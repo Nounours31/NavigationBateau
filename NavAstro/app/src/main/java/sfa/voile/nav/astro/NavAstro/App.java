@@ -3,14 +3,11 @@
  */
 package sfa.voile.nav.astro.NavAstro;
 
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sfa.voile.nav.astro.methodes.CalculsAstro;
 import sfa.voile.nav.astro.methodes.CalculsAstroDroiteHauteur;
 import sfa.voile.nav.astro.methodes.CalculsAstroMeridienne;
 import sfa.voile.nav.astro.methodes.CalculsAstroSoleil;
-import sfa.voile.nav.astro.tools.UtilitairesUI;
 import sfa.voile.nav.astro.tools.menuUI;
 
 
