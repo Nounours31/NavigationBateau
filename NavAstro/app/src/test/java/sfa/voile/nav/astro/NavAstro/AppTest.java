@@ -3,11 +3,37 @@
  */
 package sfa.voile.nav.astro.NavAstro;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Test;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+
 
 class AppTest {
-    @Test void appHasAGreeting() {
+    @Before
+    static public void setupBefore() {
+        System.out.println("setupBefore");
+    }
+
+    @BeforeClass
+    static public void setupBeforeClass() {
+        System.out.println("setupBeforeClass");
+    }
+    
+    @After
+    static public void cleanAfter() {
+        System.out.println("cleanAfter");
+    }
+
+    @AfterClass
+    static public void cleanAfterClass() {
+        System.out.println("cleanAfterClass");
+    }
+
+    @Test 
+    void appHasAGreeting() {
         App classUnderTest = new App();
+        System.out.println("appHasAGreeting");
     }
 }

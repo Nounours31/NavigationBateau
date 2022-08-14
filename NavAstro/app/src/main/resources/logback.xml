@@ -1,19 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- https://www.baeldung.com/logback -->
 <configuration scan="true" scanPeriod="30 seconds" >
     <contextName>TaskTimeTracker</contextName>
     <appender name="STDOUT"
         class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
           <pattern>
-           %d{HH:mm:ss.SSS} [%thread] %-5level %logger{5}.%M\(%line\) - %msg%n
+           %d{HH:mm:ss.SSS} [%thread] %-5level %logger{4}.%M\(%line\) - %msg%n
           </pattern>
         </encoder>
     </appender>
+    
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_DIR}/tests.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{4}.%M\(%line\) - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+    
     <logger name="com.gieman.tttracker.web" level="ERROR" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
+    
     <root level="DEBUG">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
     </root>
 </configuration>
 

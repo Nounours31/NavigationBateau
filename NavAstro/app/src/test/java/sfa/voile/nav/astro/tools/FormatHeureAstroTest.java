@@ -4,36 +4,44 @@
  */
 package sfa.voile.nav.astro.tools;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 /**
  *
  * @author pfs
  */
 public class FormatHeureAstroTest {
-    
-    public FormatHeureAstroTest() {
+    @Before
+    public void setupBefore() {
+        System.out.println("setupBefore");
+    }
+
+    @BeforeClass
+    static public void setupBeforeClass() {
+        System.out.println("setupBeforeClass");
     }
     
-    @BeforeAll
-    public static void setUpClass() {
+    @After
+    public void cleanAfter() {
+        System.out.println("cleanAfter");
     }
-    
-    @AfterAll
-    public static void tearDownClass() {
-    }
-    
-    @BeforeEach
-    public void setUp() {
-    }
-    
-    @AfterEach
-    public void tearDown() {
+
+    @AfterClass
+    static public void cleanAfterClass() {
+        System.out.println("cleanAfterClass");
     }
 
     /**
@@ -46,8 +54,6 @@ public class FormatHeureAstroTest {
         String expResult = "";
         String result = instance.printFormet();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -61,8 +67,6 @@ public class FormatHeureAstroTest {
         boolean expResult = false;
         boolean result = instance.isOK(s);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -76,8 +80,5 @@ public class FormatHeureAstroTest {
         double expResult = 0.0;
         double result = instance.parse(s);
         assertEquals(expResult, result, 0);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-    
+    }    
 }
