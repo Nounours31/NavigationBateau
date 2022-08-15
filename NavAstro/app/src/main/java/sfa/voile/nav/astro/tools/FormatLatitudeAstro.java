@@ -33,7 +33,7 @@ public class FormatLatitudeAstro {
         new FormatLatitudeAstro("([NnSs]) (\\d{1,2}):(\\d{1,2}):(\\d{1,2})", "S 25:07:58 [format horaire]", 4)
     };
 
-    FormatLatitudeAstro(String s, String e, int i, boolean b, boolean c) {
+    private FormatLatitudeAstro(String s, String e, int i, boolean b, boolean c) {
         _regExp = s;
         _exemple = e;
         _nbGroup = i;

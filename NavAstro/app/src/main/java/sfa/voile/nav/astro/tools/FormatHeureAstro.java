@@ -28,7 +28,7 @@ public class FormatHeureAstro {
         new FormatHeureAstro("([+-]?)(\\d{1,2}):(\\d{1,2}):(\\d{1,2})", "-25:07:58 [format horaire]", 4)
     };
 
-    FormatHeureAstro(String s, String e, int i, boolean b, boolean c) {
+    private FormatHeureAstro(String s, String e, int i, boolean b, boolean c) {
         _regExp = s;
         _exemple = e;
         _nbGroup = i;

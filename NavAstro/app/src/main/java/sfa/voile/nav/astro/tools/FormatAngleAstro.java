@@ -32,7 +32,7 @@ public class FormatAngleAstro {
         new FormatAngleAstro("([+-]?)(\\d{1,2}):(\\d{1,2}):(\\d{1,2})", "-25:07:58 [format horaire]", 4)
     };
 
-    FormatAngleAstro(String s, String e, int i, boolean b, boolean c) {
+    private FormatAngleAstro(String s, String e, int i, boolean b, boolean c) {
         _regExp = s;
         _exemple = e;
         _nbGroup = i;

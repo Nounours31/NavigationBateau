@@ -9,6 +9,7 @@ cd $WS
 
 gradle fatJar
 
+gradle test -i
 
 [ ! -d ${LOG_DIR} ] && mkdir -p ${LOG_DIR}
 
