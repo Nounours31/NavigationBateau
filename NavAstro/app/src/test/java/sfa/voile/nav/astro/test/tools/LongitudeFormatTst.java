@@ -4,6 +4,7 @@
  */
 package sfa.voile.nav.astro.test.tools;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterAll;
@@ -13,15 +14,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import sfa.voile.nav.astro.modele.HeureParser;
+import sfa.voile.nav.astro.modele.Longitude;
+import sfa.voile.nav.astro.modele.Longitude.SensLongitude;
+import sfa.voile.nav.astro.modele.LongitudeParser;
 
 /**
  *
  * @author pfs
  */
-public class DeclinaisonFormatTst {
+public class LongitudeFormatTst {
+	double EPSILON = 1/ (360.0 * 60 * 60 * 10);
+    static LongitudeParser parser = null;
+    
     @BeforeAll
     static public void setupBeforeAll() {
         System.out.println("setupBeforeAll");
+        parser = LongitudeParser.getInstance();
     }
 
     @BeforeEach
@@ -41,8 +49,12 @@ public class DeclinaisonFormatTst {
     }
     
     @Test
-    public void toto() {
-    	int i = 0;
-    	assertEquals(i, 3);
+    public void test1() {
+    	Longitude L = new Longitude();
+    	boolean rc = parser.parse("N 21°10'59\"", L);
+    	assertEquals(rc, true);
+    	assertTrue(Math.abs(L.getLongitude() - (21.183055555555555)) < EPSILON);
+    	assertEquals(L.getSens(), SensLongitude.Est);
     }
+
 }

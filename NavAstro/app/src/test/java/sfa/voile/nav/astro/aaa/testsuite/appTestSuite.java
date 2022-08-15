@@ -23,7 +23,8 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 	sfa.voile.nav.astro.test.tools.AngleFormatTst.class,
 	sfa.voile.nav.astro.test.tools.HeureFormatTst.class,
 	sfa.voile.nav.astro.test.tools.LatitudeFormatTst.class,
-	sfa.voile.nav.astro.test.tools.DeclinaisonFormatTst.class,
+	sfa.voile.nav.astro.test.tools.LongitudeFormatTst.class,
+	sfa.voile.nav.astro.test.tools.DeclinaisonFormatTst.class
 	})
 
 public class appTestSuite {
