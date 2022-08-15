@@ -35,17 +35,19 @@ public class UtilitairesUI {
     }
     
     public double readDegreMinuteSeconde(FormatAngleAstro[] _allRegex) {
+        PrintStream out = new PrintStream( System.out, true, StandardCharsets.UTF_8 );
+
         double dRetour = 0.0;
         boolean fin = false;
         while (!fin) {
             System.out.println("\t\tformat angulaire supporte:");
             for (FormatAngleAstro formatToDecode : _allRegex) {
-                System.out.println("\t\t\t ==>" + formatToDecode.printFormet() + "<==");
+                out.println("\t\t\t ==>" + formatToDecode.printFormet() + "<==");
             }
 
             try {
                 Locale loc = new Locale("fr", "FR");
-                Scanner in = new Scanner(System.in, StandardCharsets.ISO_8859_1);
+                Scanner in = new Scanner(System.in, StandardCharsets.UTF_8);
                 String s = in.nextLine();
                 _logger.debug("Saisie ==>{}<==", s);
 

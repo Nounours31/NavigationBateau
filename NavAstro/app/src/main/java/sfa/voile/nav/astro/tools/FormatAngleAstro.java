@@ -25,9 +25,9 @@ public class FormatAngleAstro {
     final public static FormatAngleAstro[] _allRegex = {
         // Pb de l'encodage Windows du signe degre ....
         new FormatAngleAstro("([+-]?)(\\d+)[,\\.](\\d+)'", "-25.89 [en decimal]", 3, false, true),
-        new FormatAngleAstro("([+-]?)(\\d{1,2})[공](\\d{1,2})'", "-25공07' [sans les secondes]", 3),
-        new FormatAngleAstro("([+-]?)(\\d{1,2})[공](\\d{1,2})'(\\d{1,2})\"", "-25공07'54\" [la complete]", 4),
-        new FormatAngleAstro("([+-]?)(\\d{1,2})[공](\\d{1,2}[,\\.]\\d{1,2})'", "-25공07.89' [seconde decimale dans ls minutes]", 3), // attention seconde decimale
+        new FormatAngleAstro("([+-]?)(\\d{1,2})[\u00B0](\\d{1,2})'", "-25\u00B007' [sans les secondes]", 3),
+        new FormatAngleAstro("([+-]?)(\\d{1,2})[\u00B0](\\d{1,2})'(\\d{1,2})\"", "-25\u00B007'54\" [la complete]", 4),
+        new FormatAngleAstro("([+-]?)(\\d{1,2})[\u00B0](\\d{1,2}[,\\.]\\d{1,2})'", "-25\u00B007.89' [seconde decimale dans ls minutes]", 3), // attention seconde decimale
         new FormatAngleAstro("([+-]?)(\\d{1,2})d(\\d{1,2})m(\\d{1,2})s", "-25d07m58s [format inutile ...]", 4),
         new FormatAngleAstro("([+-]?)(\\d{1,2}):(\\d{1,2}):(\\d{1,2})", "-25:07:58 [format horaire]", 4)
     };
