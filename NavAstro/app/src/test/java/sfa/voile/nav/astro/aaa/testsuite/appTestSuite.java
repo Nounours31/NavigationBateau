@@ -16,8 +16,15 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 
 // https://junit.org/junit5/docs/current/user-guide/#junit-platform-suite-engine
 @Suite
-@SuiteDisplayName("JUnit Platform Suite Demo")
-@SelectClasses({sfa.voile.nav.astro.NavAstro.AppTest.class, sfa.voile.nav.astro.tools.FormatHeureAstroTest.class})
+@SuiteDisplayName("JUnit Suite test pour l'app NavAstro")
+@SelectClasses({
+	// sfa.voile.nav.astro.test.App.class, 
+	sfa.voile.nav.astro.test.tools.GeneriqueDataFormatTst.class,
+	sfa.voile.nav.astro.test.tools.AngleFormatTst.class,
+	sfa.voile.nav.astro.test.tools.HeureFormatTst.class,
+	sfa.voile.nav.astro.test.tools.LatitudeFormatTst.class,
+	sfa.voile.nav.astro.test.tools.DeclinaisonFormatTst.class,
+	})
+
 public class appTestSuite {
-	
 }

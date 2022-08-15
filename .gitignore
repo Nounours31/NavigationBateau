@@ -10,3 +10,16 @@ nbdist/
 **/heapdump.*.phd
 **/javacore.*.txt
 **/Snap.*.trc
+
+.eclipse2/
+NavAstro/.project
+NavAstro/.settings/
+NavAstro/app/.classpath
+NavAstro/app/.project
+NavAstro/app/.settings/
+
+NavAstro/app/LOG_DIR_IS_UNDEFINED/
+NavAstro/app/bin/
+NavAstro/logsODT/
+
+

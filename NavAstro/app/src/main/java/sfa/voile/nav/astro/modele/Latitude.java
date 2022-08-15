@@ -35,11 +35,11 @@ public class Latitude extends Angle {
     }
 
     public void setLatitude(double x) {
-        _val = x;
+        setVal(x);
     }
 
 
-    public SensLatitude getSens() {
+	public SensLatitude getSens() {
         return _Sens;
     }
 

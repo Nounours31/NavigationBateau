@@ -83,6 +83,11 @@ public class Angle {
         return _val;
     }
 
+    public void setVal(double x) {
+    	_val = x;
+	}
+
+
     public Angle plus(double dz) {
         return new Angle(this._val + dz);
     }

@@ -13,7 +13,11 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
+
+import sfa.voile.nav.astro.modele.AngleParser;
+import sfa.voile.nav.astro.modele.HeureParser;
 import sfa.voile.nav.astro.modele.Latitude;
+import sfa.voile.nav.astro.modele.LatitudeParser;
 
 /**
  *
@@ -29,35 +33,31 @@ public class UtilitairesUI {
     }
 
  
-    public double readDegreMinuteSeconde() {
-        FormatAngleAstro[] _allRegex = FormatAngleAstro._allRegex;
-        return readDegreMinuteSeconde(_allRegex);
-    }
     
-    public double readDegreMinuteSeconde(FormatAngleAstro[] _allRegex) {
-        PrintStream out = new PrintStream( System.out, true, StandardCharsets.UTF_8 );
+    public double readDegreMinuteSeconde() {
+        
 
         double dRetour = 0.0;
         boolean fin = false;
         while (!fin) {
             System.out.println("\t\tformat angulaire supporte:");
-            for (FormatAngleAstro formatToDecode : _allRegex) {
-                out.println("\t\t\t ==>" + formatToDecode.printFormet() + "<==");
-            }
+            /*for (GeneriqueFormatItf formatToDecode : _allRegex) {
+                myIO.println("\t\t\t ==>" + formatToDecode.toString() + "<==");
+            }*/
 
             try {
                 Locale loc = new Locale("fr", "FR");
                 Scanner in = new Scanner(System.in, StandardCharsets.UTF_8);
                 String s = in.nextLine();
                 _logger.debug("Saisie ==>{}<==", s);
-
-                for (FormatAngleAstro formatToDecode : _allRegex) {
+/*
+                for (GeneriqueFormatItf formatToDecode : _allRegex) {
                     if (formatToDecode.isOK(s)) {
                         dRetour = formatToDecode.parse(s);
                         fin = true;
                         break;
                     }
-                }
+                } */
             }
             catch (Exception e) {
                 _logger.error("Err: {}", e.getMessage());
@@ -76,11 +76,11 @@ public class UtilitairesUI {
         double dRetour = 0.0;
         
         boolean fin = false;
-        FormatHeureAstro[] _allRegex = FormatHeureAstro._allRegex;
+        /*HeureParser[] _allRegex = HeureParser._allRegex;
         
         while (!fin) {
             System.out.println("\t\tformat angulaire supporte:");
-            for (FormatHeureAstro formatToDecode : _allRegex) {
+            for (HeureParser formatToDecode : _allRegex) {
                 System.out.println("\t\t\t ==>" + formatToDecode.printFormet() + "<==");
             }
 
@@ -90,7 +90,7 @@ public class UtilitairesUI {
                 String s = in.nextLine();
                 _logger.debug("Saisie ==>{}<==", s);
 
-                for (FormatHeureAstro formatToDecode : _allRegex) {
+                for (HeureParser formatToDecode : _allRegex) {
                     if (formatToDecode.isOK(s)) {
                         dRetour = formatToDecode.parse(s);
                         fin = true;
@@ -106,20 +106,20 @@ public class UtilitairesUI {
                 System.out.println("\t\tNe matche pas, on recommence ....");
             }
         }
-
+*/
         _logger.debug("Saisie: {}", dRetour);
         return dRetour;
     }
 
     public Latitude readLatitude() {
         Latitude dRetour = new Latitude ();
-        
+        /*
         boolean fin = false;
-        FormatLatitudeAstro[] _allRegex = FormatLatitudeAstro._allRegex;
+        LatitudeParser[] _allRegex = LatitudeParser._allRegex;
         
         while (!fin) {
             System.out.println("\t\tformat angulaire supporte:");
-            for (FormatLatitudeAstro formatToDecode : _allRegex) {
+            for (LatitudeParser formatToDecode : _allRegex) {
                 System.out.println("\t\t\t ==>" + formatToDecode.printFormet() + "<==");
             }
 
@@ -129,7 +129,7 @@ public class UtilitairesUI {
                 String s = in.nextLine();
                 _logger.debug("Saisie ==>{}<==", s);
 
-                for (FormatLatitudeAstro formatToDecode : _allRegex) {
+                for (LatitudeParser formatToDecode : _allRegex) {
                     if (formatToDecode.isOK(s)) {
                         dRetour = formatToDecode.parse(s);
                         fin = true;
@@ -145,7 +145,7 @@ public class UtilitairesUI {
                 System.out.println("\t\tNe matche pas, on recommence ....");
             }
         }
-
+*/
         _logger.debug("Saisie: {}", dRetour.toString());
         return dRetour;
     }
