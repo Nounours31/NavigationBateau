@@ -24,37 +24,91 @@ import sfa.voile.nav.astro.modele.LongitudeParser;
  */
 public class LongitudeFormatTst {
 	double EPSILON = 1/ (360.0 * 60 * 60 * 10);
-    static LongitudeParser parser = null;
-    
-    @BeforeAll
-    static public void setupBeforeAll() {
-        System.out.println("setupBeforeAll");
-        parser = LongitudeParser.getInstance();
-    }
+	static LongitudeParser parser = null;
 
-    @BeforeEach
-    public void setupBefore() {
-        System.out.println("setupBefore");
-    }
+	@BeforeAll
+	static public void setupBeforeAll() {
+		System.out.println("setupBeforeAll");
+		parser = LongitudeParser.getInstance();
+	}
 
-    
-    @AfterAll
-    static public void cleanAfter() {
-        System.out.println("cleanAfter");
-    }
+	@BeforeEach
+	public void setupBefore() {
+		System.out.println("setupBefore");
+	}
 
-    @AfterEach
-    public void cleanAfterClass() {
-        System.out.println("cleanAfterClass");
-    }
-    
-    @Test
-    public void test1() {
-    	Longitude L = new Longitude();
-    	boolean rc = parser.parse("N 21�10'59\"", L);
-    	assertEquals(rc, true);
-    	assertTrue(Math.abs(L.getLongitude() - (21.183055555555555)) < EPSILON);
-    	assertEquals(L.getSens(), SensLongitude.Est);
-    }
 
+	@AfterAll
+	static public void cleanAfter() {
+		System.out.println("cleanAfter");
+	}
+
+	@AfterEach
+	public void cleanAfterClass() {
+		System.out.println("cleanAfterClass");
+	}
+
+	@Test
+	public void test1() {
+		Longitude L = new Longitude();
+		boolean rc = parser.parse("W 21°10'59\"", L);
+		assertEquals(rc, true);
+		assertTrue(Math.abs(L.getLongitude() - (21.183055555555555)) < EPSILON);
+		assertEquals(L.getSens(), SensLongitude.West);
+
+		rc = parser.parse("E 21°10'59\"", L);
+		assertEquals(rc, true);
+		assertTrue(Math.abs(L.getLongitude() - (21.183055555555555)) < EPSILON);
+		assertEquals(L.getSens(), SensLongitude.Est);
+	}
+
+
+	@Test
+	public void test2() {
+		Longitude L = new Longitude();
+		boolean rc = parser.parse("E 21.99", L);
+		assertEquals(rc, true);
+		assertTrue(Math.abs(L.getLongitude() - (21.99)) < EPSILON);
+		assertEquals(L.getSens(), SensLongitude.Est);
+	}
+
+	@Test
+	public void test3() {
+		Longitude L = new Longitude();
+		boolean rc = parser.parse("E 21°59.99", L);
+		assertEquals(rc, true);
+		assertTrue(Math.abs(L.getLongitude() - (21.999833333333335)) < EPSILON);
+		assertEquals(L.getSens(), SensLongitude.Est);
+		
+		rc = parser.parse("W 21°59.99'", L);
+		assertEquals(rc, true);
+		assertTrue(Math.abs(L.getLongitude() - (21.999833333333335)) < EPSILON);
+		assertEquals(L.getSens(), SensLongitude.West);
+	}
+
+	@Test
+	public void test4() {
+		Longitude L = new Longitude();
+		boolean rc = parser.parse("E 21°59'99.999\"", L);
+		assertEquals(rc, false);
+		rc = parser.parse("E 21°59'99.999", L);
+		assertEquals(rc, false);
+		rc = parser.parse("E 21°59'59.999\"", L);
+		assertEquals(rc, true);
+		assertTrue(Math.abs(L.getLongitude() - (21.99999972222222)) < EPSILON);
+		assertEquals(L.getSens(), SensLongitude.Est);
+		rc = parser.parse("W 21°59'59.999", L);
+		assertEquals(rc, true);
+		assertTrue(Math.abs(L.getLongitude() - (21.99999972222222)) < EPSILON);
+		assertEquals(L.getSens(), SensLongitude.West);
+	}
+
+	@Test
+	public void test5() {
+		Longitude L = new Longitude();
+		boolean rc = parser.parse("E 181°0'0\"", L);
+		assertEquals(rc, false);
+		rc = parser.parse("E 179°59'59\"", L);
+		assertEquals(rc, false);
+	}
 }

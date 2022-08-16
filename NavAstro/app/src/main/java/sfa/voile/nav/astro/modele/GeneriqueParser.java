@@ -4,8 +4,9 @@ import java.util.regex.Matcher;
 
 public abstract class GeneriqueParser  {
     
-    protected static GeneriqueDataFormat[] _allRegex = null;    
-    public static GeneriqueDataFormat[] getAllAvailableFormat() {
+    protected GeneriqueDataFormat[] _allRegex = null;    
+
+    public GeneriqueDataFormat[] getAllAvailableFormat() {
 		return _allRegex;
 	}
  

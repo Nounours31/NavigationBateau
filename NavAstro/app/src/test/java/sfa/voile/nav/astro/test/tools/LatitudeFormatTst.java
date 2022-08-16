@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import sfa.voile.nav.astro.modele.HeureParser;
 import sfa.voile.nav.astro.modele.Latitude;
 import sfa.voile.nav.astro.modele.Latitude.SensLatitude;
 import sfa.voile.nav.astro.modele.LatitudeParser;
@@ -48,13 +47,68 @@ public class LatitudeFormatTst {
         System.out.println("cleanAfterClass");
     }
     
-    @Test
-    public void test1() {
-    	Latitude L = new Latitude();
-    	boolean rc = parser.parse("N 21�10'59\"", L);
-    	assertEquals(rc, true);
-    	assertTrue(Math.abs(L.getLatitude() - (21.183055555555555)) < EPSILON);
-    	assertEquals(L.getSens(), SensLatitude.Nord);
-    }
+	@Test
+	public void test1() {
+		Latitude L = new Latitude();
+		boolean rc = parser.parse("n 21°10'59\"", L);
+		assertEquals(rc, true);
+		assertTrue(Math.abs(L.getLatitude() - (21.183055555555555)) < EPSILON);
+		assertEquals(L.getSens(), SensLatitude.Nord);
+
+		rc = parser.parse("s 21°10'59\"", L);
+		assertEquals(rc, true);
+		assertTrue(Math.abs(L.getLatitude() - (21.183055555555555)) < EPSILON);
+		assertEquals(L.getSens(), SensLatitude.Sud);
+	}
+
+
+	@Test
+	public void test2() {
+		Latitude L = new Latitude();
+		boolean rc = parser.parse("N 21.99", L);
+		assertEquals(rc, true);
+		assertTrue(Math.abs(L.getLatitude() - (21.99)) < EPSILON);
+		assertEquals(L.getSens(), SensLatitude.Nord);
+	}
+
+	@Test
+	public void test3() {
+		Latitude L = new Latitude();
+		boolean rc = parser.parse("N 21°59.99", L);
+		assertEquals(rc, true);
+		assertTrue(Math.abs(L.getLatitude() - (21.999833333333335)) < EPSILON);
+		assertEquals(L.getSens(), SensLatitude.Nord);
+		
+		rc = parser.parse("S 21°59.99'", L);
+		assertEquals(rc, true);
+		assertTrue(Math.abs(L.getLatitude() - (21.999833333333335)) < EPSILON);
+		assertEquals(L.getSens(), SensLatitude.Sud);
+	}
+
+	@Test
+	public void test4() {
+		Latitude L = new Latitude();
+		boolean rc = parser.parse("E 21°59'99.999\"", L);
+		assertEquals(rc, false);
+		rc = parser.parse("S 21°59'99.999", L);
+		assertEquals(rc, false);
+		rc = parser.parse("S 21°59'59.999\"", L);
+		assertEquals(rc, true);
+		assertTrue(Math.abs(L.getLatitude() - (21.99999972222222)) < EPSILON);
+		assertEquals(L.getSens(), SensLatitude.Sud);
+		rc = parser.parse("N 21°59'59.999", L);
+		assertEquals(rc, true);
+		assertTrue(Math.abs(L.getLatitude() - (21.99999972222222)) < EPSILON);
+		assertEquals(L.getSens(), SensLatitude.Nord);
+	}
+
+	@Test
+	public void test5() {
+		Latitude L = new Latitude();
+		boolean rc = parser.parse("E 91°0'0\"", L);
+		assertEquals(rc, false);
+		rc = parser.parse("E 89°59'59\"", L);
+		assertEquals(rc, false);
+	}
 
 }

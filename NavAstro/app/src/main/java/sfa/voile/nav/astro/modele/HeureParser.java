@@ -12,8 +12,11 @@ import org.slf4j.LoggerFactory;
 public class HeureParser extends GeneriqueParser {
 	private static Logger _logger = LoggerFactory.getLogger(HeureParser.class);
 
+	private static HeureParser _instance = null;
 
-	final private GeneriqueDataFormat[] _allRegex = {
+	private HeureParser() {
+		super();
+		_allRegex = new GeneriqueDataFormat[] {
 			// Pb de l'encodage Windows du signe degre ....
 			new GeneriqueDataFormat(1, "([+-]?)(\\d+[,\\.]\\d+)", "-25.89 [en decimal]"),
 			new GeneriqueDataFormat(2, "([+-]?)(\\d+[,\\.]\\d+)'", "-25.89 [en decimal]"),
@@ -21,8 +24,7 @@ public class HeureParser extends GeneriqueParser {
 			new GeneriqueDataFormat(4, "([+-]?)(\\d{1,2}):(\\d+[,\\.]\\d*)", "-25:59.99 [format horaire/ minute sexadecimake / seconde decimale ]")
 	};
 
-	private static HeureParser _instance = null;
-
+	}
 	public static HeureParser getInstance() {
 		if (_instance  == null) 
 			_instance = new HeureParser();

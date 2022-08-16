@@ -4,6 +4,7 @@
  */
 package sfa.voile.nav.astro.modele;
 
+import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
@@ -17,21 +18,26 @@ public class AngleParser extends GeneriqueParser {
 	private static Logger _logger = LoggerFactory.getLogger(AngleParser.class);
 
 
-	final private GeneriqueDataFormat[] _allRegex = {
-			// Pb de l'encodage Windows du signe degre ....
-			new GeneriqueDataFormat(1, "([+-]?)(\\d+[,\\.]\\d+)", "-25.89 [en decimal]"),
-			new GeneriqueDataFormat(2, "([+-]?)(\\d+[,\\.]\\d+)[\\u00B0]", "-25.89\u00B0 [en decimal]"),
-			
-			new GeneriqueDataFormat(3, "([+-]?)(\\d{1,2})[\u00B0](\\d+[,\\.]\\d*)'", "-25\u00B059.59' [minute sexagedecmale / secondes decimales]"),
-			new GeneriqueDataFormat(4, "([+-]?)(\\d{1,2})[\u00B0](\\d+[,\\.]\\d*)", "-25\u00B0059.59 [minute sexagedecmale / secondes decimales]"),
-			new GeneriqueDataFormat(5, "([+-]?)(\\d{1,2})[\u00B0](\\d+)",           "-25\u00B0059' [minute sexagedecmale / secondes decimales]"),
-			new GeneriqueDataFormat(55,"([+-]?)(\\d{1,2})[\u00B0](\\d+)'",           "-25\u00B0059' [minute sexagedecmale / secondes decimales]"),
-			
-			new GeneriqueDataFormat(6, "([+-]?)(\\d{1,2})[\u00B0](\\d{1,2})'(\\d{1,2})\"", "-25\u00B059'59\" [la complete]"),
-			new GeneriqueDataFormat(7, "([+-]?)(\\d{1,2})d(\\d{1,2})m(\\d{1,2})s", "-25d07m58s [format inutile ...]"),
-			new GeneriqueDataFormat(8, "([+-]?)(\\d{1,2}):(\\d{1,2}):(\\d{1,2})", "-25:07:58 [format horaire]")
-	};
 
+
+	public AngleParser() {
+		super();
+		_allRegex = new GeneriqueDataFormat[] {
+				// Pb de l'encodage Windows du signe degre ....
+				new GeneriqueDataFormat(1, "([+-]?)(\\d+[,\\.]\\d+)", "								-25.89 [en decimal]"),
+				new GeneriqueDataFormat(2, "([+-]?)(\\d+[,\\.]\\d+)[°]", "							-25.89° [en decimal]"),
+				
+				new GeneriqueDataFormat(3, "([+-]?)(\\d{1,2})[°](\\d+[,\\.]\\d*)'", "				-25°59.59' [minute sexagedecmale / secondes decimales]"),
+				new GeneriqueDataFormat(4, "([+-]?)(\\d{1,2})[°](\\d+[,\\.]\\d*)", "				-25°59.59 [minute sexagedecmale / secondes decimales]"),
+				new GeneriqueDataFormat(5, "([+-]?)(\\d{1,2})[°](\\d+)", "							-25°59    [minute sexagedecmale / secondes decimales]"),
+				new GeneriqueDataFormat(55,"([+-]?)(\\d{1,2})[°](\\d+)'", "							-25°59' [minute sexagedecmale / secondes decimales]"),
+				
+				new GeneriqueDataFormat(6, "([+-]?)(\\d{1,2})[°](\\d{1,2})'(\\d+[,\\.]?\\d*)\"", "	-25°59'59.99\" 	[la complete]"),
+				new GeneriqueDataFormat(66, "([+-]?)(\\d{1,2})[°](\\d{1,2})'(\\d+[,\\.]?\\d*)", "	-25°59'59.99\" 	[la complete]"),
+				new GeneriqueDataFormat(7, "([+-]?)(\\d{1,2})d(\\d{1,2})m((\\d+[,\\.]?\\d*))s", "	-25d07m58s 		[format inutile ...]"),
+				new GeneriqueDataFormat(8, "([+-]?)(\\d{1,2}):(\\d{1,2}):((\\d+[,\\.]?\\d*))", "	-25:07:58 		[format horaire]")
+		};
+	}
 
 	private static AngleParser _instance = null;
 
@@ -41,7 +47,7 @@ public class AngleParser extends GeneriqueParser {
 		return _instance;
 	}
 
-	public boolean parse(String s, HandleDouble d) throws NumberFormatException {
+	public boolean parse(String s, Angle a) throws NumberFormatException {
 		boolean retour = false;
 		double val = 0.0;
 
@@ -89,6 +95,7 @@ public class AngleParser extends GeneriqueParser {
 					break;
 					
 				case 6:
+				case 66:
 				case 7:
 				case 8:
 					sMinute = matcher.group(3);
@@ -113,17 +120,30 @@ public class AngleParser extends GeneriqueParser {
 
 				val = degre * dSigne;
 				retour = true;
-				d.d(val);
+				a.setVal(val);
 				break;
 			}
 			else {
 				_logger.debug("No match ...");
 			}
 		}
-		if (!retour)
+		if (!retour) {
 			_logger.warn("No Match");
-
-		_logger.debug("Read reel: {} / {}", retour, d.d());
+			/* 
+			byte[] b1 = s.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+			byte[] b2 = s.getBytes(java.nio.charset.StandardCharsets.US_ASCII);
+			
+			int i = 0;
+			while (i < b1.length)
+				System.out.print(">" + String.format("%02x", b1[i++]) + "<");
+			
+			System.out.println();
+			i = 0;
+			while (i < b2.length)
+				System.out.print(">" + b2[i++] + "<");
+			*/
+		}
+		_logger.debug("Read reel: {} / {}", retour, a.toString());
 		return retour;
 	}
 

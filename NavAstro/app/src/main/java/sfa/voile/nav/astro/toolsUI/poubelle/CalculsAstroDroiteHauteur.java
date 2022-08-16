@@ -2,14 +2,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package sfa.voile.nav.astro.methodes;
+package sfa.voile.nav.astro.toolsUI.poubelle;
 
 import java.util.Hashtable;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sfa.voile.nav.astro.modele.Angle;
-import sfa.voile.nav.astro.tools.UtilitairesUI;
+import sfa.voile.nav.astro.toolsUI.menus.UtilitairesUI;
 
 /**
  *

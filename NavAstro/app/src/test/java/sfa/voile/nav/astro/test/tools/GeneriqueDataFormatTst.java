@@ -69,6 +69,6 @@ public class GeneriqueDataFormatTst {
     	assertEquals(i, 1);
 
     	String s = d.toString();
-    	assertEquals(s, "Format: ==>\\d*\\.\\d*<== ex: 1235.23");
+    	assertEquals(s, "Format:[1]>\\d*\\.\\d*< ex1235.23");
     }
 }

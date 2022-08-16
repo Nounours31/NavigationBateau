@@ -31,9 +31,9 @@ public class GeneriqueDataFormat {
 
 	@Override
     public String toString() {
-        StringBuffer sb = new StringBuffer("Format: ==>");
+        StringBuffer sb = new StringBuffer(String.format("Format:[%1d]>",_indice));
         sb.append(_regExp);
-        sb.append("<== ex: ");
+        sb.append("< ex");
         sb.append(_exemple);
         return sb.toString();
     }

@@ -2,22 +2,19 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package sfa.voile.nav.astro.tools;
+package sfa.voile.nav.astro.toolsUI.menus;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Locale;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.nio.charset.StandardCharsets;
 
+import sfa.voile.nav.astro.modele.Angle;
 import sfa.voile.nav.astro.modele.AngleParser;
-import sfa.voile.nav.astro.modele.HeureParser;
+import sfa.voile.nav.astro.modele.GeneriqueDataFormat;
 import sfa.voile.nav.astro.modele.Latitude;
-import sfa.voile.nav.astro.modele.LatitudeParser;
 
 /**
  *
@@ -26,38 +23,58 @@ import sfa.voile.nav.astro.modele.LatitudeParser;
 public class UtilitairesUI {
 
  
-    private Logger _logger = null;
+    private static final String [] HELP_FORMAT = {
+    		"? [pour avoir tous les formats]",
+    		"?"
+    };
+	private static final String[] SEP = {
+			"  ",
+			""
+	};
+    private static Logger _logger = LoggerFactory.getLogger(UtilitairesUI.class);
 
     public UtilitairesUI() {
-        _logger = LoggerFactory.getLogger(UtilitairesUI.class);
     }
 
  
+    public static String readInput () {
+    	
+		// Scanner in = new Scanner(System.in);
+		// String s = in.nextLine();
+    	
+    	Scanner console = null;
+		try {
+			console = new Scanner(new InputStreamReader(System.in, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	String s = console.nextLine();
+    	// console.close();
+    	
+		_logger.debug("Saisie ==>{}<==", s);
+    	return s;
+    }
     
-    public double readDegreMinuteSeconde() {
-        
-
-        double dRetour = 0.0;
+    public Angle readDegreMinuteSeconde() {
+        Angle dRetour = new Angle(0.0);
         boolean fin = false;
+        AngleParser a = new AngleParser();
         while (!fin) {
-            System.out.println("\t\tformat angulaire supporte:");
-            /*for (GeneriqueFormatItf formatToDecode : _allRegex) {
-                myIO.println("\t\t\t ==>" + formatToDecode.toString() + "<==");
-            }*/
-
+        	
             try {
-                Locale loc = new Locale("fr", "FR");
-                Scanner in = new Scanner(System.in, StandardCharsets.UTF_8);
-                String s = in.nextLine();
-                _logger.debug("Saisie ==>{}<==", s);
-/*
-                for (GeneriqueFormatItf formatToDecode : _allRegex) {
-                    if (formatToDecode.isOK(s)) {
-                        dRetour = formatToDecode.parse(s);
-                        fin = true;
-                        break;
+            	
+                String s = UtilitairesUI.readInput();
+                if (s.contains(HELP_FORMAT[1])) {
+                    System.out.println("\t\tformat angulaire supporte: " + a.getAllAvailableFormat().length);
+                    for (GeneriqueDataFormat formatToDecode : a.getAllAvailableFormat()) {
+                        System.out.println("\t\t\t ==>" + formatToDecode.toString() + "<==");
                     }
-                } */
+                    continue;
+                }
+                _logger.debug("Saisie ==>{}<==", s);
+                
+                fin = a.parse(s, dRetour);
             }
             catch (Exception e) {
                 _logger.error("Err: {}", e.getMessage());
@@ -149,4 +166,9 @@ public class UtilitairesUI {
         _logger.debug("Saisie: {}", dRetour.toString());
         return dRetour;
     }
+
+
+	public void println(String s) {
+		System.out.println(s + SEP[0] + HELP_FORMAT[0]);
+	}
 }

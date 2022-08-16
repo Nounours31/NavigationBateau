@@ -16,12 +16,15 @@ import org.slf4j.LoggerFactory;
 public class LatitudeParser extends GeneriqueParser {
 	private static Logger _logger = LoggerFactory.getLogger(LatitudeParser.class);
 
-	final public static GeneriqueDataFormat[] _allRegex = {
-			// Pb de l'encodage Windows du signe degre ....
-			new GeneriqueDataFormat(1, "([NnSs]) (.*)", "N 25.89 [en decimal]")
-	};
 
-
+	protected LatitudeParser() {
+		super();
+		 _allRegex = new GeneriqueDataFormat[] {
+					// Pb de l'encodage Windows du signe degre ....
+					new GeneriqueDataFormat(1, "([NnSs]) (.*)", "N 25.89 [en decimal]")
+		 };
+	}
+	
 	private static LatitudeParser _instance = null;
 
 	public static LatitudeParser getInstance() {
@@ -52,9 +55,9 @@ public class LatitudeParser extends GeneriqueParser {
 
 
 				AngleParser a = AngleParser.getInstance(); 
-				HandleDouble angle = new HandleDouble();
+				Angle angle = new Angle(0.0);
 				retour = a.parse(matcher.group(2), angle);
-				double latitudeAsDouble = angle.d();
+				double latitudeAsDouble = angle.getVal();
 				if (retour) {
 					if (Math.abs(latitudeAsDouble) <= 90.0) {
 						L.setLatitude(latitudeAsDouble);

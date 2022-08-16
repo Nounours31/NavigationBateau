@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import sfa.voile.nav.astro.tools.Utiitaires;
 
 /**
@@ -22,8 +23,16 @@ public class Angle {
     private static Logger _logger = LoggerFactory.getLogger(Angle.class);
     protected double _val = 0.0;
 
+    public Angle() {
+        _val = 0.0;
+    }
+
     public Angle(double v) {
         _val = v;
+    }
+
+    public Angle(Angle v) {
+        _val = v._val;
     }
 
     public String toDegreMinuteSeconde() {
@@ -40,7 +49,7 @@ public class Angle {
         x = Math.abs(x);
 
         sb.append(String.format("%02d", (int) Math.floor(x)));
-        sb.append("°");
+        sb.append("Â°");
         x -= Math.floor(x);
         x *= 60.0;
 
@@ -69,7 +78,7 @@ public class Angle {
         x = Math.abs(x);
 
         sb.append(String.format("%02d", (int) Math.floor(x)));
-        sb.append("°");
+        sb.append("Â°");
         x -= Math.floor(x);
         x *= 60.0;
 

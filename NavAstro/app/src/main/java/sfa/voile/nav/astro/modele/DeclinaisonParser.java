@@ -4,17 +4,21 @@
  */
 package sfa.voile.nav.astro.modele;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  *
  * @author pierr
  */
-public class DeclinaisonParser extends LatitudeParser{
-    private static Logger _logger = LoggerFactory.getLogger(DeclinaisonParser.class);
-    
+public class DeclinaisonParser extends LatitudeParser {    
 
+	public DeclinaisonParser() {
+		super();
+	}
+
+	private static DeclinaisonParser _instance = null;
+
+	public static DeclinaisonParser getInstance() {
+		if (_instance  == null) 
+			_instance = new DeclinaisonParser();
+		return _instance;
+	}
 }

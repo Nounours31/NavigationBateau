@@ -2,26 +2,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package sfa.voile.nav.astro.methodes;
-
-import java.util.Hashtable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import sfa.voile.nav.astro.modele.Angle;
-import sfa.voile.nav.astro.modele.Declinaison;
-import sfa.voile.nav.astro.modele.Heure;
-import sfa.voile.nav.astro.modele.Latitude;
-import sfa.voile.nav.astro.modele.Latitude.SensLatitude;
-import sfa.voile.nav.astro.tools.UtilitairesUI;
-import sfa.voile.nav.astro.tools.menuUI;
-import sfa.voile.nav.astro.tools.menuUI.eChoixMethodeSoleil;
+package sfa.voile.nav.astro.toolsUI.poubelle;
 
 /**
  *
  * @author pierr
  */
 public class CalculsAstroSoleil {
-
+/*
     private final static Logger _logger = LoggerFactory.getLogger(CalculsAstroSoleil.class);
     private final int PAR_INTERVAL = 1;
     private final int PAR_GRADIANT = 2;
@@ -30,16 +18,6 @@ public class CalculsAstroSoleil {
     }
 
     public enum eArgDeclinaisonSoleil {
-        Type("Par interval ou par vitesse angulaire"),
-        HeureMeusure("Heure de calcul de la Declinaiosn SOlaire (heure de la meusure)"),
-        AHvo("Angle Horaire du soleil a Greenwich (AHvo ou GHA)"),
-        HeureUT1("Heure UT debut interval Declinaison soleil D"),
-        Declinaison1("Declinaison soleil(D) debut interval "),
-        HeureUT2("Heure UT fin interval Declinaison soleil D"),
-        Declinaison2("Declinaison soleil(D) fin interval"),
-        HeureUTRef("Heure de reference calcul declinaison"),
-        DeclinaisonRef("Declinaison soleil(D) a l'heure de reference"),
-        PasDeDeclinaison("Declinaison soleil horaire (d en degre par heure)");
 
         public String getDisplay() {
             return _display;
@@ -181,14 +159,14 @@ public class CalculsAstroSoleil {
     public static void DeclinaisonSolaire() {
         _logger.debug("Calcul declinaison solaire ");
 
-        menuUI _menu = new menuUI();
-        menuUI.eChoixMethodeSoleil iChoix = _menu.choixMethodeSoleil();
+        MenuPrincipal _menu = new MenuPrincipal();
+        MenuPrincipal.eChoixMethodeSoleil iChoix = _menu.choixMethodeSoleil();
 
         CalculsAstroSoleil x = new CalculsAstroSoleil();
         Hashtable<eArgDeclinaisonSoleil, Object> methodeArgs = x.readStdInForDeclinaisonSolaire(iChoix);
         Declinaison D = x.calculDeclinaison(iChoix, methodeArgs);
 
         _logger.debug("Declinaison D:" + D.toString());
-    }
+    }*/
 
 }

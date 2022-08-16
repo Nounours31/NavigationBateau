@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import sfa.voile.nav.astro.tools.Utiitaires;
 
 /**
@@ -34,7 +35,7 @@ public class Heure {
         x = Math.abs(x);
 
         sb.append(String.format("%02d", (int) Math.floor(x)));
-        sb.append("°");
+        sb.append("Â°");
         x -= Math.floor(x);
         x *= 60.0;
 

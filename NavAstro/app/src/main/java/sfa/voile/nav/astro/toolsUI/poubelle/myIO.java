@@ -1,4 +1,4 @@
-package sfa.voile.nav.astro.tools;
+package sfa.voile.nav.astro.toolsUI.poubelle;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;

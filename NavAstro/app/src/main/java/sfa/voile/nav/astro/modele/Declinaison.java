@@ -26,4 +26,8 @@ public class Declinaison extends Latitude {
         setLatitude(l._val);
     }
 
+	public double getDeclinaison() {
+		return getLatitude();
+	}
+
 }

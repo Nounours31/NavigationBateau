@@ -5,11 +5,8 @@ package sfa.voile.nav.astro.NavAstro;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sfa.voile.nav.astro.methodes.CalculsAstroDroiteHauteur;
-import sfa.voile.nav.astro.methodes.CalculsAstroMeridienne;
-import sfa.voile.nav.astro.methodes.CalculsAstroSoleil;
-import sfa.voile.nav.astro.tools.menuUI;
 
+import sfa.voile.nav.astro.toolsUI.menus.MenuPrincipal;
 
 public class App {
 
@@ -18,34 +15,12 @@ public class App {
         logger.debug("Et c'est parti ...");
         
         try {
-            App.start();
+        	 MenuPrincipal.display();
         }
         catch(Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
         logger.debug("... et c'est fini !");        
-    }
-    
-        public static void start() {
-        menuUI _menu = new menuUI();
-        
-        while (true) {
-            menuUI.eChoixMethodePrincipale methode = _menu.choixMethode();
-            switch (methode) {
-                case TheEnd: return;
-                case DroiteDeHauteur: 
-                    CalculsAstroDroiteHauteur.droiteHauteur(); 
-                    break;
-                case LatitudeMeridienne : 
-                    CalculsAstroMeridienne.LatitudeMeridienne(); 
-                    break;
-                case DeclinaisonSolaire : 
-                    CalculsAstroSoleil.DeclinaisonSolaire(); 
-                    break;
-                default:
-                    throw new AssertionError();
-            }
-        }
     }
 }

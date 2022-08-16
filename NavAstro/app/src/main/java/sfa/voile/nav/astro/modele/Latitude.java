@@ -60,6 +60,11 @@ public class Latitude extends Angle {
     public String toString() {
         return String.format ("Latitude %s %s [Semidecimale: %s %s] [decimale: %s %f]", _Sens, this.toDegreMinuteSeconde(), _Sens, this.toDegreMinuteDecimale(), _Sens, this._val);
     }
+
+	public void setLatitude(Angle a) {
+		this.setVal(a.getVal());
+		
+	}
     
 
 }

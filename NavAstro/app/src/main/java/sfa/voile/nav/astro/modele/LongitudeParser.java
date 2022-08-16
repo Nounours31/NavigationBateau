@@ -16,12 +16,14 @@ import org.slf4j.LoggerFactory;
 public class LongitudeParser extends GeneriqueParser {
 	private static Logger _logger = LoggerFactory.getLogger(LongitudeParser.class);
 
-	final public static GeneriqueDataFormat[] _allRegex = {
-			// Pb de l'encodage Windows du signe degre ....
-			new GeneriqueDataFormat(1, "([EeWw]) (.*)", "N 25.89 [en decimal]")
-	};
 
-
+	private LongitudeParser () {
+		super();
+		_allRegex = new GeneriqueDataFormat[] {
+				// Pb de l'encodage Windows du signe degre ....
+				new GeneriqueDataFormat(1, "([EeWw]) (.*)", "N 25.89 [en decimal]")
+		};
+	}
 	private static LongitudeParser _instance = null;
 
 	public static LongitudeParser getInstance() {
@@ -52,9 +54,9 @@ public class LongitudeParser extends GeneriqueParser {
 
 
 				AngleParser a = AngleParser.getInstance(); 
-				HandleDouble angle = new HandleDouble();
+				Angle angle = new Angle(0.0);
 				retour = a.parse(matcher.group(2), angle);
-				double longitudeAsDouble = angle.d();
+				double longitudeAsDouble = angle.getVal();
 				if (retour) {
 					if (Math.abs(longitudeAsDouble) <= 180.0) {
 						G.setLongitude(longitudeAsDouble);
