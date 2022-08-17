@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.voile.nav.astro.toolsUI.menus.UtilitairesUI;
+import sfa.voile.nav.astro.ui.tools.DataReaders;
 
 import java.nio.charset.StandardCharsets;
 
@@ -111,7 +111,7 @@ public class MenuPOurPieceDetachee {
 		while (true) {
 			try {
 				System.out.print("Choix :");
-				String input = UtilitairesUI.readInput();
+				String input = DataReaders.readInput();
 				retour = eChoixMethodePrincipale.readAndCheck(input);
 				if (retour != null)
 					break;

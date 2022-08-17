@@ -9,7 +9,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sfa.voile.nav.astro.modele.Angle;
-import sfa.voile.nav.astro.toolsUI.menus.UtilitairesUI;
+import sfa.voile.nav.astro.ui.tools.DataReaders;
 
 /**
  *
@@ -42,7 +42,7 @@ public class CalculsAstroMeridienne {
 
     private Hashtable<eArgLatitudeMeridienne, Object> readStdInForLatitudeMeridienne() {
         Hashtable<eArgLatitudeMeridienne, Object> retour = new Hashtable<eArgLatitudeMeridienne, Object>();
-        UtilitairesUI _toolsUI = new UtilitairesUI();
+        DataReaders _toolsUI = new DataReaders();
 
         for (eArgLatitudeMeridienne arg : eArgLatitudeMeridienne.values()) {
             System.out.println("Saisir: " + arg.getDisplay());
@@ -54,7 +54,7 @@ public class CalculsAstroMeridienne {
     }
 
     public static void LatitudeMeridienne() {
-        UtilitairesUI _toolsUI = new UtilitairesUI();
+        DataReaders _toolsUI = new DataReaders();
         _logger.debug("Calcul latitude meridienne");
 
         Hashtable<eArgLatitudeMeridienne, Object> methodeArgs = new CalculsAstroMeridienne().readStdInForLatitudeMeridienne();

@@ -7,7 +7,7 @@ package sfa.voile.nav.astro.toolsUI.poubelle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.voile.nav.astro.toolsUI.menus.UtilitairesUI;
+import sfa.voile.nav.astro.ui.tools.DataReaders;
 
 /**
  *

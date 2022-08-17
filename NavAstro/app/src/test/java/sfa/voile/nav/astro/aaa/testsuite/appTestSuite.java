@@ -8,6 +8,8 @@ import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;
 
+import sfa.voile.nav.astro.test.ui.MenuPrincipalTst;
+
 /**
  *
  * @author pfs
@@ -19,12 +21,13 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 @SuiteDisplayName("JUnit Suite test pour l'app NavAstro")
 @SelectClasses({
 	// sfa.voile.nav.astro.test.App.class, 
-	sfa.voile.nav.astro.test.tools.GeneriqueDataFormatTst.class,
-	sfa.voile.nav.astro.test.tools.AngleFormatTst.class,
-	sfa.voile.nav.astro.test.tools.HeureFormatTst.class,
-	sfa.voile.nav.astro.test.tools.LatitudeFormatTst.class,
-	sfa.voile.nav.astro.test.tools.LongitudeFormatTst.class,
-	sfa.voile.nav.astro.test.tools.DeclinaisonFormatTst.class
+	sfa.voile.nav.astro.test.parsers.GeneriqueDataFormatTst.class,
+	sfa.voile.nav.astro.test.parsers.AngleFormatTst.class,
+	sfa.voile.nav.astro.test.parsers.HeureFormatTst.class,
+	sfa.voile.nav.astro.test.parsers.LatitudeFormatTst.class,
+	sfa.voile.nav.astro.test.parsers.LongitudeFormatTst.class,
+	sfa.voile.nav.astro.test.parsers.DeclinaisonFormatTst.class,
+	MenuPrincipalTst.class
 	})
 
 public class appTestSuite {

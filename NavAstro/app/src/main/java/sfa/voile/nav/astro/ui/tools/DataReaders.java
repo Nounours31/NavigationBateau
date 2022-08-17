@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package sfa.voile.nav.astro.toolsUI.menus;
+package sfa.voile.nav.astro.ui.tools;
 
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -20,7 +20,7 @@ import sfa.voile.nav.astro.modele.Latitude;
  *
  * @author pierr
  */
-public class UtilitairesUI {
+public class DataReaders {
 
  
     private static final String [] HELP_FORMAT = {
@@ -31,29 +31,15 @@ public class UtilitairesUI {
 			"  ",
 			""
 	};
-    private static Logger _logger = LoggerFactory.getLogger(UtilitairesUI.class);
+    private static Logger _logger = LoggerFactory.getLogger(DataReaders.class);
 
-    public UtilitairesUI() {
+    public DataReaders() {
     }
 
  
     public static String readInput () {
-    	
-		// Scanner in = new Scanner(System.in);
-		// String s = in.nextLine();
-    	
-    	Scanner console = null;
-		try {
-			console = new Scanner(new InputStreamReader(System.in, "UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	String s = console.nextLine();
-    	// console.close();
-    	
-		_logger.debug("Saisie ==>{}<==", s);
-    	return s;
+    	myInputReaderItf reader = myInputReaderFactory.getMyInputReader();
+    	return reader.readInput();
     }
     
     public Angle readDegreMinuteSeconde() {
@@ -64,7 +50,7 @@ public class UtilitairesUI {
         	
             try {
             	
-                String s = UtilitairesUI.readInput();
+                String s = DataReaders.readInput();
                 if (s.contains(HELP_FORMAT[1])) {
                     System.out.println("\t\tformat angulaire supporte: " + a.getAllAvailableFormat().length);
                     for (GeneriqueDataFormat formatToDecode : a.getAllAvailableFormat()) {

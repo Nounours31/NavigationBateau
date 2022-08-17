@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package sfa.voile.nav.astro.toolsUI.menus;
+package sfa.voile.nav.astro.ui.menus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +10,8 @@ import java.util.Comparator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import sfa.voile.nav.astro.ui.tools.DataReaders;
 
 public class NavAstroMenuItems  {
 	private static Logger _logger = LoggerFactory.getLogger(NavAstroMenuItems.class);
@@ -50,7 +52,7 @@ public class NavAstroMenuItems  {
 		while (true) {
 			displayMenu();
 			try {
-				String s = UtilitairesUI.readInput();
+				String s = DataReaders.readInput();
 				retour = readAndCheck(s);
 				return retour;
 			}

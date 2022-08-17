@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package sfa.voile.nav.astro.toolsUI.menus;
+package sfa.voile.nav.astro.ui.menus;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ public class NavAstroMenuItem  {
 		return _code;
 	}
 
-	int getIndice() {
+	private int getIndice() {
 		return _indice;
 	}
 

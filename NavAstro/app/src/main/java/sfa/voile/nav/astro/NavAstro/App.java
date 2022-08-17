@@ -6,7 +6,7 @@ package sfa.voile.nav.astro.NavAstro;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.voile.nav.astro.toolsUI.menus.MenuPrincipal;
+import sfa.voile.nav.astro.ui.menus.MenuPrincipal;
 
 public class App {
 

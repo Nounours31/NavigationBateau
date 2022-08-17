@@ -9,7 +9,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sfa.voile.nav.astro.modele.Angle;
-import sfa.voile.nav.astro.toolsUI.menus.UtilitairesUI;
+import sfa.voile.nav.astro.ui.tools.DataReaders;
 
 /**
  *
@@ -40,7 +40,7 @@ public class CalculsAstroDroiteHauteur extends CalculsAstro {
     }
     private Map<eArgDroiteHauteur, Object> ArgForDroiteHauteur() {
         Map<eArgDroiteHauteur, Object> retour = new Hashtable<eArgDroiteHauteur, Object>();
-        UtilitairesUI _toolsUI = new UtilitairesUI();
+        DataReaders _toolsUI = new DataReaders();
 
         for (eArgDroiteHauteur arg : eArgDroiteHauteur.values()) {
             System.out.println("Saisir: " + arg.getDisplay());

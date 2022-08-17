@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package sfa.voile.nav.astro.toolsUI.menus;
+package sfa.voile.nav.astro.ui.menus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import sfa.voile.nav.astro.methodes.eCalculAstroConstantes;
 import sfa.voile.nav.astro.modele.Angle;
+import sfa.voile.nav.astro.ui.tools.DataReaders;
 
 public class MenuLatitudeMeridienne_Dialog extends NavAstroMenuItems  {
 	private static Logger _logger = LoggerFactory.getLogger(MenuPrincipal.class);
@@ -25,7 +26,7 @@ public class MenuLatitudeMeridienne_Dialog extends NavAstroMenuItems  {
 	}
 
 	public void argsForMeridienne(HashMap<eCalculAstroConstantes, Object> args) {
-        UtilitairesUI _toolsUI = new UtilitairesUI();
+        DataReaders _toolsUI = new DataReaders();
         _logger.debug("Calcul latitude meridienne");
 
         eCalculAstroConstantes arg = eCalculAstroConstantes.Ho;
