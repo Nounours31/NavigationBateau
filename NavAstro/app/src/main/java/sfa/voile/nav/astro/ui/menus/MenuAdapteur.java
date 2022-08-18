@@ -115,4 +115,21 @@ public abstract class MenuAdapteur {
 		}
 		throw new NavAstroException("Cannot read "+ key.name());
 	}
+	
+	
+    protected void ResumeDeLaSaisie(HashMap<eCalculAstroConstantes, Object> args, eUINavAstroAllMenuItems iCas) {
+    	System.out.println("---------------------------------------------------");
+    	System.out.println("Arguments saisis - cas : "+ iCas.name());
+    	for (eCalculAstroConstantes key : args.keySet()) {
+    		System.out.println("\t - "+key.name()+" : ->"+args.get(key)+"<-");			
+		}
+    	System.out.println("---------------------------------------------------");
+    }
+
+    protected void Resultat(Declinaison x) {
+    	System.out.println("***************************************************");
+    	System.out.println("Resultat:  ->"+ x.toString()+"<-");
+    	System.out.println("***************************************************");
+    }
+
 }

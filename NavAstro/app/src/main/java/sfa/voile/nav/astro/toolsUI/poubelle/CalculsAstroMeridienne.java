@@ -46,7 +46,7 @@ public class CalculsAstroMeridienne {
 
         for (eArgLatitudeMeridienne arg : eArgLatitudeMeridienne.values()) {
             System.out.println("Saisir: " + arg.getDisplay());
-            Angle x = new Angle (_toolsUI.readDegreMinuteSeconde());
+            Angle x = new Angle (_toolsUI.readAngle());
             retour.put(arg, x);
         }
 

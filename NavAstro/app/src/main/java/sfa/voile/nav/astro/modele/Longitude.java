@@ -28,6 +28,12 @@ public class Longitude extends Angle {
     
     public Longitude() {
         super (0.0);
+        setSens(SensLongitude.West);
+    }
+
+    public Longitude(double d) {
+        super (d);
+        setSens(SensLongitude.West);
     }
 
     public double getLongitude() {

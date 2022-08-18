@@ -44,7 +44,7 @@ public class CalculsAstroDroiteHauteur extends CalculsAstro {
 
         for (eArgDroiteHauteur arg : eArgDroiteHauteur.values()) {
             System.out.println("Saisir: " + arg.getDisplay());
-            Angle x = new Angle (_toolsUI.readDegreMinuteSeconde());
+            Angle x = new Angle (_toolsUI.readAngle());
             retour.put(arg, x);
         }
 

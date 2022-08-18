@@ -20,7 +20,7 @@ import sfa.voile.nav.astro.methodes.eCalculAstroConstantes;
 import sfa.voile.nav.astro.modele.Declinaison;
 import sfa.voile.nav.astro.modele.Heure;
 import sfa.voile.nav.astro.tools.NavAstroError;
-import sfa.voile.nav.astro.ui.dialogues.DialogueForCalculDeclinaisonParInterval;
+import sfa.voile.nav.astro.ui.dialogues.DialogueForCalculDeclinaisonSolaire;
 import sfa.voile.nav.astro.ui.tools.DataReaders;
 
 import java.nio.charset.StandardCharsets;
@@ -29,11 +29,11 @@ import java.nio.charset.StandardCharsets;
  *
  * @author pierr
  */
-public class MenuDeclainaisonSolaire extends MenuAdapteur {
-	private static Logger _logger = LoggerFactory.getLogger(MenuDeclainaisonSolaire.class);
+public class MenuDeclinaisonSolaire extends MenuAdapteur {
+	private static Logger _logger = LoggerFactory.getLogger(MenuDeclinaisonSolaire.class);
 
 
-	public MenuDeclainaisonSolaire () {
+	public MenuDeclinaisonSolaire () {
 		_Item = new NavAstroMenuItem[] {
 				new NavAstroMenuItem (eUINavAstroAllMenuItems.Sortir, 1),
 				new NavAstroMenuItem (eUINavAstroAllMenuItems.DeclainaisonSolaireParInterval, 2),		
@@ -57,24 +57,45 @@ public class MenuDeclainaisonSolaire extends MenuAdapteur {
                 	retour = true;
                 	break;
                 case DeclainaisonSolaireParInterval: 
-                	DialogueForCalculDeclinaisonParInterval x = new DialogueForCalculDeclinaisonParInterval();
+                	DialogueForCalculDeclinaisonSolaire x = new DialogueForCalculDeclinaisonSolaire();
                 	_args = new HashMap<eCalculAstroConstantes, Object>();
 					x.demandeDesArguments(_args, methode);
 					
 					Heure hDebutInterval = getHeureFromArgsList (eCalculAstroConstantes.HeureUT1);
 					Heure hFinInterval = getHeureFromArgsList (eCalculAstroConstantes.HeureUT2);
-					Heure HMeusure = getHeureFromArgsList (eCalculAstroConstantes.HeureUTRef);					
+					Heure HMeusure = getHeureFromArgsList (eCalculAstroConstantes.HeureMeusure);					
 					Declinaison dDebutInterval = getDeclinaisonFromArgsList (eCalculAstroConstantes.Declinaison1);
 					Declinaison dFinInterval = getDeclinaisonFromArgsList (eCalculAstroConstantes.Declinaison2);
 					
-					_calculAstro.DeclinaisonSoleilParInterval(hDebutInterval, hFinInterval, dDebutInterval, dFinInterval, HMeusure);
+					ResumeDeLaSaisie(_args, methode);
+					Declinaison res = _calculAstro.DeclinaisonSoleilParInterval(hDebutInterval, hFinInterval, dDebutInterval, dFinInterval, HMeusure);
+					Resultat(res);
+					break;
+					
+                case DeclainaisonSolaireParGradiant: 
+                	x = new DialogueForCalculDeclinaisonSolaire();
+                	_args = new HashMap<eCalculAstroConstantes, Object>();
+					x.demandeDesArguments(_args, methode);
+					
+					hDebutInterval = getHeureFromArgsList (eCalculAstroConstantes.HeureUTRef);
+					hFinInterval = getHeureFromArgsList (eCalculAstroConstantes.HeureMeusure);
+					HMeusure = getHeureFromArgsList (eCalculAstroConstantes.HeureUTRef);					
+					dDebutInterval = getDeclinaisonFromArgsList (eCalculAstroConstantes.Declinaison1);
+					dFinInterval = getDeclinaisonFromArgsList (eCalculAstroConstantes.Declinaison2);
+					
+					ResumeDeLaSaisie(_args, methode);
+					res = _calculAstro.DeclinaisonSoleilParInterval(hDebutInterval, hFinInterval, dDebutInterval, dFinInterval, HMeusure);
+					Resultat(res);
                 default:
                 	displayErreur (err);
                 	break;
             }
 			}
 		}
-		catch (Exception e) {}
+		catch (Exception e) {
+			e.getMessage();
+			e.printStackTrace();
+		}
 		return retour;
 	}
 

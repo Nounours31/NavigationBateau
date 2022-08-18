@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import sfa.voile.nav.astro.modele.HandleDouble;
+import sfa.voile.nav.astro.modele.Heure;
 import sfa.voile.nav.astro.modele.HeureParser;
 
 /**
@@ -51,48 +51,48 @@ public class HeureFormatTst {
      */
     @Test
     public void test1() {
-    	HandleDouble d = new HandleDouble();
+    	Heure d = new Heure();
     	boolean rc = parser.parse("2.0", d);
     	assertEquals(rc, true);
-    	assertTrue(Math.abs(d.d() - (2.0)) < EPSILON);
+    	assertTrue(Math.abs(d.getVal() - (2.0)) < EPSILON);
 
     	rc = parser.parse("-2.0", d);
     	assertEquals(rc, true);
-    	assertTrue(Math.abs(d.d() - (-2.0)) < EPSILON);
+    	assertTrue(Math.abs(d.getVal() - (-2.0)) < EPSILON);
     }
 
     @Test
     public void test2() {
-    	HandleDouble d = new HandleDouble();
+    	Heure d = new Heure();
     	boolean rc = parser.parse("2:0:0", d);
     	assertEquals(rc, true);
-    	assertTrue(Math.abs(d.d() - (2.0)) < EPSILON);
+    	assertTrue(Math.abs(d.getVal() - (2.0)) < EPSILON);
     	rc = parser.parse("02:00:00", d);
     	assertEquals(rc, true);
-    	assertTrue(Math.abs(d.d() - (2.0)) < EPSILON);
+    	assertTrue(Math.abs(d.getVal() - (2.0)) < EPSILON);
     }
 
     @Test
     public void test3() {
-    	HandleDouble d = new HandleDouble();
+    	Heure d = new Heure();
     	boolean rc = parser.parse("2:0:30", d);
     	assertEquals(rc, true);
-    	assertTrue(Math.abs(d.d() - (2.0083333333333333)) < EPSILON);
+    	assertTrue(Math.abs(d.getVal() - (2.0083333333333333)) < EPSILON);
 
     	rc = parser.parse("-2:0:30", d);
     	assertEquals(rc, true);
-    	assertTrue(Math.abs(d.d() - (-2.0083333333333333)) < EPSILON);
+    	assertTrue(Math.abs(d.getVal() - (-2.0083333333333333)) < EPSILON);
     }
 
     @Test
     public void test4() {
-    	HandleDouble d = new HandleDouble();
+    	Heure d = new Heure();
     	boolean rc = parser.parse("2:0.5", d);
     	assertEquals(rc, true);
-    	assertTrue(Math.abs(d.d() - (2.0083333333333333)) < EPSILON);
+    	assertTrue(Math.abs(d.getVal() - (2.0083333333333333)) < EPSILON);
     	
     	rc = parser.parse("-2:0.5", d);
     	assertEquals(rc, true);
-    	assertTrue(Math.abs(d.d() - (-2.0083333333333333)) < EPSILON);
+    	assertTrue(Math.abs(d.getVal() - (-2.0083333333333333)) < EPSILON);
     }
 }

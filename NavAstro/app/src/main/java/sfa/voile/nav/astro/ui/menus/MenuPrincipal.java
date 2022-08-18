@@ -53,7 +53,7 @@ public class MenuPrincipal extends MenuAdapteur {
 	                	retour = true;
 	                	break;
 	                case DeclinaisonSolaire : 
-	                	(new MenuDeclainaisonSolaire()).affichageItemsDuMenu();
+	                	(new MenuDeclinaisonSolaire()).affichageItemsDuMenu();
 	                    break;
 	                case LatitudeDeLaMeridienne : 
 	                	(new MenuMeridienne()).affichageItemsDuMenu();

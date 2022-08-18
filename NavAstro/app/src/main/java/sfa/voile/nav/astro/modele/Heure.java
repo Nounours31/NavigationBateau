@@ -25,33 +25,46 @@ public class Heure {
         _val = v;
     }
 
+	public Heure() {
+		_val = 0.0;
+	}
 
-    public String toHeureMinuteSeconde() {
+    public Heure(Heure h) {
+    	_val = h.getVal();
+	}
+
+
+
+
+	public String toHeureMinuteSeconde() {
         double x = _val;
-        StringBuffer sb = new StringBuffer(x + " <==> ");
+        StringBuffer sb = new StringBuffer();
         if (x < 0) {
             sb.append("-");
         }
         x = Math.abs(x);
 
         sb.append(String.format("%02d", (int) Math.floor(x)));
-        sb.append("°");
+        sb.append(":");
         x -= Math.floor(x);
         x *= 60.0;
 
         sb.append(String.format("%02d", (int) Math.floor(x)));
-        sb.append("'");
+        sb.append(":");
         x -= Math.floor(x);
         x *= 60.0;
 
-        sb.append(String.format("%02.02f", Math.floor(x)));
-        sb.append("\"");
+        sb.append(String.format("%02.02f", x));
 
         return sb.toString();
     }
 
     public double getVal() {
         return _val;
+    }
+
+    public void setVal(double d) {
+        _val = d;
     }
 
     public Heure plus(double dz) {
@@ -64,7 +77,7 @@ public class Heure {
 
     @Override
     public String toString() {
-        return "Heure: " + this.toHeureMinuteSeconde() + "[" + _val + "]";
+        return "Heure: " + this.toHeureMinuteSeconde() + "  [" + _val + "]";
     }
 
     public boolean apres(Heure H) {

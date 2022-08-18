@@ -14,7 +14,7 @@ public class HeureParser extends GeneriqueParser {
 
 	private static HeureParser _instance = null;
 
-	private HeureParser() {
+	public HeureParser() {
 		super();
 		_allRegex = new GeneriqueDataFormat[] {
 			// Pb de l'encodage Windows du signe degre ....
@@ -31,7 +31,7 @@ public class HeureParser extends GeneriqueParser {
 		return _instance;
 	}
 
-	public boolean parse(String s, HandleDouble d) {
+	public boolean parse(String s, Heure d) {
 		boolean retour = false;
 		double val = 0.0;
 
@@ -103,14 +103,14 @@ public class HeureParser extends GeneriqueParser {
 				}
 				val = heure * dSigne;
 				retour = true;
-				d.d(val);
+				d.setVal(val);
 				break;
 			}
 			else {
 				_logger.debug("No match ...");
 			}
 		}
-		_logger.debug("Read reel: {} / {}", retour, d.d());
+		_logger.debug("Read reel: {} / {}", retour, d);
 		return retour;
 
 	}

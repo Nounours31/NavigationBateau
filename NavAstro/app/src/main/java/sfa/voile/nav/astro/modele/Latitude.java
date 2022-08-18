@@ -28,9 +28,20 @@ public class Latitude extends Angle {
     
     public Latitude() {
         super (0.0);
+        this.setSens(SensLatitude.Nord);
     }
 
-    public double getLatitude() {
+    public Latitude(double d) {
+        super (0.0);
+        this.setSens(SensLatitude.Nord);
+    }
+
+    public Latitude(Latitude l) {
+    	super (l._val);
+    	_Sens = l._Sens;
+	}
+
+	public double getLatitude() {
         return getVal();
     }
 

@@ -1,37 +1,41 @@
 package sfa.voile.nav.astro.methodes;
 
 public enum eCalculAstroConstantes {
-	Methode_CalculDeclinaison_ParInterval(""),
-	Methode_CalculDeclinaison_ParGradient(""),
-
-    Type("Par interval ou par vitesse angulaire"),
-    HeureMeusure("Heure de calcul de la Declinaiosn SOlaire (heure de la meusure)"),
-    AHvo("Angle Horaire du soleil a Greenwich (AHvo ou GHA)"),
-    HeureUT1("Heure UT debut interval Declinaison soleil D"),
-    Declinaison1("Declinaison soleil(D) debut interval "),
-    HeureUT2("Heure UT fin interval Declinaison soleil D"),
-    Declinaison2("Declinaison soleil(D) fin interval"),
-    HeureUTRef("Heure de reference calcul declinaison"),
-    DeclinaisonRef("Declinaison soleil(D) a l'heure de reference"),
-    PasDeDeclinaison("Declinaison soleil horaire (d en degre par heure)"),
+    HeureMeusure("Heure (UT) ou la mesure est faite", eAstroContanteType.heure),
+    AHvo("Angle Horaire du soleil a Greenwich (AHvo ou GHA)", eAstroContanteType.angle),
+    
+    HeureUT1("Heure (UT) de debut de l'interval", eAstroContanteType.heure),
+    HeureUT2("Heure (UT) de fin d'interval", eAstroContanteType.heure),
+    Declinaison1("Declinaison soleil(D) a l'heure du debut de l'interval", eAstroContanteType.declinaison),
+    Declinaison2("Declinaison soleil(D) a l'heure de fin de l'interval", eAstroContanteType.declinaison),
+    
+    HeureUTRef("Heure (UT) de la declinaison de reference", eAstroContanteType.heure),
+    DeclinaisonRef("Declinaison soleil(D) a l'heure de reference", eAstroContanteType.declinaison),
+    PasDeDeclinaison("Vitesse de declinaison soleil horaire (en degre par heure)", eAstroContanteType.declinaison),
 
 	
-	Ho("Hauteur observee (Ho)"),
-	Ei("Erreur instrumentale (Ei)"),
-	CorrectionSolaire("Correction soleil(cor)"),
-	DeclinaisonSolaire("Declinaison soleil(D)"), 
-	Hv("Merdienne hv"), 
-	Hc ("Meridienne Hc")
+	Ho("Hauteur observee (Ho)", eAstroContanteType.angle),
+	Ei("Erreur instrumentale (Ei)", eAstroContanteType.angle),
+	CorrectionSolaire("Correction soleil(cor)", eAstroContanteType.angle),
+	DeclinaisonSolaire("Declinaison soleil(D)", eAstroContanteType.angle), 
+	Hv("Merdienne hv", eAstroContanteType.angle), 
+	Hc ("Meridienne Hc", eAstroContanteType.angle)
 	;
 
+	public enum eAstroContanteType {
+		angle, heure, declinaison, latitude, longitude;
+	}
+		
 	public String getDisplay() {
-		return _display;
+		return _display + "["+_typeValeur.name()+"]";
 	}
 
 	final private String _display;
+	final private eAstroContanteType _typeValeur;
 
-	private eCalculAstroConstantes(String s) {
+	private eCalculAstroConstantes(String s, eAstroContanteType type) {
 		this._display = s;
+		this._typeValeur = type;
 	}
 
 

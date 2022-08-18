@@ -22,7 +22,7 @@ import sfa.voile.nav.astro.modele.Angle;
 import sfa.voile.nav.astro.modele.Declinaison;
 import sfa.voile.nav.astro.modele.Heure;
 import sfa.voile.nav.astro.tools.NavAstroError;
-import sfa.voile.nav.astro.ui.dialogues.DialogueForCalculDeclinaisonParInterval;
+import sfa.voile.nav.astro.ui.dialogues.DialogueForCalculDeclinaisonSolaire;
 import sfa.voile.nav.astro.ui.dialogues.DialogueForMeridienne;
 
 import java.nio.charset.StandardCharsets;

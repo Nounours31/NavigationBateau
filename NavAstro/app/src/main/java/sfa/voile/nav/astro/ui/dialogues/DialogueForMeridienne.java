@@ -16,7 +16,7 @@ import sfa.voile.nav.astro.ui.menus.eUINavAstroAllMenuItems;
 import sfa.voile.nav.astro.ui.tools.DataReaders;
 
 public class DialogueForMeridienne extends DialogueAdapteur  {
-	private static Logger _logger = LoggerFactory.getLogger(MenuPrincipal.class);
+	private static Logger _logger = LoggerFactory.getLogger(DialogueForMeridienne.class);
 
 	public DialogueForMeridienne () {
 		super ();
@@ -30,32 +30,34 @@ public class DialogueForMeridienne extends DialogueAdapteur  {
 
         eCalculAstroConstantes arg = eCalculAstroConstantes.Ho;
         _toolsUI.println("Saisir: " + arg.getDisplay());
-        Angle x = new Angle (_toolsUI.readDegreMinuteSeconde());
+        Angle x = new Angle (_toolsUI.readAngle());
         System.out.println(String.format("\t%s: %s", arg.name(), x.toString()));
         args.put(arg, x);
         
         arg = eCalculAstroConstantes.Ei;
         _toolsUI.println("Saisir: " + arg.getDisplay());
-        x = new Angle (_toolsUI.readDegreMinuteSeconde());
+        x = new Angle (_toolsUI.readAngle());
         System.out.println(String.format("\t%s: %s", arg.name(), x.toString()));
         args.put(arg, x);
 
         arg = eCalculAstroConstantes.Hv;
         _toolsUI.println("Saisir: " + arg.getDisplay());
-        x = new Angle (_toolsUI.readDegreMinuteSeconde());
+        x = new Angle (_toolsUI.readAngle());
         System.out.println(String.format("\t%s: %s", arg.name(), x.toString()));
         args.put(arg, x);
 
         arg = eCalculAstroConstantes.CorrectionSolaire;
         _toolsUI.println("Saisir: " + arg.getDisplay());
-        x = new Angle (_toolsUI.readDegreMinuteSeconde());
+        x = new Angle (_toolsUI.readAngle());
         System.out.println(String.format("\t%s: %s", arg.name(), x.toString()));
         args.put(arg, x);
 
         arg = eCalculAstroConstantes.DeclinaisonSolaire;
         _toolsUI.println("Saisir: " + arg.getDisplay());
-        x = new Angle (_toolsUI.readDegreMinuteSeconde());
+        x = new Angle (_toolsUI.readAngle());
         System.out.println(String.format("\t%s: %s", arg.name(), x.toString()));
         args.put(arg, x);
+        
+        dumpArgs(args, iCas);
 	}
 }

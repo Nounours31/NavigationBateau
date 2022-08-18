@@ -21,10 +21,12 @@ public class Declinaison extends Latitude {
     }
 
     public Declinaison(Latitude l) {
-        super();
-        setSens(l._Sens);
-        setLatitude(l._val);
+        super(l);
     }
+
+	public Declinaison(double d) {
+        super(d);
+	}
 
 	public double getDeclinaison() {
 		return getLatitude();
