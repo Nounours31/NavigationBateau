@@ -47,9 +47,7 @@ public class DataReaders {
         boolean fin = false;
         AngleParser a = new AngleParser();
         while (!fin) {
-        	
             try {
-            	
                 String s = DataReaders.readInput();
                 if (s.contains(HELP_FORMAT[1])) {
                     System.out.println("\t\tformat angulaire supporte: " + a.getAllAvailableFormat().length);

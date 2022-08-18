@@ -4,6 +4,7 @@
  */
 package sfa.voile.nav.astro.ui.menus;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import sfa.voile.nav.astro.methodes.CalculsAstro;
 import sfa.voile.nav.astro.methodes.eCalculAstroConstantes;
-import sfa.voile.nav.astro.toolsUI.poubelle.MenuDeclainaisonSolaire;
+import sfa.voile.nav.astro.tools.NavAstroError;
 
 import java.nio.charset.StandardCharsets;
 
@@ -24,16 +25,26 @@ import java.nio.charset.StandardCharsets;
  *
  * @author pierr
  */
-public class MenuPrincipal {
+public class MenuPrincipal extends MenuAdapteur {
 	private static Logger _logger = LoggerFactory.getLogger(MenuPrincipal.class);
-	private static MenuPrincipal_Dialog _dialogDialog = new MenuPrincipal_Dialog();
-	
 
-	public static boolean display() {
+	public MenuPrincipal() {
+		_Item = new NavAstroMenuItem[] {
+				new NavAstroMenuItem (eUINavAstroAllMenuItems.Sortir, 1),
+				new NavAstroMenuItem (eUINavAstroAllMenuItems.DeclinaisonSolaire, 2),
+				new NavAstroMenuItem (eUINavAstroAllMenuItems.LatitudeDeLaMeridienne, 3),
+				new NavAstroMenuItem (eUINavAstroAllMenuItems.DroiteHauteur, 4)
+		};
+	}
+
+	@Override
+	public boolean affichageItemsDuMenu() {
 		boolean retour = false;
 		try {
+			NavAstroError err = new NavAstroError();
 			while (retour == false) {
-	        	eUINavAstroContante methode = MenuPrincipal._dialogDialog.dialogue();
+				displayMenu();
+	        	eUINavAstroAllMenuItems methode = getUserChoiceAndValidedIt(err);
 				if (methode == null)
 					continue;
 				
@@ -41,15 +52,15 @@ public class MenuPrincipal {
 	                case Sortir: 
 	                	retour = true;
 	                	break;
-	                case DroiteHauteur: 
+	                case DeclinaisonSolaire : 
+	                	(new MenuDeclainaisonSolaire()).affichageItemsDuMenu();
 	                    break;
 	                case LatitudeDeLaMeridienne : 
-	                	MenuLatitudeMeridienne.display();
-	                    break;
-	                case DeclinaisonSolaire : 
-	                	MenuDeclainaisonSolaire.display();
+	                	(new MenuMeridienne()).affichageItemsDuMenu();
 	                    break;
 	                default:
+	                	displayErreur (err);
+	                	break;
 	            }
 			}
 		}

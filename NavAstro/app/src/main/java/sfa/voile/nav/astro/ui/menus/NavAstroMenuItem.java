@@ -10,26 +10,24 @@ import org.slf4j.LoggerFactory;
 public class NavAstroMenuItem  {
 	private static Logger _logger = LoggerFactory.getLogger(NavAstroMenuItem.class);
 
-	private final eUINavAstroContante _code;
-	private final int _indice;
-	private final String _nom;
+	private final eUINavAstroAllMenuItems _code;
+	private final int _iRandClassentMenu;
 	
-	protected NavAstroMenuItem(eUINavAstroContante code, int i, String txt) {
+	public NavAstroMenuItem(eUINavAstroAllMenuItems code, int iRandClassentMenu) {
 		_code = code;
-		_indice = i;
-		_nom = txt;
+		_iRandClassentMenu = iRandClassentMenu;
 	}
 
 
-	eUINavAstroContante getCode() {
+	public eUINavAstroAllMenuItems getCode() {
 		return _code;
 	}
 
-	private int getIndice() {
-		return _indice;
+	public int getIndice() {
+		return _iRandClassentMenu;
 	}
 
-	String getNom() {
-		return _nom;
+	public String getNom() {
+		return _code.getDescriptif();
 	}
 }

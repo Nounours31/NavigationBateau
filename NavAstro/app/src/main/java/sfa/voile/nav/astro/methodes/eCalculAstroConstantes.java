@@ -20,7 +20,9 @@ public enum eCalculAstroConstantes {
 	Ei("Erreur instrumentale (Ei)"),
 	CorrectionSolaire("Correction soleil(cor)"),
 	DeclinaisonSolaire("Declinaison soleil(D)"), 
-	Hv("Merdienne hv");
+	Hv("Merdienne hv"), 
+	Hc ("Meridienne Hc")
+	;
 
 	public String getDisplay() {
 		return _display;

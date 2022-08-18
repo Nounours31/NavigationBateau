@@ -15,7 +15,7 @@ public class App {
         logger.debug("Et c'est parti ...");
         
         try {
-        	 MenuPrincipal.display();
+        	(new MenuPrincipal()).affichageItemsDuMenu();
         }
         catch(Exception e) {
             System.out.println(e.getMessage());

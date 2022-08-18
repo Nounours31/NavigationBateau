@@ -2,9 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package sfa.voile.nav.astro.ui.menus;
+package sfa.voile.nav.astro.ui.dialogues;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.slf4j.Logger;
@@ -12,20 +11,20 @@ import org.slf4j.LoggerFactory;
 
 import sfa.voile.nav.astro.methodes.eCalculAstroConstantes;
 import sfa.voile.nav.astro.modele.Angle;
+import sfa.voile.nav.astro.ui.menus.MenuPrincipal;
+import sfa.voile.nav.astro.ui.menus.eUINavAstroAllMenuItems;
 import sfa.voile.nav.astro.ui.tools.DataReaders;
 
-public class MenuLatitudeMeridienne_Dialog extends NavAstroMenuItems  {
+public class DialogueForMeridienne extends DialogueAdapteur  {
 	private static Logger _logger = LoggerFactory.getLogger(MenuPrincipal.class);
 
-	public MenuLatitudeMeridienne_Dialog () {
+	public DialogueForMeridienne () {
 		super ();
-
-		_Item = new ArrayList<NavAstroMenuItem>();
-		_Item.add (new NavAstroMenuItem (eUINavAstroContante.Sortir, 1, "Sortir"));
-		_Item.add (new NavAstroMenuItem (eUINavAstroContante.Meridienne, 2, "xxx interval"));
 	}
 
-	public void argsForMeridienne(HashMap<eCalculAstroConstantes, Object> args) {
+	
+	@Override
+	public void demandeDesArguments(HashMap<eCalculAstroConstantes, Object> args, eUINavAstroAllMenuItems iCas) {
         DataReaders _toolsUI = new DataReaders();
         _logger.debug("Calcul latitude meridienne");
 
@@ -59,5 +58,4 @@ public class MenuLatitudeMeridienne_Dialog extends NavAstroMenuItems  {
         System.out.println(String.format("\t%s: %s", arg.name(), x.toString()));
         args.put(arg, x);
 	}
-
 }
