@@ -8,6 +8,7 @@ import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;
 
+import sfa.voile.nav.astro.test.ui.MenuDeclinaisonSolaireTst;
 import sfa.voile.nav.astro.test.ui.MenuPrincipalTst;
 
 /**
@@ -27,7 +28,8 @@ import sfa.voile.nav.astro.test.ui.MenuPrincipalTst;
 	sfa.voile.nav.astro.test.parsers.LatitudeFormatTst.class,
 	sfa.voile.nav.astro.test.parsers.LongitudeFormatTst.class,
 	sfa.voile.nav.astro.test.parsers.DeclinaisonFormatTst.class,
-	MenuPrincipalTst.class
+	MenuPrincipalTst.class,
+	MenuDeclinaisonSolaireTst.class
 	})
 
 public class appTestSuite {

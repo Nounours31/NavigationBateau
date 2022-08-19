@@ -28,9 +28,13 @@ public abstract class MenuAdapteur {
 	private Logger _logger = LoggerFactory.getLogger(MenuAdapteur.class);
 	
 	protected NavAstroMenuItem[] _Item = null;
+	
 	protected HashMap<eCalculAstroConstantes, Object> _args = null;
-
 	protected static CalculsAstro _calculAstro = new CalculsAstro();
+	
+	private static Object _lastComputedObject = null;
+	public Object getLastComputedObject() { return _lastComputedObject; }
+	protected void setLastComputedObject(Object x) { _lastComputedObject = x; }
 	
 	public abstract boolean affichageItemsDuMenu();
 	
@@ -82,8 +86,12 @@ public abstract class MenuAdapteur {
 	
 	protected Declinaison getDeclinaisonFromArgsList(eCalculAstroConstantes key) throws NavAstroException {
 		if ((_args != null) && (_args.containsKey(key)) && (_args.get(key) != null)) {
-			if (_args.get(key).getClass().isInstance(Declinaison.class)) {
-				return (Declinaison)_args.get(key);
+			Object o = _args.get(key);
+			if ((o != null) && (o instanceof Declinaison)) {
+				return (Declinaison)o;
+			}
+			else {
+				_logger.debug("valeur type: {}", _args.get(key).getClass());
 			}
 		}
 		throw new NavAstroException("Cannot read "+ key.name());
@@ -91,8 +99,12 @@ public abstract class MenuAdapteur {
 
 	protected Latitude getLatitudeFromArgsList(eCalculAstroConstantes key) throws NavAstroException {
 		if ((_args != null) && (_args.containsKey(key)) && (_args.get(key) != null)) {
-			if (_args.get(key).getClass().isInstance(Latitude.class)) {
-				return (Latitude)_args.get(key);
+			Object o = _args.get(key);
+			if ((o != null) && (o instanceof Latitude)) {
+				return (Latitude)o;
+			}
+			else {
+				_logger.debug("valeur type: {}", _args.get(key).getClass());
 			}
 		}
 		throw new NavAstroException("Cannot read "+ key.name());
@@ -100,8 +112,12 @@ public abstract class MenuAdapteur {
 
 	protected Heure getHeureFromArgsList(eCalculAstroConstantes key) throws NavAstroException {
 		if ((_args != null) && (_args.containsKey(key)) && (_args.get(key) != null)) {
-			if (_args.get(key).getClass().isInstance(Heure.class)) {
-				return (Heure)_args.get(key);
+			Object o = _args.get(key);
+			if ((o != null) && (o instanceof Heure)) {
+				return (Heure)o;
+			}
+			else {
+				_logger.debug("valeur type: {}", _args.get(key).getClass());
 			}
 		}
 		throw new NavAstroException("Cannot read "+ key.name());
@@ -109,8 +125,12 @@ public abstract class MenuAdapteur {
 
 	protected Angle getAngleFromArgsList(eCalculAstroConstantes key) throws NavAstroException {
 		if ((_args != null) && (_args.containsKey(key)) && (_args.get(key) != null)) {
-			if (_args.get(key).getClass().isInstance(Angle.class)) {
-				return (Angle)_args.get(key);
+			Object o = _args.get(key);
+			if ((o != null) && (o instanceof Angle)) {
+				return (Angle)o;
+			}
+			else {
+				_logger.debug("valeur type: {}", _args.get(key).getClass());
 			}
 		}
 		throw new NavAstroException("Cannot read "+ key.name());
@@ -126,10 +146,11 @@ public abstract class MenuAdapteur {
     	System.out.println("---------------------------------------------------");
     }
 
-    protected void Resultat(Declinaison x) {
+    protected void Resultat(Object x) {
     	System.out.println("***************************************************");
     	System.out.println("Resultat:  ->"+ x.toString()+"<-");
     	System.out.println("***************************************************");
+    	setLastComputedObject(x);
     }
 
 }

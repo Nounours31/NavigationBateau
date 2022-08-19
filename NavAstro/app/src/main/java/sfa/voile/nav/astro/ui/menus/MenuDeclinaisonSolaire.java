@@ -60,6 +60,7 @@ public class MenuDeclinaisonSolaire extends MenuAdapteur {
                 	DialogueForCalculDeclinaisonSolaire x = new DialogueForCalculDeclinaisonSolaire();
                 	_args = new HashMap<eCalculAstroConstantes, Object>();
 					x.demandeDesArguments(_args, methode);
+					ResumeDeLaSaisie(_args, methode);
 					
 					Heure hDebutInterval = getHeureFromArgsList (eCalculAstroConstantes.HeureUT1);
 					Heure hFinInterval = getHeureFromArgsList (eCalculAstroConstantes.HeureUT2);
@@ -67,7 +68,6 @@ public class MenuDeclinaisonSolaire extends MenuAdapteur {
 					Declinaison dDebutInterval = getDeclinaisonFromArgsList (eCalculAstroConstantes.Declinaison1);
 					Declinaison dFinInterval = getDeclinaisonFromArgsList (eCalculAstroConstantes.Declinaison2);
 					
-					ResumeDeLaSaisie(_args, methode);
 					Declinaison res = _calculAstro.DeclinaisonSoleilParInterval(hDebutInterval, hFinInterval, dDebutInterval, dFinInterval, HMeusure);
 					Resultat(res);
 					break;
@@ -76,6 +76,7 @@ public class MenuDeclinaisonSolaire extends MenuAdapteur {
                 	x = new DialogueForCalculDeclinaisonSolaire();
                 	_args = new HashMap<eCalculAstroConstantes, Object>();
 					x.demandeDesArguments(_args, methode);
+					ResumeDeLaSaisie(_args, methode);
 					
 					hDebutInterval = getHeureFromArgsList (eCalculAstroConstantes.HeureUTRef);
 					hFinInterval = getHeureFromArgsList (eCalculAstroConstantes.HeureMeusure);
@@ -83,7 +84,6 @@ public class MenuDeclinaisonSolaire extends MenuAdapteur {
 					dDebutInterval = getDeclinaisonFromArgsList (eCalculAstroConstantes.Declinaison1);
 					dFinInterval = getDeclinaisonFromArgsList (eCalculAstroConstantes.Declinaison2);
 					
-					ResumeDeLaSaisie(_args, methode);
 					res = _calculAstro.DeclinaisonSoleilParInterval(hDebutInterval, hFinInterval, dDebutInterval, dFinInterval, HMeusure);
 					Resultat(res);
                 default:
