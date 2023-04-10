@@ -1,0 +1,14 @@
+module sfa.nav.jmod {
+	requires javafx.controls;
+	requires javafx.base;
+	requires transitive javafx.graphics;
+	requires javafx.fxml;
+	requires javafx.media;
+	requires javafx.swing;
+	requires javafx.web;
+    
+    requires org.slf4j;
+    
+    opens sfa.nav to javafx.graphics, javafx.controls, javafx.media;
+    exports sfa.nav;
+}

@@ -25,3 +25,6 @@ NavAstro/logsODT/
 
 .eclipse/
 /.metadata/
+JavaNav/.gradleUserHome
+.gradle
+**/*.jar

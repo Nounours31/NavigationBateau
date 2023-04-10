@@ -1,0 +1,47 @@
+plugins {
+ 
+  id 'application'
+  id 'org.openjfx.javafxplugin' version '0.0.13'
+
+}
+
+repositories {
+	flatDir {
+        dirs 'C:/paps/Programs/Java/javaFX/javafx-sdk-17.0.6/lib',
+        	'C:/paps/Programs/Java/javaFX/javafx-jmods-17.0.6'
+    }
+	mavenCentral()
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    implementation 'com.google.guava:guava:31.1-jre'
+
+	// Loger slf4j
+	implementation 'org.slf4j:slf4j-api:2.0.6'
+	implementation 'ch.qos.logback:logback-classic:1.4.5'
+	
+	// JavaFX
+	implementation 'org.openjfx:javafx-base:17.0.6'
+	implementation 'org.openjfx:javafx-controls:17.0.6'
+	implementation 'org.openjfx:javafx-fxml:17.0.6'
+	implementation 'org.openjfx:javafx-graphics:17.0.6'
+	implementation 'org.openjfx:javafx-media:17.0.6'
+	implementation 'org.openjfx:javafx-swing:17.0.6'
+	implementation 'org.openjfx:javafx-web:17.0.6'
+	implementation 'org.openjfx:javafx-swt:17.0.6'
+}
+
+application {
+    mainClass = 'sfa.nav.HelloFX'
+}
+
+javafx {
+	version = "17"
+	modules = [ 'javafx.base', 'javafx.swing', 'javafx.graphics', 'javafx.controls', 'javafx.fxml', 'javafx.media', 'javafx.web' ]
+}
+
+mainClassName = "sfa.nav.HelloFX"
+
+
+
