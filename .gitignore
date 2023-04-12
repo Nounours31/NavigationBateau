@@ -28,3 +28,11 @@ NavAstro/logsODT/
 JavaNav/.gradleUserHome
 .gradle
 **/*.jar
+logs/
+.gradle/
+app/nbproject/
+**/.project
+**/.classpath
+**/.project
+**/.settings
+**/bin
