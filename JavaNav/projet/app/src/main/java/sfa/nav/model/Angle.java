@@ -9,9 +9,30 @@ import org.slf4j.LoggerFactory;
 
 public class Angle {
 	private static Logger logger = LoggerFactory.getLogger(Angle.class);
-	private double _angle = 0.0;
+	private double _angleInDegre = 0.0;
 	
 	protected Angle() {}
+	
+	public double asRadian() {
+		return _angleInDegre * Math.PI / 180.0;
+	}
+	public double asDegre() {
+		return _angleInDegre;
+	}
+
+	private void set(double d) {
+		while (d > 360.0)
+			d -= 360.0;
+
+		while (d < 0.0)
+			d += 360.0;
+		
+		_angleInDegre = d;
+	}
+
+	protected void internalFromAngle(Angle a) {
+		this.set (a._angleInDegre);
+	}
 	
 	static private final String regexp_3ChiffresSecondeDecimale_Groupe1DegreOptionel = "^([0-9]*)°([0-9]+)'([0-9]+)\\.([0-9]*)[\\\"']?$";
 	/*
@@ -45,8 +66,23 @@ public class Angle {
 		10.25225
 	*/
 	
-			
 	
+	
+	static public Angle fromDegre (double x) {
+		Angle retour = new Angle();
+		retour.set(x);
+		return retour;
+	}
+	
+	static public Angle fromRadian(double x) {
+		Angle a = new Angle();
+		a.set( x * 180.0 / Math.PI );
+		return a;
+	}
+
+
+	
+
 	static public Angle fromString (String s) {
         Angle retour = new Angle();
         final Pattern pattern_regexp_3ChiffresSecondeDecimale_Groupe1DegreOptionel = Pattern.compile(regexp_3ChiffresSecondeDecimale_Groupe1DegreOptionel);
@@ -56,7 +92,7 @@ public class Angle {
         final Pattern pattern_regexp_1ChiffreHeureDecimale_Groupe1DegreOptionel = Pattern.compile(regexp_1ChiffreHeureDecimale_Groupe1DegreOptionel);
         
         
-        retour._angle = 0.0;
+        retour._angleInDegre = 0.0;
         boolean find = false;
         Matcher matcher = pattern_regexp_3ChiffresSecondeDecimale_Groupe1DegreOptionel.matcher(s);
         if (matcher.find()) {
@@ -84,7 +120,7 @@ public class Angle {
         		isSecondeDecimale = true; 
         	}
         	
-        	retour._angle = heure + minute / 60.0 + seconde / (3600.0);
+        	retour.set(heure + minute / 60.0 + seconde / (3600.0));
         	find = true;
         }	
         
@@ -117,7 +153,7 @@ public class Angle {
 	        		seconde = Double.parseDouble(m);
 	        	}
 		        	
-	        	retour._angle = heure + minute / 60.0 + seconde / 3600.0;
+	        	retour.set(heure + minute / 60.0 + seconde / 3600.0);
 	        	find = true;
 	        }	
         }        
@@ -147,7 +183,7 @@ public class Angle {
 	        		minute += Double.parseDouble("." + matcher.group(3));
 	        	}
 		        	
-	        	retour._angle = heure + minute / (isMinuteDecimale ? 100.0 : 60.0);
+	        	retour.set(heure + minute / (isMinuteDecimale ? 100.0 : 60.0));
 	        	find = true;
 	        }	
         }        
@@ -170,7 +206,7 @@ public class Angle {
 	        		minute = Double.parseDouble(m);
 	        	}
 		        	
-	        	retour._angle = heure + minute / 60.0;
+	        	retour.set(heure + minute / 60.0);
 	        	find = true;
 	        }	
         }        
@@ -188,7 +224,7 @@ public class Angle {
 	        	if ((matcher.group(1) != null) && (matcher.group(1).length() > 0))
 	        		heure = Double.parseDouble(matcher.group(1));
 	
-	        	retour._angle = heure;
+	        	retour.set(heure);
 	        	find = true;
 	        }	
         }        
@@ -198,19 +234,16 @@ public class Angle {
 
 
 
-	public double getAngle() {
-		return _angle;
-	}
 	
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(_angle);
-		double h = Math.floor(   _angle);
-		double m = Math.floor(  (_angle - h) * 60.0);
-		double s = ((((_angle - h) * 60.0) - m ) * 60.0);
-		logger.debug("_angle", _angle);
-		logger.debug("m", (_angle - h) * 60.0);
+		sb.append(_angleInDegre);
+		double h = Math.floor(   _angleInDegre);
+		double m = Math.floor(  (_angleInDegre - h) * 60.0);
+		double s = ((((_angleInDegre - h) * 60.0) - m ) * 60.0);
+		logger.debug("_angle", _angleInDegre);
+		logger.debug("m", (_angleInDegre - h) * 60.0);
 		logger.debug("s", s);
 		
 		DecimalFormat df=new DecimalFormat("00.00");

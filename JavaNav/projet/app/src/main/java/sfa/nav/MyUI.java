@@ -18,21 +18,29 @@ public class MyUI extends Application {
 	
     @Override
     public void start(Stage stage) {
+    	logger.debug("Start loading the UI");
         try {
+        	logger.debug("get monUI.fxml");
             URL url = getClass().getResource("/monUI.fxml");
-            FXMLLoader fxmlLoader = new FXMLLoader(url);
-            VBox root = (VBox) fxmlLoader.load();
-            Controller controller = (Controller) fxmlLoader.getController();
-            Scene scene = new Scene(root, root.getPrefWidth(), root.getPrefWidth());
+        	logger.debug("monUI.fxml: {}", url.getFile());
 
+        	logger.debug("Load the scene");
+        	FXMLLoader fxmlLoader = new FXMLLoader(url);
+            VBox root = (VBox) fxmlLoader.load();
+        	logger.debug("VBox: {}x{}", root.getPrefWidth(), root.getPrefHeight());
+            Scene scene = new Scene(root, root.getPrefWidth(), root.getPrefHeight());
             stage.setScene(scene);
             stage.setTitle("Nav UI");
             stage.show();
+        	logger.debug("Scene: {}", scene);
         
+        	logger.debug("Set version info");
+            Controller controller = (Controller) fxmlLoader.getController();
             controller.setVersion ();
         } catch (IOException ex) {
             System.err.println("Erreur au chargement: " + ex);
         }
+    	logger.debug("End loading the UI");
     }
 
     public void startUI() {

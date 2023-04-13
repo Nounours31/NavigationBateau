@@ -882,3 +882,299 @@ java.util.regex.PatternSyntaxException: Unmatched closing ')' near index 27
 2023-04-12 20:17:01,102 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
 2023-04-12 20:17:01,103 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
 2023-04-12 20:17:01,104 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 08:14:20,446 DEBUG [main] s.nav.MyUI [MyUI.java:39] ok logger - start the app !
+2023-04-13 08:21:07,054 DEBUG [main] s.n.starter [starter.java:10] Start myUI ...
+2023-04-13 08:21:07,069 DEBUG [main] s.nav.MyUI [MyUI.java:47] ok logger - start the app !
+2023-04-13 08:21:08,131 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:21] Start loading the UI
+2023-04-13 08:21:08,132 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:23] get monUI.fxml
+2023-04-13 08:21:08,132 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:25] monUI.fxml: /E:/WorkSpaces/WS/GitHub/NavAstro/JavaNav/projet/app/build/resources/main/monUI.fxml
+2023-04-13 08:21:08,134 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:27] Load the scene
+2023-04-13 08:21:08,490 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:30] VBox: VBox@239b476b
+2023-04-13 08:21:09,019 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:35] Scene: javafx.scene.Scene@5e91df71
+2023-04-13 08:21:09,020 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:37] Set version info
+2023-04-13 08:21:09,021 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:43] End loading the UI
+2023-04-13 08:22:36,680 DEBUG [main] s.n.starter [starter.java:13] End myUI ...! bye
+2023-04-13 08:22:46,343 DEBUG [main] s.n.starter [starter.java:10] Start myUI ...
+2023-04-13 08:22:46,358 DEBUG [main] s.nav.MyUI [MyUI.java:47] ok logger - start the app !
+2023-04-13 08:22:47,300 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:21] Start loading the UI
+2023-04-13 08:22:47,301 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:23] get monUI.fxml
+2023-04-13 08:22:47,301 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:25] monUI.fxml: /E:/WorkSpaces/WS/GitHub/NavAstro/JavaNav/projet/app/build/resources/main/monUI.fxml
+2023-04-13 08:22:47,303 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:27] Load the scene
+2023-04-13 08:22:47,662 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:30] VBox: 640.0x400.0
+2023-04-13 08:22:48,125 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:35] Scene: javafx.scene.Scene@17394559
+2023-04-13 08:22:48,126 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:37] Set version info
+2023-04-13 08:22:48,128 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:43] End loading the UI
+2023-04-13 08:23:12,255 DEBUG [main] s.n.starter [starter.java:13] End myUI ...! bye
+2023-04-13 08:59:02,914 DEBUG [main] s.n.starter [starter.java:10] Start myUI ...
+2023-04-13 08:59:02,930 DEBUG [main] s.nav.MyUI [MyUI.java:47] ok logger - start the app !
+2023-04-13 08:59:03,769 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:21] Start loading the UI
+2023-04-13 08:59:03,770 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:23] get monUI.fxml
+2023-04-13 08:59:03,771 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:25] monUI.fxml: /E:/WorkSpaces/WS/GitHub/NavAstro/JavaNav/projet/app/bin/main/monUI.fxml
+2023-04-13 08:59:03,773 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:27] Load the scene
+2023-04-13 08:59:04,157 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:30] VBox: 640.0x400.0
+2023-04-13 08:59:04,691 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:35] Scene: javafx.scene.Scene@71604e88
+2023-04-13 08:59:04,692 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:37] Set version info
+2023-04-13 08:59:04,692 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:43] End loading the UI
+2023-04-13 08:59:09,218 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:106] Start latitudeOnKeyPressed
+2023-04-13 08:59:09,252 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:182] Match case 4
+2023-04-13 08:59:09,253 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:184] 	group(1): 5
+2023-04-13 08:59:22,736 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 08:59:22,736 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 08:59:22,737 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 08:59:33,367 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:106] Start latitudeOnKeyPressed
+2023-04-13 08:59:33,367 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:182] Match case 4
+2023-04-13 08:59:33,368 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:184] 	group(1): 5
+2023-04-13 08:59:33,368 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 08:59:33,368 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 08:59:33,369 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 08:59:34,985 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:106] Start latitudeOnKeyPressed
+2023-04-13 08:59:34,986 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:158] Match case 3.5
+2023-04-13 08:59:34,987 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:160] 	group(1): 5
+2023-04-13 08:59:34,988 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:160] 	group(2): 5
+2023-04-13 08:59:34,989 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 08:59:34,989 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 08:59:34,989 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 08:59:35,033 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:106] Start latitudeOnKeyPressed
+2023-04-13 08:59:35,033 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:158] Match case 3.5
+2023-04-13 08:59:35,034 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:160] 	group(1): 5
+2023-04-13 08:59:35,034 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:160] 	group(2): 56
+2023-04-13 08:59:35,034 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 08:59:35,034 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 08:59:35,035 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 08:59:39,197 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:106] Start latitudeOnKeyPressed
+2023-04-13 08:59:39,198 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:158] Match case 3.5
+2023-04-13 08:59:39,198 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:160] 	group(1): 5
+2023-04-13 08:59:39,198 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:160] 	group(2): 56
+2023-04-13 08:59:39,199 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 08:59:39,199 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 08:59:39,199 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 08:59:49,980 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:156] Start onOKNavClick
+2023-04-13 09:10:30,865 DEBUG [main] s.n.starter [starter.java:10] Start myUI ...
+2023-04-13 09:10:30,884 DEBUG [main] s.nav.MyUI [MyUI.java:47] ok logger - start the app !
+2023-04-13 09:10:31,691 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:21] Start loading the UI
+2023-04-13 09:10:31,691 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:23] get monUI.fxml
+2023-04-13 09:10:31,692 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:25] monUI.fxml: /E:/WorkSpaces/WS/GitHub/NavAstro/JavaNav/projet/app/bin/main/monUI.fxml
+2023-04-13 09:10:31,695 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:27] Load the scene
+2023-04-13 09:10:32,107 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:30] VBox: 640.0x400.0
+2023-04-13 09:10:32,659 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:35] Scene: javafx.scene.Scene@4ffd5246
+2023-04-13 09:10:32,659 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:37] Set version info
+2023-04-13 09:10:32,660 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:43] End loading the UI
+2023-04-13 09:10:57,944 DEBUG [main] s.n.starter [starter.java:13] End myUI ...! bye
+2023-04-13 09:11:00,756 DEBUG [main] s.n.starter [starter.java:13] End myUI ...! bye
+2023-04-13 09:11:12,664 DEBUG [main] s.n.starter [starter.java:10] Start myUI ...
+2023-04-13 09:11:12,687 DEBUG [main] s.nav.MyUI [MyUI.java:47] ok logger - start the app !
+2023-04-13 09:11:13,537 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:21] Start loading the UI
+2023-04-13 09:11:13,537 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:23] get monUI.fxml
+2023-04-13 09:11:13,538 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:25] monUI.fxml: /E:/WorkSpaces/WS/GitHub/NavAstro/JavaNav/projet/app/bin/main/monUI.fxml
+2023-04-13 09:11:13,540 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:27] Load the scene
+2023-04-13 09:11:13,937 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:30] VBox: 640.0x400.0
+2023-04-13 09:11:14,470 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:35] Scene: javafx.scene.Scene@4ffd5246
+2023-04-13 09:11:14,471 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:37] Set version info
+2023-04-13 09:11:14,472 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:43] End loading the UI
+2023-04-13 09:11:18,210 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:96] Start latitudeOnKeyPressed
+2023-04-13 09:11:18,223 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:182] Match case 4
+2023-04-13 09:11:18,223 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:184] 	group(1): 5
+2023-04-13 09:11:18,224 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 09:11:18,224 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 09:11:18,225 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 09:11:20,032 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:96] Start latitudeOnKeyPressed
+2023-04-13 09:11:20,034 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:182] Match case 4
+2023-04-13 09:11:20,034 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:184] 	group(1): 5
+2023-04-13 09:11:20,034 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 09:11:20,035 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 09:11:20,035 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 09:11:22,015 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:96] Start latitudeOnKeyPressed
+2023-04-13 09:11:22,017 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:158] Match case 3.5
+2023-04-13 09:11:22,018 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:160] 	group(1): 5
+2023-04-13 09:11:22,018 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:160] 	group(2): 5
+2023-04-13 09:11:22,019 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 09:11:22,019 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 09:11:22,019 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 09:11:22,060 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:96] Start latitudeOnKeyPressed
+2023-04-13 09:11:22,060 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:158] Match case 3.5
+2023-04-13 09:11:22,060 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:160] 	group(1): 5
+2023-04-13 09:11:22,061 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:160] 	group(2): 56
+2023-04-13 09:11:22,062 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 09:11:22,062 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 09:11:22,062 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 09:11:27,134 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:109] Start onActionLongitudeFrom
+2023-04-13 09:11:27,135 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:182] Match case 4
+2023-04-13 09:11:27,136 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:184] 	group(1): 5
+2023-04-13 09:11:27,137 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 09:11:27,137 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 09:11:27,137 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 09:11:29,040 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:109] Start onActionLongitudeFrom
+2023-04-13 09:11:29,042 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:182] Match case 4
+2023-04-13 09:11:29,043 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:184] 	group(1): 5
+2023-04-13 09:11:29,044 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 09:11:29,044 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 09:11:29,045 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 09:11:29,824 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:109] Start onActionLongitudeFrom
+2023-04-13 09:11:29,826 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:158] Match case 3.5
+2023-04-13 09:11:29,827 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:160] 	group(1): 5
+2023-04-13 09:11:29,827 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:160] 	group(2): 4
+2023-04-13 09:11:29,828 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 09:11:29,828 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 09:11:29,828 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 09:11:29,964 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:109] Start onActionLongitudeFrom
+2023-04-13 09:11:29,964 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:158] Match case 3.5
+2023-04-13 09:11:29,965 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:160] 	group(1): 5
+2023-04-13 09:11:29,965 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:160] 	group(2): 44
+2023-04-13 09:11:29,965 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 09:11:29,965 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 09:11:29,966 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 09:11:36,060 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:121] Start onActionLatitudeTo
+2023-04-13 09:11:36,061 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 09:11:36,061 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 09:11:36,061 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 09:11:37,517 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:121] Start onActionLatitudeTo
+2023-04-13 09:11:37,518 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 09:11:37,519 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 09:11:37,519 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 09:11:37,597 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:121] Start onActionLatitudeTo
+2023-04-13 09:11:37,598 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 09:11:37,599 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 09:11:37,600 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 09:11:44,348 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:133] Start onActionLongitudeTo
+2023-04-13 09:11:44,349 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:182] Match case 4
+2023-04-13 09:11:44,349 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:184] 	group(1): 0
+2023-04-13 09:11:44,349 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 09:11:44,349 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 09:11:44,349 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 09:11:44,637 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:133] Start onActionLongitudeTo
+2023-04-13 09:11:44,638 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:182] Match case 4
+2023-04-13 09:11:44,638 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:184] 	group(1): 0.
+2023-04-13 09:11:44,638 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 09:11:44,638 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 09:11:44,639 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 09:11:45,120 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:133] Start onActionLongitudeTo
+2023-04-13 09:11:45,122 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:182] Match case 4
+2023-04-13 09:11:45,122 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:184] 	group(1): 0.4
+2023-04-13 09:11:45,122 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 09:11:45,122 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 09:11:45,123 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 09:11:45,181 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:133] Start onActionLongitudeTo
+2023-04-13 09:11:45,182 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:182] Match case 4
+2023-04-13 09:11:45,183 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:184] 	group(1): 0.45
+2023-04-13 09:11:45,184 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 09:11:45,184 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 09:11:45,185 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 09:11:50,525 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:121] Start onActionLatitudeTo
+2023-04-13 09:11:50,525 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:182] Match case 4
+2023-04-13 09:11:50,525 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:184] 	group(1): 0.89
+2023-04-13 09:11:50,526 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:212] _angle
+2023-04-13 09:11:50,526 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:213] m
+2023-04-13 09:11:50,526 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:214] s
+2023-04-13 09:12:02,241 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:159] Start onOKNavClick
+2023-04-13 13:21:47,085 DEBUG [main] s.n.starter [starter.java:10] Start myUI ...
+2023-04-13 13:21:47,103 DEBUG [main] s.nav.MyUI [MyUI.java:47] ok logger - start the app !
+2023-04-13 13:21:47,931 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:21] Start loading the UI
+2023-04-13 13:21:47,931 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:23] get monUI.fxml
+2023-04-13 13:21:47,932 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:25] monUI.fxml: /E:/WorkSpaces/WS/GitHub/NavAstro/JavaNav/projet/app/bin/main/monUI.fxml
+2023-04-13 13:21:47,933 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:27] Load the scene
+2023-04-13 13:21:48,314 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:30] VBox: 640.0x400.0
+2023-04-13 13:21:48,858 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:35] Scene: javafx.scene.Scene@70b3994
+2023-04-13 13:21:48,859 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:37] Set version info
+2023-04-13 13:21:48,859 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:43] End loading the UI
+2023-04-13 13:21:52,480 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:101] Start latitudeOnKeyPressed
+2023-04-13 13:21:52,492 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:218] Match case 4
+2023-04-13 13:21:52,493 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:220] 	group(1): 5
+2023-04-13 13:21:52,494 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:245] _angle
+2023-04-13 13:21:52,494 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:246] m
+2023-04-13 13:21:52,494 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:247] s
+2023-04-13 13:21:53,937 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:101] Start latitudeOnKeyPressed
+2023-04-13 13:21:53,939 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:218] Match case 4
+2023-04-13 13:21:53,941 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:220] 	group(1): 5
+2023-04-13 13:21:53,942 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:245] _angle
+2023-04-13 13:21:53,943 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:246] m
+2023-04-13 13:21:53,944 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:247] s
+2023-04-13 13:21:56,098 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:101] Start latitudeOnKeyPressed
+2023-04-13 13:21:56,100 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:194] Match case 3.5
+2023-04-13 13:21:56,101 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(1): 5
+2023-04-13 13:21:56,102 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(2): 5
+2023-04-13 13:21:56,102 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:245] _angle
+2023-04-13 13:21:56,102 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:246] m
+2023-04-13 13:21:56,102 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:247] s
+2023-04-13 13:21:56,349 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:101] Start latitudeOnKeyPressed
+2023-04-13 13:21:56,349 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:194] Match case 3.5
+2023-04-13 13:21:56,350 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(1): 5
+2023-04-13 13:21:56,350 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(2): 52
+2023-04-13 13:21:56,350 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:245] _angle
+2023-04-13 13:21:56,351 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:246] m
+2023-04-13 13:21:56,351 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:247] s
+2023-04-13 13:21:59,726 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:101] Start latitudeOnKeyPressed
+2023-04-13 13:21:59,727 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:194] Match case 3.5
+2023-04-13 13:21:59,727 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(1): 5
+2023-04-13 13:21:59,727 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(2): 52
+2023-04-13 13:21:59,728 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:245] _angle
+2023-04-13 13:21:59,728 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:246] m
+2023-04-13 13:21:59,728 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:247] s
+2023-04-13 13:22:02,786 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:114] Start onActionLongitudeFrom
+2023-04-13 13:22:02,787 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:194] Match case 3.5
+2023-04-13 13:22:02,787 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(1): 5
+2023-04-13 13:22:02,788 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(2): 52
+2023-04-13 13:22:02,788 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:245] _angle
+2023-04-13 13:22:02,788 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:246] m
+2023-04-13 13:22:02,789 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:247] s
+2023-04-13 13:22:05,743 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:126] Start onActionLatitudeTo
+2023-04-13 13:22:05,745 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:194] Match case 3.5
+2023-04-13 13:22:05,747 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(1): 5
+2023-04-13 13:22:05,748 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(2): 52
+2023-04-13 13:22:05,749 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:245] _angle
+2023-04-13 13:22:05,751 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:246] m
+2023-04-13 13:22:05,753 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:247] s
+2023-04-13 13:22:06,543 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:138] Start onActionLongitudeTo
+2023-04-13 13:22:06,546 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:194] Match case 3.5
+2023-04-13 13:22:06,546 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(1): 5
+2023-04-13 13:22:06,546 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(2): 52
+2023-04-13 13:22:06,547 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:245] _angle
+2023-04-13 13:22:06,547 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:246] m
+2023-04-13 13:22:06,548 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:247] s
+2023-04-13 13:22:08,385 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:126] Start onActionLatitudeTo
+2023-04-13 13:22:08,386 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:194] Match case 3.5
+2023-04-13 13:22:08,386 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(1): 
+2023-04-13 13:22:08,387 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(2): 52
+2023-04-13 13:22:08,387 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:245] _angle
+2023-04-13 13:22:08,387 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:246] m
+2023-04-13 13:22:08,387 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:247] s
+2023-04-13 13:22:09,007 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:126] Start onActionLatitudeTo
+2023-04-13 13:22:09,009 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:194] Match case 3.5
+2023-04-13 13:22:09,010 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(1): 6
+2023-04-13 13:22:09,011 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(2): 52
+2023-04-13 13:22:09,013 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:245] _angle
+2023-04-13 13:22:09,014 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:246] m
+2023-04-13 13:22:09,015 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:247] s
+2023-04-13 13:22:13,887 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:138] Start onActionLongitudeTo
+2023-04-13 13:22:13,889 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:194] Match case 3.5
+2023-04-13 13:22:13,889 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(1): 
+2023-04-13 13:22:13,889 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(2): 52
+2023-04-13 13:22:13,890 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:245] _angle
+2023-04-13 13:22:13,890 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:246] m
+2023-04-13 13:22:13,890 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:247] s
+2023-04-13 13:22:15,199 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:138] Start onActionLongitudeTo
+2023-04-13 13:22:15,201 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:194] Match case 3.5
+2023-04-13 13:22:15,202 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(1): 6
+2023-04-13 13:22:15,202 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(2): 52
+2023-04-13 13:22:15,203 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:245] _angle
+2023-04-13 13:22:15,203 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:246] m
+2023-04-13 13:22:15,203 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:247] s
+2023-04-13 13:22:17,603 DEBUG [JavaFX Application Thread] s.n.Controller [Controller.java:164] Start onOKNavClick
+2023-04-13 13:22:17,604 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:194] Match case 3.5
+2023-04-13 13:22:17,604 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(1): 5
+2023-04-13 13:22:17,604 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(2): 52
+2023-04-13 13:22:17,605 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:194] Match case 3.5
+2023-04-13 13:22:17,607 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(1): 5
+2023-04-13 13:22:17,607 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(2): 52
+2023-04-13 13:22:17,608 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:194] Match case 3.5
+2023-04-13 13:22:17,608 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(1): 6
+2023-04-13 13:22:17,608 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(2): 52
+2023-04-13 13:22:17,609 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:194] Match case 3.5
+2023-04-13 13:22:17,609 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(1): 6
+2023-04-13 13:22:17,609 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:196] 	group(2): 52
+2023-04-13 13:22:17,638 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:245] _angle
+2023-04-13 13:22:17,639 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:246] m
+2023-04-13 13:22:17,639 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:247] s
+2023-04-13 13:22:17,640 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:245] _angle
+2023-04-13 13:22:17,640 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:246] m
+2023-04-13 13:22:17,640 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:247] s
+2023-04-13 13:22:54,883 DEBUG [main] s.n.starter [starter.java:13] End myUI ...! bye
