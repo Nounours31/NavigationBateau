@@ -2,7 +2,6 @@ package sfa.nav;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage; 
 
@@ -31,7 +31,12 @@ public class MyUI extends Application {
             Scene scene = new Scene(root, root.getPrefWidth(), root.getPrefHeight());
             stage.setScene(scene);
             stage.setTitle("Nav UI");
-            stage.show();
+            
+        	logger.debug("add icon");
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
+
+        	logger.debug("Show");
+        	stage.show();
         	logger.debug("Scene: {}", scene);
         
         	logger.debug("Set version info");

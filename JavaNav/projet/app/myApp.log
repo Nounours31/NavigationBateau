@@ -1178,3 +1178,71 @@ java.util.regex.PatternSyntaxException: Unmatched closing ')' near index 27
 2023-04-13 13:22:17,640 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:246] m
 2023-04-13 13:22:17,640 DEBUG [JavaFX Application Thread] s.n.m.Angle [Angle.java:247] s
 2023-04-13 13:22:54,883 DEBUG [main] s.n.starter [starter.java:13] End myUI ...! bye
+2023-04-23 15:22:27,860 DEBUG [main] s.n.starter [starter.java:10] Start myUI ...
+2023-04-23 15:22:27,938 DEBUG [main] s.nav.MyUI [MyUI.java:47] ok logger - start the app !
+2023-04-23 15:22:30,704 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:21] Start loading the UI
+2023-04-23 15:22:30,705 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:23] get monUI.fxml
+2023-04-23 15:22:30,706 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:25] monUI.fxml: /C:/WS/Github/NavAstro/JavaNav/projet/app/build/resources/main/monUI.fxml
+2023-04-23 15:22:30,708 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:27] Load the scene
+2023-04-23 15:22:31,192 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:30] VBox: 640.0x400.0
+2023-04-23 15:22:31,920 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:35] Scene: javafx.scene.Scene@12899bdc
+2023-04-23 15:22:31,921 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:37] Set version info
+2023-04-23 15:22:31,922 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:43] End loading the UI
+2023-04-23 15:22:45,844 DEBUG [main] s.n.starter [starter.java:13] End myUI ...! bye
+2023-04-23 16:27:53,281 DEBUG [main] s.n.starter [starter.java:10] Start myUI ...
+2023-04-23 16:27:53,330 DEBUG [main] s.nav.MyUI [MyUI.java:46] ok logger - start the app !
+2023-04-23 16:27:58,682 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:20] Start loading the UI
+2023-04-23 16:27:58,693 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:22] get monUI.fxml
+2023-04-23 16:27:58,694 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:24] monUI.fxml: /C:/WS/Github/NavAstro/JavaNav/projet/app/build/resources/main/monUI.fxml
+2023-04-23 16:27:58,695 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:26] Load the scene
+2023-04-23 16:27:59,468 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:29] VBox: 640.0x400.0
+2023-04-23 16:28:00,599 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:34] Scene: javafx.scene.Scene@1e6b5175
+2023-04-23 16:28:00,599 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:36] Set version info
+2023-04-23 16:28:00,600 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:42] End loading the UI
+2023-04-23 16:28:20,140 DEBUG [main] s.n.starter [starter.java:13] End myUI ...! bye
+2023-04-23 16:39:59,206 DEBUG [main] s.n.starter [starter.java:10] Start myUI ...
+2023-04-23 16:39:59,265 DEBUG [main] s.nav.MyUI [MyUI.java:46] ok logger - start the app !
+2023-04-23 16:40:41,785 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:20] Start loading the UI
+2023-04-23 16:40:41,786 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:22] get monUI.fxml
+2023-04-23 16:40:41,827 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:24] monUI.fxml: /C:/WS/Github/NavAstro/JavaNav/projet/app/build/resources/main/monUI.fxml
+2023-04-23 16:40:41,830 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:26] Load the scene
+2023-04-23 16:40:44,814 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:29] VBox: 640.0x400.0
+2023-04-23 16:40:47,741 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:34] Scene: javafx.scene.Scene@33b4908e
+2023-04-23 16:40:47,743 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:36] Set version info
+2023-04-23 16:40:47,745 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:42] End loading the UI
+2023-04-23 16:40:56,821 DEBUG [main] s.n.starter [starter.java:13] End myUI ...! bye
+2023-04-23 16:51:31,171 DEBUG [main] s.n.starter [starter.java:10] Start myUI ...
+2023-04-23 16:51:31,233 DEBUG [main] s.nav.MyUI [MyUI.java:46] ok logger - start the app !
+2023-04-23 16:51:41,945 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:20] Start loading the UI
+2023-04-23 16:51:41,946 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:22] get monUI.fxml
+2023-04-23 16:51:41,947 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:24] monUI.fxml: /C:/WS/Github/NavAstro/JavaNav/projet/app/build/resources/main/monUI.fxml
+2023-04-23 16:51:41,948 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:26] Load the scene
+2023-04-23 16:51:49,013 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:29] VBox: 640.0x400.0
+2023-04-23 16:51:54,144 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:34] Scene: javafx.scene.Scene@734875dc
+2023-04-23 16:51:54,145 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:36] Set version info
+2023-04-23 16:51:54,145 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:42] End loading the UI
+2023-04-23 17:16:13,958 DEBUG [main] s.n.starter [starter.java:13] End myUI ...! bye
+2023-04-23 17:30:10,112 DEBUG [main] s.n.starter [starter.java:10] Start myUI ...
+2023-04-23 17:30:10,200 DEBUG [main] s.nav.MyUI [MyUI.java:46] ok logger - start the app !
+2023-04-23 17:30:17,491 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:20] Start loading the UI
+2023-04-23 17:30:17,505 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:22] get monUI.fxml
+2023-04-23 17:30:17,505 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:24] monUI.fxml: /C:/WS/Github/NavAstro/JavaNav/projet/app/build/resources/main/monUI.fxml
+2023-04-23 17:30:17,507 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:26] Load the scene
+2023-04-23 17:30:18,393 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:29] VBox: 640.0x400.0
+2023-04-23 17:30:19,449 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:34] Scene: javafx.scene.Scene@489d654b
+2023-04-23 17:30:19,450 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:36] Set version info
+2023-04-23 17:30:19,451 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:42] End loading the UI
+2023-04-23 17:30:30,323 DEBUG [main] s.n.starter [starter.java:13] End myUI ...! bye
+2023-04-23 17:31:43,838 DEBUG [main] s.n.starter [starter.java:10] Start myUI ...
+2023-04-23 17:31:43,855 DEBUG [main] s.nav.MyUI [MyUI.java:52] ok logger - start the app !
+2023-04-23 17:31:47,030 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:21] Start loading the UI
+2023-04-23 17:31:47,046 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:23] get monUI.fxml
+2023-04-23 17:31:47,047 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:25] monUI.fxml: /C:/WS/Github/NavAstro/JavaNav/projet/app/build/resources/main/monUI.fxml
+2023-04-23 17:31:47,049 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:27] Load the scene
+2023-04-23 17:31:48,306 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:30] VBox: 640.0x400.0
+2023-04-23 17:31:48,397 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:35] add icon
+2023-04-23 17:31:48,420 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:38] Show
+2023-04-23 17:31:49,157 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:40] Scene: javafx.scene.Scene@78e54d05
+2023-04-23 17:31:49,167 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:42] Set version info
+2023-04-23 17:31:49,168 DEBUG [JavaFX Application Thread] s.nav.MyUI [MyUI.java:48] End loading the UI
+2023-04-23 17:32:01,176 DEBUG [main] s.n.starter [starter.java:13] End myUI ...! bye
