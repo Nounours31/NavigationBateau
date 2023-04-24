@@ -30,6 +30,9 @@ tasks.withType(JavaCompile) {
 
  
 test {
+   // junit 4
+   useJUnit()
+   
    systemProperty 'some.prop', 'value'
    
    // explicitly include or exclude tests
@@ -47,14 +50,22 @@ test {
    jvmArgs '-XX:MaxPermSize=256m'
    
    // listen to events in the test execution lifecycle
+   beforeSuite { 
+      descriptor -> logger.lifecycle("Running Suite: " + descriptor)
+   }
    beforeTest { 
-      descriptor -> logger.lifecycle("Running test: " + descriptor)
+      descriptor -> logger.lifecycle("  - Running test: " + descriptor)
    }
-
-   // listen to standard out and standard error of the test JVM(s)
-   onOutput { 
-      descriptor, event -> logger.lifecycle
-         ("Test: " + descriptor + " produced standard out/err: " 
-         + event.message )
+   afterTest { 
+      descriptor, result -> logger.lifecycle("  - test: " + descriptor + " rc: " + result.getResultType())
    }
+   afterSuite { 
+      descriptor, result  -> logger.lifecycle("  Suite: "+ descriptor +" - results: "+ result.getFailedTestCount() +" KO   sur "+result.getTestCount()+" ODT")
+   }
+}
+// oblige gradle a refaire les tests
+// ou 
+//	 gradle cleanTest test
+test.outputs.upToDateWhen {
+	false
 }

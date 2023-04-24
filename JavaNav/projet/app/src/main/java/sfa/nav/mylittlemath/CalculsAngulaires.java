@@ -8,6 +8,7 @@ import sfa.nav.model.Cap;
 import sfa.nav.model.Distance;
 import sfa.nav.model.Latitude;
 import sfa.nav.model.PointGeographique;
+import sfa.nav.tools.NavException;
 
 
 public class CalculsAngulaires {
@@ -17,7 +18,7 @@ public class CalculsAngulaires {
 	public CalculsAngulaires() {
 	}
 
-	public HandlerOnCapDistance getOrthoDromieCapDistanceEntreDeuxPoints (PointGeographique A, PointGeographique B) {
+	public HandlerOnCapDistance getOrthoDromieCapDistanceEntreDeuxPoints (PointGeographique A, PointGeographique B) throws NavException {
 		HandlerOnCapDistance retour = new HandlerOnCapDistance();
 		retour._distance = new Distance();
 		retour._cap = new Cap();
@@ -28,7 +29,7 @@ public class CalculsAngulaires {
 		return retour;
 	}
 
-	public HandlerOnCapDistance getLoxoDromieCapDistanceEntreDeuxPoints (PointGeographique A, PointGeographique B) {
+	public HandlerOnCapDistance getLoxoDromieCapDistanceEntreDeuxPoints (PointGeographique A, PointGeographique B) throws NavException {
 		HandlerOnCapDistance retour = new HandlerOnCapDistance();
 		retour._distance = new Distance();
 		retour._cap = new Cap();
@@ -37,7 +38,7 @@ public class CalculsAngulaires {
 		return retour;
 	}
 
-	private void capOrthodromique(PointGeographique A, PointGeographique B, HandlerOnCapDistance retour) {
+	private void capOrthodromique(PointGeographique A, PointGeographique B, HandlerOnCapDistance retour) throws NavException {
 		/*
 		=== Distance orthodromique ===
 		Soit ''M'' la longueur de l'orthodromie exprimée en milles marins entre A (LatA ,LongiA) et B (LatB ,LongiB), où 
@@ -53,11 +54,11 @@ public class CalculsAngulaires {
 		
 		double capInitial = Math.cos (A.latitude().asRadian()) * Math.tan(B.latitude().asRadian()) / Math.sin (B.longitude().asRadian() - A.longitude().asRadian()); 
 		capInitial = capInitial - ( Math.sin(A.latitude().asRadian()) / Math.tan(B.longitude().asRadian() - A.longitude().asRadian()));
-		retour._cap = Cap.fromAngle(Angle.fromRadian(capInitial));
+		retour._cap = new Cap(Angle.fromRadian(capInitial));
 		
 	}
 
-	private void capLoxodromique(PointGeographique A, PointGeographique B, HandlerOnCapDistance retour) {
+	private void capLoxodromique(PointGeographique A, PointGeographique B, HandlerOnCapDistance retour) throws NavException {
 
 		double GuderMannA = Math.PI / 4.0 + A.latitude().asRadian() / 2; 
 		double GuderMannB = Math.PI / 4.0 + B.latitude().asRadian() / 2; 
@@ -68,13 +69,13 @@ public class CalculsAngulaires {
 
 		double cap = (B.longitude().asRadian() - A.longitude().asRadian()) / (LatitudeCroissanteB - LatitudeCroissanteA);
 		cap = Math.atan(cap);
-		retour._cap = Cap.fromAngle(Angle.fromRadian(cap));
+		retour._cap = new Cap(Angle.fromRadian(cap));
 
 		boolean angleTropFaible = (Math.abs(retour._cap.asRadian() - Math.PI/2) < Math.PI / 180.0);
 		angleTropFaible = angleTropFaible && (Math.abs(retour._cap.asRadian() - 3 * Math.PI/2) < Math.PI / 180.0);
 
 		if (angleTropFaible) { // 1 degre
-			Latitude LatitudeMoyenne = Latitude.fromAngle (Angle.fromRadian( (A.latitude().asRadian() + B.latitude().asRadian()) / 2.0));
+			Latitude LatitudeMoyenne = new Latitude (Angle.fromRadian( (A.latitude().asRadian() + B.latitude().asRadian()) / 2.0));
 			Angle RouteFondParQuart;
 			/*
 			 	Dans ce cas la route est exprimée en degrés de 0° à 90° en partant du nord ou du sud puis en tournant de l'angle indiqué vers l'est ou vers l'ouest

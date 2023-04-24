@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import sfa.nav.model.Angle;
 import sfa.nav.model.Cap;
+import sfa.nav.tools.NavException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -18,10 +19,10 @@ public class CapTest {
 	}
 	
 	@Test
-	public void test002 () {
+	public void test002 () throws NavException {
 		Cap c;
 		Angle a = Angle.fromRadian(Math.PI /2.0);
-		c = Cap.fromAngle(a);		
+		c = new Cap(a);		
 		assertEquals(c.asDegre(), 90.0, 0.01);
 	}
 }

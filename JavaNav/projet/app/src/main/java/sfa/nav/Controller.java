@@ -167,22 +167,22 @@ public class Controller implements Initializable {
     		
     			String content = UITools.getTextBoxContent(idLatitudeFrom);
     			Angle a = Angle.fromString(content);
-    			Latitude l = Latitude.fromAngle(a);
+    			Latitude l = new Latitude(a);
 
     			content = UITools.getTextBoxContent(idLongitudeFrom);
     			a = Angle.fromString(content);
-    			Longitude L = Longitude.fromAngle(a);
+    			Longitude L = new Longitude(a);
     			From.latitude(l);
     			From.longitude(L);
     		
         		
     			content = UITools.getTextBoxContent(idLatitudeTo);
     			a = Angle.fromString(content);
-    			l = Latitude.fromAngle(a);
+    			l = new Latitude(a);
 
     			content = UITools.getTextBoxContent(idLongitudeTo);
     			a = Angle.fromString(content);
-    			L = Longitude.fromAngle(a);
+    			L = new Longitude(a);
     			To.latitude(l);
     			To.longitude(L);
     			
