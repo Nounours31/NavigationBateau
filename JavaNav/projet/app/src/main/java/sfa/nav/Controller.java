@@ -16,7 +16,8 @@ import sfa.nav.model.Latitude;
 import sfa.nav.model.Longitude;
 import sfa.nav.model.PointGeographique;
 import sfa.nav.mylittlemath.CalculsAngulaires;
-import sfa.nav.mylittlemath.HandlerOnCapDistance;
+import sfa.nav.tools.HandlerOnCapDistance;
+import sfa.nav.tools.NavException;
 
 public class Controller implements Initializable {
 	private static Logger logger = LoggerFactory.getLogger(Controller.class);
@@ -137,7 +138,7 @@ public class Controller implements Initializable {
     	}    	
     }
 
-	private void parseAngleAndEchoDebug(Event event, TextField echoDebug) {
+	private void parseAngleAndEchoDebug(Event event, TextField echoDebug) throws NavException {
 		if (echoDebug != null) {
 			if (event == null) {
 				echoDebug.setText("No event denined");
@@ -162,29 +163,21 @@ public class Controller implements Initializable {
     		isOK = isOK && (idLongitudeTo != null);
     		
     		if (isOK) {
-    			PointGeographique From = new PointGeographique();
-    			PointGeographique To = new PointGeographique();
     		
     			String content = UITools.getTextBoxContent(idLatitudeFrom);
-    			Angle a = Angle.fromString(content);
-    			Latitude l = new Latitude(a);
+    			Latitude l = Latitude.fromString(content);
 
     			content = UITools.getTextBoxContent(idLongitudeFrom);
-    			a = Angle.fromString(content);
-    			Longitude L = new Longitude(a);
-    			From.latitude(l);
-    			From.longitude(L);
+    			Longitude L = Longitude.fromString(content);
+    			PointGeographique From = new PointGeographique(l, L);
     		
         		
     			content = UITools.getTextBoxContent(idLatitudeTo);
-    			a = Angle.fromString(content);
-    			l = new Latitude(a);
+    			l = Latitude.fromString(content);
 
     			content = UITools.getTextBoxContent(idLongitudeTo);
-    			a = Angle.fromString(content);
-    			L = new Longitude(a);
-    			To.latitude(l);
-    			To.longitude(L);
+    			L = Longitude.fromString(content);
+    			PointGeographique To = new PointGeographique(l, L);
     			
     			CalculsAngulaires c = new CalculsAngulaires();
     			HandlerOnCapDistance ortho = c.getOrthoDromieCapDistanceEntreDeuxPoints(From, To);

@@ -1,8 +1,9 @@
 package sfa.nav.model;
 
+import sfa.nav.tools.Constantes;
+
 public class Distance {
 	double distanceInMille = 0.0;
-	final static double MilleToKm = 1.852;
 	
 	public Distance() {
 		distanceInMille = 0.0;
@@ -16,16 +17,16 @@ public class Distance {
 		this.distanceInMille = d;
 	}
 
-	public double distanceInkm() {
-		return distanceInMille * MilleToKm;
+	public double distanceInKm() {
+		return distanceInMille * Constantes.milleMarinEnMetre / 1000.0;
 	}
 
 	public void distanceInKm(double d) {
-		this.distanceInMille = d / MilleToKm;
+		this.distanceInMille = d / (Constantes.milleMarinEnMetre / 1000.0);
 	}
 
 	@Override
 	public String toString() {
-		return "Distance [" + distanceInMille() + " Mn / "+ distanceInkm() + "Km]";
+		return "Distance [" + distanceInMille() + " Mn / "+ distanceInKm() + "Km]";
 	}
 }

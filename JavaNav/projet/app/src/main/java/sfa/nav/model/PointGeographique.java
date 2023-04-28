@@ -1,8 +1,21 @@
 package sfa.nav.model;
 
+import sfa.nav.tools.NavException;
+import sfa.nav.tools.eToStringMode;
+
 public class PointGeographique {
-	private Latitude _latitude;
-	private Longitude _longitude;
+	private Latitude _latitude = null;;
+	private Longitude _longitude = null;
+	
+	public PointGeographique (Latitude lat, Longitude Longi) {
+		try {
+			_latitude = Latitude.fromDegre(lat.asDegre());
+			_longitude = Longitude.fromDegre(Longi.asDegre());
+		}
+		catch (NavException e) {
+			
+		}
+	}
 	
 	public Latitude latitude() {
 		return _latitude;
@@ -16,9 +29,10 @@ public class PointGeographique {
 	public void longitude(Longitude _longitude) {
 		this._longitude = _longitude;
 	}
+	
 	@Override
 	public String toString() {
-		return "PointGeographique [" + _latitude + ", " + _longitude + "]";
+		return "PointGeographique [l:" + _latitude.myToString(eToStringMode.or(eToStringMode.light)) + ", G:" + _longitude.myToString(eToStringMode.or(eToStringMode.light)) + "]";
 	}
 	
 	

@@ -1,8 +1,9 @@
 package sfa.nav.model;
 
+import sfa.nav.tools.Constantes;
+
 public class Vitesse {
 	double vitesseInNoeud = 0.0;
-	final static double NoeudToKmH = 1.852;
 
 	public double vitesseInNoeud() {
 		return vitesseInNoeud;
@@ -13,11 +14,11 @@ public class Vitesse {
 	}
 
 	public double vitesseInKmH() {
-		return vitesseInNoeud * NoeudToKmH;
+		return vitesseInNoeud * Constantes.milleMarinEnMetre / 1000.0;
 	}
 
 	public void vitesseInKmH(double d) {
-		this.vitesseInNoeud = d / NoeudToKmH;
+		this.vitesseInNoeud = d / (Constantes.milleMarinEnMetre / 1000.0);
 	}
 
 	@Override

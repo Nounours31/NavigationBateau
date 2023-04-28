@@ -7,41 +7,55 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import sfa.nav.tools.Constantes;
 import sfa.nav.tools.NavException;
+import sfa.nav.tools.eToStringMode;
 
 public class Angle {
 	private static Logger logger = LoggerFactory.getLogger(Angle.class);
 	private double _angleInDegre;
 	private boolean _status;
-	
+
+	final private static String NonInitMsg = Constantes.AngleNonInitialisedMsg;
+
+
 	protected Angle() {
-		_angleInDegre = 0.0;
-		_status = false;		
+		set (0);
+		valide(false);
 	}
 
-	protected Angle(Angle a) {
+	protected Angle(Angle a) throws NavException {
 		if (a == null) {
-			_angleInDegre = 0.0;
-			_status = false;					
+			set (0);
+			valide(false);
 		}
 		else {
-			_angleInDegre = a._angleInDegre;
-			_status = a._status;		
+			set (a.asDegre());
+			valide(a.valide());
 		}
 	}
+
 	
 	public double asRadian() throws NavException {
 		if (!_status)
-			throw new NavException("Non valuee");
-		return _angleInDegre * Math.PI / 180.0;
+			throw new NavException(NonInitMsg);
+		return Angle.DegreToRadian(_angleInDegre);
 	}
+	
 	public double asDegre() throws NavException {
 		if (!_status)
-			throw new NavException("Non valuee");
+			throw new NavException(NonInitMsg);
 		return _angleInDegre;
 	}
 
-	private void set(double d) {
+	protected void valide(boolean b) {
+		_status = b;
+	}
+	protected boolean valide() {
+		return _status;
+	}
+
+	protected void set(double d) {
 		while (d >= 360.0)
 			d -= 360.0;
 
@@ -49,6 +63,8 @@ public class Angle {
 			d += 360.0;
 		
 		_angleInDegre = d;
+		
+		valide(true);
 	}
 	
 	static private final String regexp_3ChiffresSecondeDecimale_Groupe1DegreOptionel = "^([0-9]+)°([0-9]+)'([0-9]+)\\.([0-9]*)[\\\"']?$";
@@ -78,6 +94,7 @@ public class Angle {
 	*/
 			
 	static private final String regexp_1ChiffreHeureDecimale_Groupe1DegreOptionel = "^([0-9\\.]+[0-9]*)[°]?$";
+	private static final String Full = null;
 	/*
 		10.25225°
 		10.25225
@@ -87,18 +104,18 @@ public class Angle {
 	
 	
 	
-	static public Angle fromDegre (double x) {
+	static public Angle fromDegre (double x) throws NavException {
 		Angle retour = new Angle();
 		retour.set(x);
-		retour._status = true;
 		return retour;
 	}
 	
-	static public Angle fromRadian(double x) {
-		return Angle.fromDegre(x * 180.0 / Math.PI);
+
+	static public Angle fromRadian(double x) throws NavException {
+		return Angle.fromDegre(Angle.RadianToDegre(x));
 	}
 
-	static public Angle fromString (String s) {
+	static public Angle fromString (String s) throws NavException {
         Angle retour = new Angle();
         final Pattern pattern_regexp_3ChiffresSecondeDecimale_Groupe1DegreOptionel = Pattern.compile(regexp_3ChiffresSecondeDecimale_Groupe1DegreOptionel);
         final Pattern pattern_regexp_3ChiffresSecondeSexa_Groupe1DegreOptionel = Pattern.compile(regexp_3ChiffresSecondeSexa_Groupe1DegreOptionel);
@@ -241,7 +258,9 @@ public class Angle {
         }        
         
         if (find)
-        	retour._status = true;
+        	retour.valide(true);
+        else
+        	throw new NavException(Constantes.IncapabledeDecodeUnAngle + "("+s+")");
         return retour;
 	}
 
@@ -250,25 +269,54 @@ public class Angle {
 	
 	@Override
 	public String toString() {
-		if (!_status)
-			return "Non valuee";
+		if (!valide())
+			return NonInitMsg;
 		
+		return myToString(eToStringMode.or(eToStringMode.full, eToStringMode.deg, eToStringMode.rad));
+	}
+
+	public String myToString(int mode) {
+		if (!valide())
+			return NonInitMsg;
+		
+		double angle2Print = 0.0;
+		try { angle2Print = this.asDegre();} catch (NavException e1) {}
+				
+		double h = Math.floor(   angle2Print);
+		double m = Math.floor(  (angle2Print - h) * 60.0);
+		double s = ((((angle2Print - h) * 60.0) - m ) * 60.0);
+		
+		DecimalFormat dfPosition = new DecimalFormat("000.000°");
+		DecimalFormat dfSeconde = new DecimalFormat("00.00\"");
+		DecimalFormat dfRad = new DecimalFormat("0.00 Rad");
 		StringBuffer sb = new StringBuffer();
-		sb.append(_angleInDegre);
-		double h = Math.floor(   _angleInDegre);
-		double m = Math.floor(  (_angleInDegre - h) * 60.0);
-		double s = ((((_angleInDegre - h) * 60.0) - m ) * 60.0);
-		logger.debug("_angle", _angleInDegre);
-		logger.debug("m", (_angleInDegre - h) * 60.0);
-		logger.debug("s", s);
-		
-		DecimalFormat df=new DecimalFormat("00.00");
-		sb.append(String.format("[%02d°%02d'%s\"]", (int)Math.floor(h), (int)Math.floor(m), df.format(s)));
+
+		if (eToStringMode.isA(mode, eToStringMode.light)) {
+			sb.append(dfPosition.format(angle2Print));
+		}
+		else if (eToStringMode.isA(mode, eToStringMode.full)) {
+			sb.append(dfPosition.format(angle2Print));
+			
+			if (eToStringMode.isA(mode, eToStringMode.deg))
+				sb.append(String.format("[%02d°%02d'%s]", (int)Math.floor(h), (int)Math.floor(m), dfSeconde.format(s)));			
+
+			if (eToStringMode.isA(mode, eToStringMode.rad)) {
+				double asRad = 0.0;
+				try { asRad = this.asRadian(); } catch (NavException e) {}
+				sb.append(String.format("[%s]", dfRad.format(asRad)));		
+			}
+		}
+		else {
+			sb.append("xxxxxxxxxxx");
+		}
 		return sb.toString();
 	}
 
-	public boolean isInitialised() {
-		// TODO Auto-generated method stub
-		return _status;
+
+	public static double DegreToRadian(double asDegre) {
+		return asDegre * Constantes.DEG2RAD;
+	}
+	public static double RadianToDegre(double asRadian) {
+		return asRadian * Constantes.RAD2DEG;
 	}
 }
