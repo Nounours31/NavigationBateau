@@ -36,3 +36,25 @@ app/nbproject/
 **/.project
 **/.settings
 **/bin
+
+# Ignore Gradle project-specific cache directory
+**/.gradle/
+**/gradle/
+**/gradlew
+**/gradlew.bat
+
+
+# Ignore Gradle build output directory
+**/build/
+**/*.class
+
+# Package Files #
+**/*.war
+**/*.ear
+
+# IDEA config files
+**/.idea/
+**/*.log
+**/out/
+
+

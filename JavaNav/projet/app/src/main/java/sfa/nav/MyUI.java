@@ -12,8 +12,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage; 
-import javafx.collections.ObservableList;
-import javafx.beans.Observable;
 
 public class MyUI extends Application {
 	private static Logger logger = LoggerFactory.getLogger(MyUI.class);

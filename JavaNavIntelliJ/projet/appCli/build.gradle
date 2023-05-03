@@ -1,0 +1,31 @@
+plugins {
+	id 'java'
+	id 'application'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.guava:guava:31.1-jre'
+
+	// Loger slf4j
+	implementation 'org.slf4j:slf4j-api:2.0.6'
+	implementation 'ch.qos.logback:logback-classic:1.4.5'
+
+	// piccocli
+	implementation 'info.picocli:picocli:4.7.0'
+
+	// moi meme
+	implementation project(':appLib')
+}
+
+
+
+compileJava {
+	options.encoding = 'UTF-8'
+	options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
+}
+
+
