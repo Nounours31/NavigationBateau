@@ -85,7 +85,7 @@ public class Latitude extends Angle {
 
 	
 	static public Latitude fromString (String s) throws NavException {
-		final String regex = "^([0-9\\.°'\\\"]+)[ \\t]*([NSns]?)$";
+		final String regex = "^([0-9\\.°'\\\"]+)[ \\t]*([NSns])$";
 		
     	Angle a;
         
@@ -111,7 +111,7 @@ public class Latitude extends Angle {
         		if (sSens.equals("s")) dSens = -1.0;
         		else if (sSens.equals("n")) dSens = +1.0;
         		else
-            		throw new NavException(Constantes.IncapabledeDecodeUneLatitude + " [N ou S]("+s+")");        			
+            		throw new NavException(Constantes.IncapabledeDecodeUneLatitude + " [N(+) ou S(-)]("+s+")");
         	}
         	a = Angle.fromDegre(a.asDegre() * dSens);
         }

@@ -1,6 +1,5 @@
 plugins {
 	id 'java'
-	id 'application'
 }
 
 repositories {
@@ -29,3 +28,15 @@ compileJava {
 }
 
 
+jar {
+	manifest {
+		attributes(
+				'Class-Path': '.',
+				'Main-Class': 'sfa.nav.cli.myLittleCli'
+		)
+	}
+	duplicatesStrategy = DuplicatesStrategy.WARN
+	from {
+		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+}

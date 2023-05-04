@@ -82,14 +82,14 @@ public class Longitude extends Angle {
 
 	
 	static public Longitude fromString (String s) throws NavException {
-		final String regex = "^([0-9\\.°'\\\"]+)[ \\t]*([OoWwEe]?)$";
+		final String regex = "^([0-9\\.°'\\\"]+)[ \\t]*([OoWwEe])$";
 		
     	Angle a;
         
         final Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(s);
         if (matcher.find()) {
-        	logger.debug("Match case 1: --- Exemple[ 10°59'59.87\" ]");
+        	logger.debug("Match case 1: --- Exemple[ 10°59'59.87E\" ]");
         	for (int i = 1; i <= matcher.groupCount(); i++) {
         		logger.debug ("\tgroup({}): {}", i, matcher.group(i));
 			}
@@ -109,7 +109,7 @@ public class Longitude extends Angle {
         		else if (sSens.equals("o")) dSens = -1.0;
         		else if (sSens.equals("e")) dSens = +1.0;
         		else
-            		throw new NavException(Constantes.IncapabledeDecodeUneLongitude + " [W ou E]("+s+")");        			
+            		throw new NavException(Constantes.IncapabledeDecodeUneLongitude + " [W(-) ou E(+)]("+s+")");
         	}
         	a = Angle.fromDegre(a.asDegre() * dSens);
         }

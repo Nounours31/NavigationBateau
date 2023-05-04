@@ -23,20 +23,15 @@ dependencies {
 	testImplementation 'junit:junit:4.13'
 }
 
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
 
- 
 test {
    // junit 4
    useJUnit()
-   
    systemProperty 'some.prop', 'value'
    
    // explicitly include or exclude tests
    // exclude 'sfa/**'
-   include 'sfa/test/testsuites/**'
+   include 'sfa/**'
 
    // show standard out and standard error of the test JVM(s) on the console
    testLogging.showStandardStreams = true
