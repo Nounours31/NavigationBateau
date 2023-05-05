@@ -1,2 +1,0 @@
-# NavAstro
-NavAstro - CLI - test
