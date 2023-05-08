@@ -3,16 +3,17 @@ package sfa.nav.nav.calculs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.nav.lib.tools.Constantes;
-import sfa.nav.lib.tools.HandlerOnCapDistance;
-import sfa.nav.lib.tools.NavException;
-import sfa.nav.lib.tools.SensRouteFondParQuart;
+import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
 import sfa.nav.model.Cap;
 import sfa.nav.model.CapFactory;
 import sfa.nav.model.Distance;
+import sfa.nav.model.DistanceFactory;
 import sfa.nav.model.PointGeographique;
+import sfa.nav.model.tools.Constantes;
+import sfa.nav.model.tools.HandlerOnCapDistance;
+import sfa.nav.model.tools.SensRouteFondParQuart;
 
 
 /*
@@ -102,8 +103,8 @@ public class CalculsAngulaires {
 
 	public HandlerOnCapDistance getOrthoDromieCapDistanceEntreDeuxPoints (PointGeographique A, PointGeographique B) throws NavException {
 		HandlerOnCapDistance retour = new HandlerOnCapDistance();
-		retour._distance = new Distance();
-		retour._cap = new Cap();
+		retour._distance = DistanceFactory.fromKm(0.0);
+		retour._cap = CapFactory.fromDegre(0.0);
 
 		capOrthodromique(A, B, retour);
 		return retour;
@@ -111,8 +112,8 @@ public class CalculsAngulaires {
 
 	public HandlerOnCapDistance getLoxoDromieCapDistanceEntreDeuxPoints (PointGeographique A, PointGeographique B) throws NavException {
 		HandlerOnCapDistance retour = new HandlerOnCapDistance();
-		retour._distance = new Distance();
-		retour._cap = new Cap();
+		retour._distance = DistanceFactory.fromKm(0.0);
+		retour._cap = CapFactory.fromDegre(0.0);
 
 		capLoxodromique(A, B, retour);
 		return retour;
@@ -129,7 +130,7 @@ public class CalculsAngulaires {
 			l: latitude
 			L: Longitude
 			
-			Distance = arccos [ sin(LatA) * sin(LatB) + cos(LatA) * cos(LatB).cos(LongB − LongA)]
+			Distance = arccos [ sin(LatA) * sin(LatB) + cos(LatA) * cos(LatB) * cos(LongB − LongA)]
 			
 			Cap initial:
 			
@@ -147,7 +148,7 @@ public class CalculsAngulaires {
 		if (Math.abs(B.longitude().asDegre() - A.longitude().asDegre()) <= 1.0) {
 			logger.debug("Deplacement a longitude constante : delta longitude {}", Math.abs(B.longitude().asDegre() - A.longitude().asDegre()));
 
-			retour._distance.distanceInKm(Constantes.RayonTerrestreEnKm * (B.latitude().asRadian() - A.latitude().asRadian()));
+			retour._distance = DistanceFactory.fromKm(Constantes.RayonTerrestreEnKm * (B.latitude().asRadian() - A.latitude().asRadian()));
 			retour._cap = CapFactory.fromDegre(0.0);
 			
 			logger.debug("\tdelta latitude {}", B.latitude().asRadian() - A.latitude().asRadian());
@@ -155,13 +156,17 @@ public class CalculsAngulaires {
 		}
 		else {
 			logger.debug("Deplacement std");
+			logger.debug("A {} - B {}", A, B);
+			logger.debug("A.latitude().asRadian() {}  - B.latitude().asRadian() {}", A.latitude().asRadian(), B.latitude().asRadian());
+			logger.debug("A.longitude().asRadian() {} - B.longitude().asRadian() {}", A.longitude().asRadian(), B.longitude().asRadian());
+			logger.debug("delta {} - etape {}", B.longitude().asRadian() - A.longitude().asRadian(), Math.cos(B.longitude().asRadian() - A.longitude().asRadian()));
 			
-			double etape = Math.sin(A.latitude().asRadian()) * Math.sin(B.latitude().asRadian());
-			etape = etape +  Math.cos(A.latitude().asRadian()) * Math.cos(B.latitude().asRadian()) * Math.cos(B.longitude().asRadian() - A.longitude().asRadian());
-			double angleSpheriqueEntreAetB =  Math.acos(etape);
-			logger.debug("\tAngle solide entre A et B: {}", AngleFactory.fromRadian(angleSpheriqueEntreAetB));
+			double etape = Math.sin(A.latitude().asRadian()) * Math.sin(B.latitude().asRadian())
+					+  Math.cos(A.latitude().asRadian()) * Math.cos(B.latitude().asRadian()) * Math.cos(B.longitude().asRadian() - A.longitude().asRadian());
+			Angle angleSpheriqueEntreAetB =  AngleFactory.fromRadian(Math.acos(etape));
+			logger.debug("\tAngle solide entre A et B: {}", angleSpheriqueEntreAetB.asDegre());
 			
-			retour._distance.distanceInKm(Constantes.RayonTerrestreEnKm * angleSpheriqueEntreAetB);
+			retour._distance = DistanceFactory.fromKm(Constantes.RayonTerrestreEnKm * angleSpheriqueEntreAetB.asRadian());
 			logger.debug("\tDistance entre A et B: {}",retour._distance.distanceInKm());
 				
 			double directionOrthodromiqueEntreLesPoints = Math.cos (A.latitude().asRadian()) * Math.tan(B.latitude().asRadian()) / Math.sin (B.longitude().asRadian() - A.longitude().asRadian()); 
@@ -179,7 +184,7 @@ public class CalculsAngulaires {
 		if (retour._distance.distanceInKm() < 0.0) {
 			logger.debug("Distance negative inversion des cap");
 			retour._cap = CapFactory.fromDegre(retour._cap.asDegre() + 180.0);
-			retour._distance.distanceInKm(Math.abs(retour._distance.distanceInKm()));
+			retour._distance = DistanceFactory.fromKm(Math.abs(retour._distance.distanceInKm()));
 
 			logger.debug("\tDistance {} Cap: {}", retour._distance.distanceInKm(), retour._cap.toString());
 		}
@@ -225,7 +230,7 @@ public class CalculsAngulaires {
 			if (g < 0)
 				retour._cap = CapFactory.fromDegre(270.0);
 			
-			retour._distance.distanceInKm(Constantes.RayonTerrestreEnKm * Math.abs(g * Math.cos(A.latitude().asRadian())));
+			retour._distance = DistanceFactory.fromKm(Constantes.RayonTerrestreEnKm * Math.abs(g * Math.cos(A.latitude().asRadian())));
 			logger.debug("\tDistance {} Cap: {}", retour._distance.distanceInKm(), retour._cap.toString());
 		}
 		else {
@@ -281,7 +286,7 @@ public class CalculsAngulaires {
 
 			retour._cap = CapFactory.fromRadian(RF);
 
-			retour._distance.distanceInKm(Constantes.RayonTerrestreEnKm * (Math.abs(B.latitude().asRadian() - A.latitude().asRadian())) / Math.cos(RFQ));
+			retour._distance = DistanceFactory.fromKm(Constantes.RayonTerrestreEnKm * (Math.abs(B.latitude().asRadian() - A.latitude().asRadian())) / Math.cos(RFQ));
 			logger.debug("\tDistance {} Cap: {}", retour._distance.distanceInKm(), retour._cap.toString());
 		}
 	}

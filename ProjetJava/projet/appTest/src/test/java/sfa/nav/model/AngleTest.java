@@ -1,8 +1,8 @@
 package sfa.nav.model;
 
-import sfa.nav.lib.tools.Constantes;
-import sfa.nav.lib.tools.NavException;
+import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
+import sfa.nav.model.tools.Constantes;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -212,7 +212,6 @@ public class AngleTest extends Angle {
 			}
 
 			assertTrue(withassert);			
-			assertFalse(a.valide());			
 		}
 	}
 
@@ -273,7 +272,6 @@ public class AngleTest extends Angle {
 			}
 			
 			assertTrue(withThrow);			
-			assertFalse(a.valide());			
 		}
 	}
 	
@@ -319,7 +317,6 @@ public class AngleTest extends Angle {
 				withThrow = true;
 			}
 			assertTrue(withThrow);	
-			assertFalse(a.valide());			
 		}
 	}
 
@@ -344,25 +341,11 @@ public class AngleTest extends Angle {
 	@Test
 	public void test102_Coverage () throws NavException  {
 		Angle a = new Angle ();
-		boolean toAssertError = false;
-		try {
 			a.asDegre();
-			assertTrue(toAssertError);
-		}
-		catch(NavException ne) {
-			assertFalse(a.valide());
-			logger.debug("OK angle non initialise - asDegre error throw: ", ne);
-		}
+			assertEquals(a.toString(), "000.000°[00°00'00.00\"][0.00 Rad]");
 
-		try {
 			a.asRadian();
-			assertTrue(toAssertError);
-		}
-		catch(NavException ne) {
-			assertFalse(a.valide());
-			logger.debug("OK angle non initialise - asRadian error throw: ", ne);
-		}
+			assertEquals(a.toString(), "000.000°[00°00'00.00\"][0.00 Rad]");
 
-		assertEquals(a.toString(), Constantes.AngleNonInitialisedMsg);
 	}
 }

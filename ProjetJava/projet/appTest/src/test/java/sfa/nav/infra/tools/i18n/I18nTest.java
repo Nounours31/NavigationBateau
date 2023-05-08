@@ -1,10 +1,10 @@
-package sfa.nav.lib.i18n;
+package sfa.nav.infra.tools.i18n;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.nav.tools.i18n.I18n;
+import sfa.nav.infra.tools.i18n.I18n;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

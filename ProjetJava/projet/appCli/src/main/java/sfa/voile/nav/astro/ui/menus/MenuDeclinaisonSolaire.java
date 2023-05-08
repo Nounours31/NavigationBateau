@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sfa.nav.astro.calculs.eCalculAstroConstantes;
-import sfa.nav.lib.tools.NavAstroError;
+import sfa.nav.infra.tools.error.NavAstroError;
 import sfa.nav.model.Declinaison;
 import sfa.nav.model.Heure;
 import sfa.voile.nav.astro.ui.dialogues.DialogueForCalculDeclinaisonSolaire;

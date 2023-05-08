@@ -1,6 +1,6 @@
 package sfa.nav.model;
 
-import sfa.nav.lib.tools.Constantes;
+import sfa.nav.model.tools.Constantes;
 
 public class Vitesse {
 	double vitesseInNoeud = 0.0;

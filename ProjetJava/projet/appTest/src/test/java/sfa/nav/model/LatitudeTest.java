@@ -1,6 +1,6 @@
 package sfa.nav.model;
 
-import sfa.nav.lib.tools.NavException;
+import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.Latitude;
 
@@ -60,14 +60,14 @@ public class LatitudeTest extends Angle {
 		a = AngleFactory.fromDegre(d);
 		assertEquals(a.asDegre(), d, epsilon);
 
-		Latitude l = Latitude.fromAngle(a);
+		Latitude l = LatitudeFactory.fromAngle(a);
 		assertEquals(l.asDegre(), d, epsilon);
 
 		d = -10.0;
 		a = AngleFactory.fromDegre(d);
 		assertEquals(a.asDegre(), 360.0 + d, epsilon);
 
-		l = Latitude.fromAngle(a);
+		l = LatitudeFactory.fromAngle(a);
 		assertEquals(l.asDegre(), d, epsilon);
 
 
@@ -76,17 +76,17 @@ public class LatitudeTest extends Angle {
 	@Test
 	public void test003_FromText () throws NavException {
 		String [][] casDeTest = {
-				{"Cas 1", "2°56N", "l: 002.933°[02°56'00.00\"][0.05 Rad] N"},
-				{"Cas 2","2°56S", "l: 002.933°[02°56'00.00\"][0.05 Rad] S"},
-				{"Cas 3","2°56 S", "l: 002.933°[02°56'00.00\"][0.05 Rad] S"},
-				{"Cas 4","2°56.99 S", "l: 002.933°[02°56'00.00\"][0.05 Rad] S"},
-				{"Cas 6","2°56'59.99\" s", "l: 002.933°[02°56'00.00\"][0.05 Rad] S"},
-				{"Cas 7",".992° s", "l: 002.933°[02°56'00.00\"][0.05 Rad] S"},
-				{"Cas 8","1°45.56 s", "l: 002.933°[02°56'00.00\"][0.05 Rad] S"},
+				{"Cas 1", "2°56N", "lat:002.933°[02°56'00.00\"][0.05 Rad] N"},
+				{"Cas 2","2°56S", "lat:002.933°[02°56'00.00\"][0.05 Rad] S"},
+				{"Cas 3","2°56 S", "lat:002.933°[02°56'00.00\"][0.05 Rad] S"},
+				{"Cas 4","2°56.99 S", "lat:002.950°[02°56'59.40\"][0.05 Rad] S"},
+				{"Cas 6","2°56'59.99\" s", "lat:002.950°[02°56'59.99\"][0.05 Rad] S"},
+				{"Cas 7",".992° s", "lat:000.992°[00°59'31.20\"][0.02 Rad] S"},
+				{"Cas 8","1°45.56 s", "lat:001.759°[01°45'33.60\"][0.03 Rad] S"},
 		};
 		for (String[] s: casDeTest) {
 			logger.debug(s[0]);
-			Latitude l = Latitude.fromString(s[1]);
+			Latitude l = LatitudeFactory.fromString(s[1]);
 			assertEquals(l.toString(), s[2]);
 		}
 	}
@@ -94,19 +94,30 @@ public class LatitudeTest extends Angle {
 	@Test
 	public void test004_FromTextKo () throws NavException {
 		String [][] casDeTest = {
-				{"N 2°56", "l: 002.933°[02°56'00.00\"][0.05 Rad] N"},
-				{"S 2°56S", "l: 002.933°[02°56'00.00\"][0.05 Rad] S"},
+				{"N 2°56", "lat:002.933°[02°56'00.00\"][0.05 Rad] N"},
+				{"S 2°56S", "lat:002.933°[02°56'00.00\"][0.05 Rad] S"},
 		};
 		boolean isKO;
 		for (String[] s: casDeTest) {
 			try {
 				isKO = false;
-				Latitude l = Latitude.fromString(s[0]);
+				Latitude l = LatitudeFactory.fromString(s[0]);
 			} catch (Exception e) {
 				isKO = true;
 			}
 			assertTrue(isKO);
 		}
+	}
+
+	@Test
+	public void test005_asRadian () throws NavException {
+		Latitude l = LatitudeFactory.fromString("45.0 N");
+		assertEquals(l.asDegre(), 45.0, epsilon);
+		assertEquals(l.asRadian(), Math.PI / 4.0, epsilon);
+
+		l = LatitudeFactory.fromString("45.0 S");
+		assertEquals(l.asDegre(), -45.0, epsilon);
+		assertEquals(l.asRadian(), -Math.PI / 4.0, epsilon);
 	}
 
 }

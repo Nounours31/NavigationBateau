@@ -1,14 +1,16 @@
 package sfa.nav.model;
 
+import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.nav.astro.calculs.SensLatitude;
-import sfa.nav.lib.tools.Constantes;
-import sfa.nav.lib.tools.NavException;
+import sfa.nav.infra.tools.error.NavException;
+import sfa.nav.model.tools.Constantes;
+import sfa.nav.model.tools.ToStringOptions;
+import sfa.nav.model.tools.ToStringOptions.eToStringMode;
 
 
 // -----------------------------------------
@@ -18,130 +20,63 @@ import sfa.nav.lib.tools.NavException;
 
 public class Latitude extends Angle {
 	private static Logger logger = LoggerFactory.getLogger(Latitude.class);
-	
-	
-	public Latitude() {
+
+
+	protected Latitude() {
 		super ();
 	}
 
-	public static Latitude fromAngle(Angle d) throws NavException {
-		Latitude l = Latitude.fromDegre(d.asDegre());
-		return l;
-	}
-	
-	
-	static public Latitude fromDegre (double x) throws NavException {
-		double a = Latitude.viewAngleAsLatitudeInDegre(AngleFactory.fromDegre(x));
-		Latitude l = new Latitude();
-		l.set(a);
-		return l;
-	}
-	
+
+
 	@Override	
-	public double asRadian() throws NavException {
+	public double asRadian()  {
 		return Angle.DegreToRadian (asDegre());
 	}
-	
-	
-	static private double viewAngleAsLatitudeInDegre(Angle a) throws NavException {
-		return Latitude.viewAngleAsLatitudeInDegre(a.asDegre());
-	}
-	
-	static private double viewAngleAsLatitudeInDegre(double a) throws NavException {
-		if (Latitude.getSens(a) == SensLatitude.Nord) {
-			return a;
+
+
+
+	@Override
+	public double asDegre()  {
+		if (getSens() == eSensByPointsCardinaux.Nord) {
+			return super.asDegre();
 		}
-		else if (Latitude.getSens(a) == SensLatitude.Sud) {
-			return a - 360.0;
+		else if (getSens() == eSensByPointsCardinaux.Sud) {
+			return super.asDegre() - 360.0;
 		}
-		else
-			throw new NavException(Constantes.InvalideLatitude + " [angle en degre:" + a + "°]");
+		return 0.0;
 	}
 
-	
-	@Override
-	public double asDegre() throws NavException {
-		return viewAngleAsLatitudeInDegre (super.asDegre());
-	}
-	
-	
-   	
+
+
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		try {
-			if (this.asDegre() >= 0.0) {
-				sb.append("l: "+ super.toString());
-				sb.append(" N");
-			}
-			else {
-				Angle a = AngleFactory.fromDegre(-this.asDegre());
-				sb.append("l: "+ a.toString());
-				sb.append(" S");
-			} 
-		}
-		catch (Exception e) {
-			sb.append(e.getMessage());
-		}
-		return sb.toString();
+		Angle a = AngleFactory.fromDegre(Math.abs(this.asDegre()));
+		return "lat:" + a.toString() + " " + getSens().getTag();
 	}
 
-	
-	static public Latitude fromString (String s) throws NavException {
-		final String regex = "^([0-9\\.°'\\\"]+)[ \\t]*([NSns])$";
-		
-    	Angle a;
-        
-        final Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(s);
-        if (matcher.find()) {
-        	logger.debug("Match case 1: --- Exemple[ 10°59'59.87\" ]");
-        	for (int i = 1; i <= matcher.groupCount(); i++) {
-        		logger.debug ("\tgroup({}): {}", i, matcher.group(i));
-			}
-        	
-        	if ((matcher.group(1) != null) && (matcher.group(1).length() > 0))
-        		a = AngleFactory.fromString(matcher.group(1));
-        	else
-        		throw new NavException(Constantes.IncapabledeDecodeUneLatitude + "("+s+")");
-        	
-        	if (Math.abs(a.asDegre()) > 90.0)
-        		throw new NavException(Constantes.IncapabledeDecodeUneLatitude + " [|.| > 90.0]("+s+")");
-        		
-        	double dSens = 0.0;
-        	if ((matcher.group(2) != null) && (matcher.group(2).length() > 0)) {
-        		String sSens = matcher.group(2).toLowerCase();
-        		if (sSens.equals("s")) dSens = -1.0;
-        		else if (sSens.equals("n")) dSens = +1.0;
-        		else
-            		throw new NavException(Constantes.IncapabledeDecodeUneLatitude + " [N(+) ou S(-)]("+s+")");
-        	}
-        	a = AngleFactory.fromDegre(a.asDegre() * dSens);
-        }
-        else 
-        	throw new NavException(Constantes.IncapabledeDecodeUneLatitude + "("+s+")");
-        
-        return Latitude.fromAngle(a);
-
-	}
-	
-	
-	public SensLatitude getSens() throws NavException {
-		return Latitude.getSens(asDegre());
+	public String myToString(ToStringOptions opts) {
+		Angle a = AngleFactory.fromDegre(Math.abs(this.asDegre()));
+		return "lat:" + a.myToString(opts) + " " + getSens().getTag();
 	}
 
-	private static SensLatitude getSens(double asDegre) throws NavException {
-		if ((asDegre >= 0.0) && (asDegre <= 90.0)) {
-			return SensLatitude.Nord;
-		}
-		else if ((asDegre >= 270.0) && (asDegre < 360.0)) {
-			return SensLatitude.Sud;
-		}
-		return SensLatitude.Error;
+
+
+	public eSensByPointsCardinaux getSens()  {
+		if (super.asDegre() <= 90.0) return eSensByPointsCardinaux.Nord;
+		if (super.asDegre() >= 270.0) return eSensByPointsCardinaux.Sud;
+		return eSensByPointsCardinaux.Error;
 	}
-	
-	@Deprecated
-	public void setSens(Object object) throws NavException {
-		throw new NavException("deprecated");
+
+	public void inverseSens() {
+		set(asDegre() * (-1.0));
 	}
+
+
+	public static boolean isValideAngleInDegre(double x) {
+		Angle a = AngleFactory.fromDegre(x);
+		if (a.asDegre() <= 90.0) return true;
+		if (a.asDegre() >= 270.0) return true;
+		return false;		
+	}
+
 }

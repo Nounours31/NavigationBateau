@@ -6,8 +6,8 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.nav.lib.tools.Constantes;
-import sfa.nav.lib.tools.NavException;
+import sfa.nav.infra.tools.error.NavException;
+import sfa.nav.model.tools.Constantes;
 
 public class AngleFactory extends Angle {
 	private static Logger logger = LoggerFactory.getLogger(AngleFactory.class);
@@ -40,7 +40,6 @@ public class AngleFactory extends Angle {
 	*/
 			
 	static private final String regexp_1ChiffreHeureDecimale_Groupe1DegreOptionel = "^([0-9\\.]+[0-9]*)[°]?$";
-	private static final String Full = null;
 	/*
 		10.25225°
 		10.25225
@@ -191,32 +190,25 @@ public class AngleFactory extends Angle {
 	        }	
         }        
         
-        if (find)
-        	retour.valide(true);
-        else
+        if (!find)
         	throw new NavException(Constantes.IncapabledeDecodeUnAngle + "("+s+")");
         return retour;
 	}
 
 	
-	static public Angle fromDegre (double x) throws NavException {
+	static public Angle fromDegre (double x) {
 		Angle retour = new Angle();
 		retour.set(x);
 		return retour;
 	}
 	
 
-	static public Angle fromRadian(double x) throws NavException {
+	static public Angle fromRadian(double x) {
 		return AngleFactory.fromDegre(Angle.RadianToDegre(x));
 	}
 
 
-	static public Angle fromAngle(Angle s) throws NavException {
-		return AngleFactory.fromDegre(s.asDegre());
-	}
-
-
-	static public Angle fromMe(Angle s) throws NavException {
+	static public Angle fromAngle(Angle s)  {
 		return AngleFactory.fromDegre(s.asDegre());
 	}
 }

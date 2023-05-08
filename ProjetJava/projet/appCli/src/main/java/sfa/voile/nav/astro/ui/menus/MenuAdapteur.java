@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import sfa.nav.astro.calculs.CalculsAstro;
 import sfa.nav.astro.calculs.eCalculAstroConstantes;
-import sfa.nav.lib.tools.NavAstroError;
-import sfa.nav.lib.tools.NavException;
+import sfa.nav.infra.tools.error.NavAstroError;
+import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.Declinaison;
 import sfa.nav.model.Heure;

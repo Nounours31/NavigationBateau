@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sfa.nav.model.Latitude;
+import sfa.nav.model.LatitudeFactory;
 import sfa.nav.model.Longitude;
+import sfa.nav.model.LongitudeFactory;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -58,13 +60,13 @@ public class MenuDistanceCap {
             String slat = sc.nextLine();
             logger.debug("lat {}, ->{}<-", slat, slat.getBytes(StandardCharsets.ISO_8859_1));
 
-            Latitude lat = Latitude.fromString(slat);
+            Latitude lat = LatitudeFactory.fromString(slat);
             logger.debug("lat {}", lat.toString());
 
             System.out.print("\n\tsLong: ");
             String sLongitude = sc.nextLine();
             logger.debug("sLong {}", sLongitude);
-            Longitude L = Longitude.fromString(sLongitude);
+            Longitude L = LongitudeFactory.fromString(sLongitude);
             logger.debug("sLong {}", L.toString());
         }
         catch (Exception e) {

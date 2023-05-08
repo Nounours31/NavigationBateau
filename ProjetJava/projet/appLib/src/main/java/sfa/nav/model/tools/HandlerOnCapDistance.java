@@ -1,4 +1,4 @@
-package sfa.nav.lib.tools;
+package sfa.nav.model.tools;
 
 import sfa.nav.model.Cap;
 import sfa.nav.model.Distance;

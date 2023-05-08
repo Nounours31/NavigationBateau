@@ -1,4 +1,4 @@
-package sfa.nav.tools.i18n;
+package sfa.nav.infra.tools.i18n;
 
 import java.util.Arrays;
 import java.util.Locale;

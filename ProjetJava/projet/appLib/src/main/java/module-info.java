@@ -4,7 +4,7 @@ module JavaNav.appLib.main {
     opens sfa.nav.model ;
 
     exports sfa.nav.model;
-    exports sfa.nav.lib.tools;
+    exports sfa.nav.model.tools;
     exports sfa.nav.nav.calculs;
     exports sfa.nav.astro.calculs;
 }

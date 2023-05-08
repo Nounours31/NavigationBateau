@@ -7,7 +7,7 @@ package sfa.nav.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.nav.lib.tools.NavException;
+import sfa.nav.infra.tools.error.NavException;
 
 
 /**
@@ -17,25 +17,16 @@ import sfa.nav.lib.tools.NavException;
 public class Heure {
 
     private static Logger _logger = LoggerFactory.getLogger(Heure.class);
-    private double _val = 0.0;
+    private double _heuredecimale = 0.0;
+    private boolean isValide = true;
 
-    public Heure(double v) {
-        _val = v;
+    protected Heure() {
     }
 
-	public Heure() {
-		_val = 0.0;
-	}
-
-    public Heure(Heure h) {
-    	_val = h.getVal();
-	}
-
-
-
+    
 
 	public String toHeureMinuteSeconde() {
-        double x = _val;
+        double x = _heuredecimale;
         StringBuffer sb = new StringBuffer();
         if (x < 0) {
             sb.append("-");
@@ -57,29 +48,22 @@ public class Heure {
         return sb.toString();
     }
 
-    public double getVal() {
-        return _val;
+    public double getHeureDecimale() {
+        return _heuredecimale;
     }
 
-    public void setVal(double d) {
-        _val = d;
-    }
 
-    public Heure plus(double dz) {
-        return new Heure(this._val + dz);
-    }
-
-    public Heure plus(Heure Ei) {
-        return new Heure(this._val + Ei._val);
+    public Heure plus(Heure h) {
+        return HeureFactory.fromHeureDecimale(this._heuredecimale + h._heuredecimale);
     }
 
     @Override
     public String toString() {
-        return "Heure: " + this.toHeureMinuteSeconde() + "  [" + _val + "]";
+        return "Heure: " + this.toHeureMinuteSeconde() + "  [" + _heuredecimale + "]";
     }
 
     public boolean apres(Heure H) {
-        return (_val > H._val);
+        return (_heuredecimale > H._heuredecimale);
     }
 
     public boolean avant(Heure H) {
@@ -87,12 +71,14 @@ public class Heure {
     }
 
     public double moins(Heure H) {
-        return _val - H._val;
+        return _heuredecimale - H._heuredecimale;
     }
 
-    @Deprecated
-	public static Heure fromString(Object object) throws NavException {
-		throw new NavException("Not impl");
+
+
+	public void set(double d) {
+		_heuredecimale = d;
 	}
+
 
 }

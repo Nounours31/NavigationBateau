@@ -3,7 +3,7 @@ package sfa.nav.model;
 
 import org.junit.Test;
 
-import sfa.nav.lib.tools.NavException;
+import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.Cap;
 

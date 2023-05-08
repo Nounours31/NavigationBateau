@@ -3,14 +3,14 @@ package sfa.nav.maree.calculs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.nav.lib.tools.Constantes;
-import sfa.nav.lib.tools.HandlerOnCapDistance;
-import sfa.nav.lib.tools.NavException;
-import sfa.nav.lib.tools.SensRouteFondParQuart;
+import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.Cap;
 import sfa.nav.model.Distance;
 import sfa.nav.model.PointGeographique;
+import sfa.nav.model.tools.Constantes;
+import sfa.nav.model.tools.HandlerOnCapDistance;
+import sfa.nav.model.tools.SensRouteFondParQuart;
 
 
 /*

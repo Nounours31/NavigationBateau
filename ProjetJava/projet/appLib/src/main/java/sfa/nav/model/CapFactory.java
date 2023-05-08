@@ -1,6 +1,6 @@
 package sfa.nav.model;
 
-import sfa.nav.lib.tools.NavException;
+import sfa.nav.infra.tools.error.NavException;
 
 public class CapFactory {
 	

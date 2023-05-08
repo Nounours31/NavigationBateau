@@ -1,38 +1,35 @@
 package sfa.nav.model;
 
-import sfa.nav.lib.tools.NavException;
-import sfa.nav.lib.tools.eToStringMode;
+import sfa.nav.infra.tools.error.NavException;
+import sfa.nav.model.tools.ToStringOptions;
+import sfa.nav.model.tools.ToStringOptions.eToStringMode;
 
 public class PointGeographique {
 	private Latitude _latitude = null;;
 	private Longitude _longitude = null;
 	
-	public PointGeographique (Latitude lat, Longitude Longi) {
-		try {
-			_latitude = Latitude.fromDegre(lat.asDegre());
-			_longitude = Longitude.fromDegre(Longi.asDegre());
-		}
-		catch (NavException e) {
-			
-		}
+	public PointGeographique (Latitude lat, Longitude Longi) throws NavException {
+			_latitude = LatitudeFactory.fromDegre(lat.asDegre());
+			_longitude = LongitudeFactory.fromDegre(Longi.asDegre());
 	}
 	
 	public Latitude latitude() {
 		return _latitude;
 	}
-	public void latitude(Latitude _latitude) {
-		this._latitude = _latitude;
+	public void latitude(Latitude _latitude) throws NavException {
+		this._latitude = LatitudeFactory.fromDegre(_latitude.asDegre());
 	}
 	public Longitude longitude() {
 		return _longitude;
 	}
 	public void longitude(Longitude _longitude) {
-		this._longitude = _longitude;
+		this._longitude = LongitudeFactory.fromDegre(_longitude.asDegre());
 	}
 	
 	@Override
 	public String toString() {
-		return "PointGeographique [l:" + _latitude.myToString(eToStringMode.or(eToStringMode.light)) + ", G:" + _longitude.myToString(eToStringMode.or(eToStringMode.light)) + "]";
+		ToStringOptions opts = new ToStringOptions(eToStringMode.light);
+		return "PtGeo [" + _latitude.myToString(opts) + ", "+ _longitude.myToString(opts) + "]";
 	}
 	
 	

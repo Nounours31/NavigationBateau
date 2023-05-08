@@ -1,4 +1,4 @@
-package sfa.nav.lib.tools;
+package sfa.nav.infra.tools.error;
 
 public class NavException extends Exception {
 	/**

@@ -2,7 +2,8 @@ package sfa.test.testsuites;
 
 import org.junit.runners.Suite;
 
-import sfa.nav.lib.i18n.I18nTest;
+import sfa.nav.infra.tools.i18n.I18nTest;
+
 import org.junit.runner.RunWith;
 
 @RunWith(Suite.class)

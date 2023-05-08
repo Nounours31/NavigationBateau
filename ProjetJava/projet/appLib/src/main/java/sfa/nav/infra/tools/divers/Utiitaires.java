@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package sfa.nav.lib.tools;
+package sfa.nav.infra.tools.divers;
 
 import java.nio.charset.StandardCharsets;
 

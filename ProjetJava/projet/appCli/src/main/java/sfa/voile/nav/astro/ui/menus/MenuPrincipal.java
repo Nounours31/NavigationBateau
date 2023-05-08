@@ -7,7 +7,7 @@ package sfa.voile.nav.astro.ui.menus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.nav.lib.tools.NavAstroError;
+import sfa.nav.infra.tools.error.NavAstroError;
 
 /**
  *

@@ -10,11 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sfa.nav.astro.calculs.eCalculAstroConstantes;
-import sfa.nav.lib.tools.NavException;
+import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
 import sfa.nav.model.Declinaison;
+import sfa.nav.model.DeclinaisonFactory;
 import sfa.nav.model.Heure;
+import sfa.nav.model.HeureFactory;
 import sfa.voile.nav.astro.ui.menus.MenuPrincipal;
 import sfa.voile.nav.astro.ui.menus.eUINavAstroAllMenuItems;
 
@@ -42,12 +44,12 @@ public class DialogueForCalculDeclinaisonSolaire extends DialogueAdapteur  {
         _logger.debug("Calcul latitude meridienne");
 
         eCalculAstroConstantes arg = eCalculAstroConstantes.HeureUTRef;
-        Heure x = Heure.fromString(null);
+        Heure x = HeureFactory.fromString(null);
         System.out.println(String.format("\t%s: %s", arg.name(), x.toString()));
         args.put(arg, x);
         
         arg = eCalculAstroConstantes.DeclinaisonRef;
-        Declinaison D = (Declinaison) Declinaison.fromString(null);
+        Declinaison D = (Declinaison) DeclinaisonFactory.fromString(null);
         System.out.println(String.format("\t%s: %s", arg.name(), D.toString()));
         args.put(arg, x);
 
@@ -57,7 +59,7 @@ public class DialogueForCalculDeclinaisonSolaire extends DialogueAdapteur  {
         args.put(arg, a);
 
         arg = eCalculAstroConstantes.HeureMeusure;
-        x = Heure.fromString(null);
+        x = HeureFactory.fromString(null);
         System.out.println(String.format("\t%s: %s", arg.name(), x.toString()));
         args.put(arg, x);
 	}
@@ -66,27 +68,27 @@ public class DialogueForCalculDeclinaisonSolaire extends DialogueAdapteur  {
         _logger.debug("Calcul latitude meridienne");
 
         eCalculAstroConstantes arg = eCalculAstroConstantes.HeureUT1;
-        Heure h = Heure.fromString(null);
+        Heure h = HeureFactory.fromString(null);
         System.out.println(String.format("\t%s: %s", arg.name(), h.toString()));
         args.put(arg, h);
         
         arg = eCalculAstroConstantes.Declinaison1;
-        Declinaison D = (Declinaison) Declinaison.fromString(null);
+        Declinaison D = (Declinaison) DeclinaisonFactory.fromString(null);
         System.out.println(String.format("\t%s: %s", arg.name(), D.toString()));
         args.put(arg, D);
 
         arg = eCalculAstroConstantes.HeureUT2;
-        h = Heure.fromString(null);
+        h = HeureFactory.fromString(null);
         System.out.println(String.format("\t%s: %s", arg.name(), h.toString()));
         args.put(arg, h);
         
         arg = eCalculAstroConstantes.Declinaison2;
-        D = (Declinaison) Declinaison.fromString(null);
+        D = (Declinaison) DeclinaisonFactory.fromString(null);
         System.out.println(String.format("\t%s: %s", arg.name(), D.toString()));
         args.put(arg, D);
 
         arg = eCalculAstroConstantes.HeureMeusure;
-        h = Heure.fromString(null);
+        h = HeureFactory.fromString(null);
         System.out.println(String.format("\t%s: %s", arg.name(), h.toString()));
         args.put(arg, h);
 	}

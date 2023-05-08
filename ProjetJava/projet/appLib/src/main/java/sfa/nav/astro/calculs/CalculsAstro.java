@@ -10,11 +10,15 @@ import java.util.Hashtable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.nav.lib.tools.NavException;
+import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
+import sfa.nav.model.AngleFactory;
 import sfa.nav.model.Declinaison;
+import sfa.nav.model.DeclinaisonFactory;
 import sfa.nav.model.Heure;
 import sfa.nav.model.Latitude;
+import sfa.nav.model.LatitudeFactory;
+import sfa.nav.model.eSensByPointsCardinaux;
 
 
 /**
@@ -32,7 +36,7 @@ public class CalculsAstro {
 
 		//  distanceZenitale
 		double dz = 90.0 - Hv.asDegre();
-		Latitude L = Latitude.fromAngle(D.plus(dz));
+		Latitude L = LatitudeFactory.fromAngle(D.plus(AngleFactory.fromDegre(dz)));
 		
 		System.out.println("Latitude: " + L.toString());
 		return L;
@@ -49,10 +53,13 @@ public class CalculsAstro {
 
 		Declinaison D = new Declinaison();
 		double NbHeure = HMeusure.moins(hReference);
-		double declinaison1AsDouble = DReference.asDegre() * ((DReference.getSens() == SensLatitude.Nord) ? (+1.0) : (-1.0)); 
-		double newDeclinaison = declinaison1AsDouble + TauxVariation.multiply(NbHeure);
-		D = (Declinaison) Declinaison.fromDegre(Math.abs(newDeclinaison));
-		D.setSens((newDeclinaison < 0.0) ? SensLatitude.inverse(DReference.getSens()) : DReference.getSens());
+		double declinaison1AsDouble = DReference.asDegre() * ((DReference.getSens() == eSensByPointsCardinaux.Nord) ? (+1.0) : (-1.0)); 
+		double newDeclinaison = declinaison1AsDouble + TauxVariation.multiplyByDouble(NbHeure).asDegre();
+		D = (Declinaison) DeclinaisonFactory.fromDegre(Math.abs(newDeclinaison));
+		if (newDeclinaison < 0.0) {
+			//D.setSens((newDeclinaison < 0.0) ? eSensByPointsCardinaux.inverse(DReference.getSens()) : DReference.getSens());
+			D.inverseSens();
+		}
 		_logger.debug("H  {}", HMeusure);
 		_logger.debug("H1 {}", hReference);
 		_logger.debug("Declinaison D1 {}", DReference);
@@ -77,13 +84,16 @@ public class CalculsAstro {
 		double taux = HMeusure.moins(hDebutInterval) / hFinInterval.moins(hDebutInterval);
 
 
-		double declinaison1AsDouble = dDebutInterval.asDegre() * ((dDebutInterval.getSens() == SensLatitude.Nord) ? (+1.0) : (-1.0)); 
-		double declinaison2AsDouble = dFinInterval.asDegre() * ((dFinInterval.getSens() == SensLatitude.Nord) ? (+1.0) : (-1.0)); 
+		double declinaison1AsDouble = dDebutInterval.asDegre() * ((dDebutInterval.getSens() == eSensByPointsCardinaux.Nord) ? (+1.0) : (-1.0)); 
+		double declinaison2AsDouble = dFinInterval.asDegre() * ((dFinInterval.getSens() == eSensByPointsCardinaux.Nord) ? (+1.0) : (-1.0)); 
 
 		double newDeclinaison = declinaison1AsDouble + taux * (declinaison2AsDouble - declinaison1AsDouble);
-		D = (Declinaison) Latitude.fromDegre(Math.abs(newDeclinaison));
-		D.setSens((newDeclinaison < 0.0) ? SensLatitude.Sud : SensLatitude.Nord);
-
+		D = (Declinaison) LatitudeFactory.fromDegre(Math.abs(newDeclinaison));
+		if (newDeclinaison < 0.0) {
+			//D.setSens((newDeclinaison < 0.0) ? eSensByPointsCardinaux.Sud : eSensByPointsCardinaux.Nord);
+			D.inverseSens();
+		}
+		
 		_logger.debug("H1 {}", hDebutInterval);
 		_logger.debug("H2 {}", hFinInterval);
 		_logger.debug("H  {}", HMeusure);

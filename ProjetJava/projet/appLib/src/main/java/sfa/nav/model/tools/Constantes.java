@@ -1,4 +1,4 @@
-package sfa.nav.lib.tools;
+package sfa.nav.model.tools;
 
 public class Constantes {
 	public static final String AngleNonInitialisedMsg = "Non initialise";

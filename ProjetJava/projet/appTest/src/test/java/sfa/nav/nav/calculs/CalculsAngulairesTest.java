@@ -1,4 +1,4 @@
-package sfa.nav.lib.mylittlemath;
+package sfa.nav.nav.calculs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -11,12 +11,14 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.nav.lib.tools.Constantes;
-import sfa.nav.lib.tools.HandlerOnCapDistance;
-import sfa.nav.lib.tools.NavException;
+import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Latitude;
+import sfa.nav.model.LatitudeFactory;
 import sfa.nav.model.Longitude;
+import sfa.nav.model.LongitudeFactory;
 import sfa.nav.model.PointGeographique;
+import sfa.nav.model.tools.Constantes;
+import sfa.nav.model.tools.HandlerOnCapDistance;
 import sfa.nav.nav.calculs.CalculsAngulaires;
 
 
@@ -45,14 +47,14 @@ public class CalculsAngulairesTest {
 	public static void initOnlyOnce() throws NavException {
 		ca = new CalculsAngulaires();
 		
-		Paris = new PointGeographique(Latitude.fromDegre(48.85), Longitude.fromDegre(2.35));
- 		NewYork = new PointGeographique(Latitude.fromDegre(40.705628), Longitude.fromDegre(-74.013519));
- 		GreenWitch = new PointGeographique(Latitude.fromDegre(0.0), Longitude.fromDegre(0.0));
- 		MelhPointB = new PointGeographique(Latitude.fromDegre(60.0), Longitude.fromDegre(120.0));
- 		MelhMemeLatitudePointA = new PointGeographique(Latitude.fromDegre(40.0), Longitude.fromDegre(-140.0));
- 		MelhMemeLatitudePointB = new PointGeographique(Latitude.fromDegre(40.0), Longitude.fromDegre(160.0));
- 		MelhMemeLongitudePointA = new PointGeographique(Latitude.fromDegre(78.0), Longitude.fromDegre(107.0));
- 		MelhMemeLongitudePointB = new PointGeographique(Latitude.fromDegre(-59.1), Longitude.fromDegre(107.0));
+		Paris = new PointGeographique(LatitudeFactory.fromDegre(48.85), LongitudeFactory.fromDegre(2.35));
+ 		NewYork = new PointGeographique(LatitudeFactory.fromDegre(40.705628), LongitudeFactory.fromDegre(-74.013519));
+ 		GreenWitch = new PointGeographique(LatitudeFactory.fromDegre(0.0), LongitudeFactory.fromDegre(0.0));
+ 		MelhPointB = new PointGeographique(LatitudeFactory.fromDegre(60.0), LongitudeFactory.fromDegre(120.0));
+ 		MelhMemeLatitudePointA = new PointGeographique(LatitudeFactory.fromDegre(40.0), LongitudeFactory.fromDegre(-140.0));
+ 		MelhMemeLatitudePointB = new PointGeographique(LatitudeFactory.fromDegre(40.0), LongitudeFactory.fromDegre(160.0));
+ 		MelhMemeLongitudePointA = new PointGeographique(LatitudeFactory.fromDegre(78.0), LongitudeFactory.fromDegre(107.0));
+ 		MelhMemeLongitudePointB = new PointGeographique(LatitudeFactory.fromDegre(-59.1), LongitudeFactory.fromDegre(107.0));
 	}
 
 	@AfterClass
@@ -81,8 +83,8 @@ public class CalculsAngulairesTest {
 
 	@Test
 	public void test002_LoxoCasSimple () throws NavException {
-		Latitude latitudeA = Latitude.fromDegre(47.0), latitudeB = Latitude.fromDegre(10.0);
-		Longitude longitudeA = Longitude.fromDegre(2.0), longitudeB = Longitude.fromDegre(106.0);
+		Latitude latitudeA = LatitudeFactory.fromDegre(47.0), latitudeB = LatitudeFactory.fromDegre(10.0);
+		Longitude longitudeA = LongitudeFactory.fromDegre(2.0), longitudeB = LongitudeFactory.fromDegre(106.0);
 		
 		PointGeographique A = new PointGeographique(latitudeA, longitudeA);
 		PointGeographique B = new PointGeographique(latitudeB, longitudeB);
@@ -95,8 +97,8 @@ public class CalculsAngulairesTest {
 
 	@Test
 	public void test002_OrthoCasSimple () throws NavException {
-		Latitude latitudeA = Latitude.fromDegre(47.0), latitudeB = Latitude.fromDegre(10.0);
-		Longitude longitudeA = Longitude.fromDegre(2.0), longitudeB = Longitude.fromDegre(106.0);
+		Latitude latitudeA = LatitudeFactory.fromDegre(47.0), latitudeB = LatitudeFactory.fromDegre(10.0);
+		Longitude longitudeA = LongitudeFactory.fromDegre(2.0), longitudeB = LongitudeFactory.fromDegre(106.0);
 		
 		PointGeographique A = new PointGeographique(latitudeA, longitudeA);
 		PointGeographique B = new PointGeographique(latitudeB, longitudeB);
