@@ -9,8 +9,7 @@ import sfa.nav.model.Cap;
 import sfa.nav.model.Distance;
 import sfa.nav.model.PointGeographique;
 import sfa.nav.model.tools.Constantes;
-import sfa.nav.model.tools.HandlerOnCapDistance;
-import sfa.nav.model.tools.SensRouteFondParQuart;
+import sfa.nav.model.tools.DataLoxodromieCapDistance;
 
 
 /*

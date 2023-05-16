@@ -6,14 +6,18 @@ import org.slf4j.LoggerFactory;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
-import sfa.nav.model.Cap;
 import sfa.nav.model.CapFactory;
-import sfa.nav.model.Distance;
 import sfa.nav.model.DistanceFactory;
+import sfa.nav.model.Latitude;
+import sfa.nav.model.LatitudeFactory;
+import sfa.nav.model.Longitude;
+import sfa.nav.model.LongitudeFactory;
 import sfa.nav.model.PointGeographique;
+import sfa.nav.model.PointGeographiqueFactory;
 import sfa.nav.model.tools.Constantes;
-import sfa.nav.model.tools.HandlerOnCapDistance;
-import sfa.nav.model.tools.SensRouteFondParQuart;
+import sfa.nav.model.tools.DataLoxodromieCapDistance;
+import sfa.nav.model.tools.DataOrthoDromieCapDistanceVertex;
+import sfa.nav.model.tools.ePointsCardinaux;
 
 
 /*
@@ -93,6 +97,9 @@ https://coordinates-converter.com/fr/decimal/48.850000,2.350000?karte=OpenStreet
 ================================================================================
 http://serge.mehl.free.fr/anx/loxodromie.html
 
+
+================================================================================
+https://www.aero-training.fr/calculer-une-orthodromie.html
  */
 
 public class CalculsAngulaires {
@@ -101,17 +108,18 @@ public class CalculsAngulaires {
 	public CalculsAngulaires() {
 	}
 
-	public HandlerOnCapDistance getOrthoDromieCapDistanceEntreDeuxPoints (PointGeographique A, PointGeographique B) throws NavException {
-		HandlerOnCapDistance retour = new HandlerOnCapDistance();
+	public DataOrthoDromieCapDistanceVertex getOrthoDromieCapDistanceEntreDeuxPoints (PointGeographique A, PointGeographique B) throws NavException {
+		DataOrthoDromieCapDistanceVertex retour = new DataOrthoDromieCapDistanceVertex();
 		retour._distance = DistanceFactory.fromKm(0.0);
 		retour._cap = CapFactory.fromDegre(0.0);
-
+		retour._vertex = null;
+		
 		capOrthodromique(A, B, retour);
 		return retour;
 	}
 
-	public HandlerOnCapDistance getLoxoDromieCapDistanceEntreDeuxPoints (PointGeographique A, PointGeographique B) throws NavException {
-		HandlerOnCapDistance retour = new HandlerOnCapDistance();
+	public DataLoxodromieCapDistance getLoxoDromieCapDistanceEntreDeuxPoints (PointGeographique A, PointGeographique B) throws NavException {
+		DataLoxodromieCapDistance retour = new DataLoxodromieCapDistance();
 		retour._distance = DistanceFactory.fromKm(0.0);
 		retour._cap = CapFactory.fromDegre(0.0);
 
@@ -119,8 +127,8 @@ public class CalculsAngulaires {
 		return retour;
 	}
 
-	private void capOrthodromique(PointGeographique A, PointGeographique B, HandlerOnCapDistance retour) throws NavException {
-		logger.debug("Orthodromie - chemin le plus court entre A {} et B {}", A, B);
+	private void capOrthodromique(PointGeographique Depart, PointGeographique Arrivee, DataOrthoDromieCapDistanceVertex retour) throws NavException {
+		logger.debug("Orthodromie - chemin le plus court entre Depart {} et Arrivee {}", Depart, Arrivee);
 		/*
 			CA c'est le PLUS court l'arc de l'orance
 		*/
@@ -144,60 +152,126 @@ public class CalculsAngulaires {
 				cap: 0 ou 180°
 		 */
 		
-		// deplacement a Longitude constante
-		if (Math.abs(B.longitude().asDegre() - A.longitude().asDegre()) <= 1.0) {
-			logger.debug("Deplacement a longitude constante : delta longitude {}", Math.abs(B.longitude().asDegre() - A.longitude().asDegre()));
+		double LatDepart = Depart.latitude().asRadian();
+		double LatArrivee = Arrivee.latitude().asRadian();
+		double LongiDepart = Depart.longitude().asRadian();
+		double LongiArrivee = Arrivee.longitude().asRadian();
+		
+		double l = LatArrivee - LatDepart;
+		double g = LongiArrivee - LongiDepart;
+		double gOptimum = g;
+		
+		// sens du deplacement
+		ePointsCardinaux[] sens = {
+				ePointsCardinaux.N,
+				ePointsCardinaux.E
+		};
+		
+		sens[0] = ePointsCardinaux.N;
+		if (l < 0) sens[0] = ePointsCardinaux.S;
 
-			retour._distance = DistanceFactory.fromKm(Constantes.RayonTerrestreEnKm * (B.latitude().asRadian() - A.latitude().asRadian()));
-			retour._cap = CapFactory.fromDegre(0.0);
-			
-			logger.debug("\tdelta latitude {}", B.latitude().asRadian() - A.latitude().asRadian());
-			logger.debug("\tDistance {} Cap: {}", retour._distance.distanceInKm(), retour._cap.toString());
+		sens[1] = ePointsCardinaux.E;
+		if (gOptimum < 0) sens[1] = ePointsCardinaux.W;
+
+		// ----------------------------------------
+		// Si g > Pi alors je ne prend pas le plus court chemein, je dois me retourner
+		// ----------------------------------------
+		if (Math.abs(g) > Math.PI) {
+			gOptimum = 2 * Math.PI - Math.abs(gOptimum);
+			sens[1] = sens[1].sensInverse();
+			logger.debug("Changement de sens: g {} gOptimun {} sens {}", AngleFactory.fromRadian(g), AngleFactory.fromRadian(gOptimum), sens[1].getTag());
+		}
+
+		
+		// deplacement a Longitude constante
+		if (Math.abs(gOptimum) <= Angle.DegreToRadian(1.0)) {
+			logger.debug("Deplacement a longitude constante : delta longitude {}°", Math.abs(Angle.RadianToDegre(gOptimum)));
+
+			retour._distance = DistanceFactory.fromKm(Math.abs(Constantes.RayonTerrestreEnKm * (l)));
+			retour._cap = (l < 0) ? /* vers sud */ CapFactory.fromDegre(180.0) : /* vers le nord */ CapFactory.fromDegre(0.0);
+			retour._vertex = null;
 		}
 		else {
-			logger.debug("Deplacement std");
-			logger.debug("A {} - B {}", A, B);
-			logger.debug("A.latitude().asRadian() {}  - B.latitude().asRadian() {}", A.latitude().asRadian(), B.latitude().asRadian());
-			logger.debug("A.longitude().asRadian() {} - B.longitude().asRadian() {}", A.longitude().asRadian(), B.longitude().asRadian());
-			logger.debug("delta {} - etape {}", B.longitude().asRadian() - A.longitude().asRadian(), Math.cos(B.longitude().asRadian() - A.longitude().asRadian()));
-			
-			double etape = Math.sin(A.latitude().asRadian()) * Math.sin(B.latitude().asRadian())
-					+  Math.cos(A.latitude().asRadian()) * Math.cos(B.latitude().asRadian()) * Math.cos(B.longitude().asRadian() - A.longitude().asRadian());
-			Angle angleSpheriqueEntreAetB =  AngleFactory.fromRadian(Math.acos(etape));
-			logger.debug("\tAngle solide entre A et B: {}", angleSpheriqueEntreAetB.asDegre());
-			
-			retour._distance = DistanceFactory.fromKm(Constantes.RayonTerrestreEnKm * angleSpheriqueEntreAetB.asRadian());
-			logger.debug("\tDistance entre A et B: {}",retour._distance.distanceInKm());
-				
-			double directionOrthodromiqueEntreLesPoints = Math.cos (A.latitude().asRadian()) * Math.tan(B.latitude().asRadian()) / Math.sin (B.longitude().asRadian() - A.longitude().asRadian()); 
-			directionOrthodromiqueEntreLesPoints = directionOrthodromiqueEntreLesPoints - ( Math.sin(A.latitude().asRadian()) / Math.tan(B.longitude().asRadian() - A.longitude().asRadian()));
-			
-			directionOrthodromiqueEntreLesPoints = Math.atan(1/directionOrthodromiqueEntreLesPoints);
-			logger.debug("\tDirection entre A et B: {}",AngleFactory.fromRadian(directionOrthodromiqueEntreLesPoints));
+			double cosM = Math.sin(LatDepart) * Math.sin(LatArrivee) +  Math.cos(LatDepart) * Math.cos(LatArrivee) * Math.cos(gOptimum);
+			Angle M =  AngleFactory.fromRadian(Math.acos(cosM));
+			double sinM = Math.sin(M.asRadian());
 
+			double mOrtho = Math.abs(Constantes.RayonTerrestreEnKm * M.asRadian());
+			retour._distance = DistanceFactory.fromKm(mOrtho);
 			
-			retour._cap = CapFactory.fromAngle(AngleFactory.fromRadian(directionOrthodromiqueEntreLesPoints));
-			logger.debug("\tCap entre A et B: {}",retour._cap);
+			// ---------------------------------------
+			// Angle de route initiale est notee 
+			//   - 0 a 180: du nord vers l'est
+			//   - 0 a -180: vers l'ouest delon le signe de g
+			// ---------------------------------------
+			double cosAngleRouteInitiale = (Math.sin(LatArrivee) - Math.sin(LatDepart) * cosM) / (Math.cos(LatDepart) * sinM);
+			double AngleRouteInitiale = Math.acos(cosAngleRouteInitiale);
+			double routeOrthoAuDepart = AngleRouteInitiale;
+			
+			if (sens[1].equals(ePointsCardinaux.W)) {
+				routeOrthoAuDepart = 2 * Math.PI - routeOrthoAuDepart;
+			}			
+			retour._cap = CapFactory.fromAngle(AngleFactory.fromRadian(routeOrthoAuDepart));
+
+			// ---------------------------------------
+			// Vertex Angle de route initiale est notee 
+			// ---------------------------------------
+			double cosLatVertex = Math.cos(LatDepart) * Math.sin(AngleRouteInitiale);
+			double LatVertex = Math.acos(cosLatVertex);
+			Latitude latitudeVertex;
+			if (Math.abs(AngleRouteInitiale) >= (Math.PI / 2.0))
+				latitudeVertex = LatitudeFactory.fromDegreAndSens(LatVertex * 180.0 /Math.PI, ePointsCardinaux.Sud);
+			else 
+				latitudeVertex = LatitudeFactory.fromDegreAndSens(LatVertex * 180.0 /Math.PI, ePointsCardinaux.Nord);
+			
+			
+			double cos_gVertex = Math.tan(LatDepart) / Math.tan(LatVertex);
+			double gVertex = Math.acos(cos_gVertex);
+			double LongiVertex = 0.0;
+			ePointsCardinaux directionVersLeVertex = sens[1];
+			ePointsCardinaux sensLongiVertex = Depart.longitude().getSens();
+			if (gOptimum < 0) { // deplacement vers l'ouest
+				gVertex = Math.abs(gVertex) * (-1.0);
+				directionVersLeVertex = ePointsCardinaux.W;			
+			}
+			else { 
+				gVertex = Math.abs(gVertex);
+				directionVersLeVertex = ePointsCardinaux.E;			
+			}
+
+			LongiVertex = LongiDepart + gVertex;
+			if (Math.abs(LongiVertex) > Math.PI) {
+				if (directionVersLeVertex.equals(ePointsCardinaux.E)) {
+					LongiVertex = LongiVertex -Math.PI;
+					LongiVertex = Math.PI - LongiVertex;
+					sensLongiVertex = sensLongiVertex.sensInverse();
+				}
+				if (directionVersLeVertex.equals(ePointsCardinaux.W)) {
+					LongiVertex = Math.abs(LongiVertex) -Math.PI;
+					LongiVertex = Math.PI - LongiVertex;
+					sensLongiVertex = sensLongiVertex.sensInverse();
+				}
+			}
+			else {
+				sensLongiVertex = ePointsCardinaux.E;
+				if (LongiVertex < 0) sensLongiVertex = ePointsCardinaux.Ouest;
+				LongiVertex = Math.abs(LongiVertex);
+			}
+			logger.debug("Variation de longitude du vertex: gVertex {} sens {} LongitudeVertex {}", 
+					AngleFactory.fromRadian(gVertex), 
+					directionVersLeVertex.getTag(),
+					AngleFactory.fromRadian(LongiVertex));
+
+			Longitude longitudeVertex = LongitudeFactory.fromDegreAndSens(LongiVertex * 180.0 / Math.PI, sensLongiVertex);
+			retour._vertex = PointGeographiqueFactory.fromLatLong(latitudeVertex, longitudeVertex);
 		}
-		
-		
-		if (retour._distance.distanceInKm() < 0.0) {
-			logger.debug("Distance negative inversion des cap");
-			retour._cap = CapFactory.fromDegre(retour._cap.asDegre() + 180.0);
-			retour._distance = DistanceFactory.fromKm(Math.abs(retour._distance.distanceInKm()));
-
-			logger.debug("\tDistance {} Cap: {}", retour._distance.distanceInKm(), retour._cap.toString());
-		}
-
 	}
 
-	private void capLoxodromique(PointGeographique A, PointGeographique B, HandlerOnCapDistance retour) throws NavException {
-		logger.debug("loxodromie - A cap constant entre A {} et B {}", A, B);
+	private void capLoxodromique(PointGeographique Depart, PointGeographique Arrivee, DataLoxodromieCapDistance retour) throws NavException {
+		logger.debug("loxodromie - A cap constant entre Depart {} et Arrivee {}", Depart, Arrivee);
 		/*
 				CA c'est le cas de tous les jours, la vrai nav ....
-				
 				!! --> Cette formule n'est valable que si la différence des longitudes est inférieure à 180°
-				
 		 */
 		// le mieux explique: 
 		//			http://serge.mehl.free.fr/anx/loxodromie.html
@@ -207,55 +281,76 @@ public class CalculsAngulaires {
 		 Guderman (x) = -- +  --- 
 		  				4	   2
 		 
-		 						       LongB           -         LongA
+		 						       LongiArrivee           -         LongiDepart
 		 Direction = ArcTan ( ------------------------------------------------------------ )
-		 					ln( tan( Guderman( latB )) - ln( tan( Guderman( latA ))
+		 					ln( tan( Guderman( LatArrivee )) - ln( tan( Guderman( LatDepart ))
 		 
-		 				latB - latA
+		 				LatArrivee - LatDepart
 		 Distance =   -----------------
 		                cos ( Cap )
 		 */
 
-		double g = B.longitude().asRadian() - A.longitude().asRadian();
-		if (Math.abs(g) > Math.PI)
-			g = 2 * Math.PI - Math.abs(g);
-		double l = B.latitude().asRadian() - A.latitude().asRadian();
+		double LatDepart = Depart.latitude().asRadian();
+		double LatArrivee = Arrivee.latitude().asRadian();
+		double LongiDepart = Depart.longitude().asRadian();
+		double LongiArrivee = Arrivee.longitude().asRadian();
 
 		
-		// A Latitude constante --> on se deplace d'est en ouest
-		if (Math.abs(A.latitude().asDegre() - B.latitude().asDegre()) < 1.0) {
-			logger.debug("Deplacement a latitude constante : delta latitude {}", Math.abs(A.latitude().asDegre() - B.latitude().asDegre()));
+		double l = LatArrivee - LatDepart;
+		double g = LongiArrivee - LongiDepart;
+		double gOptimum = g;
+
+		// sens du deplacement
+		ePointsCardinaux[] sens = {
+				ePointsCardinaux.N,
+				ePointsCardinaux.E
+		};
+		
+		sens[0] = ePointsCardinaux.N;
+		if (l < 0) sens[0] = ePointsCardinaux.S;
+
+		sens[1] = ePointsCardinaux.E;
+		if (g < 0) sens[1] = ePointsCardinaux.W;
+
+		// ----------------------------------------
+		// Si g > Pi alors je ne prend pas le plus court chemein, je dois me retourner
+		// ----------------------------------------
+		if (Math.abs(g) > Math.PI) {
+			gOptimum = 2 * Math.PI - Math.abs(g);
+			sens[1] = sens[1].sensInverse();
+		}
+
+		
+		// A Latitude constante --> on se deplace d'est en ouest ou inverse
+		if (Math.abs(LatDepart - LatArrivee) < Angle.DegreToRadian(0.01)) {
+			logger.debug("Deplacement a latitude constante : delta latitude {}°", Math.abs(Angle.RadianToDegre(LatDepart - LatArrivee)));
 
 			retour._cap = CapFactory.fromDegre(90.0);
+			// --------------------------------
+			// Long > 0 =>  Ouest
+			// Si g <0 alors on va vers l'ouest
+			// --------------------------------
 			if (g < 0)
 				retour._cap = CapFactory.fromDegre(270.0);
 			
-			retour._distance = DistanceFactory.fromKm(Constantes.RayonTerrestreEnKm * Math.abs(g * Math.cos(A.latitude().asRadian())));
-			logger.debug("\tDistance {} Cap: {}", retour._distance.distanceInKm(), retour._cap.toString());
+			retour._distance = DistanceFactory.fromKm(Constantes.RayonTerrestreEnKm * Math.abs(gOptimum * Math.cos(LatDepart)));
 		}
 		else {
 			logger.debug("Deplacement std");
 
 
-			// sens du deplacement
-			SensRouteFondParQuart[] sens = {
-					SensRouteFondParQuart.N,
-					SensRouteFondParQuart.E
-			};
 			
-			sens[0] = SensRouteFondParQuart.N;
-			if (l < 0) sens[0] = SensRouteFondParQuart.S;
+			double GuderMannDepart = Math.PI / 4.0 + LatDepart / 2; 
+			double GuderMannArrivee = Math.PI / 4.0 + LatArrivee / 2; 
 
-			sens[1] = SensRouteFondParQuart.E;
-			if (g < 0) sens[1] = SensRouteFondParQuart.W;
+			double LatitudeCroissanteDepart = Math.abs(Math.log(Math.tan(GuderMannDepart)));
+			if (LatDepart < 0) LatitudeCroissanteDepart = LatitudeCroissanteDepart * (-1.0);
 			
-			double GuderMannA = Math.PI / 4.0 + A.latitude().asRadian() / 2; 
-			double GuderMannB = Math.PI / 4.0 + B.latitude().asRadian() / 2; 
-
-			double LatitudeCroissanteA = Math.log(Math.tan(GuderMannA));
-			double LatitudeCroissanteB = Math.log(Math.tan(GuderMannB));
-			double RFQ = Math.abs(g / (LatitudeCroissanteB - LatitudeCroissanteA));
-			RFQ = Math.atan(Math.abs(RFQ));
+			double LatitudeCroissanteArrivee = Math.abs(Math.log(Math.tan(GuderMannArrivee)));
+			if (LatArrivee < 0) LatitudeCroissanteArrivee = LatitudeCroissanteArrivee * (-1.0);
+			
+			double TanRFQ = Math.abs(gOptimum / (LatitudeCroissanteArrivee - LatitudeCroissanteDepart));
+			double RFQ = Math.atan(Math.abs(TanRFQ));
 			logger.debug("\tRFQ entre A et B: {}", AngleFactory.fromRadian(RFQ));
 			
 			
@@ -277,18 +372,17 @@ public class CalculsAngulaires {
 			// si Rfq = S60°W alors Rf = 240° (= 180°+060°)
 			//-------------------------------
 			double RF = 0.0;
-			if (     (sens[0].equals(SensRouteFondParQuart.N)) && (sens[1].equals(SensRouteFondParQuart.E))) RF = 0.0 * Math.PI + RFQ;
-			else if ((sens[0].equals(SensRouteFondParQuart.N)) && (sens[1].equals(SensRouteFondParQuart.W))) RF = 2.0 * Math.PI - RFQ;
-			else if ((sens[0].equals(SensRouteFondParQuart.S)) && (sens[1].equals(SensRouteFondParQuart.E))) RF = 1.0 * Math.PI - RFQ;
-			else if ((sens[0].equals(SensRouteFondParQuart.S)) && (sens[1].equals(SensRouteFondParQuart.W))) RF = 1.0 * Math.PI + RFQ;
+			if (     (sens[0].equals(ePointsCardinaux.N)) && (sens[1].equals(ePointsCardinaux.E))) RF = 0.0 * Math.PI + RFQ;
+			else if ((sens[0].equals(ePointsCardinaux.N)) && (sens[1].equals(ePointsCardinaux.W))) RF = 2.0 * Math.PI - RFQ;
+			else if ((sens[0].equals(ePointsCardinaux.S)) && (sens[1].equals(ePointsCardinaux.E))) RF = 1.0 * Math.PI - RFQ;
+			else if ((sens[0].equals(ePointsCardinaux.S)) && (sens[1].equals(ePointsCardinaux.W))) RF = 1.0 * Math.PI + RFQ;
 			else
 				throw new NavException(Constantes.ImpossibledeCalculerLaRFFromRFQ);
 
 			retour._cap = CapFactory.fromRadian(RF);
 
-			retour._distance = DistanceFactory.fromKm(Constantes.RayonTerrestreEnKm * (Math.abs(B.latitude().asRadian() - A.latitude().asRadian())) / Math.cos(RFQ));
-			logger.debug("\tDistance {} Cap: {}", retour._distance.distanceInKm(), retour._cap.toString());
+			retour._distance = DistanceFactory.fromKm(Constantes.RayonTerrestreEnKm * (Math.abs(LatArrivee - LatDepart)) / Math.cos(RFQ));
 		}
+		logger.debug("\tDistance {} Cap: {}", retour._distance.distanceInKm(), retour._cap.toString());
 	}
-
 }

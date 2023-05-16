@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.tools.Constantes;
 import sfa.nav.model.tools.ToStringOptions;
+import sfa.nav.model.tools.ePointsCardinaux;
 import sfa.nav.model.tools.ToStringOptions.eToStringMode;
 
 public class Longitude extends Angle {
@@ -30,10 +31,10 @@ public class Longitude extends Angle {
 	
 	@Override
 	public double asDegre()  {
-		if (getSens() == eSensByPointsCardinaux.Est) {
+		if (getSens() == ePointsCardinaux.Est) {
 			return super.asDegre();
 		}
-		else if (getSens() == eSensByPointsCardinaux.Ouest) {
+		else if (getSens() == ePointsCardinaux.Ouest) {
 			return super.asDegre() - 360.0;
 		}
 		return 0.0;
@@ -53,10 +54,10 @@ public class Longitude extends Angle {
 	}
 
 
-	public eSensByPointsCardinaux getSens()  {
-		if (super.asDegre() <= 180.0) return eSensByPointsCardinaux.Est;
-		if (super.asDegre() > 180.0) return eSensByPointsCardinaux.Ouest;
-		return eSensByPointsCardinaux.Error;
+	public ePointsCardinaux getSens()  {
+		if (super.asDegre() <= 180.0) return ePointsCardinaux.Est;
+		if (super.asDegre() > 180.0) return ePointsCardinaux.Ouest;
+		return ePointsCardinaux.Error;
 	}
 
 

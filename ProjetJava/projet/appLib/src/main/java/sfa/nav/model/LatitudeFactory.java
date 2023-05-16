@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.tools.Constantes;
+import sfa.nav.model.tools.ePointsCardinaux;
 
 public class LatitudeFactory extends Latitude {
 	
@@ -13,14 +14,19 @@ public class LatitudeFactory extends Latitude {
 		return l;
 	}
 
+	public static Latitude fromDegreAndSens(double latVertex, ePointsCardinaux sens) throws NavException {
+		Latitude l = LatitudeFactory.fromString(latVertex + " " + sens.getTag());
+		return l;
+	}
 
-	static public Latitude fromDegre (double x) throws NavException {
+
+	static public Latitude fromDegre (double x)  {
 		if (Latitude.isValideAngleInDegre(x)) {
 			Latitude l = new Latitude();
 			l.set(x);
 			return l;
 		}
-		throw new NavException("Invalide latitude");
+		return null;
 	}
 	
 	static public Latitude fromString (String s) throws NavException  {
@@ -49,5 +55,7 @@ public class LatitudeFactory extends Latitude {
 		}        
 		throw new NavException(Constantes.IncapabledeDecodeUneLatitude + " [N(+) ou S(-)]("+s+")");
 	}
+
+
 
 }

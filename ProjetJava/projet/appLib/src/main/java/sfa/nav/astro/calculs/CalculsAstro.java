@@ -18,7 +18,7 @@ import sfa.nav.model.DeclinaisonFactory;
 import sfa.nav.model.Heure;
 import sfa.nav.model.Latitude;
 import sfa.nav.model.LatitudeFactory;
-import sfa.nav.model.eSensByPointsCardinaux;
+import sfa.nav.model.tools.ePointsCardinaux;
 
 
 /**
@@ -53,7 +53,7 @@ public class CalculsAstro {
 
 		Declinaison D = new Declinaison();
 		double NbHeure = HMeusure.moins(hReference);
-		double declinaison1AsDouble = DReference.asDegre() * ((DReference.getSens() == eSensByPointsCardinaux.Nord) ? (+1.0) : (-1.0)); 
+		double declinaison1AsDouble = DReference.asDegre() * ((DReference.getSens() == ePointsCardinaux.Nord) ? (+1.0) : (-1.0)); 
 		double newDeclinaison = declinaison1AsDouble + TauxVariation.multiplyByDouble(NbHeure).asDegre();
 		D = (Declinaison) DeclinaisonFactory.fromDegre(Math.abs(newDeclinaison));
 		if (newDeclinaison < 0.0) {
@@ -84,8 +84,8 @@ public class CalculsAstro {
 		double taux = HMeusure.moins(hDebutInterval) / hFinInterval.moins(hDebutInterval);
 
 
-		double declinaison1AsDouble = dDebutInterval.asDegre() * ((dDebutInterval.getSens() == eSensByPointsCardinaux.Nord) ? (+1.0) : (-1.0)); 
-		double declinaison2AsDouble = dFinInterval.asDegre() * ((dFinInterval.getSens() == eSensByPointsCardinaux.Nord) ? (+1.0) : (-1.0)); 
+		double declinaison1AsDouble = dDebutInterval.asDegre() * ((dDebutInterval.getSens() == ePointsCardinaux.Nord) ? (+1.0) : (-1.0)); 
+		double declinaison2AsDouble = dFinInterval.asDegre() * ((dFinInterval.getSens() == ePointsCardinaux.Nord) ? (+1.0) : (-1.0)); 
 
 		double newDeclinaison = declinaison1AsDouble + taux * (declinaison2AsDouble - declinaison1AsDouble);
 		D = (Declinaison) LatitudeFactory.fromDegre(Math.abs(newDeclinaison));

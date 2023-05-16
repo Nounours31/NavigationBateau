@@ -1,6 +1,11 @@
 package sfa.nav.model;
 
-import sfa.nav.infra.tools.error.NavException;
+public class PointGeographiqueFactory extends PointGeographique{
 
-public class PointGeographiqueFactory {
+	public static PointGeographique fromLatLong(Latitude lat, Longitude longi) {
+		PointGeographique retour = new PointGeographique();
+		retour.latitude(lat);
+		retour.longitude(longi);
+		return retour;
+	}
 }

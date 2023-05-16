@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.tools.Constantes;
 import sfa.nav.model.tools.ToStringOptions;
+import sfa.nav.model.tools.ePointsCardinaux;
 import sfa.nav.model.tools.ToStringOptions.eToStringMode;
 
 
@@ -37,10 +38,10 @@ public class Latitude extends Angle {
 
 	@Override
 	public double asDegre()  {
-		if (getSens() == eSensByPointsCardinaux.Nord) {
+		if (getSens() == ePointsCardinaux.Nord) {
 			return super.asDegre();
 		}
-		else if (getSens() == eSensByPointsCardinaux.Sud) {
+		else if (getSens() == ePointsCardinaux.Sud) {
 			return super.asDegre() - 360.0;
 		}
 		return 0.0;
@@ -61,11 +62,12 @@ public class Latitude extends Angle {
 
 
 
-	public eSensByPointsCardinaux getSens()  {
-		if (super.asDegre() <= 90.0) return eSensByPointsCardinaux.Nord;
-		if (super.asDegre() >= 270.0) return eSensByPointsCardinaux.Sud;
-		return eSensByPointsCardinaux.Error;
+	public ePointsCardinaux getSens()  {
+		if (super.asDegre() <= 90.0) return ePointsCardinaux.Nord;
+		if (super.asDegre() >= 270.0) return ePointsCardinaux.Sud;
+		return ePointsCardinaux.Error;
 	}
+
 
 	public void inverseSens() {
 		set(asDegre() * (-1.0));
@@ -78,5 +80,8 @@ public class Latitude extends Angle {
 		if (a.asDegre() >= 270.0) return true;
 		return false;		
 	}
+
+
+
 
 }

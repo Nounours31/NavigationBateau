@@ -2,6 +2,7 @@ package sfa.nav.nav.calculs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -12,18 +13,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sfa.nav.infra.tools.error.NavException;
+import sfa.nav.model.Cap;
+import sfa.nav.model.CapFactory;
+import sfa.nav.model.Distance;
+import sfa.nav.model.DistanceFactory;
 import sfa.nav.model.Latitude;
 import sfa.nav.model.LatitudeFactory;
 import sfa.nav.model.Longitude;
 import sfa.nav.model.LongitudeFactory;
 import sfa.nav.model.PointGeographique;
+import sfa.nav.model.PointGeographiqueFactory;
 import sfa.nav.model.tools.Constantes;
-import sfa.nav.model.tools.HandlerOnCapDistance;
+import sfa.nav.model.tools.DataLoxodromieCapDistance;
+import sfa.nav.model.tools.DataOrthoDromieCapDistanceVertex;
 import sfa.nav.nav.calculs.CalculsAngulaires;
 
 
-public class CalculsAngulairesTest {
-    private static final Logger logger = LoggerFactory.getLogger(CalculsAngulairesTest.class);
+public class Orthodromie_aDistanceMinimale_Test {
+    private static final Logger logger = LoggerFactory.getLogger(Orthodromie_aDistanceMinimale_Test.class);
 
     private static double precisionCap = Constantes.DemiDegreEnDegre; 
     private static double precisionDiatnce = Constantes.milleMarinEnMetre;
@@ -47,14 +54,14 @@ public class CalculsAngulairesTest {
 	public static void initOnlyOnce() throws NavException {
 		ca = new CalculsAngulaires();
 		
-		Paris = new PointGeographique(LatitudeFactory.fromDegre(48.85), LongitudeFactory.fromDegre(2.35));
- 		NewYork = new PointGeographique(LatitudeFactory.fromDegre(40.705628), LongitudeFactory.fromDegre(-74.013519));
- 		GreenWitch = new PointGeographique(LatitudeFactory.fromDegre(0.0), LongitudeFactory.fromDegre(0.0));
- 		MelhPointB = new PointGeographique(LatitudeFactory.fromDegre(60.0), LongitudeFactory.fromDegre(120.0));
- 		MelhMemeLatitudePointA = new PointGeographique(LatitudeFactory.fromDegre(40.0), LongitudeFactory.fromDegre(-140.0));
- 		MelhMemeLatitudePointB = new PointGeographique(LatitudeFactory.fromDegre(40.0), LongitudeFactory.fromDegre(160.0));
- 		MelhMemeLongitudePointA = new PointGeographique(LatitudeFactory.fromDegre(78.0), LongitudeFactory.fromDegre(107.0));
- 		MelhMemeLongitudePointB = new PointGeographique(LatitudeFactory.fromDegre(-59.1), LongitudeFactory.fromDegre(107.0));
+		Paris = PointGeographiqueFactory.fromLatLong(LatitudeFactory.fromDegre(48.85), LongitudeFactory.fromDegre(2.35));
+ 		NewYork = PointGeographiqueFactory.fromLatLong(LatitudeFactory.fromDegre(40.705628), LongitudeFactory.fromDegre(-74.013519));
+ 		GreenWitch = PointGeographiqueFactory.fromLatLong(LatitudeFactory.fromDegre(0.0), LongitudeFactory.fromDegre(0.0));
+ 		MelhPointB = PointGeographiqueFactory.fromLatLong(LatitudeFactory.fromDegre(60.0), LongitudeFactory.fromDegre(120.0));
+ 		MelhMemeLatitudePointA = PointGeographiqueFactory.fromLatLong(LatitudeFactory.fromDegre(40.0), LongitudeFactory.fromDegre(-140.0));
+ 		MelhMemeLatitudePointB = PointGeographiqueFactory.fromLatLong(LatitudeFactory.fromDegre(40.0), LongitudeFactory.fromDegre(160.0));
+ 		MelhMemeLongitudePointA = PointGeographiqueFactory.fromLatLong(LatitudeFactory.fromDegre(78.0), LongitudeFactory.fromDegre(107.0));
+ 		MelhMemeLongitudePointB = PointGeographiqueFactory.fromLatLong(LatitudeFactory.fromDegre(-59.1), LongitudeFactory.fromDegre(107.0));
 	}
 
 	@AfterClass
@@ -81,29 +88,16 @@ public class CalculsAngulairesTest {
 		assertNotNull(ca);
 	}
 
-	@Test
-	public void test002_LoxoCasSimple () throws NavException {
-		Latitude latitudeA = LatitudeFactory.fromDegre(47.0), latitudeB = LatitudeFactory.fromDegre(10.0);
-		Longitude longitudeA = LongitudeFactory.fromDegre(2.0), longitudeB = LongitudeFactory.fromDegre(106.0);
-		
-		PointGeographique A = new PointGeographique(latitudeA, longitudeA);
-		PointGeographique B = new PointGeographique(latitudeB, longitudeB);
-		
-		HandlerOnCapDistance infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(A, B);
-		
-		assertEquals(infos._distance.distanceInKm(), 10709.0, precisionDiatnce); 
-		assertEquals(infos._cap.asDegre(), 112.5, precisionCap);
-	}
 
 	@Test
 	public void test002_OrthoCasSimple () throws NavException {
 		Latitude latitudeA = LatitudeFactory.fromDegre(47.0), latitudeB = LatitudeFactory.fromDegre(10.0);
 		Longitude longitudeA = LongitudeFactory.fromDegre(2.0), longitudeB = LongitudeFactory.fromDegre(106.0);
 		
-		PointGeographique A = new PointGeographique(latitudeA, longitudeA);
-		PointGeographique B = new PointGeographique(latitudeB, longitudeB);
+		PointGeographique A = PointGeographiqueFactory.fromLatLong(latitudeA, longitudeA);
+		PointGeographique B = PointGeographiqueFactory.fromLatLong(latitudeB, longitudeB);
 		
-		HandlerOnCapDistance infos = ca.getOrthoDromieCapDistanceEntreDeuxPoints(A, B);
+		DataOrthoDromieCapDistanceVertex infos = ca.getOrthoDromieCapDistanceEntreDeuxPoints(A, B);
 		
 		assertEquals(infos._distance.distanceInKm(), 10244.0, precisionDiatnce); 
 		assertEquals(infos._cap.asDegre(), 73.0, precisionCap);
@@ -111,26 +105,9 @@ public class CalculsAngulairesTest {
 
 	
 	@Test
-	public void test003_LoxoCasMehl () throws NavException {
-		HandlerOnCapDistance infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(GreenWitch, MelhPointB);
-		assertEquals(infos._distance.distanceInKm(), 12547.0, precisionDiatnce); 
-		assertEquals(infos._cap.asDegre(), 58.0, precisionCap);
-		
-		// meme latitude
-		infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(MelhMemeLatitudePointA, MelhMemeLatitudePointB);
-		assertEquals(infos._distance.distanceInKm(), 5116.0, precisionDiatnce); 
-		assertEquals(infos._cap.asDegre(), 90.0, precisionCap);
-
-		// meme longitude
-		infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(MelhMemeLongitudePointA, MelhMemeLongitudePointB);
-		assertEquals(infos._distance.distanceInKm(), 15524.0, precisionDiatnce); 
-		assertEquals(infos._cap.asDegre(), 180.0, precisionCap);
-	}
-
-	@Test
 	public void test003_OrthoCasMehl () throws NavException {
 		
-		HandlerOnCapDistance infos = ca.getOrthoDromieCapDistanceEntreDeuxPoints(GreenWitch, MelhPointB);
+		DataOrthoDromieCapDistanceVertex infos = ca.getOrthoDromieCapDistanceEntreDeuxPoints(GreenWitch, MelhPointB);
 		assertEquals(infos._distance.distanceInKm(), 11630.0, precisionDiatnce); 
 		assertEquals(infos._cap.asDegre(), 26.5, precisionCap);
 
@@ -148,18 +125,41 @@ public class CalculsAngulairesTest {
 	
 	
 	@Test
-	public void test004_LoxoCasWikipedia () throws NavException {
-		HandlerOnCapDistance infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(Paris, NewYork);
-		
-		assertEquals(infos._distance.distanceInKm(), 6086.0, precisionDiatnce); 
-		assertEquals(infos._cap.asDegre(), 261.0, precisionCap);
-	}
-
-	@Test
 	public void test004_OrthoCasWikipedia () throws NavException {
-		HandlerOnCapDistance infos = ca.getOrthoDromieCapDistanceEntreDeuxPoints(Paris, NewYork);
+		DataOrthoDromieCapDistanceVertex infos = ca.getOrthoDromieCapDistanceEntreDeuxPoints(Paris, NewYork);
 
 		assertEquals(infos._distance.distanceInKm(), 5844.0, precisionDiatnce); 
 		assertEquals(infos._cap.asDegre(), 291.79, precisionCap);
+	}
+
+	
+	@Test
+	public void test005_OrthoDocPasserellePage7 () throws NavException {
+		// ------------------------------
+		// cas 1
+		// ------------------------------
+		PointGeographique pgDepart = PointGeographiqueFactory.fromLatLong (
+				LatitudeFactory.fromString("38°30.0 N"),
+				LongitudeFactory.fromString("142°00.00 E"));
+		PointGeographique pgArrivee = PointGeographiqueFactory.fromLatLong (
+				LatitudeFactory.fromString("37°48 N"),
+				LongitudeFactory.fromString("122°30 W"));
+		Cap cap = CapFactory.fromDegre(56);
+		Distance distance = DistanceFactory.fromMn(4272);
+		PointGeographique vertex = PointGeographiqueFactory.fromLatLong (
+				LatitudeFactory.fromString("49°26.5 N"),
+				LongitudeFactory.fromString("170°54.3 W"));
+		
+		Cap capLoxo = CapFactory.fromDegre(56);
+		Distance distanceloxo = DistanceFactory.fromMn(4514);
+
+		DataOrthoDromieCapDistanceVertex infos = ca.getOrthoDromieCapDistanceEntreDeuxPoints(pgDepart, pgArrivee);
+		assertTrue(infos._distance.equalsInMn(distance, precisionDiatnce)); 
+		assertTrue(infos._cap.equalsInDegre(cap, precisionCap));
+		assertTrue(infos._vertex.equals(vertex, precisionCap));
+
+		DataLoxodromieCapDistance infos2 = ca.getLoxoDromieCapDistanceEntreDeuxPoints(pgDepart, pgArrivee);
+		assertTrue(infos._distance.equalsInMn(distance, precisionDiatnce)); 
+		assertTrue(infos._cap.equalsInDegre(cap, precisionCap));
 	}
 }

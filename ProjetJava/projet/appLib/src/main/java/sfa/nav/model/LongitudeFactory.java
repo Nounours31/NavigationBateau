@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.tools.Constantes;
+import sfa.nav.model.tools.ePointsCardinaux;
 
 public class LongitudeFactory extends Longitude {
 	private static Logger logger = LoggerFactory.getLogger(LongitudeFactory.class);
@@ -23,6 +24,11 @@ public class LongitudeFactory extends Longitude {
 		l.set(x);
 		return l;	
 	}
+	
+	public static Longitude fromDegreAndSens(double d, ePointsCardinaux sensLongiVertex) throws NavException {
+		return LongitudeFactory.fromString(d + " " + sensLongiVertex.getTag());
+	}
+
 
 	static public Longitude fromString (String s) throws NavException {
 		final String regex = "^([0-9\\.°'\\\"]+)[ \\t]*([OoWwEe])$";
@@ -62,5 +68,7 @@ public class LongitudeFactory extends Longitude {
         return LongitudeFactory.fromAngle(a);
 
 	}
+
+
 
 }

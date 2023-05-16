@@ -1,6 +1,10 @@
-package sfa.test.testsuites;
+package sfa.test.z.allinone;
 
 import org.junit.runners.Suite;
+
+import sfa.test.testsuites.I18nTestSuite;
+import sfa.test.testsuites.MathsTestSuite;
+import sfa.test.testsuites.ModelTestSuite;
 
 import org.junit.runner.RunWith;
 

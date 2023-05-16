@@ -57,4 +57,10 @@ public class Distance  {
 		_distanceInMille  = mn;
 	}
 
+	public boolean equalsInMn(Distance distanceCas1, double precision) {
+		if (Math.abs(distanceCas1._distanceInMille - this._distanceInMille) < precision)
+			return true;
+		return false;
+	}
+
 }
