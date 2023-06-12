@@ -97,7 +97,7 @@ public class Orthodromie_aDistanceMinimale_Test {
 		PointGeographique A = PointGeographiqueFactory.fromLatLong(latitudeA, longitudeA);
 		PointGeographique B = PointGeographiqueFactory.fromLatLong(latitudeB, longitudeB);
 		
-		DataOrthoDromieCapDistanceVertex infos = ca.getOrthoDromieCapDistanceEntreDeuxPoints(A, B);
+		DataOrthoDromieCapDistanceVertex infos = ca.capOrthodromique(A, B);
 		
 		assertEquals(infos._distance.distanceInKm(), 10244.0, precisionDiatnce); 
 		assertEquals(infos._cap.asDegre(), 73.0, precisionCap);
@@ -107,17 +107,17 @@ public class Orthodromie_aDistanceMinimale_Test {
 	@Test
 	public void test003_OrthoCasMehl () throws NavException {
 		
-		DataOrthoDromieCapDistanceVertex infos = ca.getOrthoDromieCapDistanceEntreDeuxPoints(GreenWitch, MelhPointB);
+		DataOrthoDromieCapDistanceVertex infos = ca.capOrthodromique(GreenWitch, MelhPointB);
 		assertEquals(infos._distance.distanceInKm(), 11630.0, precisionDiatnce); 
 		assertEquals(infos._cap.asDegre(), 26.5, precisionCap);
 
 		// meme latitude
-		infos = ca.getOrthoDromieCapDistanceEntreDeuxPoints(MelhMemeLatitudePointA, MelhMemeLatitudePointB);
+		infos = ca.capOrthodromique(MelhMemeLatitudePointA, MelhMemeLatitudePointB);
 		assertEquals(infos._distance.distanceInKm(), 5013.0, precisionDiatnce); 
 		assertEquals(infos._cap.asDegre(), 290.0, precisionCap);
 
 		// meme longitude
-		infos = ca.getOrthoDromieCapDistanceEntreDeuxPoints(MelhMemeLongitudePointA, MelhMemeLongitudePointB);
+		infos = ca.capOrthodromique(MelhMemeLongitudePointA, MelhMemeLongitudePointB);
 		assertEquals(infos._distance.distanceInKm(), 15261.0, precisionDiatnce); 
 		assertEquals(infos._cap.asDegre(), 180.0, precisionCap);
 	}
@@ -126,7 +126,7 @@ public class Orthodromie_aDistanceMinimale_Test {
 	
 	@Test
 	public void test004_OrthoCasWikipedia () throws NavException {
-		DataOrthoDromieCapDistanceVertex infos = ca.getOrthoDromieCapDistanceEntreDeuxPoints(Paris, NewYork);
+		DataOrthoDromieCapDistanceVertex infos = ca.capOrthodromique (Paris, NewYork);
 
 		assertEquals(infos._distance.distanceInKm(), 5844.0, precisionDiatnce); 
 		assertEquals(infos._cap.asDegre(), 291.79, precisionCap);
@@ -153,12 +153,12 @@ public class Orthodromie_aDistanceMinimale_Test {
 		Cap capLoxo = CapFactory.fromDegre(56);
 		Distance distanceloxo = DistanceFactory.fromMn(4514);
 
-		DataOrthoDromieCapDistanceVertex infos = ca.getOrthoDromieCapDistanceEntreDeuxPoints(pgDepart, pgArrivee);
+		DataOrthoDromieCapDistanceVertex infos = ca.capOrthodromique(pgDepart, pgArrivee);
 		assertTrue(infos._distance.equalsInMn(distance, precisionDiatnce)); 
 		assertTrue(infos._cap.equalsInDegre(cap, precisionCap));
 		assertTrue(infos._vertex.equals(vertex, precisionCap));
 
-		DataLoxodromieCapDistance infos2 = ca.getLoxoDromieCapDistanceEntreDeuxPoints(pgDepart, pgArrivee);
+		DataLoxodromieCapDistance infos2 = ca.capLoxodromique (pgDepart, pgArrivee);
 		assertTrue(infos._distance.equalsInMn(distance, precisionDiatnce)); 
 		assertTrue(infos._cap.equalsInDegre(cap, precisionCap));
 	}

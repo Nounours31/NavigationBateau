@@ -1,26 +1,21 @@
 package sfa.nav.model;
 
-import sfa.nav.infra.tools.error.NavException;
-import sfa.nav.model.Angle;
-import sfa.nav.model.tools.Constantes;
-
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-import java.io.File;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import sfa.nav.infra.tools.error.NavException;
+import sfa.nav.odt.tools.HandlerStringDouble;
+import sfa.nav.odt.tools.HandlerStringString;
 
 public class AngleTest extends Angle {
-    File output;
     private static final Logger logger = LoggerFactory.getLogger(AngleTest.class);
     private static double epsilon = 0.000001;
     
@@ -156,32 +151,23 @@ public class AngleTest extends Angle {
 		assertEquals(a.asRadian(), ref, epsilon);
 	}
 
-	class handlerStringDouble {
-		String _s;
-		double _v;
-		handlerStringDouble(String s, double v) {_s = s; _v = v;}
-	}
 
-	class handlerStringString {
-		String _s;
-		String _v;
-		handlerStringString(String s, String v) {_s = s; _v = v;}
-	}
+
 
 	@Test
 	public void test006_fromText_HeureDecimaleOK () throws NavException {
 		Angle a;
-		handlerStringDouble[] allVals = {
-				new handlerStringDouble("25.25", 25.25),
-				new handlerStringDouble("25°25", (25.00 + 25.0/60.0)),
-				new handlerStringDouble("25.25°", 25.25),
+		HandlerStringDouble[] allVals = {
+				new HandlerStringDouble("25.25", 25.25),
+				new HandlerStringDouble("25°25", (25.00 + 25.0/60.0)),
+				new HandlerStringDouble("25.25°", 25.25),
 
-				new handlerStringDouble(".25°", 0.25),
-				new handlerStringDouble("0.25°", 0.25),
-				new handlerStringDouble("0°25", (0.0 + 25.0/60.0)),
+				new HandlerStringDouble(".25°", 0.25),
+				new HandlerStringDouble("0.25°", 0.25),
+				new HandlerStringDouble("0°25", (0.0 + 25.0/60.0)),
 		};
 		
-		for (handlerStringDouble val : allVals) {
+		for (HandlerStringDouble val : allVals) {
 			String s = val._s;
 			double ref = val._v;
 			logger.debug("s: " + s + "| v:" + ref);
@@ -194,11 +180,11 @@ public class AngleTest extends Angle {
 	@Test
 	public void test007_fromText_HeureDecimaleKO () throws NavException {
 		Angle a = new Angle();
-		handlerStringDouble[] allVals = {
-				new handlerStringDouble("°25", 1.0),
+		HandlerStringDouble[] allVals = {
+				new HandlerStringDouble("°25", 1.0),
 		};
 		
-		for (handlerStringDouble val : allVals) {
+		for (HandlerStringDouble val : allVals) {
 			String s = val._s;
 			double ref = val._v;
 			logger.debug("s: " + s + "| v:" + ref);
@@ -218,27 +204,27 @@ public class AngleTest extends Angle {
 	@Test
 	public void test008_fromText_MinutesDecimale () throws NavException {
 		Angle a;
-		handlerStringDouble[] allVals = {
-				new handlerStringDouble("5.25", 5.25),
-				new handlerStringDouble("5.25°", 5.25),
-				new handlerStringDouble("5°25", 5 + 25.0/60.0),
-				new handlerStringDouble("5°25'", 5 + 25.0/60.0),
-				new handlerStringDouble("5°25\"", 5 + 25.0/60.0),
-				new handlerStringDouble("5°25.99", 5 + 25.99/60.0),
-				new handlerStringDouble("5°25.99'", 5 + 25.99/60.0),
-				new handlerStringDouble("5°05.50'", 5 + 5.5/60.0),
-				new handlerStringDouble("5°5.50'", 5 + 5.5/60.0),
-				new handlerStringDouble("5°5.50", 5 + 5.5/60.0),
-				new handlerStringDouble("5°25'00\"", (5.00 + 25.0/60.0)),
-				new handlerStringDouble("5°25'59\"", (5.00 + 25.0/60.0 + 59.0/(60.0*60.0))),
-				new handlerStringDouble("5°05'00\"", (5.00 + 5.0/60.0)),
-				new handlerStringDouble("5°5'00\"", (5.00 + 5.0/60.0)),
-				new handlerStringDouble("5°5'", (5.00 + 5.0/60.0)),
-				new handlerStringDouble("5°5", (5.00 + 5.0/60.0)),
-				new handlerStringDouble("5°5\"", (5.00 + 5.0/60.0)),
+		HandlerStringDouble[] allVals = {
+				new HandlerStringDouble("5.25", 5.25),
+				new HandlerStringDouble("5.25°", 5.25),
+				new HandlerStringDouble("5°25", 5 + 25.0/60.0),
+				new HandlerStringDouble("5°25'", 5 + 25.0/60.0),
+				new HandlerStringDouble("5°25\"", 5 + 25.0/60.0),
+				new HandlerStringDouble("5°25.99", 5 + 25.99/60.0),
+				new HandlerStringDouble("5°25.99'", 5 + 25.99/60.0),
+				new HandlerStringDouble("5°05.50'", 5 + 5.5/60.0),
+				new HandlerStringDouble("5°5.50'", 5 + 5.5/60.0),
+				new HandlerStringDouble("5°5.50", 5 + 5.5/60.0),
+				new HandlerStringDouble("5°25'00\"", (5.00 + 25.0/60.0)),
+				new HandlerStringDouble("5°25'59\"", (5.00 + 25.0/60.0 + 59.0/(60.0*60.0))),
+				new HandlerStringDouble("5°05'00\"", (5.00 + 5.0/60.0)),
+				new HandlerStringDouble("5°5'00\"", (5.00 + 5.0/60.0)),
+				new HandlerStringDouble("5°5'", (5.00 + 5.0/60.0)),
+				new HandlerStringDouble("5°5", (5.00 + 5.0/60.0)),
+				new HandlerStringDouble("5°5\"", (5.00 + 5.0/60.0)),
 		};
 		
-		for (handlerStringDouble val : allVals) {
+		for (HandlerStringDouble val : allVals) {
 			String s = val._s;
 			double ref = val._v;
 			logger.debug("s: " + s + "| v:" + ref);
@@ -250,15 +236,15 @@ public class AngleTest extends Angle {
 	@Test
 	public void test009_fromText_MinutesDecimaleKO () throws NavException {
 		Angle a = new Angle();
-		handlerStringDouble[] allVals = {
-				new handlerStringDouble("25°60", 1),
-				new handlerStringDouble("25°60'", 1),
-				new handlerStringDouble("25°60\"", 1),
-				new handlerStringDouble("25°61\"", 1),
+		HandlerStringDouble[] allVals = {
+				new HandlerStringDouble("25°60", 1),
+				new HandlerStringDouble("25°60'", 1),
+				new HandlerStringDouble("25°60\"", 1),
+				new HandlerStringDouble("25°61\"", 1),
 		};
 		
 		boolean withThrow = false;
-		for (handlerStringDouble val : allVals) {
+		for (HandlerStringDouble val : allVals) {
 			String s = val._s;
 			double ref = val._v;
 			logger.debug("s: " + s + "| v:" + ref);
@@ -278,16 +264,16 @@ public class AngleTest extends Angle {
 	@Test
 	public void test010_fromText_SecondesDecimale () throws NavException {
 		Angle a;
-		handlerStringDouble[] allVals = {
-				new handlerStringDouble("5°25'09", (5.00 + 25.0/60.0 + 9.0/(60.0*60.0))),
-				new handlerStringDouble("5°25'09\"", (5.00 + 25.0/60.0 + 9.0/(60.0*60.0))),
-				new handlerStringDouble("5°25'9", (5.00 + 25.0/60.0 + 9.0/(60.0*60.0))),
-				new handlerStringDouble("5°25'9\"", (5.00 + 25.0/60.0 + 9.0/(60.0*60.0))),
-				new handlerStringDouble("5°25'9.99", (5.00 + 25.0/60.0 + 9.99/(60.0*60.0))),
-				new handlerStringDouble("5°25'9.99\"", (5.00 + 25.0/60.0 + 9.99/(60.0*60.0))),
+		HandlerStringDouble[] allVals = {
+				new HandlerStringDouble("5°25'09", (5.00 + 25.0/60.0 + 9.0/(60.0*60.0))),
+				new HandlerStringDouble("5°25'09\"", (5.00 + 25.0/60.0 + 9.0/(60.0*60.0))),
+				new HandlerStringDouble("5°25'9", (5.00 + 25.0/60.0 + 9.0/(60.0*60.0))),
+				new HandlerStringDouble("5°25'9\"", (5.00 + 25.0/60.0 + 9.0/(60.0*60.0))),
+				new HandlerStringDouble("5°25'9.99", (5.00 + 25.0/60.0 + 9.99/(60.0*60.0))),
+				new HandlerStringDouble("5°25'9.99\"", (5.00 + 25.0/60.0 + 9.99/(60.0*60.0))),
 		};
 		
-		for (handlerStringDouble val : allVals) {
+		for (HandlerStringDouble val : allVals) {
 			String s = val._s;
 			double ref = val._v;
 			logger.debug("s: " + s + "| v:" + ref);
@@ -299,13 +285,13 @@ public class AngleTest extends Angle {
 	@Test
 	public void test011_fromText_SecondesDecimaleKO () throws NavException {
 		Angle a = new Angle();
-		handlerStringDouble[] allVals = {
-				new handlerStringDouble("25°25'99", 1),
-				new handlerStringDouble("25°25'99\"", 1),
+		HandlerStringDouble[] allVals = {
+				new HandlerStringDouble("25°25'99", 1),
+				new HandlerStringDouble("25°25'99\"", 1),
 		};
 		
 		boolean withThrow = false;
-		for (handlerStringDouble val : allVals) {
+		for (HandlerStringDouble val : allVals) {
 			String s = val._s;
 			double ref = val._v;
 			logger.debug("s: " + s + "| v:" + ref);
@@ -323,12 +309,12 @@ public class AngleTest extends Angle {
 	@Test
 	public void test101_tostring () throws NavException {
 		Angle a;
-		handlerStringString[] allVals = {
-				new handlerStringString("25°25.99", "025.433°[25°25'59.40\"][0.44 Rad]"),
-				new handlerStringString("25°5'59",  "025.100°[25°05'59.00\"][0.44 Rad]"),
+		HandlerStringString[] allVals = {
+				new HandlerStringString("25°25.99", "025.433°[25°25'59.40\"][0.44 Rad]"),
+				new HandlerStringString("25°5'59",  "025.100°[25°05'59.00\"][0.44 Rad]"),
 		};
 		
-		for (handlerStringString val : allVals) {
+		for (HandlerStringString val : allVals) {
 			String s = val._s;
 			String ref = val._v;
 			logger.debug("s: " + s + "| v:" + ref);

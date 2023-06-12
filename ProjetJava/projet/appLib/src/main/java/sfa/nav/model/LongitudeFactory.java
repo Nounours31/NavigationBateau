@@ -18,11 +18,18 @@ public class LongitudeFactory extends Longitude {
 		return l;
 	}
 	
+	public static Longitude fromRadian(double inRadian)  {
+		Longitude l = LongitudeFactory.fromDegre(Angle.RadianToDegre(inRadian));
+		return l;
+	}
 	
 	static public Longitude fromDegre (double x)  {
 		Longitude l = new Longitude();
-		l.set(x);
-		return l;	
+		if (Longitude.isValideAngleInDegre(x)) {
+			l.set(x);
+			return l;	
+		}
+		return null;
 	}
 	
 	public static Longitude fromDegreAndSens(double d, ePointsCardinaux sensLongiVertex) throws NavException {
@@ -66,9 +73,5 @@ public class LongitudeFactory extends Longitude {
         	throw new NavException(Constantes.IncapabledeDecodeUneLongitude + "("+s+")");
         
         return LongitudeFactory.fromAngle(a);
-
 	}
-
-
-
 }

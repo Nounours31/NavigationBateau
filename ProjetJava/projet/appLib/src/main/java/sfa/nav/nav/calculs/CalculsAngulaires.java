@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
+import sfa.nav.model.Cap;
 import sfa.nav.model.CapFactory;
+import sfa.nav.model.Distance;
 import sfa.nav.model.DistanceFactory;
 import sfa.nav.model.Latitude;
 import sfa.nav.model.LatitudeFactory;
@@ -108,26 +110,37 @@ public class CalculsAngulaires {
 	public CalculsAngulaires() {
 	}
 
-	public DataOrthoDromieCapDistanceVertex getOrthoDromieCapDistanceEntreDeuxPoints (PointGeographique A, PointGeographique B) throws NavException {
+	// ------------------------------------------------------------------------------------------------
+	// A un point, direction, distance -> calcul de la future position
+	// ------------------------------------------------------------------------------------------------
+	public PointGeographique estimeLoxodromique (PointGeographique Depart, Cap routeFond, Distance d) {
+		PointGeographique pg = null;
+		if (d.distanceInMilleNautique() < 300) {
+			double l = d.distanceInMilleNautique() * Math.cos(routeFond.asRadian()) / 60.0;
+			Latitude latArrivee = LatitudeFactory.fromDegre(Depart.latitude().asDegre() + l);
+			
+			
+			double latitudeMoyenne = (Depart.latitude().asRadian() + latArrivee.asRadian()) / 2.0;
+			double variationLongitude = -1.0 *  d.distanceInMilleNautique() * Math.sin(routeFond.asRadian()) / (60 * Math.cos(latitudeMoyenne));
+			Longitude longitudeArrivee = LongitudeFactory.fromRadian(Depart.longitude().asRadian() + variationLongitude * Math.PI / 180.0);
+			
+			pg = PointGeographiqueFactory.fromLatLong(latArrivee, longitudeArrivee);
+		}		
+		return pg;
+	}
+	
+	
+	// ------------------------------------------------------------------------------------------------
+	// A deux points donnes, cap et distance orthodromique 
+	//		--> la plus courte
+	//		--> cap NON consant
+	// ------------------------------------------------------------------------------------------------
+	public DataOrthoDromieCapDistanceVertex capOrthodromique(PointGeographique Depart, PointGeographique Arrivee) throws NavException {
 		DataOrthoDromieCapDistanceVertex retour = new DataOrthoDromieCapDistanceVertex();
 		retour._distance = DistanceFactory.fromKm(0.0);
 		retour._cap = CapFactory.fromDegre(0.0);
 		retour._vertex = null;
 		
-		capOrthodromique(A, B, retour);
-		return retour;
-	}
-
-	public DataLoxodromieCapDistance getLoxoDromieCapDistanceEntreDeuxPoints (PointGeographique A, PointGeographique B) throws NavException {
-		DataLoxodromieCapDistance retour = new DataLoxodromieCapDistance();
-		retour._distance = DistanceFactory.fromKm(0.0);
-		retour._cap = CapFactory.fromDegre(0.0);
-
-		capLoxodromique(A, B, retour);
-		return retour;
-	}
-
-	private void capOrthodromique(PointGeographique Depart, PointGeographique Arrivee, DataOrthoDromieCapDistanceVertex retour) throws NavException {
 		logger.debug("Orthodromie - chemin le plus court entre Depart {} et Arrivee {}", Depart, Arrivee);
 		/*
 			CA c'est le PLUS court l'arc de l'orance
@@ -265,9 +278,19 @@ public class CalculsAngulaires {
 			Longitude longitudeVertex = LongitudeFactory.fromDegreAndSens(LongiVertex * 180.0 / Math.PI, sensLongiVertex);
 			retour._vertex = PointGeographiqueFactory.fromLatLong(latitudeVertex, longitudeVertex);
 		}
+		
+		return retour;
 	}
 
-	private void capLoxodromique(PointGeographique Depart, PointGeographique Arrivee, DataLoxodromieCapDistance retour) throws NavException {
+	// ------------------------------------------------------------------------------------------------
+	// A deux points donnes, cap et distance loxodromique 
+	//		--> cap constant
+	// ------------------------------------------------------------------------------------------------
+	public DataLoxodromieCapDistance capLoxodromique(PointGeographique Depart, PointGeographique Arrivee) throws NavException {
+		DataLoxodromieCapDistance retour = new DataLoxodromieCapDistance();
+		retour._distance = DistanceFactory.fromKm(0.0);
+		retour._cap = CapFactory.fromDegre(0.0);
+
 		logger.debug("loxodromie - A cap constant entre Depart {} et Arrivee {}", Depart, Arrivee);
 		/*
 				CA c'est le cas de tous les jours, la vrai nav ....
@@ -384,5 +407,7 @@ public class CalculsAngulaires {
 			retour._distance = DistanceFactory.fromKm(Constantes.RayonTerrestreEnKm * (Math.abs(LatArrivee - LatDepart)) / Math.cos(RFQ));
 		}
 		logger.debug("\tDistance {} Cap: {}", retour._distance.distanceInKm(), retour._cap.toString());
+		
+		return retour;
 	}
 }

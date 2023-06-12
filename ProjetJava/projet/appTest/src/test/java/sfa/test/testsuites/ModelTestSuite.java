@@ -10,7 +10,12 @@ import sfa.nav.model.LongitudeTest;
 import org.junit.runner.RunWith;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({AngleTest.class, LatitudeTest.class, LongitudeTest.class, CapTest.class})
+@Suite.SuiteClasses({
+	AngleTest.class, 
+	LatitudeTest.class, 
+	LongitudeTest.class, 
+	CapTest.class
+	})
 
 public class ModelTestSuite {
 }

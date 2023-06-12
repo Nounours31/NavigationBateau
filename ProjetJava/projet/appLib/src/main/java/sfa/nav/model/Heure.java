@@ -43,7 +43,7 @@ public class Heure {
         x -= Math.floor(x);
         x *= 60.0;
 
-        sb.append(String.format("%02.02f", x));
+        sb.append(String.format("%04.2f", x));
 
         return sb.toString();
     }
@@ -57,6 +57,11 @@ public class Heure {
         return HeureFactory.fromHeureDecimale(this._heuredecimale + h._heuredecimale);
     }
 
+	public Heure plus(double nbHeure) {
+        return HeureFactory.fromHeureDecimale(this._heuredecimale + nbHeure);
+	}
+
+    
     @Override
     public String toString() {
         return "Heure: " + this.toHeureMinuteSeconde() + "  [" + _heuredecimale + "]";
@@ -79,6 +84,9 @@ public class Heure {
 	public void set(double d) {
 		_heuredecimale = d;
 	}
+
+
+
 
 
 }

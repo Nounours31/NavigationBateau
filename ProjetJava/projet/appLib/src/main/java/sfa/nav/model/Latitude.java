@@ -61,7 +61,6 @@ public class Latitude extends Angle {
 	}
 
 
-
 	public ePointsCardinaux getSens()  {
 		if (super.asDegre() <= 90.0) return ePointsCardinaux.Nord;
 		if (super.asDegre() >= 270.0) return ePointsCardinaux.Sud;
@@ -73,15 +72,10 @@ public class Latitude extends Angle {
 		set(asDegre() * (-1.0));
 	}
 
-
 	public static boolean isValideAngleInDegre(double x) {
 		Angle a = AngleFactory.fromDegre(x);
 		if (a.asDegre() <= 90.0) return true;
 		if (a.asDegre() >= 270.0) return true;
 		return false;		
 	}
-
-
-
-
 }

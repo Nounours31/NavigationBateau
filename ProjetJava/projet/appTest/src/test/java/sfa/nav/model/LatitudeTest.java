@@ -3,6 +3,7 @@ package sfa.nav.model;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.Latitude;
+import sfa.nav.odt.tools.HandlerStringString;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -75,19 +77,21 @@ public class LatitudeTest extends Angle {
 
 	@Test
 	public void test003_FromText () throws NavException {
-		String [][] casDeTest = {
-				{"Cas 1", "2°56N", "lat:002.933°[02°56'00.00\"][0.05 Rad] N"},
-				{"Cas 2","2°56S", "lat:002.933°[02°56'00.00\"][0.05 Rad] S"},
-				{"Cas 3","2°56 S", "lat:002.933°[02°56'00.00\"][0.05 Rad] S"},
-				{"Cas 4","2°56.99 S", "lat:002.950°[02°56'59.40\"][0.05 Rad] S"},
-				{"Cas 6","2°56'59.99\" s", "lat:002.950°[02°56'59.99\"][0.05 Rad] S"},
-				{"Cas 7",".992° s", "lat:000.992°[00°59'31.20\"][0.02 Rad] S"},
-				{"Cas 8","1°45.56 s", "lat:001.759°[01°45'33.60\"][0.03 Rad] S"},
-		};
-		for (String[] s: casDeTest) {
-			logger.debug(s[0]);
-			Latitude l = LatitudeFactory.fromString(s[1]);
-			assertEquals(l.toString(), s[2]);
+		String[][] x = 				
+			{
+				{"2°56N", "lat:002.933°[02°56'00.00\"][0.05 Rad] N"},
+				{"2°56S", "lat:002.933°[02°56'00.00\"][0.05 Rad] S"},
+				{"2°56 S", "lat:002.933°[02°56'00.00\"][0.05 Rad] S"},
+				{"2°56.99 S", "lat:002.950°[02°56'59.40\"][0.05 Rad] S"},
+				{"2°56'59.99\" s", "lat:002.950°[02°56'59.99\"][0.05 Rad] S"},
+				{".992° s", "lat:000.992°[00°59'31.20\"][0.02 Rad] S"},
+				{"1°45.56 s", "lat:001.759°[01°45'33.60\"][0.03 Rad] S"},
+			}; 
+		List<HandlerStringString> casDeTest = HandlerStringString.fromStringStringArray(x);
+		for (HandlerStringString s: casDeTest) {
+			logger.debug(s._s);
+			Latitude l = LatitudeFactory.fromString(s._s);
+			assertEquals(l.toString(), s._v);
 		}
 	}
 

@@ -32,7 +32,7 @@ public class Loxodromie_aAngleConstantTest {
     private static final Logger logger = LoggerFactory.getLogger(Loxodromie_aAngleConstantTest.class);
 
     private static double precisionCap = Constantes.DemiDegreEnDegre; 
-    private static double precisionDiatnce = Constantes.milleMarinEnMetre;
+    private static double precisionDistance = 100.0; // 100 m ... Constantes.milleMarinEnMetre;
     
     private static CalculsAngulaires ca = null;
     
@@ -95,9 +95,9 @@ public class Loxodromie_aAngleConstantTest {
 		PointGeographique A = PointGeographiqueFactory.fromLatLong(latitudeA, longitudeA);
 		PointGeographique B = PointGeographiqueFactory.fromLatLong(latitudeB, longitudeB);
 		
-		DataLoxodromieCapDistance infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(A, B);
+		DataLoxodromieCapDistance infos = ca.capLoxodromique(A, B);
 		
-		assertEquals(infos._distance.distanceInKm(), 10709.0, precisionDiatnce); 
+		assertEquals(infos._distance.distanceInKm(), 10709.0, precisionDistance); 
 		assertEquals(infos._cap.asDegre(), 112.5, precisionCap);
 	}
 
@@ -105,18 +105,18 @@ public class Loxodromie_aAngleConstantTest {
 	
 	@Test
 	public void test003_LoxoCasMehl () throws NavException {
-		DataLoxodromieCapDistance infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(GreenWitch, MelhPointB);
-		assertEquals(infos._distance.distanceInKm(), 12547.0, precisionDiatnce); 
+		DataLoxodromieCapDistance infos = ca.capLoxodromique(GreenWitch, MelhPointB);
+		assertEquals(infos._distance.distanceInKm(), 12547.0, precisionDistance); 
 		assertEquals(infos._cap.asDegre(), 58.0, precisionCap);
 		
 		// meme latitude
-		infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(MelhMemeLatitudePointA, MelhMemeLatitudePointB);
-		assertEquals(infos._distance.distanceInKm(), 5116.0, precisionDiatnce); 
+		infos = ca.capLoxodromique(MelhMemeLatitudePointA, MelhMemeLatitudePointB);
+		assertEquals(infos._distance.distanceInKm(), 5116.0, precisionDistance); 
 		assertEquals(infos._cap.asDegre(), 90.0, precisionCap);
 
 		// meme longitude
-		infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(MelhMemeLongitudePointA, MelhMemeLongitudePointB);
-		assertEquals(infos._distance.distanceInKm(), 15524.0, precisionDiatnce); 
+		infos = ca.capLoxodromique(MelhMemeLongitudePointA, MelhMemeLongitudePointB);
+		assertEquals(infos._distance.distanceInKm(), 15524.0, precisionDistance); 
 		assertEquals(infos._cap.asDegre(), 180.0, precisionCap);
 	}
 
@@ -125,9 +125,9 @@ public class Loxodromie_aAngleConstantTest {
 	
 	@Test
 	public void test004_LoxoCasWikipedia () throws NavException {
-		DataLoxodromieCapDistance infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(Paris, NewYork);
+		DataLoxodromieCapDistance infos = ca.capLoxodromique(Paris, NewYork);
 		
-		assertEquals(infos._distance.distanceInKm(), 6086.0, precisionDiatnce); 
+		assertEquals(infos._distance.distanceInKm(), 6086.0, precisionDistance); 
 		assertEquals(infos._cap.asDegre(), 261.0, precisionCap);
 	}
 
@@ -145,8 +145,8 @@ public class Loxodromie_aAngleConstantTest {
 		Cap cap = CapFactory.fromDegre(20.5);
 		Distance distance = DistanceFactory.fromMn(146.4);
 		
-		DataLoxodromieCapDistance infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(pgDepart, pgArrivee);
-		assertTrue(infos._distance.equalsInMn(distance, precisionDiatnce)); 
+		DataLoxodromieCapDistance infos = ca.capLoxodromique(pgDepart, pgArrivee);
+		assertTrue(infos._distance.equalsInMn(distance, precisionDistance)); 
 		assertTrue(infos._cap.equalsInDegre(cap, precisionCap));
 
 		// ------------------------------
@@ -161,8 +161,8 @@ public class Loxodromie_aAngleConstantTest {
 		cap = CapFactory.fromDegre(86);
 		distance = DistanceFactory.fromMn(142.3);
 		
-		infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(pgDepart, pgArrivee);
-		assertTrue(infos._distance.equalsInMn(distance, precisionDiatnce)); 
+		infos = ca.capLoxodromique(pgDepart, pgArrivee);
+		assertTrue(infos._distance.equalsInMn(distance, precisionDistance)); 
 		assertTrue(infos._cap.equalsInDegre(cap, precisionCap));
 
 		// ------------------------------
@@ -177,8 +177,8 @@ public class Loxodromie_aAngleConstantTest {
 		cap = CapFactory.fromDegre(124.5);
 		distance = DistanceFactory.fromMn(154.2);
 		
-		infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(pgDepart, pgArrivee);
-		assertTrue(infos._distance.equalsInMn(distance, precisionDiatnce)); 
+		infos = ca.capLoxodromique(pgDepart, pgArrivee);
+		assertTrue(infos._distance.equalsInMn(distance, precisionDistance)); 
 		assertTrue(infos._cap.equalsInDegre(cap, precisionCap));
 
 		// ------------------------------
@@ -193,8 +193,8 @@ public class Loxodromie_aAngleConstantTest {
 		cap = CapFactory.fromDegre(270.5);
 		distance = DistanceFactory.fromMn(75.8);
 		
-		infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(pgDepart, pgArrivee);
-		assertTrue(infos._distance.equalsInMn(distance, precisionDiatnce)); 
+		infos = ca.capLoxodromique(pgDepart, pgArrivee);
+		assertTrue(infos._distance.equalsInMn(distance, precisionDistance)); 
 		assertTrue(infos._cap.equalsInDegre(cap, precisionCap));
 
 		// ------------------------------
@@ -209,8 +209,8 @@ public class Loxodromie_aAngleConstantTest {
 		cap = CapFactory.fromDegre(125);
 		distance = DistanceFactory.fromMn(166.5);
 		
-		infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(pgDepart, pgArrivee);
-		assertTrue(infos._distance.equalsInMn(distance, precisionDiatnce)); 
+		infos = ca.capLoxodromique(pgDepart, pgArrivee);
+		assertTrue(infos._distance.equalsInMn(distance, precisionDistance)); 
 		assertTrue(infos._cap.equalsInDegre(cap, precisionCap));
 
 	}
@@ -230,8 +230,8 @@ public class Loxodromie_aAngleConstantTest {
 		Cap cap = CapFactory.fromDegre(74.5);
 		Distance distance = DistanceFactory.fromMn(2570.0);
 		
-		DataLoxodromieCapDistance infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(pgDepart, pgArrivee);
-		assertTrue(infos._distance.equalsInMn(distance, precisionDiatnce)); 
+		DataLoxodromieCapDistance infos = ca.capLoxodromique(pgDepart, pgArrivee);
+		assertTrue(infos._distance.equalsInMn(distance, precisionDistance)); 
 		assertTrue(infos._cap.equalsInDegre(cap, precisionCap));
 
 		// ------------------------------
@@ -246,8 +246,8 @@ public class Loxodromie_aAngleConstantTest {
 		cap = CapFactory.fromDegre(129);
 		distance = DistanceFactory.fromMn(2975);
 		
-		infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(pgDepart, pgArrivee);
-		assertTrue(infos._distance.equalsInMn(distance, precisionDiatnce)); 
+		infos = ca.capLoxodromique(pgDepart, pgArrivee);
+		assertTrue(infos._distance.equalsInMn(distance, precisionDistance)); 
 		assertTrue(infos._cap.equalsInDegre(cap, precisionCap));
 
 		// ------------------------------
@@ -262,8 +262,8 @@ public class Loxodromie_aAngleConstantTest {
 		cap = CapFactory.fromDegre(38);
 		distance = DistanceFactory.fromMn(2320);
 		
-		infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(pgDepart, pgArrivee);
-		assertTrue(infos._distance.equalsInMn(distance, precisionDiatnce)); 
+		infos = ca.capLoxodromique(pgDepart, pgArrivee);
+		assertTrue(infos._distance.equalsInMn(distance, precisionDistance)); 
 		assertTrue(infos._cap.equalsInDegre(cap, precisionCap));
 
 		// ------------------------------
@@ -278,8 +278,8 @@ public class Loxodromie_aAngleConstantTest {
 		cap = CapFactory.fromDegre(228);
 		distance = DistanceFactory.fromMn(2040);
 		
-		infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(pgDepart, pgArrivee);
-		assertTrue(infos._distance.equalsInMn(distance, precisionDiatnce)); 
+		infos = ca.capLoxodromique(pgDepart, pgArrivee);
+		assertTrue(infos._distance.equalsInMn(distance, precisionDistance)); 
 		assertTrue(infos._cap.equalsInDegre(cap, precisionCap));
 
 		// ------------------------------
@@ -294,8 +294,8 @@ public class Loxodromie_aAngleConstantTest {
 		cap = CapFactory.fromDegre(334);
 		distance = DistanceFactory.fromMn(3624);
 		
-		infos = ca.getLoxoDromieCapDistanceEntreDeuxPoints(pgDepart, pgArrivee);
-		assertTrue(infos._distance.equalsInMn(distance, precisionDiatnce)); 
+		infos = ca.capLoxodromique(pgDepart, pgArrivee);
+		assertTrue(infos._distance.equalsInMn(distance, precisionDistance)); 
 		assertTrue(infos._cap.equalsInDegre(cap, precisionCap));
 	}
 
