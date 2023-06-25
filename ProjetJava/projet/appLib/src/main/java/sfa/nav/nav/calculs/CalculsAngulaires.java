@@ -121,8 +121,8 @@ public class CalculsAngulaires {
 			
 			
 			double latitudeMoyenne = (Depart.latitude().asRadian() + latArrivee.asRadian()) / 2.0;
-			double variationLongitude = -1.0 *  d.distanceInMilleNautique() * Math.sin(routeFond.asRadian()) / (60 * Math.cos(latitudeMoyenne));
-			Longitude longitudeArrivee = LongitudeFactory.fromRadian(Depart.longitude().asRadian() + variationLongitude * Math.PI / 180.0);
+			double variationLongitudeEnDegre = 1.0 *  d.distanceInMilleNautique() * Math.sin(routeFond.asRadian()) / Math.abs((60.0 * Math.cos(latitudeMoyenne)));
+			Longitude longitudeArrivee = LongitudeFactory.fromDegre(Depart.longitude().asDegre() + variationLongitudeEnDegre);
 			
 			pg = PointGeographiqueFactory.fromLatLong(latArrivee, longitudeArrivee);
 		}		
@@ -137,9 +137,9 @@ public class CalculsAngulaires {
 	// ------------------------------------------------------------------------------------------------
 	public DataOrthoDromieCapDistanceVertex capOrthodromique(PointGeographique Depart, PointGeographique Arrivee) throws NavException {
 		DataOrthoDromieCapDistanceVertex retour = new DataOrthoDromieCapDistanceVertex();
-		retour._distance = DistanceFactory.fromKm(0.0);
-		retour._cap = CapFactory.fromDegre(0.0);
-		retour._vertex = null;
+		retour.distance ( DistanceFactory.fromKm(0.0));
+		retour.cap (CapFactory.fromDegre(0.0));
+		retour.vertex (null);
 		
 		logger.debug("Orthodromie - chemin le plus court entre Depart {} et Arrivee {}", Depart, Arrivee);
 		/*
@@ -200,9 +200,9 @@ public class CalculsAngulaires {
 		if (Math.abs(gOptimum) <= Angle.DegreToRadian(1.0)) {
 			logger.debug("Deplacement a longitude constante : delta longitude {}°", Math.abs(Angle.RadianToDegre(gOptimum)));
 
-			retour._distance = DistanceFactory.fromKm(Math.abs(Constantes.RayonTerrestreEnKm * (l)));
-			retour._cap = (l < 0) ? /* vers sud */ CapFactory.fromDegre(180.0) : /* vers le nord */ CapFactory.fromDegre(0.0);
-			retour._vertex = null;
+			retour.distance ( DistanceFactory.fromKm(Math.abs(Constantes.RayonTerrestreEnKm * (l))));
+			retour.cap ( (l < 0) ? /* vers sud */ CapFactory.fromDegre(180.0) : /* vers le nord */ CapFactory.fromDegre(0.0));
+			retour.vertex (null);
 		}
 		else {
 			double cosM = Math.sin(LatDepart) * Math.sin(LatArrivee) +  Math.cos(LatDepart) * Math.cos(LatArrivee) * Math.cos(gOptimum);
@@ -210,7 +210,7 @@ public class CalculsAngulaires {
 			double sinM = Math.sin(M.asRadian());
 
 			double mOrtho = Math.abs(Constantes.RayonTerrestreEnKm * M.asRadian());
-			retour._distance = DistanceFactory.fromKm(mOrtho);
+			retour.distance ( DistanceFactory.fromKm(mOrtho));
 			
 			// ---------------------------------------
 			// Angle de route initiale est notee 
@@ -224,7 +224,7 @@ public class CalculsAngulaires {
 			if (sens[1].equals(ePointsCardinaux.W)) {
 				routeOrthoAuDepart = 2 * Math.PI - routeOrthoAuDepart;
 			}			
-			retour._cap = CapFactory.fromAngle(AngleFactory.fromRadian(routeOrthoAuDepart));
+			retour.cap ( CapFactory.fromAngle(AngleFactory.fromRadian(routeOrthoAuDepart)));
 
 			// ---------------------------------------
 			// Vertex Angle de route initiale est notee 
@@ -276,7 +276,7 @@ public class CalculsAngulaires {
 					AngleFactory.fromRadian(LongiVertex));
 
 			Longitude longitudeVertex = LongitudeFactory.fromDegreAndSens(LongiVertex * 180.0 / Math.PI, sensLongiVertex);
-			retour._vertex = PointGeographiqueFactory.fromLatLong(latitudeVertex, longitudeVertex);
+			retour.vertex ( PointGeographiqueFactory.fromLatLong(latitudeVertex, longitudeVertex));
 		}
 		
 		return retour;
@@ -288,8 +288,8 @@ public class CalculsAngulaires {
 	// ------------------------------------------------------------------------------------------------
 	public DataLoxodromieCapDistance capLoxodromique(PointGeographique Depart, PointGeographique Arrivee) throws NavException {
 		DataLoxodromieCapDistance retour = new DataLoxodromieCapDistance();
-		retour._distance = DistanceFactory.fromKm(0.0);
-		retour._cap = CapFactory.fromDegre(0.0);
+		retour.distance ( DistanceFactory.fromKm(0.0));
+		retour.cap ( CapFactory.fromDegre(0.0));
 
 		logger.debug("loxodromie - A cap constant entre Depart {} et Arrivee {}", Depart, Arrivee);
 		/*
@@ -348,15 +348,15 @@ public class CalculsAngulaires {
 		if (Math.abs(LatDepart - LatArrivee) < Angle.DegreToRadian(0.01)) {
 			logger.debug("Deplacement a latitude constante : delta latitude {}°", Math.abs(Angle.RadianToDegre(LatDepart - LatArrivee)));
 
-			retour._cap = CapFactory.fromDegre(90.0);
+			retour.cap (CapFactory.fromDegre(90.0));
 			// --------------------------------
 			// Long > 0 =>  Ouest
 			// Si g <0 alors on va vers l'ouest
 			// --------------------------------
 			if (g < 0)
-				retour._cap = CapFactory.fromDegre(270.0);
+				retour.cap (CapFactory.fromDegre(270.0));
 			
-			retour._distance = DistanceFactory.fromKm(Constantes.RayonTerrestreEnKm * Math.abs(gOptimum * Math.cos(LatDepart)));
+			retour.distance (DistanceFactory.fromKm(Constantes.RayonTerrestreEnKm * Math.abs(gOptimum * Math.cos(LatDepart))));
 		}
 		else {
 			logger.debug("Deplacement std");
@@ -402,11 +402,11 @@ public class CalculsAngulaires {
 			else
 				throw new NavException(Constantes.ImpossibledeCalculerLaRFFromRFQ);
 
-			retour._cap = CapFactory.fromRadian(RF);
+			retour.cap ( CapFactory.fromRadian(RF));
 
-			retour._distance = DistanceFactory.fromKm(Constantes.RayonTerrestreEnKm * (Math.abs(LatArrivee - LatDepart)) / Math.cos(RFQ));
+			retour.distance ( DistanceFactory.fromKm(Constantes.RayonTerrestreEnKm * (Math.abs(LatArrivee - LatDepart)) / Math.cos(RFQ)));
 		}
-		logger.debug("\tDistance {} Cap: {}", retour._distance.distanceInKm(), retour._cap.toString());
+		logger.debug("\tDistance {} Cap: {}", retour.distance().distanceInKm(), retour.cap().toString());
 		
 		return retour;
 	}

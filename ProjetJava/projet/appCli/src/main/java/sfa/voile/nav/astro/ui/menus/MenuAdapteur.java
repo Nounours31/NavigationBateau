@@ -16,7 +16,7 @@ import sfa.nav.infra.tools.error.NavAstroError;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.Declinaison;
-import sfa.nav.model.Heure;
+import sfa.nav.model.NavDateHeure;
 import sfa.nav.model.Latitude;
 
 
@@ -110,11 +110,11 @@ public abstract class MenuAdapteur {
 		throw new NavException("Cannot read "+ key.name());
 	}
 
-	protected Heure getHeureFromArgsList(eCalculAstroConstantes key) throws NavException {
+	protected NavDateHeure getHeureFromArgsList(eCalculAstroConstantes key) throws NavException {
 		if ((_args != null) && (_args.containsKey(key)) && (_args.get(key) != null)) {
 			Object o = _args.get(key);
-			if ((o != null) && (o instanceof Heure)) {
-				return (Heure)o;
+			if ((o != null) && (o instanceof NavDateHeure)) {
+				return (NavDateHeure)o;
 			}
 			else {
 				_logger.debug("valeur type: {}", _args.get(key).getClass());

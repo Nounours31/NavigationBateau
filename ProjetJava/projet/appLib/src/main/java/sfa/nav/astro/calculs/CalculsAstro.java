@@ -4,8 +4,7 @@
  */
 package sfa.nav.astro.calculs;
 
-import java.util.HashMap;
-import java.util.Hashtable;
+import java.io.NotActiveException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +14,9 @@ import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
 import sfa.nav.model.Declinaison;
 import sfa.nav.model.DeclinaisonFactory;
-import sfa.nav.model.Heure;
 import sfa.nav.model.Latitude;
 import sfa.nav.model.LatitudeFactory;
+import sfa.nav.model.NavDateHeure;
 import sfa.nav.model.tools.ePointsCardinaux;
 
 
@@ -44,15 +43,21 @@ public class CalculsAstro {
 
 
 	public Declinaison DeclinaisonSoleilParGradiant (
-			Heure hReference, 
+			NavDateHeure hReference, 
 			Declinaison DReference,
 			Angle TauxVariation,
-			Heure HMeusure) throws NavException 
+			NavDateHeure HMeusure) throws NavException 
 	{
 		_logger.debug("Calcul declinaison par gradiant");
 
 		Declinaison D = new Declinaison();
-		double NbHeure = HMeusure.moins(hReference);
+		double NbHeure = 0;
+		try {
+			NbHeure = HMeusure.moins(hReference);
+		} catch (NavException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		double declinaison1AsDouble = DReference.asDegre() * ((DReference.getSens() == ePointsCardinaux.Nord) ? (+1.0) : (-1.0)); 
 		double newDeclinaison = declinaison1AsDouble + TauxVariation.multiplyByDouble(NbHeure).asDegre();
 		D = (Declinaison) DeclinaisonFactory.fromDegre(Math.abs(newDeclinaison));
@@ -70,9 +75,9 @@ public class CalculsAstro {
 	}
 	
 	public Declinaison DeclinaisonSoleilParInterval (
-		Heure hDebutInterval, Heure hFinInterval, 
+		NavDateHeure hDebutInterval, NavDateHeure hFinInterval, 
 		Declinaison dDebutInterval, Declinaison dFinInterval,
-		Heure HMeusure) throws NavException 
+		NavDateHeure HMeusure) throws NavException, NotActiveException 
 	{
 		_logger.debug("Calcul declinaison par interval");
 		Declinaison D = new Declinaison();

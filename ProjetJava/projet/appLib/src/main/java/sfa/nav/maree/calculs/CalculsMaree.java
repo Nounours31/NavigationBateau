@@ -1,20 +1,18 @@
 package sfa.nav.maree.calculs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.nav.infra.tools.error.NavException;
-import sfa.nav.model.Angle;
-import sfa.nav.model.Cap;
-import sfa.nav.model.Distance;
-import sfa.nav.model.Maree;
-import sfa.nav.model.Maree.eEtatMaree;
-import sfa.nav.model.Maree.eSensMaree;
 import sfa.nav.model.Hauteur;
-import sfa.nav.model.Heure;
-import sfa.nav.model.PointGeographique;
-import sfa.nav.model.tools.Constantes;
-import sfa.nav.model.tools.DataLoxodromieCapDistance;
+import sfa.nav.model.Maree;
+import sfa.nav.model.NavDateHeure;
+import sfa.nav.model.NavDateHeureFactory;
+import sfa.nav.model.tools.eEtatMaree;
+import sfa.nav.model.tools.eSensIntervalMaree;
+import sfa.nav.model.tools.eSensMaree;
 
 
 
@@ -34,7 +32,7 @@ public class CalculsMaree {
 	public CalculsMaree() {
 	}
 
-	public Hauteur CalculHauteur(Maree m1, Maree m2, Heure h) {
+	public Hauteur CalculHauteur(Maree m1, Maree m2, NavDateHeure h) {
 		Maree debut = (m1.avant(m2) ? m1 : m2);
 		Maree fin = (m1.avant(m2) ? m2 : m1);
 		
@@ -56,11 +54,11 @@ public class CalculsMaree {
 		}
 		
 		
-		double HeureMaree = (fin.heure().moins (debut.heure())) / 6.0;
+		double HeureMaree = (fin.heure().getHeureDecimaleFromEpoch() - (debut.heure().getHeureDecimaleFromEpoch())) / 6.0;
 		double Marnage = Math.abs(fin.hauteur().moins (debut.hauteur()).getValInMetre());
 		double Douzieme = Marnage / 12.0;
 		
-		double nbHeureMaree = Math.abs((debut.heure().moins (h)));
+		double nbHeureMaree = h.getHeureDecimaleFromEpoch() - debut.heure().getHeureDecimaleFromEpoch();
 		nbHeureMaree = nbHeureMaree / HeureMaree;
 		
 		int nbHeureEntiere = (int)Math.floor(nbHeureMaree);
@@ -75,7 +73,7 @@ public class CalculsMaree {
 		return retour;
 	}
 
-	public Heure CalculHeure(Maree m1, Maree m2, double piedPilote, double HauteurEau) {
+	public NavDateHeure CalculHeure(Maree m1, Maree m2, double piedPilote, double HauteurEau) {
 		Maree debut = (m1.avant(m2) ? m1 : m2);
 		Maree fin = (m1.avant(m2) ? m2 : m1);
 		
@@ -103,7 +101,7 @@ public class CalculsMaree {
 			return null;
 		
 		
-		double HeureMaree = (fin.heure().moins (debut.heure())) / 6.0;
+		double HeureMaree = (fin.heure().getHeureDecimaleFromEpoch() -  debut.heure().getHeureDecimaleFromEpoch()) / 6.0;
 		double Marnage = Math.abs(fin.hauteur().moins (debut.hauteur()).getValInMetre());
 		double Douzieme = Marnage / 12.0;
 
@@ -129,9 +127,42 @@ public class CalculsMaree {
 		double heuremareerestante = nbDouziemeRestant / nbDouziemesurcetInterval;
 		nbHeureMaree = nbHeureMaree + heuremareerestante;
 
-		double nbHeure = nbHeureMaree * HeureMaree;
+		double nbHeureDecimale = nbHeureMaree * HeureMaree;
 
-		Heure retour = debut.heure().plus(nbHeure);
+		NavDateHeure retour = NavDateHeureFactory.fromZonedDateTime(debut.heure().add(nbHeureDecimale));
 		return retour;		
+	}
+
+
+	public List<IntervalHoraire> CalculIntervalPassageParJour (List<Maree> lM, double piedPilote, double HauteurEau) {
+		List<IntervalHoraire> retour = new ArrayList<>(); 
+		if (lM.size() < 3)
+			return retour;
+		
+		int i = 0;
+		IntervalHoraire interval = new IntervalHoraire();
+		while ((i+1) < lM.size()) {
+			Maree m1 = lM.get(i);
+			Maree m2 = lM.get(i+1);
+			
+			CalculsMaree cm = new CalculsMaree();
+			NavDateHeure h = cm.CalculHeure(m1, m2, piedPilote, HauteurEau);
+			
+			if (h == null)
+				continue;
+			
+			if (!interval.hasStart())
+				interval.start(h);
+			else {
+				interval.end(h);
+				interval.setMareePosition((m1.auDessus(m2) ? eSensIntervalMaree.YaDeLeau : eSensIntervalMaree.YaPasDeau));
+				retour.add(interval);
+				interval = new IntervalHoraire();
+				interval.start(h);
+			}
+			i++;
+		}
+		return retour;
+		
 	}
 }

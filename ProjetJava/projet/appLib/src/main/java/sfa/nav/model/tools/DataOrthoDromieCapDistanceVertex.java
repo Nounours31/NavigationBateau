@@ -1,16 +1,19 @@
 package sfa.nav.model.tools;
 
-import sfa.nav.model.Cap;
-import sfa.nav.model.Distance;
 import sfa.nav.model.PointGeographique;
 
-public class DataOrthoDromieCapDistanceVertex {
-	public Cap _cap;
-	public Distance _distance;
-	public PointGeographique _vertex;
-	
+public class DataOrthoDromieCapDistanceVertex extends DataLoxodromieCapDistance {
+	private PointGeographique _vertex;
+		
+	public PointGeographique vertex() {
+		return _vertex;
+	}
+	public void vertex(PointGeographique v) {
+		_vertex = v;
+	}
+
 	@Override
 	public String toString() {
-		return "C:"+_cap.toString()+" - D:"+_distance.toString() + " - P:" + _vertex.toString();
+		return "C:"+ cap().toString()+" - D:"+ distance().toString() + " - P:" + vertex().toString();
 	}
 }

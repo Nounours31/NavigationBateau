@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import sfa.nav.astro.calculs.eCalculAstroConstantes;
 import sfa.nav.infra.tools.error.NavAstroError;
 import sfa.nav.model.Declinaison;
-import sfa.nav.model.Heure;
+import sfa.nav.model.NavDateHeure;
 import sfa.voile.nav.astro.ui.dialogues.DialogueForCalculDeclinaisonSolaire;
 
 import java.nio.charset.StandardCharsets;
@@ -60,9 +60,9 @@ public class MenuDeclinaisonSolaire extends MenuAdapteur {
 					x.demandeDesArguments(_args, methode);
 					ResumeDeLaSaisie(_args, methode);
 					
-					Heure hDebutInterval = getHeureFromArgsList (eCalculAstroConstantes.HeureUT1);
-					Heure hFinInterval = getHeureFromArgsList (eCalculAstroConstantes.HeureUT2);
-					Heure HMeusure = getHeureFromArgsList (eCalculAstroConstantes.HeureMeusure);					
+					NavDateHeure hDebutInterval = getHeureFromArgsList (eCalculAstroConstantes.HeureUT1);
+					NavDateHeure hFinInterval = getHeureFromArgsList (eCalculAstroConstantes.HeureUT2);
+					NavDateHeure HMeusure = getHeureFromArgsList (eCalculAstroConstantes.HeureMeusure);					
 					Declinaison dDebutInterval = getDeclinaisonFromArgsList (eCalculAstroConstantes.Declinaison1);
 					Declinaison dFinInterval = getDeclinaisonFromArgsList (eCalculAstroConstantes.Declinaison2);
 					

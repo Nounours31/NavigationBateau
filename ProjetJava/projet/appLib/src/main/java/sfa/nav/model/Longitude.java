@@ -12,6 +12,14 @@ import sfa.nav.model.tools.ToStringOptions;
 import sfa.nav.model.tools.ePointsCardinaux;
 import sfa.nav.model.tools.ToStringOptions.eToStringMode;
 
+// -----------------------------------------------------------------
+// Une longitude, généralement notée λ, est donc une mesure angulaire sur 360° par rapport à un méridien de référence, 
+// avec une étendue de 
+//
+//		−180°, vers l'ouest, à +180°, vers l'est. 
+//
+// Par convention, le méridien de référence, qui correspond aux points de longitude 0°, est le méridien de Greenwich.
+//-----------------------------------------------------------------
 public class Longitude extends Angle {
 	private static Logger logger = LoggerFactory.getLogger(Longitude.class);
 	

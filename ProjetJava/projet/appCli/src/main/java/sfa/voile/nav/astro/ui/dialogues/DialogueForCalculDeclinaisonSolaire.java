@@ -15,8 +15,8 @@ import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
 import sfa.nav.model.Declinaison;
 import sfa.nav.model.DeclinaisonFactory;
-import sfa.nav.model.Heure;
-import sfa.nav.model.HeureFactory;
+import sfa.nav.model.NavDateHeure;
+import sfa.nav.model.NavDateHeureFactory;
 import sfa.voile.nav.astro.ui.menus.MenuPrincipal;
 import sfa.voile.nav.astro.ui.menus.eUINavAstroAllMenuItems;
 
@@ -44,7 +44,7 @@ public class DialogueForCalculDeclinaisonSolaire extends DialogueAdapteur  {
         _logger.debug("Calcul latitude meridienne");
 
         eCalculAstroConstantes arg = eCalculAstroConstantes.HeureUTRef;
-        Heure x = HeureFactory.fromString(null);
+        NavDateHeure x = NavDateHeureFactory.fromString(null);
         System.out.println(String.format("\t%s: %s", arg.name(), x.toString()));
         args.put(arg, x);
         
@@ -59,7 +59,7 @@ public class DialogueForCalculDeclinaisonSolaire extends DialogueAdapteur  {
         args.put(arg, a);
 
         arg = eCalculAstroConstantes.HeureMeusure;
-        x = HeureFactory.fromString(null);
+        x = NavDateHeureFactory.fromString(null);
         System.out.println(String.format("\t%s: %s", arg.name(), x.toString()));
         args.put(arg, x);
 	}
@@ -68,7 +68,7 @@ public class DialogueForCalculDeclinaisonSolaire extends DialogueAdapteur  {
         _logger.debug("Calcul latitude meridienne");
 
         eCalculAstroConstantes arg = eCalculAstroConstantes.HeureUT1;
-        Heure h = HeureFactory.fromString(null);
+        NavDateHeure h = NavDateHeureFactory.fromString(null);
         System.out.println(String.format("\t%s: %s", arg.name(), h.toString()));
         args.put(arg, h);
         
@@ -78,7 +78,7 @@ public class DialogueForCalculDeclinaisonSolaire extends DialogueAdapteur  {
         args.put(arg, D);
 
         arg = eCalculAstroConstantes.HeureUT2;
-        h = HeureFactory.fromString(null);
+        h = NavDateHeureFactory.fromString(null);
         System.out.println(String.format("\t%s: %s", arg.name(), h.toString()));
         args.put(arg, h);
         
@@ -88,7 +88,7 @@ public class DialogueForCalculDeclinaisonSolaire extends DialogueAdapteur  {
         args.put(arg, D);
 
         arg = eCalculAstroConstantes.HeureMeusure;
-        h = HeureFactory.fromString(null);
+        h = NavDateHeureFactory.fromString(null);
         System.out.println(String.format("\t%s: %s", arg.name(), h.toString()));
         args.put(arg, h);
 	}

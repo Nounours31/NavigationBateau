@@ -93,12 +93,12 @@ public class Orthodromie_Loxo_CoursDeNavigation_GrilleDeCalculTest {
 		Distance distanceLoxo = DistanceFactory.fromMn(4506);
 		
 		DataOrthoDromieCapDistanceVertex infosOrtho = ca.capOrthodromique(pgDepart, pgArrivee);
-		assertTrue(infosOrtho._distance.equalsInMn(distanceOrtho, precisionDiatnce)); 
-		assertTrue(infosOrtho._cap.equalsInDegre(capOrtho, precisionCap));
-		assertTrue(infosOrtho._vertex.equals(vertexOrtho, precisionDiatnce));
+		assertTrue(infosOrtho.distance().equalsInMn(distanceOrtho, precisionDiatnce)); 
+		assertTrue(infosOrtho.cap().equalsInDegre(capOrtho, precisionCap));
+		assertTrue(infosOrtho.vertex().equals(vertexOrtho, precisionDiatnce));
 
 		DataLoxodromieCapDistance infosLoxo = ca.capLoxodromique(pgDepart, pgArrivee);
-		assertTrue(infosLoxo._distance.equalsInMn(distanceLoxo, precisionDiatnce)); 
-		assertTrue(infosLoxo._cap.equalsInDegre(capLoxo, precisionCap));
+		assertTrue(infosLoxo.distance().equalsInMn(distanceLoxo, precisionDiatnce)); 
+		assertTrue(infosLoxo.cap().equalsInDegre(capLoxo, precisionCap));
 	}
 }

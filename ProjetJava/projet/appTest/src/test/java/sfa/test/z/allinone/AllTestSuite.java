@@ -10,7 +10,12 @@ import sfa.test.testsuites.ModelTestSuite;
 import org.junit.runner.RunWith;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({NavTestSuite.class, MareeTestSuite.class, ModelTestSuite.class, I18nTestSuite.class})
+@Suite.SuiteClasses({
+	I18nTestSuite.class,
+	MareeTestSuite.class, 
+	ModelTestSuite.class,
+	NavTestSuite.class,  
+	})
 
 public class AllTestSuite {
 }

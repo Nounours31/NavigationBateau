@@ -1,17 +1,10 @@
 package sfa.nav.model;
 
-import java.text.DecimalFormat;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.nav.infra.tools.error.NavException;
-import sfa.nav.model.tools.Constantes;
 import sfa.nav.model.tools.ToStringOptions;
 import sfa.nav.model.tools.ePointsCardinaux;
-import sfa.nav.model.tools.ToStringOptions.eToStringMode;
 
 
 // -----------------------------------------
