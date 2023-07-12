@@ -1,39 +1,22 @@
-import UIkit from 'uikit';
-import Icons from 'uikit/dist/js/uikit-icons';
+import { Env } from './UIEnv';
+import { cUITools } from './cUITools';
+
 
 
 export class MainPage {
     constructor() {
     }
    
-    public show() : void {
-        const userName = "Ousseynou DIOP";
-        const salary = "5.000.000";
-        
-        if (document != null) {
-            let x: HTMLElement | null = document.getElementById("name");
-            if (x != null)
-                x.innerHTML = userName;
-            
-            x = document.getElementById("salary");
-            if (x != null)
-                x.innerHTML = salary;
-        }
-        
-        UIkit.use(Icons);
-        
-        // components can be called from the imported UIkit reference
-        UIkit.notification('Hello world.');      
-        return ;
-    }
 
-    public setupMainPage () : void {
-        let element: UIkitElement = new ;
-        let options: UIkit.UIkitNavbarOptions = {
-            "delay-hide": 0,
-            "delay-show": 0,
-        };
+    public show () : void { 
+        let t : cUITools = new cUITools();
+        t.setHeader();
+        t.setGlobalMenu();
+        t.setFooter();
+        
+        let elementFromDom: HTMLElement | null = document.getElementById(Env.elmentIdOfCurrentCommandeDiv);
+        let element: HTMLElement  = ((elementFromDom != null) ? elementFromDom : document.createElement('div'));
 
-        UIkit.navbar(element, options);
+        element.innerHTML =  `Coucou c'est moi`;               
     }
   }

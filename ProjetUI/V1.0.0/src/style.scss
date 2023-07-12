@@ -1,21 +1,42 @@
 $body-color: red;
-// 1. Your custom variables and variable overwrites.
-$global-link-color: #DA7D02;
+$mode: dev;
+
+$basic_color: greenyellow;
+@if $mode == "prod" {
+  $basic_color: green;
+}
+
+$background-color: $basic_color;
+$div-bg-color: $background-color;
+
 
 // @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
 $global-font-family: 'Roboto', sans-serif;
 
-// 2. Import default variables and available mixins.
-@import "uikit/src/scss/variables-theme.scss";
-@import "uikit/src/scss/mixins-theme.scss";
-
-// 3. Your custom mixin overwrites.
-@mixin hook-card() { color: #000; }
-@import "uikit/src/scss/uikit-theme.scss";
 
 body {
   color: $body-color;
+  background-color: $background-color;
+  font-family: $global-font-family;
+}
+
+div {
+  color: $body-color;
   background-color: greenyellow;
-  font-family: 'Roboto', sans-serif;
+  font-family: $global-font-family;
+  border: 1px solid black;
+}
+
+#sfa_nav_global_header {
+  background-color: green;
+}
+sfa_nav_global_menu {
+  background-color: aqua;
+}
+#sfa_nav_current_commande{
+  background-color: bisque;
+}
+#sfa_nav_global_footer {
+  background-color: aquamarine;
 }
