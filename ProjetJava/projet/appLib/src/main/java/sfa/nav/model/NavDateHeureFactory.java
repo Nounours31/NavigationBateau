@@ -17,32 +17,26 @@ import org.slf4j.LoggerFactory;
 import sfa.nav.infra.tools.error.NavException;
 
 public class NavDateHeureFactory extends NavDateHeure {
-    private static Logger _logger = LoggerFactory.getLogger(NavDateHeureFactory.class);
+	private static Logger _logger = LoggerFactory.getLogger(NavDateHeureFactory.class);
 	static private final String regexp_Heure = "^([0-9]+)h?$";
 	/*
-		10
-		10h
+	 * 10 10h
 	 */
 	static private final String regexp_heureDecimale = "^([0-9]+)\\.([0-9]+)h?$";
 	/*
-		10°25'52"
-		10°25'52'
-		10°25'52
+	 * 10°25'52" 10°25'52' 10°25'52
 	 */
 
-	static private final String regexp_heusesexadecimale= "^([0-9]+):([0-9]{1,2})(:[0-9]{1,2}(\\.[0-9]+)?)?h?$?$";
+	static private final String regexp_heusesexadecimale = "^([0-9]+):([0-9]{1,2})(:[0-9]{1,2}(\\.[0-9]+)?)?h?$?$";
 	/*
-		10:10
-		10:10:10
-		10:12:10.89666 - G1=10 G2=12 G3=:10.89666
-		0:00:01
+	 * 10:10 10:10:10 10:12:10.89666 - G1=10 G2=12 G3=:10.89666 0:00:01
 	 */
 
 	public class InfoFormatter {
 		final DateTimeFormatter DATE_FORMAT;
 		final boolean isZoulou;
 		final String format;
-		
+
 		InfoFormatter(DateTimeFormatter d, boolean z, String s) {
 			DATE_FORMAT = d;
 			isZoulou = z;
@@ -50,94 +44,68 @@ public class NavDateHeureFactory extends NavDateHeure {
 		}
 	}
 
-	public static NavDateHeure fromString (String s) throws NavException {
+	public static NavDateHeure fromString(String s) throws NavException {
 		NavDateHeureFactory pipo = new NavDateHeureFactory();
-		InfoFormatter[] formatters = { 
-				pipo.new InfoFormatter (new DateTimeFormatterBuilder().appendPattern("uuuu/MM/dd[ [HH][:mm][:ss][.SSS]]")
-			            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-			            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-			            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
-			            .parseDefaulting(ChronoField.MILLI_OF_SECOND, 0)
-			            .parseStrict()
-			            .toFormatter()
-			            .withResolverStyle(ResolverStyle.STRICT), 
-			        false,
-			        "uuuu/MM/dd[ [HH][:mm][:ss][.SSS]]"),
-				pipo.new InfoFormatter (
-					new DateTimeFormatterBuilder().appendPattern("uuuu/MM/dd[ [HH][:mm][:ss][.SSS]] z")
-			            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-			            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-			            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
-			            .parseDefaulting(ChronoField.MILLI_OF_SECOND, 0)
-			            .parseStrict()
-			            .toFormatter()
-			            .withResolverStyle(ResolverStyle.STRICT), 
-			        true,
-			        "uuuu/MM/dd[ [HH][:mm][:ss][.SSS]] z"),
-				pipo.new InfoFormatter (new DateTimeFormatterBuilder().appendPattern("dd/MM[/yyyy][ [HH][:mm][:ss][.SSS]]")
-			            .parseDefaulting(ChronoField.YEAR, LocalDate.now().get(ChronoField.YEAR))
-			            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-			            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-			            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
-			            .parseDefaulting(ChronoField.MILLI_OF_SECOND, 0)
-			            .parseStrict()
-			            .toFormatter()
-			            .withResolverStyle(ResolverStyle.STRICT), 
-			          false,
-			          "dd/MM[/yyyy][ [HH][:mm][:ss][.SSS]]"),
-				pipo.new InfoFormatter (new DateTimeFormatterBuilder().appendPattern("dd/MM[/yyyy][ [HH][:mm][:ss][.SSS]] z")
-			            .parseDefaulting(ChronoField.YEAR, LocalDate.now().get(ChronoField.YEAR))
-			            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-			            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-			            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
-			            .parseDefaulting(ChronoField.MILLI_OF_SECOND, 0)
-			            .parseStrict()
-			            .toFormatter()
-			            .withResolverStyle(ResolverStyle.STRICT), 
-			         true,
-			         "dd/MM[/yyyy][ [HH][:mm][:ss][.SSS]] z"),
-				pipo.new InfoFormatter (new DateTimeFormatterBuilder().appendPattern("dd/MM[/yy][ [HH][:mm][:ss][.SSS]]")
-			            .parseDefaulting(ChronoField.YEAR, LocalDate.now().get(ChronoField.YEAR))
-			            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-			            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-			            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
-			            .parseDefaulting(ChronoField.MILLI_OF_SECOND, 0)
-			            .parseStrict()
-			            .toFormatter()
-			            .withResolverStyle(ResolverStyle.STRICT), 
-			          false,
-			          "dd/MM[/yy][ [HH][:mm][:ss][.SSS]]"),
-				pipo.new InfoFormatter (new DateTimeFormatterBuilder().appendPattern("dd/MM[/yy][ [HH][:mm][:ss][.SSS]] z")
-			            .parseDefaulting(ChronoField.YEAR, LocalDate.now().get(ChronoField.YEAR))
-			            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-			            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-			            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
-			            .parseDefaulting(ChronoField.MILLI_OF_SECOND, 0)
-			            .parseStrict()
-			            .toFormatter()
-			            .withResolverStyle(ResolverStyle.STRICT), 
-			         true,
-			         "dd/MM[/yy][ [HH][:mm][:ss][.SSS]] z"),
-			};
+		InfoFormatter[] formatters = {
+				pipo.new InfoFormatter(new DateTimeFormatterBuilder().appendPattern("uuuu/MM/dd[ [HH][:mm][:ss][.SSS]]")
+						.parseDefaulting(ChronoField.HOUR_OF_DAY, 0).parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+						.parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+						.parseDefaulting(ChronoField.MILLI_OF_SECOND, 0).parseStrict().toFormatter()
+						.withResolverStyle(ResolverStyle.STRICT), false, "uuuu/MM/dd[ [HH][:mm][:ss][.SSS]]"),
+				pipo.new InfoFormatter(new DateTimeFormatterBuilder()
+						.appendPattern("uuuu/MM/dd[ [HH][:mm][:ss][.SSS]] z")
+						.parseDefaulting(ChronoField.HOUR_OF_DAY, 0).parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+						.parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+						.parseDefaulting(ChronoField.MILLI_OF_SECOND, 0).parseStrict().toFormatter()
+						.withResolverStyle(ResolverStyle.STRICT), true, "uuuu/MM/dd[ [HH][:mm][:ss][.SSS]] z"),
+				pipo.new InfoFormatter(new DateTimeFormatterBuilder()
+						.appendPattern("dd/MM[/yyyy][ [HH][:mm][:ss][.SSS]]")
+						.parseDefaulting(ChronoField.YEAR, LocalDate.now().get(ChronoField.YEAR))
+						.parseDefaulting(ChronoField.HOUR_OF_DAY, 0).parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+						.parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+						.parseDefaulting(ChronoField.MILLI_OF_SECOND, 0).parseStrict().toFormatter()
+						.withResolverStyle(ResolverStyle.STRICT), false, "dd/MM[/yyyy][ [HH][:mm][:ss][.SSS]]"),
+				pipo.new InfoFormatter(
+						new DateTimeFormatterBuilder().appendPattern("dd/MM[/yyyy][ [HH][:mm][:ss][.SSS]] z")
+								.parseDefaulting(ChronoField.YEAR, LocalDate.now().get(ChronoField.YEAR))
+								.parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+								.parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+								.parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+								.parseDefaulting(ChronoField.MILLI_OF_SECOND, 0).parseStrict().toFormatter()
+								.withResolverStyle(ResolverStyle.STRICT),
+						true, "dd/MM[/yyyy][ [HH][:mm][:ss][.SSS]] z"),
+				pipo.new InfoFormatter(new DateTimeFormatterBuilder().appendPattern("dd/MM[/yy][ [HH][:mm][:ss][.SSS]]")
+						.parseDefaulting(ChronoField.YEAR, LocalDate.now().get(ChronoField.YEAR))
+						.parseDefaulting(ChronoField.HOUR_OF_DAY, 0).parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+						.parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+						.parseDefaulting(ChronoField.MILLI_OF_SECOND, 0).parseStrict().toFormatter()
+						.withResolverStyle(ResolverStyle.STRICT), false, "dd/MM[/yy][ [HH][:mm][:ss][.SSS]]"),
+				pipo.new InfoFormatter(
+						new DateTimeFormatterBuilder().appendPattern("dd/MM[/yy][ [HH][:mm][:ss][.SSS]] z")
+								.parseDefaulting(ChronoField.YEAR, LocalDate.now().get(ChronoField.YEAR))
+								.parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+								.parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+								.parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+								.parseDefaulting(ChronoField.MILLI_OF_SECOND, 0).parseStrict().toFormatter()
+								.withResolverStyle(ResolverStyle.STRICT),
+						true, "dd/MM[/yy][ [HH][:mm][:ss][.SSS]] z"), };
 
-	    for (InfoFormatter dtf : formatters) {
-	    	try {
+		for (InfoFormatter dtf : formatters) {
+			try {
 				TemporalAccessor d = dtf.DATE_FORMAT.parse(s);
 				if (dtf.isZoulou) {
 					NavDateHeure h = new NavDateHeure();
 					h.setValeur(ZonedDateTime.from(d));
 					return h;
-				}
-				else {
+				} else {
 					NavDateHeure h = new NavDateHeure();
-					h.setValeur(ZonedDateTime.of(LocalDateTime.from(d), pipo.myZone()));
+					h.setValeur(ZonedDateTime.of(LocalDateTime.from(d), NavDateHeureFactory.myZone()));
 					return h;
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				_logger.error("{}\n{}\n123456789012345678901234567890123456789", dtf.format, s);
 				_logger.error("Impossible de parser avec sdfZoulou - {} / {}", s, e.getMessage());
-			}			
+			}
 		}
 
 		final Pattern pattern_regexp_Heure = Pattern.compile(regexp_Heure);
@@ -158,7 +126,7 @@ public class NavDateHeureFactory extends NavDateHeure {
 				double ValDecimale = Double.parseDouble(matcher.group(2));
 				while (ValDecimale > 1.0)
 					ValDecimale /= 10.0;
-				h.setTodayHeureDecimale(ValEntiere + ValDecimale); 
+				h.setTodayHeureDecimale(ValEntiere + ValDecimale);
 				find = true;
 			}
 		}
@@ -171,7 +139,7 @@ public class NavDateHeureFactory extends NavDateHeure {
 				if ((matcher.groupCount() <= 4) && (matcher.group(3) != null))
 					secondes = Double.parseDouble(matcher.group(3).replaceAll(":", ""));
 
-				h.setTodayHeureDecimale(heure + minutes / 60.0 + secondes / 3600.0); 
+				h.setTodayHeureDecimale(heure + minutes / 60.0 + secondes / 3600.0);
 				find = true;
 			}
 		}
@@ -183,13 +151,11 @@ public class NavDateHeureFactory extends NavDateHeure {
 		return h;
 	}
 
-
 	public static NavDateHeure fromHeureDecimale(double d) {
 		NavDateHeure h = new NavDateHeure();
 		h.setTodayHeureDecimale(d);
 		return h;
 	}
-
 
 	public static NavDateHeure fromZonedDateTime(ZonedDateTime plus) {
 		NavDateHeure retour = new NavDateHeure();

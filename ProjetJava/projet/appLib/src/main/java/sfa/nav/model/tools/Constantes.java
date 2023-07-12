@@ -16,5 +16,5 @@ public class Constantes {
 
 	public static final double DemiDegreEnDegre = 0.5;
 	public static final double milleMarinEnMetre = 1852.0;
-	public final static double RayonTerrestreEnKm = 6378.0;
+	public final static double RayonTerrestreEnKm = 6371.009; // equateur 6378.1370   polaire 6356.7523
 }

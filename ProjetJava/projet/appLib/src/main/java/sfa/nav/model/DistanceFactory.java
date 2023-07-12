@@ -1,15 +1,13 @@
 package sfa.nav.model;
 
-import sfa.nav.infra.tools.error.NavException;
-
 public class DistanceFactory extends Distance {
-	static public Distance fromKm (double km) throws NavException {
+	static public Distance fromKm (double km)  {
 		Distance retour = new Distance();
 		retour.distanceInkm (km);
 		return retour;
 	}
 
-	public static Distance fromMn (double mn) throws NavException {
+	public static Distance fromMn (double mn)  {
 		Distance retour = new Distance();
 		retour.distanceInMille (mn);
 		return retour;

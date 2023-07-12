@@ -16,10 +16,4 @@ public class Cap extends Angle {
 	public String myToString(ToStringOptions opts) {
 		return super.myToString(opts);
 	}
-
-	public boolean equalsInDegre(Cap capCas1, double precisionCap) {
-		if (Math.abs(capCas1.asDegre() - this.asDegre()) < precisionCap)
-			return true;
-		return false;
-	}
 }

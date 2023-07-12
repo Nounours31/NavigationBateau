@@ -1,16 +1,6 @@
 package sfa.nav.model;
 
-import sfa.nav.infra.tools.error.NavException;
-import sfa.nav.model.Angle;
-import sfa.nav.model.Latitude;
-import sfa.nav.odt.tools.HandlerStringString;
-
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -20,6 +10,12 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import sfa.nav.infra.tools.error.NavException;
+import sfa.nav.odt.tools.HandlerStringString;
 
 public class LatitudeTest extends Angle {
     File output;

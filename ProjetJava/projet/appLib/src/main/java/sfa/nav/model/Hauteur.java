@@ -16,15 +16,23 @@ public class Hauteur {
 	}
 
 	public boolean plusHaut(Hauteur h) {
-		return (_d > h._d);
+		return (_d >= h._d);
 	}
 
 	public boolean plusHaut(double hEnMetre) {
-		return (_d > hEnMetre);
+		return (_d >= hEnMetre);
+	}
+
+	public boolean plusBasse(double hEnMetre) {
+		return (_d <= hEnMetre);
+	}
+
+	public boolean plusBasse(Hauteur h) {
+		return (_d <= h._d);
 	}
 
 	public Hauteur moins(Hauteur h) {
-		return new Hauteur (_d - h._d);
+		return new Hauteur(_d - h._d);
 	}
 
 	public double getValInMetre() {

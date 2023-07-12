@@ -1,5 +1,8 @@
 package sfa.nav.cli;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,11 +10,6 @@ import sfa.nav.model.Latitude;
 import sfa.nav.model.LatitudeFactory;
 import sfa.nav.model.Longitude;
 import sfa.nav.model.LongitudeFactory;
-
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 public class MenuDistanceCap {
     private final static Logger logger = LoggerFactory.getLogger(MenuDistanceCap.class);
@@ -21,6 +19,7 @@ public class MenuDistanceCap {
     }
     public void menu() {
             boolean fin = false;
+            Scanner sc = null;
             while (!fin) {
                 logger.debug("Start top loop ...");
                 System.out.println("-------------------------------------------------------------");
@@ -29,7 +28,7 @@ public class MenuDistanceCap {
                 System.out.println("\t\t2. Orthodromie");
                 System.out.println("\t\t3. Sortie");
 
-                Scanner sc = new Scanner(System.in);
+                sc = new Scanner(System.in);
                 String input = sc.nextLine();
                 switch (input) {
                     case "0":  logger.debug("Exit");
@@ -49,6 +48,7 @@ public class MenuDistanceCap {
                 if (fin)
                     break;
             }
+            sc.close();
     }
 
     private void CaculCapDirection(eDistanceCapType eDistanceCapType) {
@@ -68,6 +68,7 @@ public class MenuDistanceCap {
             logger.debug("sLong {}", sLongitude);
             Longitude L = LongitudeFactory.fromString(sLongitude);
             logger.debug("sLong {}", L.toString());
+            sc.close();
         }
         catch (Exception e) {
             logger.error("Exception ... ", e);

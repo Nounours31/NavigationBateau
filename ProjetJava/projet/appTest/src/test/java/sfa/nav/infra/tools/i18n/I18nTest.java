@@ -1,14 +1,6 @@
 package sfa.nav.infra.tools.i18n;
 
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import sfa.nav.infra.tools.i18n.I18n;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 
@@ -16,6 +8,9 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class I18nTest extends I18n {
     private static final Logger logger = LoggerFactory.getLogger(I18nTest.class);

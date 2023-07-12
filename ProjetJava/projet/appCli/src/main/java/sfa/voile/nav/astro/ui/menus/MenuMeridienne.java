@@ -4,15 +4,8 @@
  */
 package sfa.voile.nav.astro.ui.menus;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Locale;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,10 +13,7 @@ import sfa.nav.astro.calculs.eCalculAstroConstantes;
 import sfa.nav.infra.tools.error.NavAstroError;
 import sfa.nav.model.Angle;
 import sfa.nav.model.Declinaison;
-import sfa.voile.nav.astro.ui.dialogues.DialogueForCalculDeclinaisonSolaire;
 import sfa.voile.nav.astro.ui.dialogues.DialogueForMeridienne;
-
-import java.nio.charset.StandardCharsets;
 
 /**
  *

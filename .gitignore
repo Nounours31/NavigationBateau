@@ -58,3 +58,6 @@ app/nbproject/
 **/out/
 
 
+ProjetUI/V1.0.0/node_modules
+**/node_modules
+**/node_modules/

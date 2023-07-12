@@ -33,6 +33,7 @@ public class MenuLevel0 {
                     }
                     if (fin)
                         break;
+                sc.close();
 
             }
             catch (Exception e) {

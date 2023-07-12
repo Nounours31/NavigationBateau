@@ -17,79 +17,79 @@ import sfa.nav.model.Declinaison;
 import sfa.nav.model.DeclinaisonFactory;
 import sfa.nav.model.NavDateHeure;
 import sfa.nav.model.NavDateHeureFactory;
-import sfa.voile.nav.astro.ui.menus.MenuPrincipal;
 import sfa.voile.nav.astro.ui.menus.eUINavAstroAllMenuItems;
 
-public class DialogueForCalculDeclinaisonSolaire extends DialogueAdapteur  {
+public class DialogueForCalculDeclinaisonSolaire extends DialogueAdapteur {
 	private static Logger _logger = LoggerFactory.getLogger(DialogueForCalculDeclinaisonSolaire.class);
 
-	public DialogueForCalculDeclinaisonSolaire () {
-		super ();
+	public DialogueForCalculDeclinaisonSolaire() {
+		super();
 	}
 
 	@Override
-	public void demandeDesArguments(HashMap<eCalculAstroConstantes, Object> args, eUINavAstroAllMenuItems iCas) throws NavException {
-		if (iCas == eUINavAstroAllMenuItems.DeclainaisonSolaireParGradiant) 
+	public void demandeDesArguments(HashMap<eCalculAstroConstantes, Object> args, eUINavAstroAllMenuItems iCas)
+			throws NavException {
+		if (iCas == eUINavAstroAllMenuItems.DeclainaisonSolaireParGradiant)
 			this.parGradiant(args);
-		
+
 		else if (iCas == eUINavAstroAllMenuItems.DeclainaisonSolaireParInterval)
 			this.parInterval(args);
-		
+
 		else
-			throw new NavException("Methode non implementee: " + iCas.name());		
-        dumpArgs(args, iCas);
+			throw new NavException("Methode non implementee: " + iCas.name());
+		dumpArgs(args, iCas);
 	}
-	
+
 	private void parGradiant(HashMap<eCalculAstroConstantes, Object> args) throws NavException {
-        _logger.debug("Calcul latitude meridienne");
+		_logger.debug("Calcul latitude meridienne");
 
-        eCalculAstroConstantes arg = eCalculAstroConstantes.HeureUTRef;
-        NavDateHeure x = NavDateHeureFactory.fromString(null);
-        System.out.println(String.format("\t%s: %s", arg.name(), x.toString()));
-        args.put(arg, x);
-        
-        arg = eCalculAstroConstantes.DeclinaisonRef;
-        Declinaison D = (Declinaison) DeclinaisonFactory.fromString(null);
-        System.out.println(String.format("\t%s: %s", arg.name(), D.toString()));
-        args.put(arg, x);
+		eCalculAstroConstantes arg = eCalculAstroConstantes.HeureUTRef;
+		NavDateHeure x = NavDateHeureFactory.fromString(null);
+		System.out.println(String.format("\t%s: %s", arg.name(), x.toString()));
+		args.put(arg, x);
 
-        arg = eCalculAstroConstantes.PasDeDeclinaison;
-        Angle a = AngleFactory.fromString(null);
-        System.out.println(String.format("\t%s: %s", arg.name(), a.toString()));
-        args.put(arg, a);
+		arg = eCalculAstroConstantes.DeclinaisonRef;
+		Declinaison D = (Declinaison) DeclinaisonFactory.fromString(null);
+		System.out.println(String.format("\t%s: %s", arg.name(), D.toString()));
+		args.put(arg, x);
 
-        arg = eCalculAstroConstantes.HeureMeusure;
-        x = NavDateHeureFactory.fromString(null);
-        System.out.println(String.format("\t%s: %s", arg.name(), x.toString()));
-        args.put(arg, x);
+		arg = eCalculAstroConstantes.PasDeDeclinaison;
+		Angle a = AngleFactory.fromString(null);
+		System.out.println(String.format("\t%s: %s", arg.name(), a.toString()));
+		args.put(arg, a);
+
+		arg = eCalculAstroConstantes.HeureMeusure;
+		x = NavDateHeureFactory.fromString(null);
+		System.out.println(String.format("\t%s: %s", arg.name(), x.toString()));
+		args.put(arg, x);
 	}
-	
+
 	private void parInterval(HashMap<eCalculAstroConstantes, Object> args) throws NavException {
-        _logger.debug("Calcul latitude meridienne");
+		_logger.debug("Calcul latitude meridienne");
 
-        eCalculAstroConstantes arg = eCalculAstroConstantes.HeureUT1;
-        NavDateHeure h = NavDateHeureFactory.fromString(null);
-        System.out.println(String.format("\t%s: %s", arg.name(), h.toString()));
-        args.put(arg, h);
-        
-        arg = eCalculAstroConstantes.Declinaison1;
-        Declinaison D = (Declinaison) DeclinaisonFactory.fromString(null);
-        System.out.println(String.format("\t%s: %s", arg.name(), D.toString()));
-        args.put(arg, D);
+		eCalculAstroConstantes arg = eCalculAstroConstantes.HeureUT1;
+		NavDateHeure h = NavDateHeureFactory.fromString(null);
+		System.out.println(String.format("\t%s: %s", arg.name(), h.toString()));
+		args.put(arg, h);
 
-        arg = eCalculAstroConstantes.HeureUT2;
-        h = NavDateHeureFactory.fromString(null);
-        System.out.println(String.format("\t%s: %s", arg.name(), h.toString()));
-        args.put(arg, h);
-        
-        arg = eCalculAstroConstantes.Declinaison2;
-        D = (Declinaison) DeclinaisonFactory.fromString(null);
-        System.out.println(String.format("\t%s: %s", arg.name(), D.toString()));
-        args.put(arg, D);
+		arg = eCalculAstroConstantes.Declinaison1;
+		Declinaison D = (Declinaison) DeclinaisonFactory.fromString(null);
+		System.out.println(String.format("\t%s: %s", arg.name(), D.toString()));
+		args.put(arg, D);
 
-        arg = eCalculAstroConstantes.HeureMeusure;
-        h = NavDateHeureFactory.fromString(null);
-        System.out.println(String.format("\t%s: %s", arg.name(), h.toString()));
-        args.put(arg, h);
+		arg = eCalculAstroConstantes.HeureUT2;
+		h = NavDateHeureFactory.fromString(null);
+		System.out.println(String.format("\t%s: %s", arg.name(), h.toString()));
+		args.put(arg, h);
+
+		arg = eCalculAstroConstantes.Declinaison2;
+		D = (Declinaison) DeclinaisonFactory.fromString(null);
+		System.out.println(String.format("\t%s: %s", arg.name(), D.toString()));
+		args.put(arg, D);
+
+		arg = eCalculAstroConstantes.HeureMeusure;
+		h = NavDateHeureFactory.fromString(null);
+		System.out.println(String.format("\t%s: %s", arg.name(), h.toString()));
+		args.put(arg, h);
 	}
 }

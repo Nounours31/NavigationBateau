@@ -2,19 +2,19 @@ package sfa.test.z.allinone;
 
 import org.junit.runners.Suite;
 
-import sfa.test.testsuites.I18nTestSuite;
-import sfa.test.testsuites.MareeTestSuite;
-import sfa.test.testsuites.NavTestSuite;
-import sfa.test.testsuites.ModelTestSuite;
+import sfa.nav.infra.tools.i18n.zI18nTestSuite;
+import sfa.nav.maree.calculs.zMareeTestSuite;
+import sfa.nav.model.zModelTestSuite;
+import sfa.nav.nav.calculs.zNavTestSuite;
 
 import org.junit.runner.RunWith;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	I18nTestSuite.class,
-	MareeTestSuite.class, 
-	ModelTestSuite.class,
-	NavTestSuite.class,  
+	zI18nTestSuite.class,
+	zMareeTestSuite.class, 
+	zModelTestSuite.class,
+	zNavTestSuite.class,  
 	})
 
 public class AllTestSuite {
