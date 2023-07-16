@@ -13,15 +13,20 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import fi.iki.elonen.NanoFileUpload;
 import fi.iki.elonen.NanoHTTPD;
 
-public class App extends NanoHTTPD {
+public class App extends RouterNanoHTTPD {
 	public App() throws IOException {
 		super(8080);
+		addMappings();
 		start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
 	}
 
-	public static void main(String[] args) throws IOException {
-		new App();
-	}
+
+    @Override
+    public void addMappings() {
+        addRoute("/", IndexHandler.class); // curl 'http://localhost:8080' 
+		addRoute("/users", UserHandler.class); // curl -X POST 'http://localhost:8080/users' 
+		addRoute("/stores", StoreHandler.class); // curl 'http://localhost:8080/stores/123' 
+    }
 
 	@Override
 	public Response serve(IHTTPSession session) {
@@ -64,5 +69,9 @@ public class App extends NanoHTTPD {
 		response.addHeader("Access-Control-Allow-Origin", "*");
 		return response;
 
+	}
+
+	public static void main(String[] args) throws IOException {
+		new App();
 	}
 }
