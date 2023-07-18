@@ -1,10 +1,14 @@
 import { Env } from './UIEnv';
 import { cUITools } from './cUITools';
+import { cUIComponents } from './cUIComponents';
 
 
 
 export class MainPage {
+    private UICompo : cUIComponents;
+
     constructor() {
+        this.UICompo = new cUIComponents();              
     }
    
 
@@ -17,6 +21,7 @@ export class MainPage {
         let elementFromDom: HTMLElement | null = document.getElementById(Env.elmentIdOfCurrentCommandeDiv);
         let element: HTMLElement  = ((elementFromDom != null) ? elementFromDom : document.createElement('div'));
 
-        element.innerHTML =  `Coucou c'est moi`;               
+        element.innerHTML =  `Coucou c'est moi`;
+        element.innerHTML += this.UICompo.getBoutton("toto");
     }
   }
