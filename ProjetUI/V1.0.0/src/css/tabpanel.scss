@@ -1,0 +1,8 @@
+div.TabPanel p:not(:target) {
+  display: none;
+}
+
+div.TabPanel p:target {
+  display: block
+}
+

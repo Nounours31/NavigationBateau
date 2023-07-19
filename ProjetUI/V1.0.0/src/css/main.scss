@@ -1,0 +1,60 @@
+$body-color: red;
+$mode: dev;
+
+$basic_color: greenyellow;
+@if $mode == "prod" {
+  $basic_color: green;
+}
+
+$background-color: $basic_color;
+$div-bg-color: $background-color;
+
+
+// @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+$global-font-family: 'Roboto', sans-serif;
+$font-color: black;
+
+
+body {
+  color: $body-color;
+  background-color: $background-color;
+  font-family: $global-font-family;
+}
+
+div {
+  color: $body-color;
+  background-color: greenyellow;
+  font-family: $global-font-family;
+  border: 1px solid black;
+}
+
+.button {
+  border: 1px solid black;
+  background-color: $basic_color; 
+  color: $font-color;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  font-family: $global-font-family;
+}
+
+#sfa_nav_global_header {
+  background-color: green;
+}
+sfa_nav_global_menu {
+  background-color: aqua;
+}
+#sfa_nav_current_commande{
+  background-color: bisque;
+}
+#sfa_nav_global_footer {
+  background-color: aquamarine;
+}
+
+
+@import "tabpanel";
+@import "accordeon";
+
