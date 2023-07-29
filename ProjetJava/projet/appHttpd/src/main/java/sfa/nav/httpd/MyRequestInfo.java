@@ -1,49 +1,62 @@
 package sfa.nav.httpd;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import sfa.nav.httpd.MyHttpResponse.Status;
+import sfa.nav.httpd.MyHttpResponse.eMimeTypes;
 
 public class MyRequestInfo {
-	private String content;
-	private String mime;
+	private static final Logger logger = LoggerFactory.getLogger(MyRequestInfo.class);
+
+	private byte[] content;
+	private eMimeTypes mime;
 	private Status status;
 
 	public MyRequestInfo() {
-		content = "";
-		mime = MyHttpResponse.MIME_PLAINTEXT;
+		content = new byte[] {};
+		mime = eMimeTypes.aa;
 		status = Status.INTERNAL_ERROR;
 	}
 
 	public long length() {
-		try {
-			return content.getBytes("UTF-8").length;
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+		if (content == null)
 			return 0;
-		}
+		return content.length;
 	}
 
 	public byte[] getBytes() {
-		try {
-			return content.getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return new byte[] {};
-		}
+		return content;
 	}
 
-	public void setMimeType(String mimeHtml) {
+	public void mimeType(eMimeTypes mimeHtml) {
 		mime = mimeHtml;
 	}
+	public eMimeTypes mimeType() {
+		return mime;
+	}
 
-	public void setStatus(Status s) {
+	public void status(Status s) {
 		status = s;
+	}
+	public Status status() {
+		return status;
 	}
 
 	public void setContent(String s) {
+		content = s.getBytes(StandardCharsets.UTF_8);
+	}
+	public void setContent(byte[] s) {
 		content = s;
 	}
+
+	@Override
+	public String toString() {
+		return "MyRequestInfo [contentlength" + length() + ", mime=" + mimeType() + ", status=" + status() + "]";
+	}
+
 
 }

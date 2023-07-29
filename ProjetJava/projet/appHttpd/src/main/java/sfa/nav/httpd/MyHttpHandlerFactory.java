@@ -13,10 +13,13 @@ public class MyHttpHandlerFactory {
 	static IMyHttpHandler createMyHttpHandler(eHttpHandlerType type) {
 		switch (type) {
 		case OnDir:
+			logger.debug("Create dir handler");
 			return new MyHttpHandlerOnDirectory();
 		case OnFile:
+			logger.debug("Create File handler");
 			return new MyHttpHandlerOnFile();
 		case OnVolatile:
+			logger.debug("Create volatile handler");
 			return new MyHttpHandlerOnVolatile();
 		default:
 			return null;

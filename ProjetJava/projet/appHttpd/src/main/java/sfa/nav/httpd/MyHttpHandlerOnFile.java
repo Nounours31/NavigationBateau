@@ -4,19 +4,21 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
-public class MyHttpHandlerOnFile extends AMyHttpHandler {
+import sfa.nav.httpd.MyHttpResponse.eMimeTypes;
 
-	/**
-	 * logger to log to.
-	 */
-	private static final Logger LOG = Logger.getLogger(MyHttpHandlerOnFile.class.getName());
+public class MyHttpHandlerOnFile extends AMyHttpHandler {
+	final static private Logger logger = LoggerFactory.getLogger(MyHttpHandlerOnDirectory.class);
 
 	public MyHttpHandlerOnFile() {
 		super();
@@ -25,37 +27,16 @@ public class MyHttpHandlerOnFile extends AMyHttpHandler {
 	public void initialize(Map<String, String> commandLineOptions) {
 	}
 
-	private String readSource(File file) {
+	private byte[] readSource(File file) {
 		FileReader fileReader = null;
 		BufferedReader reader = null;
 		try {
-			fileReader = new FileReader(file);
-			reader = new BufferedReader(fileReader);
-			String line = null;
-			StringBuilder sb = new StringBuilder();
-			do {
-				line = reader.readLine();
-				if (line != null) {
-					sb.append(line).append("\n");
-				}
-			} while (line != null);
-			reader.close();
-			return sb.toString();
-		} catch (Exception e) {
-			MyHttpHandlerOnFile.LOG.log(Level.SEVERE, "could not read source", e);
-			return null;
-		} finally {
-			try {
-				if (fileReader != null) {
-					fileReader.close();
-				}
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (IOException ignored) {
-				MyHttpHandlerOnFile.LOG.log(Level.FINEST, "close failed", ignored);
-			}
-		}
+			byte[] retour = Files.readAllBytes(file.toPath());
+			return retour;
+		} catch (IOException e) {
+			logger.error("could not read source", e);
+		} 
+		return null;
 	}
 
 	@Override
@@ -75,20 +56,20 @@ public class MyHttpHandlerOnFile extends AMyHttpHandler {
 		// Prohibit getting out of current directory
 		if (uri.contains("../")) {
 			retour.setContent("Won't serve ../ for security reasons.");
-			retour.setMimeType(MyHttpResponse.MIME_PLAINTEXT);
-			retour.setStatus(MyHttpResponse.Status.FORBIDDEN);
+			retour.mimeType(eMimeTypes.txt);
+			retour.status(MyHttpResponse.Status.FORBIDDEN);
 		} else {
 			File f = new File(homeDir, uri);
 
 			if (f.exists() && f.canRead()) {
 				retour.setContent(readSource(f));
-				retour.setMimeType(MyHttpResponse.MIME_HTML);
-				retour.setStatus(MyHttpResponse.Status.OK);
+				retour.mimeType(eMimeTypes.getTypeFromFile(f));
+				retour.status(MyHttpResponse.Status.OK);
 			} else {
 				retour.setContent(
 						String.format("KO cannot be read or not exist : Exist? %b Read? %b", f.exists(), f.canRead()));
-				retour.setMimeType(MyHttpResponse.MIME_PLAINTEXT);
-				retour.setStatus(MyHttpResponse.Status.NOT_FOUND);
+				retour.mimeType(eMimeTypes.txt);
+				retour.status(MyHttpResponse.Status.NOT_FOUND);
 			}
 		}
 		return retour;

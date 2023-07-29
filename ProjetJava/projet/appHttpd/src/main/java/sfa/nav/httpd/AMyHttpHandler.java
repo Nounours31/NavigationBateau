@@ -27,7 +27,8 @@ public abstract class AMyHttpHandler implements IMyHttpHandler {
 	final static private Logger logger = LoggerFactory.getLogger(AMyHttpHandler.class);
 	final static private String ERROR = "Erreur";
 
-	protected static String homeDir = "E:\\WorkSpaces\\WS\\GitHub\\Navigation\\1.0.0\\Eclipse\\ProjetUI\\V1.0.0";
+//	protected static String homeDir = "E:\\WorkSpaces\\WS\\GitHub\\Navigation\\1.0.0\\Eclipse\\ProjetUI\\V1.0.0";
+	protected static final String homeDir = "d:\\paps\\git\\NavigationBateau\\ProjetUI\\V1.0.0";
 
 	static private enum eHeaderKeys {
 		Accept("Accept"), Host("Host"), UserAgent("User-agent"), ContentType("Content-type"),
@@ -162,6 +163,7 @@ public abstract class AMyHttpHandler implements IMyHttpHandler {
 
 		// overloaded
 		MyRequestInfo requestInfo = this.computeResponse(httpExchange, requestParamValue, requestParamHeaders);
+		logger.debug("resultat de la requete: {}", requestInfo);
 
 		// this line is a must
 		httpExchange.sendResponseHeaders(200, requestInfo.length());

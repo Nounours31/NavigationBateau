@@ -68,15 +68,30 @@ export class cUIComponents {
     
 
     public createTabPane(info: iTabPanelItem[]) : string {
-        let partie1 : string = `<p class="TabPanel">`;
-        let partie2 : string = `<div class="TabPanel">`;
+        let partie1 : string = `<p class="tabpanel">`;
+        let partie2 : string = `<div class="tabpanel">`;
 
         info.forEach(element => {
-            partie1 += `<a href="#${element.id}" class="TabPanel">${element.titre}</a>`;
-            partie2 += `<p id="${element.id}" class="TabPanel">${element.contenu}</p>`;
+            partie1 += `<a href="#${element.id}" class="tabpanel">${element.titre}</a><span class="tabpanel tabpanelseparator">x</span> `;
+            partie2 += `<p id="${element.id}" class="tabpanel">${element.contenu}</p>`;
         });
         partie1 += "</p>";
         partie2 += "</div>";
+        return partie1 + partie2;
+    }     
+    
+    public createTab(info: iTabPanelItem[]) : string {
+        let partie1 : string = `<div class="tab">`;
+        let partie2 : string = ``;
+
+        info.forEach(element => {
+            partie1 += `<button class="tablinks" onclick="openCity(event, '${element.id}')">${element.titre}</button>`;
+            partie2 += `<div id="${element.id}" class="tabcontent">
+            <h3>${element.titre}</h3>
+            <p>${element.contenu}</p>
+          </div>`;
+        });
+        partie1 += "</div>";
         return partie1 + partie2;
     } 
 

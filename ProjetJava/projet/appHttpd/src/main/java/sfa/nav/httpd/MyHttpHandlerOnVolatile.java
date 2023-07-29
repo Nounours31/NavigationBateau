@@ -8,19 +8,16 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 
 import sfa.nav.httpd.MyHttpResponse.Status;
 
 public class MyHttpHandlerOnVolatile extends AMyHttpHandler {
-
-	/**
-	 * logger to log to.
-	 */
-	private static final Logger LOG = Logger.getLogger(MyHttpHandlerOnVolatile.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(MyHttpHandlerOnVolatile.class);
 
 	public MyHttpHandlerOnVolatile() {
 		super();
@@ -51,7 +48,7 @@ public class MyHttpHandlerOnVolatile extends AMyHttpHandler {
 			reader.close();
 			return sb.toString();
 		} catch (Exception e) {
-			MyHttpHandlerOnVolatile.LOG.log(Level.SEVERE, "could not read source", e);
+			logger.error("could not read source", e);
 			return null;
 		} finally {
 			try {
@@ -62,7 +59,7 @@ public class MyHttpHandlerOnVolatile extends AMyHttpHandler {
 					reader.close();
 				}
 			} catch (IOException ignored) {
-				MyHttpHandlerOnVolatile.LOG.log(Level.FINEST, "close failed", ignored);
+				logger.error("close failed", ignored);
 			}
 		}
 	}

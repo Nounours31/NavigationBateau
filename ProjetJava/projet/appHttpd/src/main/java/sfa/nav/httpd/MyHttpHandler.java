@@ -35,7 +35,6 @@ public class MyHttpHandler extends AMyHttpHandler implements IMyHttpHandler {
 
 		IMyHttpHandler s = MyHttpHandlerFactory.createMyHttpHandler(whatToCreate);
 		s.handle(httpExchange);
-
 		return;
 	}
 
