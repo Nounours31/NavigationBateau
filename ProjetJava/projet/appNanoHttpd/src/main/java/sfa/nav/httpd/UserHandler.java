@@ -1,18 +1,22 @@
 package sfa.nav.httpd;
 
-public static class UserHandler extends DefaultHandler {
-    @Override
-    public String getText() {
-        return "UserA, UserB, UserC";
-    }
+import fi.iki.elonen.NanoHTTPD;
+import fi.iki.elonen.NanoHTTPD.Response;
+import fi.iki.elonen.router.RouterNanoHTTPD.DefaultHandler;
 
-    @Override
-    public String getMimeType() {
-        return MIME_PLAINTEXT;
-    }
+public class UserHandler extends DefaultHandler {
+	@Override
+	public String getText() {
+		return "UserA, UserB, UserC";
+	}
 
-    @Override
-    public Response.IStatus getStatus() {
-        return Response.Status.OK;
-    }
+	@Override
+	public String getMimeType() {
+		return NanoHTTPD.MIME_PLAINTEXT;
+	}
+
+	@Override
+	public Response.IStatus getStatus() {
+		return Response.Status.OK;
+	}
 }

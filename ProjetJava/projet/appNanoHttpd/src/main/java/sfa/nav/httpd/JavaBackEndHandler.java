@@ -8,7 +8,7 @@ import fi.iki.elonen.router.RouterNanoHTTPD;
 import fi.iki.elonen.router.RouterNanoHTTPD.GeneralHandler;
 import fi.iki.elonen.router.RouterNanoHTTPD.UriResource;
 
-public class StoreHandler extends GeneralHandler {
+public class JavaBackEndHandler extends GeneralHandler {
 	@Override
 	public Response get(
 			// curl 'http://localhost:8080/stores/123'

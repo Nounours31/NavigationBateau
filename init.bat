@@ -1,4 +1,4 @@
-set SERVER=TITI
+set SERVER=VAPE
 
 if "%SERVER%" == "VAPE" (
     set JAVA_HOME=E:\bin\Java\jdk17\jdk-17.0.5+8
