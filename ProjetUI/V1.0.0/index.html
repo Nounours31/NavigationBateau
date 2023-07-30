@@ -8,11 +8,8 @@
   <title>Navigation by Nounours Polochon</title>
   <link rel="icon" type="image/png" href="./src/images/resultFinal.png"/>
   
- 
   <!-- https://fonts.google.com -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-
-
 </head>
 
 <body>
@@ -23,48 +20,7 @@
   <div style="position:relative;width:800px;height:800px">
     <canvas width="800" height="800"></canvas>
     <input type="text" style="position:absolute;left:100px;top:300px;width:600px; " />
-</div>
+  </div>
   <script src="dist/index.js"></script>
-  <script>
-    function openCity(evt, cityName) {
-  // Declare all variables
-  var i, tabcontent, tablinks;
-
-  // Get all elements with class="tabcontent" and hide them
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-
-  // Get all elements with class="tablinks" and remove the class "active"
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-
-  // Show the current tab, and add an "active" class to the button that opened the tab
-  document.getElementById(cityName).style.display = "block";
-  evt.currentTarget.className += " active";
-}
-
-function toto() { 
-const canvas = document.querySelector("canvas");
-const ctx = canvas.getContext("2d");
-let cw = canvas.width = 536;
-let ch = canvas.height = 100;
-   
-ctx.beginPath();
-ctx.moveTo(0,28)
-ctx.bezierCurveTo(0,28,31,7,70,8);
-ctx.bezierCurveTo(109,9,313,99,425,90);
-ctx.bezierCurveTo(516,82.5,536,55,536,55);
-ctx.stroke();
-
-  }
-  
-  toto();
-  
-  </script>
 </body>
-
 </html>

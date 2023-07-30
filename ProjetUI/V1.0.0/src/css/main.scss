@@ -54,7 +54,10 @@ sfa_nav_global_menu {
   background-color: aquamarine;
 }
 
+table, th, td {
+  border: 1px solid;
+}
 
-@import "tabpanel";
+@import "tab";
 @import "accordeon";
 
