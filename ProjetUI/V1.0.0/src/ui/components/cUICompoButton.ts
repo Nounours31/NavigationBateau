@@ -1,6 +1,5 @@
 
 import {cUICompo} from "./cUICompo";
-import { iUInfoItem } from "./iUInfoItem";
 
 export class cUICompoButton extends cUICompo{
     constructor() {
@@ -28,8 +27,11 @@ export class cUICompoButton extends cUICompo{
         return retour;
     } 
 
-    override getHtml(info: iUInfoItem[]| null): string {
-        throw new Error("Method not implemented."+info);
+    override getHtmlAsString(): string {
+        throw new Error("Method not implemented.");
+    }
+    override getHtmlAsDom(): HTMLElement {
+        throw new Error("Method not implemented.");
     }
     override activate(): void {
         throw new Error("Method not implemented.");

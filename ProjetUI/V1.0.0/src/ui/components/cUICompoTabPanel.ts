@@ -9,25 +9,12 @@ export class cUICompoTabPanel extends cUICompo{
         super();
     }
 
-    public createTab(info: iUInfoItem[]|null) : string {
-        if (info === null)
-            return "";
-            
-        let partie1 : string = `<div class="tab">`;
-        let partie2 : string = ``;
-
-        info.forEach(element => {
-            partie1 += `<button class="tablinks" id="${element.id}_button">${element.titre}</button>`;
-            partie2 += `<div id="${element.id}_div" class="tabcontent">
-            <h3>${element.titre}</h3>
-            <p>${element.contenu}</p>
-          </div>`;
-        });
-        partie1 += "</div>";
-        return partie1 + partie2;
-    } 
-    override getHtml(info: iUInfoItem[]| null): string {
+    override getHtmlAsString(info?: iUInfoItem[]): string {
         return this.createTab(info);
+    }
+
+    override getHtmlAsDom(): HTMLElement {
+        throw new Error("Method not implemented.");
     }
 
     override activate(): void {
@@ -50,6 +37,24 @@ export class cUICompoTabPanel extends cUICompo{
             }
         }
     }
+
+    public createTab(info?: iUInfoItem[]) : string {
+        if ((info === undefined) || (info === null))
+            throw new Error("missing info !!");
+            
+        let partie1 : string = `<div class="tab">`;
+        let partie2 : string = ``;
+
+        info.forEach(element => {
+            partie1 += `<button class="tablinks" id="${element.id}_button">${element.titre}</button>`;
+            partie2 += `<div id="${element.id}_div" class="tabcontent">
+            <h3>${element.titre}</h3>
+            <p>${element.contenu}</p>
+          </div>`;
+        });
+        partie1 += "</div>";
+        return partie1 + partie2;
+    } 
 
     static clickCallBackOnTabpanel (this: HTMLElement, e: MouseEvent) : any {
         e.preventDefault();

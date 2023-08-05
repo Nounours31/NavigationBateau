@@ -8,10 +8,10 @@ export class cUICompoAccordeon extends cUICompo{
     }
 
 
-    private createAccordeon(info: iUInfoItem[]| null) : string {
-        if (info === null)
-            info = [];
-
+    private createAccordeon(info?: iUInfoItem[] | undefined) : string {
+        if ((info === undefined) || (info === null))
+            throw new Error("missing info !!");
+ 
         let retour : string = `<div>`;
         info.forEach(element => {
                 retour += `<button class="accordion defaut">${element.titre}</button>
@@ -44,7 +44,11 @@ export class cUICompoAccordeon extends cUICompo{
         }
     } 
 
-    override getHtml(info: iUInfoItem[]| null): string {
+    override getHtmlAsDom(): HTMLElement {
+        throw new Error("Method not implemented.");
+    }
+
+    override getHtmlAsString(info?: iUInfoItem[] | undefined): string {
         return this.createAccordeon(info);
     }
     override activate(): void {
