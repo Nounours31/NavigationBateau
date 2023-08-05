@@ -27,8 +27,9 @@ public abstract class AMyHttpHandler implements IMyHttpHandler {
 	final static private Logger logger = LoggerFactory.getLogger(AMyHttpHandler.class);
 	final static private String ERROR = "Erreur";
 
-//	protected static String homeDir = "E:\\WorkSpaces\\WS\\GitHub\\Navigation\\1.0.0\\Eclipse\\ProjetUI\\V1.0.0";
-	protected static final String homeDir = "d:\\paps\\git\\NavigationBateau\\ProjetUI\\V1.0.0";
+	protected static final String homeDir = "E:\\WorkSpaces\\WS\\GitHub\\Navigation\\1.0.0\\Eclipse\\ProjetUI\\V1.0.0";
+	// protected static final String homeDir =
+	// "d:\\paps\\git\\NavigationBateau\\ProjetUI\\V1.0.0";
 
 	static private enum eHeaderKeys {
 		Accept("Accept"), Host("Host"), UserAgent("User-agent"), ContentType("Content-type"),

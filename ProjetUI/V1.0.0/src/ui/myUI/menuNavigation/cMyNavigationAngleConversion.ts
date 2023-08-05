@@ -4,19 +4,19 @@ import {v4 as uuidv4} from 'uuid';
 
 
 
-export class cMyNavigationPageDetails  {
+export class cMyNavigationAngleConversion  {
     readonly idCelluleCap : string  = uuidv4();
     readonly idCelluleDistance : string  = uuidv4();
     readonly idLatitudeArrivee: string  = uuidv4();
     readonly idLongitudeArrivee: string  = uuidv4();
-    readonly idLongitudeDepart: string  = uuidv4();
-    readonly idLatitudeDepart: string  = uuidv4();
+    readonly idAngleDecimal: string  = uuidv4();
+    readonly idAngleSexaGedecimal: string  = uuidv4();
     readonly idButtonComputeOrthoCapDistance: string  = uuidv4();
     
     constructor() {
     }
     
-    public createMenuOrtho () : string {
+    public createMenuConversion () : string {
         let retour : string = ``;
         retour += "<div>";
         retour += `
@@ -24,29 +24,34 @@ export class cMyNavigationPageDetails  {
         <tbody>
         
         <tr>
-        <th colspan="7"><h2>Route Ortho:</h2></th>
+        <th colspan="7"><h2>Conversion angulaire:</h2></th>
+        </tr>
+        <tr>
+        <th>Angle degre sexagedecimale (2°45'45.55" E/W/N/S)</th>
+        <th>Angle degre decimale (2°45.55" E/W/N/S)</th>
+        <th>Angle decimale (+/-2.55</th>
         </tr>
         
         <tr>
-        <td rowspan="2">Depart</td>
-        <td>Latitude</td>
         <td>
-        <label for="${this.idLatitudeDepart}">Latitude (-90 <=> +90):</label>
+        <label for="${this.idAngleSexaGedecimal}">Angle (2°45'45.55" E/W/N/S):</label>
         </td>
         <td>
-        <input type="number" id="${this.idLatitudeDepart}" name="${this.idLatitudeDepart}" min="-90" max="90">
+        <input type="text" id="${this.idAngleSexaGedecimal}" name="${this.idAngleSexaGedecimal}">
         </td>
-        <td rowspan="4"><button id="${this.idButtonComputeOrthoCapDistance}">Calcul</button></td>
-        <td rowspan="2">Cap</td>
-        <td rowspan="2" id="${this.idCelluleCap}">0.0</td>
+        <label for="${this.idAngleDecimal}">Angle (2°45.55" E/W/N/S):</label>
+        </td>
+        <td>
+        <input type="text" id="${this.idAngleDecimal}" name="${this.idAngleDecimal}">
+        </td>
         </tr>
         
         <tr>
         <td>Longitude</td>
         <td>
-        <label for="${this.idLongitudeDepart}">Longitude (-180 <=> +180):</label>
+        <label for="${this.idAngleDecimal}">Longitude (-180 <=> +180):</label>
         </td><td>
-        <input type="number" id="${this.idLongitudeDepart}" name="${this.idLongitudeDepart}" min="-180" max="180">
+        <input type="number" id="${this.idAngleDecimal}" name="${this.idAngleDecimal}" min="-180" max="180">
         </td>
         </tr>
         
@@ -77,30 +82,9 @@ export class cMyNavigationPageDetails  {
         return retour;
     }   
     
-    public createMenuLoxo () : string {
-        let retour : string = ``;
-        retour += "<div>";
-        retour += `
-        Route Loxo:<br/>
-        ...
-        `;
-        retour += "</div>";
-        return retour;
-    }   
     
-    public createMenuCap () : string {
-        let retour : string = ``;
-        retour += "<div>";
-        retour += `
-        Cap:<br/>
-        ...
-        `;
-        retour += "</div>";
-        return retour;
-    }   
-    
-    public activateNavCallBack() {
-        let self : cMyNavigationPageDetails = this;
+    public activateConversionCallBack() {
+        let self : cMyNavigationAngleConversion = this;
         let computeOrthoNave : HTMLElement = document.getElementById(`${this.idButtonComputeOrthoCapDistance}`) as HTMLElement;
         computeOrthoNave.addEventListener('click', function (evt: MouseEvent) : any {
             if (evt.target instanceof HTMLElement)
