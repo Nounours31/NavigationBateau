@@ -1,5 +1,3 @@
-import { iOrthoInternalResponnse } from "../../../tools/iAjaxInterfaces";
-import { myAjax } from "../../../tools/myAjax";
 import {v4 as uuidv4} from 'uuid';
 
 
@@ -109,33 +107,9 @@ export class cMyNavigationPageDetails  {
     }
     
     
-    public computeOrthoRoute(elem: HTMLElement, evt: MouseEvent) : any{
+    public computeOrthoRoute(elem: HTMLElement, evt: MouseEvent) : boolean {
         console.log (elem);
         console.log (evt);
-        let x : myAjax = new myAjax();
-        let y : Promise<iOrthoInternalResponnse> = x.fetch("test");
-        
-        
-        let xx : HTMLElement = document.getElementById(`${this.idCelluleCap}`) as HTMLElement;
-        let yy : HTMLElement = document.getElementById(`${this.idCelluleDistance}`) as HTMLElement;
-        
-        let retour : iOrthoInternalResponnse = {cap: 0.0, distance: 0.0}; 
-        y.then((val) => { 
-            retour = val;         
-            xx.innerText = retour.cap.toString();
-            yy.innerText = retour.distance.toString();
-        })
-        .then((val) => {
-            console.log(val)
-        })
-        .catch((err) => {
-            console.log(err)
-        })
-        .finally(() => {
-            console.log("finally")
-        });
-        
-        
         return true;
     }
 }

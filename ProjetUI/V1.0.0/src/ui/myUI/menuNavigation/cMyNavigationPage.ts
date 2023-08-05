@@ -23,11 +23,12 @@ export class cMyNavigationPage extends cUICompo {
         return info;
     }   
 
-    override getHtml(info: iUInfoItem[]| null): string {
-        if (info === null)
-            info = [];
+    override getHtmlAsDom(): HTMLElement {
+        throw new Error("Method not implemented.");
+    }
 
-        return this.myAccortdeon.getHtml(this.createMenu());
+    override getHtmlAsString(): string {
+        return this.myAccortdeon.getHtmlAsString(this.createMenu());
     }
     override activate(): void {
         this.myAccortdeon.activate();

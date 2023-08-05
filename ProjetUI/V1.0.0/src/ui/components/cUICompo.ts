@@ -4,7 +4,8 @@ export abstract  class cUICompo {
     constructor() {
     }
 
-    abstract getHtml(info: iUInfoItem[] | null) : string;
+    abstract getHtmlAsString(info?: iUInfoItem[]) : string;
+    abstract getHtmlAsDom(info?: iUInfoItem[]) : HTMLElement;
     abstract activate() : void;
 }
    

@@ -1,4 +1,5 @@
 
+import { cUIEnv } from "../cUIEnv";
 import { cUICompo } from "../components/cUICompo";
 import {cUICompoTabPanel } from "../components/cUICompoTabPanel";
 import { iUInfoItem } from "../components/iUInfoItem";
@@ -16,18 +17,29 @@ export class cMyMainMenu extends cUICompo {
 
     createMainMenu () : iUInfoItem[] {
         let info: iUInfoItem[] = [
-            {id: "Navigation", titre: "Navigation", contenu: this.navePage.getHtml(null)},
-            {id: "Maree", titre: "Maree", contenu: this.navePage.getHtml(null)},
-            {id: "NavAstro", titre: "NavAstro", contenu: this.navePage.getHtml(null)},
+            {id: "Navigation", titre: "Navigation", contenu: this.navePage.getHtmlAsString()},
+            {id: "Maree", titre: "Maree", contenu: this.navePage.getHtmlAsString()},
+            {id: "NavAstro", titre: "NavAstro", contenu: this.navePage.getHtmlAsString()},
         ];
         return info;
     }   
 
-    override getHtml(info: iUInfoItem[]| null): string {
-        if (info === null)
-            info = [];
-        return this.myMenu.getHtml(this.createMainMenu());
+    override getHtmlAsString(): string {
+        throw new Error("Method not implemented.");
     }
+
+    override getHtmlAsDom(): HTMLElement {
+        let menuastxt : string =  this.myMenu.getHtmlAsString(this.createMainMenu());
+
+        let options : ElementCreationOptions = {};
+        let headerDiv: HTMLDivElement = document.createElement('div', options) as HTMLDivElement; 
+        headerDiv.id = cUIEnv.elmentIdOfGlobalMenuDiv;
+
+        headerDiv.innerHTML = menuastxt; 
+        headerDiv.id = cUIEnv.elmentIdOfGlobalMenuDiv;
+        return headerDiv;
+    }
+
     override activate(): void {
         this.myMenu.activate();
         this.navePage.activate();

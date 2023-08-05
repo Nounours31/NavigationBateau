@@ -16,6 +16,8 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
+    "typescript-logging": "^2.1.0",
+    "typescript-logging-log4ts-style": "^2.1.0",
     "uuid": "^9.0.0"
   }
 }
