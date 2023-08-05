@@ -97,10 +97,19 @@ public class MyHttpHandlerOnVolatile extends AMyHttpHandler {
 		double longitude;
 	}
 	class Pipo {
+		@Override
+		public String toString() {
+			return "Pipo [depart=" + depart + ", arrivee=" + arrivee + "]";
+		}
 		lL depart;
 		lL arrivee;
 	}
 	class Pipette {
+		@Override
+		public String toString() {
+			return "Pipette [query=" + query + "]";
+		}
+
 		Pipo query;
 	}
 
@@ -124,7 +133,7 @@ public class MyHttpHandlerOnVolatile extends AMyHttpHandler {
 		
 			Gson gson = new Gson();
 			Pipette p = gson.fromJson(new String(message, StandardCharsets.UTF_8), Pipette.class);
-			logger.debug("Pipette: {} - received: {}", p);
+			logger.debug("Pipette: received: {}", p);
 			
 			CalculsDeNavigation cnv = new CalculsDeNavigation();
 			PointGeographique pg1 = PointGeographiqueFactory.fromLatLong(LatitudeFactory.fromDegre(p.query.depart.latitude), LongitudeFactory.fromDegre(p.query.depart.longitude));

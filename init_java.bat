@@ -16,4 +16,7 @@ if "%SERVER%" == "TITI" (
 )
 set PATH=%GRADLE_HOME%;%GRADLE_HOME%/bin;%JAVA_HOME%;%JAVA_HOME%/bin;%PATH%
 
+e:
+cd E:\WorkSpaces\WS\GitHub\Navigation\NavigationBateau\ProjetJava\projet
+
 gradle
