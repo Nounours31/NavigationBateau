@@ -110,7 +110,7 @@ public class MyHttpHandlerOnDirectory extends AMyHttpHandler {
 			retour.mimeType(eMimeTypes.txt);
 			retour.status(MyHttpResponse.Status.FORBIDDEN);
 		} else {
-			File f = new File(homeDir, uri);
+			File f = new File(getRoot(), uri);
 
 			if (f.isDirectory()) {
 				String indexFile = null;

@@ -6,7 +6,13 @@ import java.io.File;
 public class MyHttpResponse {
 
 	public static enum Status {
-		FORBIDDEN, INTERNAL_ERROR, NOT_FOUND, OK
+		FORBIDDEN(403), INTERNAL_ERROR(500), NOT_FOUND(404), OK(200);
+		private final int  HTTPResponseCode;
+		
+		private Status(int i) {HTTPResponseCode = i;}
+		int asHTTPResponseCode() {
+			return HTTPResponseCode;
+		}
 	}
 
 	public static final String MIME_PLAINTEXT = null;
@@ -205,7 +211,7 @@ public class MyHttpResponse {
 	                jpe ("image/jpeg"),
 	                jpeg ("image/jpeg"),
 	                jpg ("image/jpeg"),
-	                js ("application/x-javascript"),
+	                js ("text/javascript"),
 	                json ("application/json"),
 	                jsx ("text/jscript"),
 	                jsxbin ("text/plain"),
@@ -581,6 +587,10 @@ public class MyHttpResponse {
 						if (x.name().equals(extens)) return x;
 					}
 					return eMimeTypes.txt;
+				}
+				
+				public String getHttpVal() {
+					return nom;
 				}
 	        }
 	    

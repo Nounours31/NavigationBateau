@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
 import com.sun.net.httpserver.HttpServer;
 
 public class App {
-	Logger logger = LoggerFactory.getLogger(App.class);
+	final private static Logger logger = LoggerFactory.getLogger(App.class);
 
-	public App() throws IOException {
+	public App(String rootPath) throws IOException {
 		HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 8001), 0);
-		server.createContext("/", new MyHttpHandler());
+		server.createContext("/", new MyHttpHandler(rootPath));
 
 		ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
 		server.setExecutor(threadPoolExecutor);
@@ -25,6 +25,15 @@ public class App {
 	}
 
 	public static void main(String[] args) throws IOException {
-		new App();
+		String root = null;
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].equals("-root"))
+				root = args[++i];
+		} 
+		if (root == null) {
+			logger.error("Il faut le root du site internet ...");
+			return;
+		}
+		new App(root);
 	}
 }

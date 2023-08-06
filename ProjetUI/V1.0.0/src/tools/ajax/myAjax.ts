@@ -1,35 +1,40 @@
 import { log4TSProvider } from "../config/LogConfig";
 
-export type WSResponseAsType = {
+export type WSContratForWSQuery = {
+    query: any
+    options?: string
+}
+
+export type WSContratForWSResponse = {
     data?: any
     errors?: Array<{message: string}>
     status?: number
 }
 
 export class myAjax {
-    static readonly log = log4TSProvider.getLogger("cMyNavigationAngleConversion");
+    static readonly log = log4TSProvider.getLogger("myAjax");
     
     constructor() {
     }
         
-    private async fetch(query: string, url: string): Promise<WSResponseAsType> {
+    public async fetch(query: WSContratForWSQuery, url: string): Promise<WSContratForWSResponse> {
         myAjax.log.debug ("start fetch ", query, url);
         const response : Response = await window.fetch(url, {
             method: 'POST',
             headers: {
                 'content-type': 'application/json;charset=UTF-8',
             },
-            body: query,
+            body: JSON.stringify(query),
         }) ;
         myAjax.log.debug ("fetch sent / await response");
         
         const {data, errors}: any = await response.json();
-        myAjax.log.debug ("response ", response);
+        myAjax.log.debug ("data response ", data);
 
         if (response.ok) {
             let dataInResponse : any  = data;
             if ((dataInResponse !== undefined) && (dataInResponse !== null)) {
-                const retour : WSResponseAsType = {
+                const retour : WSContratForWSResponse = {
                     "data": data,
                     "errors": errors,
                     "status": response.status
@@ -47,23 +52,20 @@ export class myAjax {
         }
     }
 
-    public synchrofetch(query: string, url: string): WSResponseAsType {
-        myAjax.log.debug ("synchrofetch", name, query, url);
-        this.fetch(query, url)
-        .then((x : WSResponseAsType) => {
-            myAjax.log.debug ("synchrofetch in then");
-            return x;
-        })
-        .catch ((x) => {
-            myAjax.log.debug ("synchrofetch in catch");
-            throw new Error(x.toString());
-        })
-        .finally(() => {
-            myAjax.log.debug ("synchrofetch in finally");
-        });
-        let x : WSResponseAsType = {};
-        myAjax.log.debug ("synchrofetch return", x);
-        return x;
+    public synchrofetch(query: WSContratForWSQuery, url: string): WSContratForWSResponse {
+        myAjax.log.debug ("synchrofetch", name, query, url);        
+        const async: boolean = false;
+        const xhr : XMLHttpRequest = new XMLHttpRequest();
+        xhr.open("POST", url, async);
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        xhr.send(JSON.stringify(query));
+        let retour : WSContratForWSResponse = {};
+        if (xhr.status === 200) {
+            retour = JSON.parse (xhr.responseText) as WSContratForWSResponse;
+        }
+        myAjax.log.debug ("synchrofetch return", retour);
+        return retour;
     }
+
 
 }

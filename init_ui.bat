@@ -14,7 +14,7 @@ if "%SERVER%" == "TITI" (
 set PATH=%PATH%
 
 e:
-cd E:\WorkSpaces\WS\GitHub\Navigation\1.0.0\Eclipse\ProjetUI\V1.0.0
+cd E:\WorkSpaces\WS\GitHub\Navigation\NavigationBateau\ProjetUI\V1.0.0
 
 call code .
 call npx webpack --watch

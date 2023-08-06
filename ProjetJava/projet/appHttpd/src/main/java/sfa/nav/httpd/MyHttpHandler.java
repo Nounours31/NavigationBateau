@@ -20,13 +20,18 @@ import sfa.nav.httpd.MyHttpHandlerFactory.eHttpHandlerType;
 public class MyHttpHandler extends AMyHttpHandler implements IMyHttpHandler {
 	final static private Logger logger = LoggerFactory.getLogger(MyHttpHandler.class);
 
+	public MyHttpHandler(String rootServer) {
+		super();
+		setRoot(rootServer);
+	}
+	
 	@Override
 	public void handle(HttpExchange httpExchange) throws IOException {
 		String fullURI = httpExchange.getRequestURI().toString(); // Ex: /toto?a=b
 		logger.debug(fullURI);
 
 		eHttpHandlerType whatToCreate = eHttpHandlerType.OnVolatile;
-		File fileToServe = new File(this.getRootPath(), this.getURLWithoutOpts(fullURI));
+		File fileToServe = new File(this.getRoot(), this.getURLWithoutOpts(fullURI));
 		if (fileToServe.exists() && fileToServe.isFile())
 			whatToCreate = eHttpHandlerType.OnFile;
 

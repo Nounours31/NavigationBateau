@@ -20,6 +20,8 @@ import com.sun.net.httpserver.HttpExchange;
 
 import sfa.nav.httpd.MyHttpResponse.Status;
 import sfa.nav.httpd.MyHttpResponse.eMimeTypes;
+import sfa.nav.httpd.ws.navigation.WSModeleImpl;
+import sfa.nav.httpd.ws.navigation.WSNavigationImpl;
 import sfa.nav.model.LatitudeFactory;
 import sfa.nav.model.LongitudeFactory;
 import sfa.nav.model.PointGeographique;
@@ -92,31 +94,7 @@ public class MyHttpHandlerOnVolatile extends AMyHttpHandler {
 
 	}
 
-	class lL {
-		double latitude;
-		double longitude;
-	}
-	class Pipo {
-		@Override
-		public String toString() {
-			return "Pipo [depart=" + depart + ", arrivee=" + arrivee + "]";
-		}
-		lL depart;
-		lL arrivee;
-	}
-	class Pipette {
-		@Override
-		public String toString() {
-			return "Pipette [query=" + query + "]";
-		}
 
-		Pipo query;
-	}
-
-	class koko {
-		Object data;
-		String[] errors;
-	}
 
 	@Override
 	public MyRequestInfo computeResponse(HttpExchange httpExchange, Map<String, String> requestParamValue,
@@ -129,27 +107,26 @@ public class MyHttpHandlerOnVolatile extends AMyHttpHandler {
 		if (uri.equals("/api/nav/ortho") && post.equals("POST")) {
 			InputStream is = httpExchange.getRequestBody();
 			byte[] message = is.readAllBytes();
-			logger.debug("Api: {} - received: {}", uri, new String(message, StandardCharsets.UTF_8));
-		
-			Gson gson = new Gson();
-			Pipette p = gson.fromJson(new String(message, StandardCharsets.UTF_8), Pipette.class);
-			logger.debug("Pipette: received: {}", p);
+			logger.debug("Api: {} - received: ->{}<-", uri, new String(message, StandardCharsets.UTF_8));
 			
-			CalculsDeNavigation cnv = new CalculsDeNavigation();
-			PointGeographique pg1 = PointGeographiqueFactory.fromLatLong(LatitudeFactory.fromDegre(p.query.depart.latitude), LongitudeFactory.fromDegre(p.query.depart.longitude));
-			PointGeographique pg2 = PointGeographiqueFactory.fromLatLong(LatitudeFactory.fromDegre(p.query.arrivee.latitude), LongitudeFactory.fromDegre(p.query.arrivee.longitude));
-			DataLoxodromieCapDistance calculs = cnv.capLoxodromique(pg1, pg2);
+			WSContratForWSQuery query = new Gson().fromJson(new String(message, StandardCharsets.UTF_8), WSContratForWSQuery.class);
+
+			WSNavigationImpl wsnav = new WSNavigationImpl(query);
+			MyRequestInfo wsResponse = wsnav.response();
 			
-			koko kk = new koko();
-			kk.data = calculs;
-			kk.errors = new String[] {};
+			ret = wsResponse;
+		}
+		else if (uri.equals("/api/nav/modele") && post.equals("POST")) {
+			InputStream is = httpExchange.getRequestBody();
+			byte[] message = is.readAllBytes();
+			logger.debug("Api: {} - received: ->{}<-", uri, new String(message, StandardCharsets.UTF_8));
 			
-			String s = gson.toJson(kk);
-			logger.debug("retour: {}", s);
+			WSContratForWSQuery query = new Gson().fromJson(new String(message, StandardCharsets.UTF_8), WSContratForWSQuery.class);
+
+			WSModeleImpl wsnav = new WSModeleImpl(query);
+			MyRequestInfo wsResponse = wsnav.response();
 			
-			ret.mimeType(eMimeTypes.json);
-			ret.setContent(s);
-			ret.status(Status.OK);
+			ret = wsResponse;
 		}
 		else {
 			ret.mimeType(eMimeTypes.txt);

@@ -59,7 +59,7 @@ public class MyHttpHandlerOnFile extends AMyHttpHandler {
 			retour.mimeType(eMimeTypes.txt);
 			retour.status(MyHttpResponse.Status.FORBIDDEN);
 		} else {
-			File f = new File(homeDir, uri);
+			File f = new File(getRoot(), uri);
 
 			if (f.exists() && f.canRead()) {
 				retour.setContent(readSource(f));

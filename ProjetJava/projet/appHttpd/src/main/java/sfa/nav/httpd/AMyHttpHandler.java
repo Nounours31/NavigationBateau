@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,9 +28,17 @@ public abstract class AMyHttpHandler implements IMyHttpHandler {
 	final static private Logger logger = LoggerFactory.getLogger(AMyHttpHandler.class);
 	final static private String ERROR = "Erreur";
 
-	protected static final String homeDir = "E:\\WorkSpaces\\WS\\GitHub\\Navigation\\1.0.0\\Eclipse\\ProjetUI\\V1.0.0";
+	private static String _homeDir = "E:\\WorkSpaces\\WS\\GitHub\\Navigation\\1.0.0\\Eclipse\\ProjetUI\\V1.0.0";
 	// protected static final String homeDir =
 	// "d:\\paps\\git\\NavigationBateau\\ProjetUI\\V1.0.0";
+	
+	protected void setRoot(String s) {
+		_homeDir = s;
+	}
+
+	protected String getRoot() {
+		return _homeDir;
+	}
 
 	static private enum eHeaderKeys {
 		Accept("Accept"), Host("Host"), UserAgent("User-agent"), ContentType("Content-type"),
@@ -64,9 +73,6 @@ public abstract class AMyHttpHandler implements IMyHttpHandler {
 		return fullURI;
 	}
 
-	protected String getRootPath() {
-		return homeDir;
-	}
 
 	@Override
 	public void handle(HttpExchange httpExchange) throws IOException {
@@ -166,8 +172,11 @@ public abstract class AMyHttpHandler implements IMyHttpHandler {
 		MyRequestInfo requestInfo = this.computeResponse(httpExchange, requestParamValue, requestParamHeaders);
 		logger.debug("resultat de la requete: {}", requestInfo);
 
-		// this line is a must
-		httpExchange.sendResponseHeaders(200, requestInfo.length());
+		String encoding = StandardCharsets.UTF_8.name();
+		String s = String.format("%s; charset=%s", requestInfo.mimeType().getHttpVal(), encoding);		
+		httpExchange.getResponseHeaders().set("Content-Type", s);
+		httpExchange.sendResponseHeaders(requestInfo.status().asHTTPResponseCode(), requestInfo.length());
+
 		outputStream.write(requestInfo.getBytes());
 		outputStream.flush();
 		outputStream.close();

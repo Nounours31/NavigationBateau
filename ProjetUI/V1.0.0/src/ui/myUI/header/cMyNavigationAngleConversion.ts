@@ -1,7 +1,7 @@
 import {v4 as uuidv4} from 'uuid';
 
 import {log4TSProvider} from  "../../../tools/config/LogConfig"; 
-import { cAjaxCallculNavigation, iOrthoInternalResponnse } from "../../../tools/ajax/cAjaxCallculNavigation";
+import { cAjaxCalculAngleFactory, WSModeleResponse } from '../../../tools/ajax/cAjaxCalculAngleFactory';
 
 
 export class cMyNavigationAngleConversion  {
@@ -64,7 +64,7 @@ export class cMyNavigationAngleConversion  {
         </tr>
         
         <tr>
-        <td>
+        <td id="Poubelle0">
         converti
         </td>
         <td>
@@ -180,15 +180,13 @@ export class cMyNavigationAngleConversion  {
         cMyNavigationAngleConversion.log.debug("computeAngleconversion: elem", elem);
         cMyNavigationAngleConversion.log.debug("computeAngleconversion: evt", evt);
         
-        let retour : iOrthoInternalResponnse = {cap: 0.0, distance: 0.0}; 
-        let ws : cAjaxCallculNavigation = new cAjaxCallculNavigation();
+        let retour : WSModeleResponse = {valeur: 0.0}; 
+        let ws : cAjaxCalculAngleFactory = new cAjaxCalculAngleFactory();
         retour = ws.callWS();        
         
-        let xx : HTMLElement = document.getElementById("Poubelle") as HTMLElement;
-        let yy : HTMLElement = document.getElementById("Poubelle") as HTMLElement;
+        let xx : HTMLElement = document.getElementById("Poubelle0") as HTMLElement;
         
-            xx.innerText = retour.cap.toString();
-            yy.innerText = retour.distance.toString();
+        xx.innerText = retour.valeur.toString();
         return true;
     }
     

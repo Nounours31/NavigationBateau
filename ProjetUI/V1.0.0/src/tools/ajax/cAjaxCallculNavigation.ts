@@ -1,30 +1,36 @@
 import { cUIEnv } from "../../ui/cUIEnv";
 import { log4TSProvider } from "../config/LogConfig";
-import {WSResponseAsType, myAjax} from "./myAjax";
+import {WSContratForWSQuery, WSContratForWSResponse, myAjax} from "./myAjax";
 
-interface iPosition {
+interface WSPosition {
     latitude: number,
     longitude: number
 }
 
-interface iOrthoRequest {
-    depart: iPosition, 
-    arrivee: iPosition
+interface WSDepartArrivee {
+    depart: WSPosition, 
+    arrivee: WSPosition
 }
 
-export interface iOrthoInternalResponnse {
-    cap: number,
-    distance: number
+interface WSDepartArrivee {
+    depart: WSPosition, 
+    arrivee: WSPosition
 }
+
+export interface WSNavigation {
+    capInDegre: number,
+    distanceInMiles: number
+}
+
 
 export class cAjaxCallculNavigation {
     static readonly log = log4TSProvider.getLogger("cAjaxCallculNavigation");
     
     constructor() {}
 
-    public callWS () : iOrthoInternalResponnse  {
+    public callWS () : WSNavigation  {
         cAjaxCallculNavigation.log.debug("callWS");
-        let queryNav : iOrthoRequest = {
+        let queryNav : WSDepartArrivee = {
             depart: {
                 latitude: 4.52,
                 longitude: 0.125,
@@ -38,10 +44,13 @@ export class cAjaxCallculNavigation {
 
         let x : myAjax = new myAjax();
         let url : string = cUIEnv.WebServerURL + "ortho";
-        let y : WSResponseAsType = x.synchrofetch(JSON.stringify(queryNav), url);
+        let query: WSContratForWSQuery = {
+            "query": queryNav
+        };
+        let y : WSContratForWSResponse = x.synchrofetch(query, url);
         cAjaxCallculNavigation.log.debug("reponse ", y);
 
-        let z : iOrthoInternalResponnse = y.data;
+        let z : WSNavigation = y.data;
         cAjaxCallculNavigation.log.debug("data ", z);
         
         return z;
