@@ -5,20 +5,20 @@ import { cAjaxCalculAngleFactory, WSModeleResponse } from '../../../tools/ajax/c
 
 
 export class cMyNavigationAngleConversion  {
+    static readonly classIdOfAllButtonForcompute: string  = uuidv4();
+    static readonly TAG_FOR_RESPONSE : string = "_response";
+
     static readonly idAngleDecimal: string  = uuidv4();
     static readonly idAngleSexaGedecimal: string  = uuidv4();
     static readonly idAnglePresqueDecimal: string  = uuidv4();
-    static readonly classAnglePresqueDecimal_button: string  = cMyNavigationAngleConversion.idAngleDecimal + uuidv4();
 
     static readonly id_LATITUDE_AngleDecimal: string  = uuidv4();
     static readonly id_LATITUDE_AngleSexaGedecimal: string  = uuidv4();
     static readonly id_LATITUDE_AnglePresqueDecimal: string  = uuidv4();
-    static readonly class_LATITUDE_AnglePresqueDecimal_button: string  = cMyNavigationAngleConversion.id_LATITUDE_AngleDecimal + uuidv4();
 
     static readonly id_LONGITUDE_AngleDecimal: string  = uuidv4();
     static readonly id_LONGITUDE_AngleSexaGedecimal: string  = uuidv4();
     static readonly id_LONGITUDE_AnglePresqueDecimal: string  = uuidv4();
-    static readonly class_LONGITUDE_AnglePresqueDecimal_button: string  = cMyNavigationAngleConversion.id_LONGITUDE_AngleDecimal + uuidv4();
 
     static readonly log = log4TSProvider.getLogger("cMyNavigationAngleConversion");
 
@@ -47,31 +47,31 @@ export class cMyNavigationAngleConversion  {
         </tr>
         
         <tr>
-        <td>
+        <td class="${cMyNavigationAngleConversion.idAngleSexaGedecimal}">
         <label for="${cMyNavigationAngleConversion.idAngleSexaGedecimal}">Angle (2°45'45.55"):</label>
         <input type="text" id="${cMyNavigationAngleConversion.idAngleSexaGedecimal}" name="${cMyNavigationAngleConversion.idAngleSexaGedecimal}">
-        <button class="${cMyNavigationAngleConversion.classAnglePresqueDecimal_button}">*</button></td>
+        <button class="${cMyNavigationAngleConversion.idAngleSexaGedecimal} ${cMyNavigationAngleConversion.classIdOfAllButtonForcompute}">*</button></td>
         <td>
         <label for="${cMyNavigationAngleConversion.idAnglePresqueDecimal}">Angle (2°45.55"):</label>
         <input type="text" id="${cMyNavigationAngleConversion.idAnglePresqueDecimal}" name="${cMyNavigationAngleConversion.idAnglePresqueDecimal}">
-        <button class="${cMyNavigationAngleConversion.classAnglePresqueDecimal_button}">*</button></td>
+        <button class="${cMyNavigationAngleConversion.idAnglePresqueDecimal} ${cMyNavigationAngleConversion.classIdOfAllButtonForcompute}">*</button></td>
         </td>
         <td>
         <label for="${cMyNavigationAngleConversion.idAngleDecimal}">Angle (+/-2.45):</label>
         <input type="text" id="${cMyNavigationAngleConversion.idAngleDecimal}" name="${cMyNavigationAngleConversion.idAngleDecimal}">
-        <button class="${cMyNavigationAngleConversion.classAnglePresqueDecimal_button}">*</button></td>
+        <button class="${cMyNavigationAngleConversion.idAngleDecimal} ${cMyNavigationAngleConversion.classIdOfAllButtonForcompute}">*</button></td>
         </td>
         </tr>
         
         <tr>
-        <td id="Poubelle0">
-        converti
+        <td id="${cMyNavigationAngleConversion.idAngleSexaGedecimal}${cMyNavigationAngleConversion.TAG_FOR_RESPONSE}">
+        -
         </td>
-        <td>
-        converti
+        <td id="${cMyNavigationAngleConversion.idAnglePresqueDecimal}${cMyNavigationAngleConversion.TAG_FOR_RESPONSE}">
+        -
         </td>
-        <td>
-        converti
+        <td id="${cMyNavigationAngleConversion.idAngleDecimal}${cMyNavigationAngleConversion.TAG_FOR_RESPONSE}">
+        -
         </td>
         </tr>
         <!-- **************** Latitude ******************** -->
@@ -86,14 +86,17 @@ export class cMyNavigationAngleConversion  {
         <td>
         <label for="${cMyNavigationAngleConversion.id_LATITUDE_AngleSexaGedecimal}">Latitude (2°45'45.55" N/S):</label>
         <input type="text" id="${cMyNavigationAngleConversion.id_LATITUDE_AngleSexaGedecimal}" name="${cMyNavigationAngleConversion.id_LATITUDE_AngleSexaGedecimal}">
+        <button class="${cMyNavigationAngleConversion.id_LATITUDE_AngleSexaGedecimal} ${cMyNavigationAngleConversion.classIdOfAllButtonForcompute}">*</button></td>
         </td>
         <td>
         <label for="${cMyNavigationAngleConversion.id_LATITUDE_AnglePresqueDecimal}">Latitude (2°45.55" N/S):</label>
         <input type="text" id="${cMyNavigationAngleConversion.id_LATITUDE_AnglePresqueDecimal}" name="${cMyNavigationAngleConversion.id_LATITUDE_AnglePresqueDecimal}">
+        <button class="${cMyNavigationAngleConversion.id_LATITUDE_AnglePresqueDecimal} ${cMyNavigationAngleConversion.classIdOfAllButtonForcompute}">*</button></td>
         </td>
         <td>
-        <label for="${cMyNavigationAngleConversion.idAngleDecimal}">Latitude  (+/-2.45):</label>
-        <input type="text" id="${cMyNavigationAngleConversion.idAngleDecimal}" name="${cMyNavigationAngleConversion.idAngleDecimal}">
+        <label for="${cMyNavigationAngleConversion.id_LATITUDE_AngleDecimal}">Latitude  (+/-2.45):</label>
+        <input type="text" id="${cMyNavigationAngleConversion.id_LATITUDE_AngleDecimal}" name="${cMyNavigationAngleConversion.id_LATITUDE_AngleDecimal}">
+        <button class="${cMyNavigationAngleConversion.id_LATITUDE_AngleDecimal} ${cMyNavigationAngleConversion.classIdOfAllButtonForcompute}">*</button></td>
         </td>
         </tr>
         
@@ -119,14 +122,17 @@ export class cMyNavigationAngleConversion  {
         <td>
         <label for="${cMyNavigationAngleConversion.id_LONGITUDE_AngleSexaGedecimal}">Angle (2°45'45.55" E/W):</label>
         <input type="text" id="${cMyNavigationAngleConversion.id_LONGITUDE_AngleSexaGedecimal}" name="${cMyNavigationAngleConversion.id_LONGITUDE_AngleSexaGedecimal}">
+        <button class="${cMyNavigationAngleConversion.id_LONGITUDE_AngleSexaGedecimal} ${cMyNavigationAngleConversion.classIdOfAllButtonForcompute}">*</button></td>
         </td>
         <td>
-        <label for="${cMyNavigationAngleConversion.idAnglePresqueDecimal}">Angle (2°45.55" E/W):</label>
+        <label for="${cMyNavigationAngleConversion.id_LONGITUDE_AnglePresqueDecimal}">Angle (2°45.55" E/W):</label>
         <input type="text" id="${cMyNavigationAngleConversion.id_LONGITUDE_AnglePresqueDecimal}" name="${cMyNavigationAngleConversion.id_LONGITUDE_AnglePresqueDecimal}">
+        <button class="${cMyNavigationAngleConversion.id_LONGITUDE_AnglePresqueDecimal} ${cMyNavigationAngleConversion.classIdOfAllButtonForcompute}">*</button></td>
         </td>
         <td>
         <label for="${cMyNavigationAngleConversion.id_LONGITUDE_AngleDecimal}">Angle (+/-2.45):</label>
         <input type="text" id="${cMyNavigationAngleConversion.id_LONGITUDE_AngleDecimal}" name="${cMyNavigationAngleConversion.id_LONGITUDE_AngleDecimal}">
+        <button class="${cMyNavigationAngleConversion.id_LONGITUDE_AngleDecimal} ${cMyNavigationAngleConversion.classIdOfAllButtonForcompute}">*</button></td>
         </td>
         </tr>
         
@@ -137,7 +143,7 @@ export class cMyNavigationAngleConversion  {
         <td>
         converti
         </td>
-        <td id="Poubelle">
+        <td>
         converti
         </td>
         </tr>
@@ -156,44 +162,46 @@ export class cMyNavigationAngleConversion  {
     }
     
     public activateConversionCallBack() {
-            let self : cMyNavigationAngleConversion = this;
-        let computeOrthoNave : HTMLElement = document.getElementById(`${cMyNavigationAngleConversion.idAngleDecimal}`) as HTMLElement;
-        computeOrthoNave.addEventListener('click', function (evt: MouseEvent) : any {
-            if (evt.target instanceof HTMLElement)
-                self.computeOrthoRoute(evt.target as HTMLElement, evt);
-        });
+        let self : cMyNavigationAngleConversion = this;
 
-        // les calback des boutton 
-        let allButtonCalculAngulaire : HTMLCollectionOf<HTMLElement> = document.getElementsByClassName(`${cMyNavigationAngleConversion.classAnglePresqueDecimal_button}`) as  HTMLCollectionOf<HTMLElement>;
+        // les calback de TOUS les boutton 
+        let allButtonCalculAngulaire : HTMLCollectionOf<HTMLElement> = document.getElementsByClassName(`${cMyNavigationAngleConversion.classIdOfAllButtonForcompute}`) as  HTMLCollectionOf<HTMLElement>;
         for (let i = 0; i < allButtonCalculAngulaire.length; i++) {
             let x :HTMLElement | null= allButtonCalculAngulaire.item(i);
             if(x !== null) {
                 x.addEventListener('click', function (evt: MouseEvent) : any {
                     if (evt.target instanceof HTMLElement) 
-                        self.computeAngleconversion(evt.target as HTMLElement, evt);                    
+                        self.computeConversion(evt.target as HTMLElement, evt);                    
                 });
             }
         }
     }
 
-    computeAngleconversion(elem: HTMLElement, evt: MouseEvent) {
+    computeConversion(elem: HTMLElement, evt: MouseEvent) {
         cMyNavigationAngleConversion.log.debug("computeAngleconversion: elem", elem);
         cMyNavigationAngleConversion.log.debug("computeAngleconversion: evt", evt);
-        
+  
+        // Recup du boutton
+        let b : HTMLButtonElement | null = elem as HTMLButtonElement;
+        if (b == null)
+            return false;
+
+        // recup de l'input associe au boutton
+        let input : HTMLInputElement | null = b.previousElementSibling as HTMLInputElement;
+        if (input == null)
+            return false;
+
+        // recup de la zone de reponse
+        let responsezone : HTMLElement | null = document.getElementById(input.id + cMyNavigationAngleConversion.TAG_FOR_RESPONSE);
+        if (responsezone == null)
+            return false;
+
         let retour : WSModeleResponse = {valeur: 0.0}; 
         let ws : cAjaxCalculAngleFactory = new cAjaxCalculAngleFactory();
         retour = ws.callWS();        
         
-        let xx : HTMLElement = document.getElementById("Poubelle0") as HTMLElement;
         
-        xx.innerText = retour.valeur.toString();
-        return true;
-    }
-    
-    
-    public computeOrthoRoute(elem: HTMLElement, evt: MouseEvent) : any{
-        cMyNavigationAngleConversion.log.debug("computeOrthoRoute: elem", elem);
-        cMyNavigationAngleConversion.log.debug("computeOrthoRoute: evt", evt);
+        responsezone.innerText = retour.valeur.toString();
         return true;
     }
 }
