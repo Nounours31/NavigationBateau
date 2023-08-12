@@ -26,10 +26,13 @@ export class cAjaxCalculAngleFactory {
     
     constructor() {}
 
-    public callWS () : WSModeleResponse  {
+    public callWS (value : string | null) : WSModeleResponse  {
+        if (value == null)
+            value = "0.0";
+
         cAjaxCalculAngleFactory.log.debug("callWS");
         let queryNav : WSModeleRequest = {
-            valeur: `2°56'59"`,
+            "valeur": value,
             type: eTypeModeleConnu[eTypeModeleConnu.Angle] as string,
             action: eActionConnue[eActionConnue.Conversion] as string
         }

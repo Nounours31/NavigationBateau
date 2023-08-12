@@ -191,6 +191,9 @@ export class cMyNavigationAngleConversion  {
         if (input == null)
             return false;
 
+        // recup de l'input 
+        let value : string = input.value;
+
         // recup de la zone de reponse
         let responsezone : HTMLElement | null = document.getElementById(input.id + cMyNavigationAngleConversion.TAG_FOR_RESPONSE);
         if (responsezone == null)
@@ -198,7 +201,7 @@ export class cMyNavigationAngleConversion  {
 
         let retour : WSModeleResponse = {valeur: 0.0}; 
         let ws : cAjaxCalculAngleFactory = new cAjaxCalculAngleFactory();
-        retour = ws.callWS();        
+        retour = ws.callWS(value);        
         
         
         responsezone.innerText = retour.valeur.toString();

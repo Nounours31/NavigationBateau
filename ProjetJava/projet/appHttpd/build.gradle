@@ -1,5 +1,6 @@
 plugins {
   id 'java'
+   id 'application' 
 }
 
 repositories {
@@ -20,4 +21,16 @@ dependencies {
 	// Loger slf4j
 	implementation 'org.slf4j:slf4j-api:2.0.6'
 	implementation 'ch.qos.logback:logback-classic:1.4.5'	
+}
+
+application {
+    mainClass = 'sfa.nav.httpd.App' 
+}
+
+task runJar(type: javaExec) {
+    main="sfa.nav.httpd.App.main"
+    args = [
+            "-root",
+            "/D/paps/git/NavigationBateau/ProjetUI/V1.0.0"
+           ]
 }
