@@ -1,25 +1,26 @@
 package sfa.nav.httpd;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.nav.httpd.MyHttpResponse.Status;
-import sfa.nav.httpd.MyHttpResponse.eMimeTypes;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import sfa.nav.httpd.ws.infra.WSContratForWSResponse;
 
 public class MyRequestInfo {
 	private static final Logger logger = LoggerFactory.getLogger(MyRequestInfo.class);
 
 	private byte[] content;
-	private eMimeTypes mime;
-	private Status status;
+	private String mime;
+	private int status;
 
 	public MyRequestInfo() {
 		content = new byte[] {};
-		mime = eMimeTypes.aa;
-		status = Status.INTERNAL_ERROR;
+		mime = "";
+		status = 500;
 	}
 
 	public long length() {
@@ -32,17 +33,17 @@ public class MyRequestInfo {
 		return content;
 	}
 
-	public void mimeType(eMimeTypes mimeHtml) {
+	public void mimeType(String mimeHtml) {
 		mime = mimeHtml;
 	}
-	public eMimeTypes mimeType() {
+	public String mimeType() {
 		return mime;
 	}
 
-	public void status(Status s) {
+	public void status(int s) {
 		status = s;
 	}
-	public Status status() {
+	public int status() {
 		return status;
 	}
 
@@ -56,6 +57,15 @@ public class MyRequestInfo {
 	@Override
 	public String toString() {
 		return "MyRequestInfo [contentlength" + length() + ", mime=" + mimeType() + ", status=" + status() + "]";
+	}
+
+	public void setContent(JsonObject data) {
+		this.setContent(new Gson().toJson(data));
+		
+	}
+
+	public void setContent(WSContratForWSResponse wsResponse) {
+		this.setContent(new Gson().toJson(wsResponse, WSContratForWSResponse.class));
 	}
 
 

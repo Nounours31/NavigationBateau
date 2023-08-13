@@ -1,29 +1,15 @@
 package sfa.nav.httpd.ws.navigation;
 
-import java.nio.charset.StandardCharsets;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
-import sfa.nav.httpd.MyHttpResponse.Status;
-import sfa.nav.httpd.MyHttpResponse.eMimeTypes;
 import sfa.nav.httpd.MyRequestInfo;
-import sfa.nav.httpd.WSContratForWSQuery;
-import sfa.nav.httpd.WSContratForWSResponse;
-import sfa.nav.model.LatitudeFactory;
-import sfa.nav.model.LongitudeFactory;
-import sfa.nav.model.PointGeographique;
-import sfa.nav.model.PointGeographiqueFactory;
-import sfa.nav.model.tools.DataLoxodromieCapDistance;
-import sfa.nav.nav.calculs.CalculsDeNavigation;
+import sfa.nav.httpd.ws.infra.WSContratForWSQuery;
 
 
-public class WSNavigationImpl extends WSAdapteur{
+public class WSNavigationImpl {
 	private static final Logger logger = LoggerFactory.getLogger(WSNavigationImpl.class);
 
 	class WSPosition {
@@ -48,12 +34,15 @@ public class WSNavigationImpl extends WSAdapteur{
 	    double distance;
 	}
 
-	public WSNavigationImpl(WSContratForWSQuery q) {
-		super(q);
+	private WSContratForWSQuery q;
+
+	public WSNavigationImpl(WSContratForWSQuery _q) {
+		q = _q;
 	}
 
 	public MyRequestInfo response() {
 		MyRequestInfo response = new MyRequestInfo();
+		/*
 		WSDepartArrivee myQuery = (WSDepartArrivee)parseQuery (WSDepartArrivee.class);
 		if (myQuery == null) {
 			WSContratForWSResponse x = new WSContratForWSResponse();
@@ -82,7 +71,7 @@ public class WSNavigationImpl extends WSAdapteur{
 			response.mimeType(eMimeTypes.json);
 			response.setContent(new Gson().toJson(x));
 			response.status(Status.OK);
-		}
+		}*/
 		return response;
 	}
 }

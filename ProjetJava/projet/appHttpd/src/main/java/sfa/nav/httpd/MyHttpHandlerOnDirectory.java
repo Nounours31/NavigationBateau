@@ -8,12 +8,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sun.net.httpserver.HttpExchange;
-
-import sfa.nav.httpd.MyHttpResponse.eMimeTypes;
 
 public class MyHttpHandlerOnDirectory extends AMyHttpHandler {
 	final static private Logger logger = LoggerFactory.getLogger(MyHttpHandlerOnDirectory.class);
@@ -107,8 +108,8 @@ public class MyHttpHandlerOnDirectory extends AMyHttpHandler {
 		// Prohibit getting out of current directory
 		if (uri.contains("../")) {
 			retour.setContent("Won't serve ../ for security reasons.");
-			retour.mimeType(eMimeTypes.txt);
-			retour.status(MyHttpResponse.Status.FORBIDDEN);
+			retour.mimeType(MediaType.TEXT_PLAIN);
+			retour.status(Response.Status.FORBIDDEN.getStatusCode());
 		} else {
 			File f = new File(getRoot(), uri);
 
@@ -117,12 +118,12 @@ public class MyHttpHandlerOnDirectory extends AMyHttpHandler {
 				if (indexFile == null) {
 					if (f.canRead()) {
 						retour.setContent(listDirectory(uri, f));
-						retour.mimeType(eMimeTypes.html);
-						retour.status(MyHttpResponse.Status.OK);
+						retour.mimeType(MediaType.TEXT_HTML);
+						retour.status(Response.Status.OK.getStatusCode());
 					} else {
 						retour.setContent(String.format("Won't serve %s no read access", f.getAbsolutePath()));
-						retour.mimeType(eMimeTypes.txt);
-						retour.status(MyHttpResponse.Status.FORBIDDEN);
+						retour.mimeType(MediaType.TEXT_PLAIN);
+						retour.status(Response.Status.FORBIDDEN.getStatusCode());
 					}
 				}
 			}

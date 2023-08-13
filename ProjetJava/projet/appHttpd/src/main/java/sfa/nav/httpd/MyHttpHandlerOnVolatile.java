@@ -11,23 +11,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.LoggerFactory;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.sun.net.httpserver.HttpExchange;
 
-import sfa.nav.httpd.MyHttpResponse.Status;
-import sfa.nav.httpd.MyHttpResponse.eMimeTypes;
-import sfa.nav.httpd.ws.navigation.WSModeleImpl;
+import sfa.nav.httpd.ws.infra.WSContratForWSQuery;
+import sfa.nav.httpd.ws.navigation.WSCalculsAngulaires;
 import sfa.nav.httpd.ws.navigation.WSNavigationImpl;
-import sfa.nav.model.LatitudeFactory;
-import sfa.nav.model.LongitudeFactory;
-import sfa.nav.model.PointGeographique;
-import sfa.nav.model.PointGeographiqueFactory;
-import sfa.nav.model.tools.DataLoxodromieCapDistance;
-import sfa.nav.nav.calculs.CalculsDeNavigation;
 
 public class MyHttpHandlerOnVolatile extends AMyHttpHandler {
 	private static final Logger logger = LoggerFactory.getLogger(MyHttpHandlerOnVolatile.class);
@@ -89,7 +84,8 @@ public class MyHttpHandlerOnVolatile extends AMyHttpHandler {
 		}
 		if ((markdownSource == null) || (bytes == null))
 			return null;
-		return MyHttpResponse.newFixedLengthResponse(Status.OK, MyHttpResponse.MIME_HTML,
+		return MyHttpResponse.newFixedLengthResponse(Response.Status.OK.getStatusCode(), 
+				MediaType.TEXT_HTML,
 				new ByteArrayInputStream(bytes), bytes.length);
 
 	}
@@ -123,15 +119,15 @@ public class MyHttpHandlerOnVolatile extends AMyHttpHandler {
 			
 			WSContratForWSQuery query = new Gson().fromJson(new String(message, StandardCharsets.UTF_8), WSContratForWSQuery.class);
 
-			WSModeleImpl wsnav = new WSModeleImpl(query);
+			WSCalculsAngulaires wsnav = new WSCalculsAngulaires(query);
 			MyRequestInfo wsResponse = wsnav.response();
 			
 			ret = wsResponse;
 		}
 		else {
-			ret.mimeType(eMimeTypes.txt);
+			ret.mimeType(MediaType.TEXT_HTML);
 			ret.setContent("KO");
-			ret.status(Status.INTERNAL_ERROR);
+			ret.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
 		}
 		return ret;
 	}

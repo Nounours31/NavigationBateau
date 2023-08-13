@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -173,9 +176,9 @@ public abstract class AMyHttpHandler implements IMyHttpHandler {
 		logger.debug("resultat de la requete: {}", requestInfo);
 
 		String encoding = StandardCharsets.UTF_8.name();
-		String s = String.format("%s; charset=%s", requestInfo.mimeType().getHttpVal(), encoding);		
+		String s = String.format("%s; charset=%s", requestInfo.mimeType(), encoding);		
 		httpExchange.getResponseHeaders().set("Content-Type", s);
-		httpExchange.sendResponseHeaders(requestInfo.status().asHTTPResponseCode(), requestInfo.length());
+		httpExchange.sendResponseHeaders(requestInfo.status(), requestInfo.length());
 
 		outputStream.write(requestInfo.getBytes());
 		outputStream.flush();
@@ -231,17 +234,20 @@ public abstract class AMyHttpHandler implements IMyHttpHandler {
 	}
 
 	protected MyHttpResponse getForbiddenResponse(String s) {
-		return MyHttpResponse.newFixedLengthResponse(MyHttpResponse.Status.FORBIDDEN, MyHttpResponse.MIME_PLAINTEXT,
+		return MyHttpResponse.newFixedLengthResponse(Response.Status.FORBIDDEN.getStatusCode(), 
+				MediaType.TEXT_PLAIN,
 				"FORBIDDEN: " + s);
 	}
 
 	protected MyHttpResponse getInternalErrorResponse(String s) {
-		return MyHttpResponse.newFixedLengthResponse(MyHttpResponse.Status.INTERNAL_ERROR,
-				MyHttpResponse.MIME_PLAINTEXT, "INTERNAL ERROR: " + s);
+		return MyHttpResponse.newFixedLengthResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+				MediaType.TEXT_PLAIN,
+				"INTERNAL ERROR: " + s);
 	}
 
 	protected MyHttpResponse getNotFoundResponse() {
-		return MyHttpResponse.newFixedLengthResponse(MyHttpResponse.Status.NOT_FOUND, MyHttpResponse.MIME_PLAINTEXT,
+		return MyHttpResponse.newFixedLengthResponse(Response.Status.NOT_FOUND.getStatusCode(), 
+				MediaType.TEXT_PLAIN,
 				"Error 404, file not found.");
 	}
 

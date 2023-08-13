@@ -1,2 +1,2 @@
 rootProject.name = 'JavaNav'
-include('appLib', 'appTest', 'appCli', 'appNanoHttpd', 'appHttpd')
+include('appLib', 'appTest', 'appCli', 'appHttpd', 'appLibWS')
