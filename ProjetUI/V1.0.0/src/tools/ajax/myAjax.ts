@@ -60,7 +60,7 @@ export class myAjax {
         xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify(query));
         let retour : WSContratForWSResponse = {};
-        if (xhr.status === 200) {
+        if (xhr.status < 500)  {
             retour = JSON.parse (xhr.responseText) as WSContratForWSResponse;
         }
         myAjax.log.debug ("synchrofetch return", retour);

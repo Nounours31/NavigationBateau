@@ -19,5 +19,6 @@ export class MainPage {
         headerDiv.appendChild (footer.getHtmlAsDom());
 
         header.activate();
+        menu.activate();
     }
   }

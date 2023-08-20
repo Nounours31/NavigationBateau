@@ -89,7 +89,7 @@ public class CalculAnguilaireRestService {
     			response.status = Response.Status.OK.getStatusCode();
     		}
     		catch(Exception e) {
-    			response.status = Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();;
+    			response.status = Response.Status.BAD_REQUEST.getStatusCode();;
     			response.addError(e.getMessage());
     		}
     	}
