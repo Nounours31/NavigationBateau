@@ -9,4 +9,5 @@ public class Declinaison extends Latitude {
 		super();
 	}
 
+
 }
