@@ -3,6 +3,8 @@ package sfa.nav.astro.calculs;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
+import sfa.nav.model.AngleOriente;
+import sfa.nav.model.AngleOrienteFactory;
 import sfa.nav.model.Declinaison;
 import sfa.nav.model.DeclinaisonFactory;
 import sfa.nav.model.VitesseAngulaire;
@@ -19,6 +21,9 @@ public class Ephemerides {
 		ParGradiant, parInterval;
 	}
 	
+	// --------------------------------------------
+	// Une point des ephemerides
+	// --------------------------------------------
 	private class Ephemeride {
 		private Angle GHA; 
 		private Declinaison declinaison; 
@@ -49,7 +54,7 @@ public class Ephemerides {
 					+ ", varDecli=" + varDecli + ", type=" + type + "]";
 		}
 
-		public double heureEnSeconde() {
+		public double heureRefEnSeconde() {
 			return heureEnSeconde;
 		}
 		public Declinaison declinaison() {
@@ -65,6 +70,7 @@ public class Ephemerides {
 			return varDecli;
 		}
 	}
+
 	
 	final private Ephemeride ephe1;
 	final private Ephemeride ephe2;
@@ -90,7 +96,7 @@ public class Ephemerides {
 		return declinaisonParVitesse(heureObservation);
 	}
 	
-	public Angle AngleHoraireLocal_AHL_LHA(double heureObservation) throws NavException {
+	public AngleOriente AngleHoraireLocal_AHL_LHA(double heureObservation) throws NavException {
 		if (type == EphemeridesType.parInterval)  
 				return AngleHoraireLocal_AHL_LHA_ParInterval(heureObservation);
 		return AngleHoraireLocal_AHL_LHA_ParVitesse(heureObservation);
@@ -99,50 +105,50 @@ public class Ephemerides {
 
 	private Declinaison declinaisonParVitesse(double dateObservationEnSecondes) throws NavException {
 		if (logger.isDebugEnabled()) {
-			logger.debug("Observation: {} - Heure de ref {}", new Date((long)dateObservationEnSecondes), new Date((long)ephe1.heureEnSeconde()));
+			logger.debug("Observation: {} - Heure de ref {}", new Date((long)dateObservationEnSecondes), new Date((long)ephe1.heureRefEnSeconde()));
 		}
 		
-		double dureeEnSeconde = (dateObservationEnSecondes - ephe1.heureEnSeconde());
+		double dureeEnSeconde = (dateObservationEnSecondes - ephe1.heureRefEnSeconde());
 		double interpolation = ephe1.declinaison().asDegre() + ephe1.variationDeclinaison().asDegreParSeconde() * dureeEnSeconde;
 		Declinaison retour = DeclinaisonFactory.fromDegre(interpolation);
 		return retour;
 	}
 
-	private Angle AngleHoraireLocal_AHL_LHA_ParVitesse(double dateObservationEnSecondes) {
+	private AngleOriente AngleHoraireLocal_AHL_LHA_ParVitesse(double dateObservationEnSecondes) {
 		if (logger.isDebugEnabled()) {
-			logger.debug("Observation: {} - Heure de ref {}", new Date((long)dateObservationEnSecondes), new Date((long)ephe1.heureEnSeconde()));
+			logger.debug("Observation: {} - Heure de ref {}", new Date((long)dateObservationEnSecondes), new Date((long)ephe1.heureRefEnSeconde()));
 		}
 		
-		double dureeEnSeconde = (dateObservationEnSecondes - ephe1.heureEnSeconde());
+		double dureeEnSeconde = (dateObservationEnSecondes - ephe1.heureRefEnSeconde());
 		double interpolation = ephe1.GHA().asDegre() + ephe1.variationHA().asDegreParSeconde() * dureeEnSeconde ;
-		Angle retour = AngleFactory.fromDegre(interpolation);
+		AngleOriente retour = AngleOrienteFactory.fromDegre(interpolation);
 		return retour;
 	}
 
 
 	private Declinaison declinaisonParInterval(double dateObservationEnSecondes) throws NavException {
-		boolean isValid = ((ephe1.heureEnSeconde() <= dateObservationEnSecondes) && (dateObservationEnSecondes <= ephe2.heureEnSeconde()));
+		boolean isValid = ((ephe1.heureRefEnSeconde() <= dateObservationEnSecondes) && (dateObservationEnSecondes <= ephe2.heureRefEnSeconde()));
 		if (!isValid)
 			throw new NavException("Date observation pas entre les deux bornes");
 		
-		double gradiant = (ephe2.declinaison().asDegre() - ephe1.declinaison().asDegre()) / (ephe2.heureEnSeconde() - ephe1.heureEnSeconde());
+		double gradiant = (ephe2.declinaison().asDegre() - ephe1.declinaison().asDegre()) / (ephe2.heureRefEnSeconde() - ephe1.heureRefEnSeconde());
 	
-		double interpolation = gradiant * dateObservationEnSecondes + ephe1.declinaison().asDegre();
+		double interpolation = gradiant * (dateObservationEnSecondes - ephe1.heureRefEnSeconde()) + ephe1.declinaison().asDegre();
 		Declinaison retour = DeclinaisonFactory.fromDegre(interpolation);
 		
 		return retour;
 	}
 
 
-	private Angle AngleHoraireLocal_AHL_LHA_ParInterval(double dateObservationEnSecondes) throws NavException {
-		boolean isValid = ((ephe1.heureEnSeconde() <= dateObservationEnSecondes) && (dateObservationEnSecondes <= ephe2.heureEnSeconde()));
+	private AngleOriente AngleHoraireLocal_AHL_LHA_ParInterval(double dateObservationEnSecondes) throws NavException {
+		boolean isValid = ((ephe1.heureRefEnSeconde() <= dateObservationEnSecondes) && (dateObservationEnSecondes <= ephe2.heureRefEnSeconde()));
 		if (!isValid)
 			throw new NavException("Date observation pas entre les deux bornes");
 		
-		double gradiant = (ephe2.GHA().asDegre() - ephe1.GHA().asDegre()) /  (ephe2.heureEnSeconde() - ephe1.heureEnSeconde());
+		double gradiant = (ephe2.GHA().asDegre() - ephe1.GHA().asDegre()) /  (ephe2.heureRefEnSeconde() - ephe1.heureRefEnSeconde());
 	
-		double interpolation = gradiant * dateObservationEnSecondes + ephe1.GHA().asDegre();
-		Angle retour = AngleFactory.fromDegre(interpolation);
+		double interpolation = gradiant * (dateObservationEnSecondes - ephe1.heureRefEnSeconde()) + ephe1.GHA().asDegre();
+		AngleOriente retour = AngleOrienteFactory.fromDegre(interpolation);
 		return retour;
 	}
 

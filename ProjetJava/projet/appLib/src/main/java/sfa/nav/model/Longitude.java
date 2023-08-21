@@ -19,6 +19,7 @@ public class Longitude extends Angle {
 
 	protected Longitude() {
 		super();
+		super.setOriente();
 	}
 
 	@Override
@@ -28,13 +29,7 @@ public class Longitude extends Angle {
 
 	@Override
 	public double asDegre() {
-		if (getSens() == ePointsCardinaux.Est) {
-			return super.asDegre();
-		} else if (getSens() == ePointsCardinaux.Ouest) {
-			return super.asDegre() - 360.0;
-		}
-		logger.error("Longitude invalide");
-		return 0.0;
+		return super.asDegre();
 	}
 
 	@Override
@@ -49,23 +44,29 @@ public class Longitude extends Angle {
 	}
 
 	public ePointsCardinaux getSens() {
-		if (super.asDegre() <= 180.0)
+		if ((super.asDegre() >= 0.0) && (super.asDegre() <= 180.0))
 			return ePointsCardinaux.Est;
-		if (super.asDegre() > 180.0)
+		if ((super.asDegre() < 0.0) && (super.asDegre() >= -180.0))
 			return ePointsCardinaux.Ouest;
 		return ePointsCardinaux.Error;
 	}
 
-	public void inverseSens() {
-		set(super.asDegre() * (-1.0));
-	}
 
 	public static boolean isValideAngleInDegre(double x) {
-		Angle a = AngleFactory.fromDegre(x);
-		if (a.asDegre() <= 180.0)
-			return true;
-		if (a.asDegre() > 180.0)
+		if (Math.abs(x) <= 180.0)
 			return true;
 		return false;
+	}
+	
+	public Longitude plusDegre(double variationLongitudeEnDegre) {
+		double inDegre = this.asDegre();
+		inDegre += variationLongitudeEnDegre;
+		
+		Angle a = AngleFactory.fromDegre(inDegre);
+		if (a.asDegre() < 180.0)
+			return LongitudeFactory.fromDegre(inDegre);
+		
+		inDegre = a.asDegre() - 360.0;
+		return LongitudeFactory.fromDegre(inDegre);
 	}
 }

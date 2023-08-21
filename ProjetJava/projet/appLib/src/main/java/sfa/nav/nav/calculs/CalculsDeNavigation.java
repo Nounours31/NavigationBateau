@@ -123,8 +123,7 @@ public class CalculsDeNavigation {
 			double latitudeMoyenne = (Depart.latitude().asRadian() + latArrivee.asRadian()) / 2.0;
 			double variationLongitudeEnDegre = 1.0 * d.distanceInMilleNautique() * Math.sin(routeFond.asRadian())
 					/ Math.abs((60.0 * Math.cos(latitudeMoyenne)));
-			Longitude longitudeArrivee = LongitudeFactory
-					.fromDegre(Depart.longitude().asDegre() + variationLongitudeEnDegre);
+			Longitude longitudeArrivee = Depart.longitude().plusDegre(variationLongitudeEnDegre);
 
 			pg = PointGeographiqueFactory.fromLatLong(latArrivee, longitudeArrivee);
 		} else {

@@ -16,6 +16,7 @@ public class Latitude extends Angle {
 
 	protected Latitude() {
 		super();
+		super.setOriente();
 	}
 
 	@Override
@@ -25,13 +26,7 @@ public class Latitude extends Angle {
 
 	@Override
 	public double asDegre() {
-		if (getSens() == ePointsCardinaux.Nord) {
-			return super.asDegre();
-		} else if (getSens() == ePointsCardinaux.Sud) {
-			return super.asDegre() - 360.0;
-		}
-		logger.error("Latitude invalide");
-		return 0.0;
+		return super.asDegre();
 	}
 
 	@Override
@@ -46,23 +41,25 @@ public class Latitude extends Angle {
 	}
 
 	public ePointsCardinaux getSens() {
-		if (super.asDegre() <= 90.0)
+		if ((super.asDegre() >= 0.0) && (super.asDegre() <= 90.0))
 			return ePointsCardinaux.Nord;
-		if (super.asDegre() >= 270.0)
+		if ((super.asDegre() < 0.0) && (super.asDegre() >= -90.0))
 			return ePointsCardinaux.Sud;
 		return ePointsCardinaux.Error;
 	}
 
-	public void inverseSens() {
-		set(asDegre() * (-1.0));
-	}
 
 	public static boolean isValideAngleInDegre(double x) {
-		Angle a = AngleFactory.fromDegre(x);
-		if (a.asDegre() <= 90.0)
-			return true;
-		if (a.asDegre() >= 270.0)
+		if (Math.abs(x) <= 90.0)
 			return true;
 		return false;
 	}
+	
+	public Latitude plusDegre(double variationEnDegre) {
+		double inDegre = this.asDegre();
+		inDegre += variationEnDegre;
+		
+		return LatitudeFactory.fromDegre(inDegre);		
+	}
+
 }

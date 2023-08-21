@@ -32,13 +32,13 @@ public class LatitudeFactory extends Latitude {
 	static public Latitude fromString (String s) throws NavException  {
 		final String regex = "^([0-9\\.°'\\\"]+)[ \\t]*([NSns])$";
 
-		Angle a;
+		AngleOriente a;
 
 		final Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(s);
 		if (matcher.find()) {
 			if ((matcher.group(1) != null) && (matcher.group(1).length() > 0)) {
-				a = AngleFactory.fromString(matcher.group(1));
+				a = AngleOrienteFactory.fromString(matcher.group(1));
 
 				if (Math.abs(a.asDegre()) <= 90.0) {
 					double dSens = 0.0;
@@ -46,7 +46,7 @@ public class LatitudeFactory extends Latitude {
 						String sSens = matcher.group(2).toLowerCase();
 						if (sSens.equals("s")) dSens = -1.0;
 						if (sSens.equals("n")) dSens = +1.0;
-						a = AngleFactory.fromDegre(a.asDegre() * dSens);
+						a = AngleOrienteFactory.fromDegre(a.asDegre() * dSens);
 						
 						return LatitudeFactory.fromAngle(a);
 					}					

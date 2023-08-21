@@ -5,7 +5,9 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ SiteNaveAstro.class, 
-	EphemeridesTest.class,})
+	EphemeridesTest.class,
+	CorrectionsTest.class,
+	})
 
 public class zNavAstroTestSuite {
 }

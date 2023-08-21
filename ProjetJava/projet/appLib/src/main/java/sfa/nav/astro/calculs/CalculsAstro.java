@@ -63,7 +63,7 @@ public class CalculsAstro {
 		D = (Declinaison) DeclinaisonFactory.fromDegre(Math.abs(newDeclinaison));
 		if (newDeclinaison < 0.0) {
 			//D.setSens((newDeclinaison < 0.0) ? eSensByPointsCardinaux.inverse(DReference.getSens()) : DReference.getSens());
-			D.inverseSens();
+			// D.inverseSens();
 		}
 		_logger.debug("H  {}", HMeusure);
 		_logger.debug("H1 {}", hReference);
@@ -96,7 +96,7 @@ public class CalculsAstro {
 		D = (Declinaison) LatitudeFactory.fromDegre(Math.abs(newDeclinaison));
 		if (newDeclinaison < 0.0) {
 			//D.setSens((newDeclinaison < 0.0) ? eSensByPointsCardinaux.Sud : eSensByPointsCardinaux.Nord);
-			D.inverseSens();
+			//D.inverseSens();
 		}
 		
 		_logger.debug("H1 {}", hDebutInterval);

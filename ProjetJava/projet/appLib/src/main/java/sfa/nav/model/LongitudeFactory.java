@@ -40,7 +40,7 @@ public class LongitudeFactory extends Longitude {
 	static public Longitude fromString (String s) throws NavException {
 		final String regex = "^([0-9\\.°'\\\"]+)[ \\t]*([OoWwEe])$";
 		
-    	Angle a;
+    	AngleOriente a;
         
         final Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(s);
@@ -51,7 +51,7 @@ public class LongitudeFactory extends Longitude {
 			}
         	
         	if ((matcher.group(1) != null) && (matcher.group(1).length() > 0))
-        		a = AngleFactory.fromString(matcher.group(1));
+        		a = AngleOrienteFactory.fromString(matcher.group(1));
         	else
         		throw new NavException(Constantes.IncapabledeDecodeUneLongitude + "("+s+")");
         	
@@ -67,7 +67,7 @@ public class LongitudeFactory extends Longitude {
         		else
             		throw new NavException(Constantes.IncapabledeDecodeUneLongitude + " [W(-) ou E(+)]("+s+")");
         	}
-        	a = AngleFactory.fromDegre(a.asDegre() * dSens);
+        	a = AngleOrienteFactory.fromDegre(a.asDegre() * dSens);
         }
         else 
         	throw new NavException(Constantes.IncapabledeDecodeUneLongitude + "("+s+")");

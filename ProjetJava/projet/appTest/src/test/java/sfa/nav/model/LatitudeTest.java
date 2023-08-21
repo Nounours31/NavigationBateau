@@ -1,6 +1,7 @@
 package sfa.nav.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -66,9 +67,25 @@ public class LatitudeTest extends Angle {
 		assertEquals(a.asDegre(), 360.0 + d, epsilon);
 
 		l = LatitudeFactory.fromAngle(a);
+		assertNull(l);
+	}
+
+	@Test
+	public void test002_FromAngleOriente () throws NavException {
+		AngleOriente a;
+		double d = 10.0;
+		a = AngleOrienteFactory.fromDegre(d);
+		assertEquals(a.asDegre(), d, epsilon);
+
+		Latitude l = LatitudeFactory.fromAngle(a);
 		assertEquals(l.asDegre(), d, epsilon);
 
+		d = -10.0;
+		a = AngleOrienteFactory.fromDegre(d);
+		assertEquals(a.asDegre(), -10.0, epsilon);
 
+		l = LatitudeFactory.fromAngle(a);
+		assertEquals(l.asDegre(), d, epsilon);
 	}
 
 	@Test

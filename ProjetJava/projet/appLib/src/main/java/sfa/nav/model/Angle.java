@@ -8,6 +8,7 @@ import sfa.nav.model.tools.ToStringOptions.eToStringMode;
 
 public class Angle {
 	private double _angleInDegre;
+	private boolean _isOriente = false;
 
 	protected Angle() {
 		set(0);
@@ -21,8 +22,8 @@ public class Angle {
 		return _angleInDegre;
 	}
 
-	protected void set(double d, boolean isOriente) {
-		if (!isOriente) { 
+	protected void set(double d) {
+		if (!_isOriente) { 
 			while (d >= 360.0)
 				d -= 360.0;
 	
@@ -32,9 +33,6 @@ public class Angle {
 		_angleInDegre = d;
 	}
 
-	protected void set(double d) {
-		set (d, false);
-	}
 
 	@Override
 	public String toString() {
@@ -89,6 +87,10 @@ public class Angle {
 	public Angle multiplyByDouble(double coef) {
 		this.set(this._angleInDegre * coef);
 		return this;
+	}
+
+	public void setOriente() {
+		_isOriente = true;
 	}
 
 }
