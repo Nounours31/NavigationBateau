@@ -21,14 +21,19 @@ public class Angle {
 		return _angleInDegre;
 	}
 
-	protected void set(double d) {
-		while (d >= 360.0)
-			d -= 360.0;
-
-		while (d < 0.0)
-			d += 360.0;
-
+	protected void set(double d, boolean isOriente) {
+		if (!isOriente) { 
+			while (d >= 360.0)
+				d -= 360.0;
+	
+			while (d < 0.0)
+				d += 360.0;
+		}	
 		_angleInDegre = d;
+	}
+
+	protected void set(double d) {
+		set (d, false);
 	}
 
 	@Override

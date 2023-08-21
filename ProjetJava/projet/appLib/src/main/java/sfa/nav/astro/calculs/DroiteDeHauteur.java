@@ -1,20 +1,16 @@
 package sfa.nav.astro.calculs;
 
-import sfa.nav.astro.calculs.Ephemerides.EphemerideType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
 import sfa.nav.model.Declinaison;
-import sfa.nav.model.DeclinaisonFactory;
 import sfa.nav.model.Distance;
 import sfa.nav.model.DistanceFactory;
 import sfa.nav.model.PointGeographique;
 import sfa.nav.model.tools.Constantes;
-
-import java.util.Date;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class DroiteDeHauteur {
@@ -29,6 +25,10 @@ public class DroiteDeHauteur {
 	}
 	
 	public class DroiteHauteurPositionnee {
+		public Distance getIntercept() { return intercept; }
+		public eSensIntercept getSens() { return sens; }
+		public Angle getZ() { return Z; }
+
 		private Distance intercept;
 		private eSensIntercept sens;
 		private Angle Z;
@@ -41,69 +41,20 @@ public class DroiteDeHauteur {
 	}
 
 	
-	private Declinaison declinaisonParInterval(Ephemerides ephe1,Ephemerides ephe2, double dateObservationEnSecondes) throws NavException {
-		
-		boolean isValid = ((ephe1.heure() <= dateObservationEnSecondes) && (dateObservationEnSecondes <= ephe2.heure()));
-		if (!isValid)
-			throw new NavException("Date observation pas entre les deux bornes");
-		
-		double gradiant = (ephe2.declinaison().asDegre() - ephe1.declinaison().asDegre()) / (ephe2.heure() - ephe1.heure());
-	
-		double interpolation = gradiant * dateObservationEnSecondes + ephe1.declinaison().asDegre();
-		Declinaison retour = DeclinaisonFactory.fromDegre(interpolation);
-		return retour;
-	}
-	
-	private Declinaison declinaisonParVitesse(Ephemerides ephe, double dateObservationEnSecondes) throws NavException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Observation: {} - Heure de ref {}", new Date((long)dateObservationEnSecondes), new Date((long)ephe.heure()));
-		}
-		
-		double dureeEnSeconde = (dateObservationEnSecondes - ephe.heure())/ 1000.0;
-		double interpolation = ephe.declinaison().asDegre() + ephe.variationDeclinaison().asDegreParSeconde() * dureeEnSeconde;
-		Declinaison retour = DeclinaisonFactory.fromDegre(interpolation);
-		return retour;
-	}
 
-	private Angle AngleHoraireLocal_AHL_LHA(Ephemerides ephe1,Ephemerides ephe2, double dateObservationEnSecondes) throws NavException {
-		boolean isValid = ((ephe1.heure() <= dateObservationEnSecondes) && (dateObservationEnSecondes <= ephe2.heure()));
-		if (!isValid)
-			throw new NavException("Date observation pas entre les deux bornes");
-		
-		double gradiant = (ephe2.GHA().asDegre() - ephe1.GHA().asDegre()) /  (ephe2.heure() - ephe1.heure());
-	
-		double interpolation = gradiant * dateObservationEnSecondes + ephe1.GHA().asDegre();
-		Angle retour = AngleFactory.fromDegre(interpolation);
-		return retour;
-	}
-
-	private Angle AngleHoraireLocal_AHL_LHA(Ephemerides ephe, double dateObservationEnSecondes) throws NavException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Observation: {} - Heure de ref {}", new Date((long)dateObservationEnSecondes), new Date((long)ephe.heure()));
-		}
-		
-		double dureeEnSeconde = (dateObservationEnSecondes - ephe.heure())/ 1000.0;
-		double interpolation = ephe.GHA().asDegre() + ephe.variationHA().asDegreParSeconde() * dureeEnSeconde ;
-		Angle retour = AngleFactory.fromDegre(interpolation);
-		return retour;
-	}
 
 
 	public DroiteHauteurPositionnee droitedeHauteur (PointGeographique positionEstimee, 
 			Angle HauteurInstruentale_Hi, 
-			long heureObservation,
+			double heureObservation,
 			double hauteurOeil,
 			Angle sextan_collimasson,
-			Ephemerides ephe1,
-			Ephemerides ephe2) throws NavException {
+			Ephemerides ephe) throws NavException {
 		// Etape 1: Declinaison astre
-		Declinaison declinaisonAstreHeureObservation = (ephe1.type() == EphemerideType.parInterval ? 
-				this.declinaisonParInterval(ephe1, ephe2, heureObservation) : this.declinaisonParVitesse(ephe1, heureObservation));
+		Declinaison declinaisonAstreHeureObservation = ephe.declinaison(heureObservation);
 		
 		// Etape 2: Latitude astre
-		Angle AHL_LHA = (ephe1.type() == EphemerideType.parInterval ? 
-				this.AngleHoraireLocal_AHL_LHA(ephe1, ephe2, heureObservation) : this.AngleHoraireLocal_AHL_LHA(ephe1, heureObservation));
-		AHL_LHA.plus(positionEstimee.longitude());
+		Angle AHL_LHA = ephe.AngleHoraireLocal_AHL_LHA(heureObservation);
 		
 		// Etape 3: position estimee
 		
@@ -127,6 +78,7 @@ public class DroiteDeHauteur {
 
 		if (AHL_LHA.asDegre() < 180.0)
 			azimut_Z = azimut_Z - 360.0;
+		azimut_Z = Math.abs(azimut_Z);
 		
 		Angle Z = AngleFactory.fromDegre(azimut_Z);
 		

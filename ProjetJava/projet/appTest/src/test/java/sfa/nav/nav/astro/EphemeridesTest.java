@@ -14,13 +14,13 @@ import org.slf4j.LoggerFactory;
 
 import sfa.nav.astro.calculs.DroiteDeHauteur;
 import sfa.nav.astro.calculs.DroiteDeHauteur.DroiteHauteurPositionnee;
-import sfa.nav.astro.calculs.DroiteDeHauteur.eSensIntercept;
 import sfa.nav.astro.calculs.Ephemerides;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
 import sfa.nav.model.AngleOriente;
 import sfa.nav.model.AngleOrienteFactory;
+import sfa.nav.model.Declinaison;
 import sfa.nav.model.DeclinaisonFactory;
 import sfa.nav.model.Latitude;
 import sfa.nav.model.LatitudeFactory;
@@ -28,14 +28,12 @@ import sfa.nav.model.Longitude;
 import sfa.nav.model.LongitudeFactory;
 import sfa.nav.model.PointGeographique;
 import sfa.nav.model.PointGeographiqueFactory;
+import sfa.nav.model.VitesseAngulaire;
 import sfa.nav.model.VitesseAngulaireFactory;
 
 
-public class SiteNaveAstro {
-	private static final Logger logger = LoggerFactory.getLogger(SiteNaveAstro.class);
-	
-	private static final double EPISILON_ANGLE = 0.001;
-	private static final double EPISILON_DISTANCE = 0.001;
+public class EphemeridesTest {
+	private static final Logger logger = LoggerFactory.getLogger(EphemeridesTest.class);
 
 	// ------------------------------------------------------------------------------------
 	// Init zone
@@ -61,30 +59,34 @@ public class SiteNaveAstro {
 	// ------------------------------------------------------------------------------------
 	// Les tests
 	// ------------------------------------------------------------------------------------
+	final double UNEHEUREENSECONDE= 1.0 * 3600.0;
+	final double EPSILON_ANGLE = 0.001;
+	
+	@Test
+	public void test001() throws NavException {
+		Angle gha = AngleFactory.fromString("0°00");
+		Declinaison dec = DeclinaisonFactory.fromString("0°00 N");
+		VitesseAngulaire varHA = VitesseAngulaireFactory.fromDegreParHeure(0.1);
+		VitesseAngulaire varDec = VitesseAngulaireFactory.fromDegreParHeure(0.1);
+		double hRef = 1.0;
+		Ephemerides e = new Ephemerides(gha, varHA, dec, varDec, hRef);
+		
+		Angle a = e.AngleHoraireLocal_AHL_LHA(hRef + UNEHEUREENSECONDE);
+		assertEquals (a.asDegre(), 0.1, EPSILON_ANGLE);
+	}
 
 	@Test
-	public void test001_PremierCanevasDroiteHauteur() throws NavException {
-		DroiteDeHauteur dh = new DroiteDeHauteur();
-		Latitude lat = LatitudeFactory.fromString("47°29 N");
-		Longitude lon = LongitudeFactory.fromString("2°53 W");
-		PointGeographique positionEstimee = PointGeographiqueFactory.fromLatLong(lat, lon); 
-		Angle HauteurInstruentale_Hi = AngleFactory.fromString("22°59"); 
-		double heureObservation = new Date(1998, 03, 04, 15, 24, 0).getTime()/1000.0;
-		double hauteurOeil = 2;
-		AngleOriente sextan_collimasson = AngleOrienteFactory.fromString("-0°03");
-		Ephemerides ephe = new Ephemerides(AngleFactory.fromString("177°1.9'"), VitesseAngulaireFactory.fromDegreParHeure(15.002),
-				DeclinaisonFactory.fromString("6°35.9' S"), VitesseAngulaireFactory.fromDegreParHeure(1.0 / 60.0), 
-				(new Date(1998, 03, 04, 00, 00, 0).getTime()) * 1.0 / 1000.0);
+	public void test002() throws NavException {
+		Angle gha = AngleFactory.fromString("0°00");
+		Declinaison dec = DeclinaisonFactory.fromString("0°00 N");
+		double hRef = 1.0;
+
+		Angle gha2 = AngleFactory.fromString("10°00");
+		Declinaison dec2 = DeclinaisonFactory.fromString("10°00 N");
+		double hRef2 = 11.0;
+		Ephemerides e = new Ephemerides(gha, dec, hRef, gha2, dec2, hRef2);
 		
-		DroiteHauteurPositionnee res = dh.droitedeHauteur ( positionEstimee, 
-				 HauteurInstruentale_Hi, 
-				 heureObservation,
-				 hauteurOeil,
-				 sextan_collimasson,
-				 ephe);
-		
-		assertEquals(res.getIntercept().distanceInMilleNautique(), 99.2025, EPISILON_DISTANCE);
-		assertEquals(res.getSens(), eSensIntercept.versPg);
-		assertEquals(res.getZ().asDegre(), 232.65, EPISILON_ANGLE);
+		Angle a = e.AngleHoraireLocal_AHL_LHA(hRef + 5);
+		assertEquals(a.asDegre(), 6.0, EPSILON_ANGLE);
 	}
 }
