@@ -9,6 +9,7 @@ import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
 import sfa.nav.model.AngleOriente;
+import sfa.nav.model.AngleOrienteFactory;
 import sfa.nav.model.Declinaison;
 import sfa.nav.model.Distance;
 import sfa.nav.model.DistanceFactory;
@@ -51,8 +52,7 @@ public class DroiteDeHauteur {
 			Angle HauteurInstruentale_Hi, 
 			double heureObservationSecondeEpoch,
 			double hauteurOeil,
-			AngleOriente sextan_exentricite,
-			AngleOriente sextan_collimasson,
+			ErreurSextan sextanErr,
 			Ephemerides ephe) throws NavException {
 		// Etape 1: Declinaison astre
 		Declinaison declinaisonAstreHeureObservation = ephe.declinaison(heureObservationSecondeEpoch);
@@ -70,12 +70,12 @@ public class DroiteDeHauteur {
 		
 		
 		// Etape 5: Intercept
-		ErreurSextan sextanErr = new ErreurSextan(sextan_collimasson, sextan_exentricite);
 		CorrectionDeVisee cv = new CorrectionDeVisee(eTypeCorrection.soleil, sextanErr);
-		double hauteurVraie_Hv = cv.correctionEnDegre(HauteurInstruentale_Hi, hauteurOeil, eBordSoleil.inf);
-		double interceptEnDegre = hauteurVraie_Hv - hauteurCalculee_Hc;
+		AngleOriente correction = AngleOrienteFactory.fromDegre(cv.correctionEnDegre(HauteurInstruentale_Hi, hauteurOeil, eBordSoleil.inf));
+		Angle  hauteurVraie_Hv = HauteurInstruentale_Hi.plus(correction);
+		double interceptEnDegre = hauteurVraie_Hv.asDegre() - aHauteurCalculee_Hc.asDegre();
 		Distance intercept = DistanceFactory.fromMn(interceptEnDegre * 60.00);
-		eSensIntercept sens =  (intercept.distanceInKm() > 0 ? eSensIntercept.versPg : eSensIntercept.opposePg);
+		eSensIntercept sens =  (intercept.distanceInMilleNautique() > 0 ? eSensIntercept.versPg : eSensIntercept.opposePg);
 		
 		// Etape 6: Azimut
 		double azimut_Z = Constantes.RAD2DEG * Math.acos(

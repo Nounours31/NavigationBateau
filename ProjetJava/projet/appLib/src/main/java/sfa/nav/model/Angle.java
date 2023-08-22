@@ -11,7 +11,7 @@ public class Angle {
 	private boolean _isOriente = false;
 
 	protected Angle() {
-		set(0);
+		_internalSetInDegre(0);
 	}
 
 	public double asRadian() {
@@ -22,14 +22,20 @@ public class Angle {
 		return _angleInDegre;
 	}
 
-	protected void set(double d) {
+	protected void _internalSetInDegre(double d) {
 		if (!_isOriente) { 
 			while (d >= 360.0)
 				d -= 360.0;
 	
 			while (d < 0.0)
 				d += 360.0;
-		}	
+		} else {
+			while (d >= 360.0)
+				d -= 360.0;
+	
+			while (d <= -360.0)
+				d += 360.0;			
+		}
 		_angleInDegre = d;
 	}
 
@@ -80,12 +86,12 @@ public class Angle {
 	}
 
 	public Angle plus(Angle dz) {
-		this.set(this._angleInDegre + dz._angleInDegre);
+		this._internalSetInDegre(this._angleInDegre + dz._angleInDegre);
 		return this;
 	}
 
 	public Angle multiplyByDouble(double coef) {
-		this.set(this._angleInDegre * coef);
+		this._internalSetInDegre(this._angleInDegre * coef);
 		return this;
 	}
 

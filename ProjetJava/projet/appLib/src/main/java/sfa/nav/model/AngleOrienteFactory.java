@@ -35,7 +35,7 @@ public class AngleOrienteFactory extends AngleOriente {
         	
         	try {
         		Angle a = AngleFactory.fromString(matcher.group(2));
-        		retour.set(signe * a.asDegre());
+        		retour._internalSetInDegre(signe * a.asDegre());
         	}
         	catch (Exception e) {
         		throw new NavException("ceci n'est pas un Angle oriente: " + s + " err: " + e.getMessage());
@@ -50,7 +50,7 @@ public class AngleOrienteFactory extends AngleOriente {
 	
 	static public AngleOriente fromDegre (double x) {
 		AngleOriente retour = new AngleOriente();
-		retour.set(x);
+		retour._internalSetInDegre(x);
 		return retour;
 	}
 	

@@ -26,7 +26,7 @@ public class LongitudeFactory extends Longitude {
 	static public Longitude fromDegre (double x)  {
 		Longitude l = new Longitude();
 		if (Longitude.isValideAngleInDegre(x)) {
-			l.set(x);
+			l._internalSetInDegre(x);
 			return l;	
 		}
 		return null;

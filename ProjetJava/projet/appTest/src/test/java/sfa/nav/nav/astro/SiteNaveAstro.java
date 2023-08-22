@@ -16,6 +16,7 @@ import sfa.nav.astro.calculs.DroiteDeHauteur;
 import sfa.nav.astro.calculs.DroiteDeHauteur.DroiteHauteurPositionnee;
 import sfa.nav.astro.calculs.DroiteDeHauteur.eSensIntercept;
 import sfa.nav.astro.calculs.Ephemerides;
+import sfa.nav.astro.calculs.CorrectionDeVisee.ErreurSextan;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
@@ -69,24 +70,27 @@ public class SiteNaveAstro {
 		Longitude lon = LongitudeFactory.fromString("2°53 W");
 		PointGeographique positionEstimee = PointGeographiqueFactory.fromLatLong(lat, lon); 
 		Angle HauteurInstruentale_Hi = AngleFactory.fromString("22°59"); 
-		double heureObservation = new Date(1998, 03, 04, 15, 24, 0).getTime()/1000.0;
+		double heureObservation = new Date(1998, 03, 04, 15, 24, 0).getTime() * 1.0 / 1000.0;
 		double hauteurOeil = 2;
 		AngleOriente sextan_exentricite = AngleOrienteFactory.fromString("0°0");
 		AngleOriente sextan_collimasson = AngleOrienteFactory.fromString("-0°03");
-		Ephemerides ephe = new Ephemerides(AngleFactory.fromString("177°1.9'"), VitesseAngulaireFactory.fromDegreParHeure(15.002),
-				DeclinaisonFactory.fromString("6°35.9' S"), VitesseAngulaireFactory.fromDegreParHeure(1.0 / 60.0), 
+		ErreurSextan errSextan = new ErreurSextan(sextan_collimasson, sextan_exentricite);
+		
+		Ephemerides ephe = new Ephemerides(
+				AngleFactory.fromString("177°1.9'"),        VitesseAngulaireFactory.fromDegreParHeure(15.002),		// 15 deg/h
+				DeclinaisonFactory.fromString("6°35.9' S"), VitesseAngulaireFactory.fromDegreParHeure(1.0 / 60.0),  // 1 minute/heure
 				(new Date(1998, 03, 04, 00, 00, 0).getTime()) * 1.0 / 1000.0);
+		
 		
 		DroiteHauteurPositionnee res = dh.droitedeHauteur ( positionEstimee, 
 				 HauteurInstruentale_Hi, 
 				 heureObservation,
 				 hauteurOeil,
-				 sextan_exentricite,
-				 sextan_collimasson,
+				 errSextan,
 				 ephe);
 		
-		assertEquals(res.getIntercept().distanceInMilleNautique(), 99.2025, EPISILON_DISTANCE);
+		assertEquals(res.getIntercept().distanceInMilleNautique(), 96.7025, EPISILON_DISTANCE);
 		assertEquals(res.getSens(), eSensIntercept.versPg);
-		assertEquals(res.getZ().asDegre(), 127.3503, EPISILON_ANGLE);
+		assertEquals(res.getZ().asDegre(), 232.6496, EPISILON_ANGLE);
 	}
 }

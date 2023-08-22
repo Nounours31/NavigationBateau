@@ -23,7 +23,7 @@ public class LatitudeFactory extends Latitude {
 	static public Latitude fromDegre (double x)  {
 		if (Latitude.isValideAngleInDegre(x)) {
 			Latitude l = new Latitude();
-			l.set(x);
+			l._internalSetInDegre(x);
 			return l;
 		}
 		return null;

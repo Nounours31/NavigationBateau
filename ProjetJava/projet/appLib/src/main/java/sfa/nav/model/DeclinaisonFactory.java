@@ -6,7 +6,7 @@ public class DeclinaisonFactory {
 	
 	static public Declinaison fromDegre (double x) throws NavException {
 		Declinaison retour = new Declinaison();
-		retour.set(x);
+		retour._internalSetInDegre(x);
 		return retour;
 	}
 

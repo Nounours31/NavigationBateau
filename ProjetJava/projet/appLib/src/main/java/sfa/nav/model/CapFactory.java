@@ -4,13 +4,13 @@ public class CapFactory {
 	
 	static public Cap fromDegre (double x)  {
 		Cap retour = new Cap();
-		retour.set(x);
+		retour._internalSetInDegre(x);
 		return retour;
 	}
 
 	public static Cap fromAngle(Angle a)  {
 		Cap retour = new Cap();
-		retour.set(a.asDegre());
+		retour._internalSetInDegre(a.asDegre());
 		return retour;
 	}
 

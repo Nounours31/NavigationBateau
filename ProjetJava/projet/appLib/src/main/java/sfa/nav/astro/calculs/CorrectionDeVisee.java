@@ -30,12 +30,18 @@ public class CorrectionDeVisee {
 	}
 	
 	public double correctionEnDegre (Angle hauteurInstrumentale_Hi, double hauteurOeilenMetre, eBordSoleil bord) throws NavException {
+		return correctionEnDegre ( hauteurInstrumentale_Hi,  hauteurOeilenMetre, bord, false);
+	}
+
+	public double correctionEnDegre (Angle hauteurInstrumentale_Hi, double hauteurOeilenMetre, eBordSoleil bord, boolean byCalcul) throws NavException {
+		if (byCalcul)
+			return correctionEnDegreCalcul(hauteurInstrumentale_Hi, hauteurOeilenMetre, bord);
 		return correctionEnDegreAbaque(hauteurInstrumentale_Hi, hauteurOeilenMetre, bord);
 	}
 	
-	private double correctionEnDegreCalcul (double hauteurInstrumentale_Hi_enDegre, double hauteurOeil,  eBordSoleil bord) throws NavException {
+	private double correctionEnDegreCalcul (Angle hauteurInstrumentale_Hi, double hauteurOeil,  eBordSoleil bord) throws NavException {
 		
-		double hauteurObservee_Ho_enDegre = hauteurInstrumentale_Hi_enDegre + err.exentricite.asDegre() + err.collimacon.asDegre();
+		double hauteurObservee_Ho_enDegre = hauteurInstrumentale_Hi.asDegre() + err.exentricite.asDegre() + err.collimacon.asDegre();
 		
 		double refractionAtmospheriqueEnMinuteDeArc = (1.77 * Math.sqrt(hauteurOeil));
 		double hauteurApparente_Har_enDegre = hauteurObservee_Ho_enDegre - refractionAtmospheriqueEnMinuteDeArc / 60.0;
@@ -52,14 +58,14 @@ public class CorrectionDeVisee {
 		if (bord == eBordSoleil.sup) {
 			hauteurParallaxe_Hv_enDegre = hauteurParallaxe_Hv_enDegre - AngleFactory.fromString("0°32").asDegre();
 		}		
-		return (-hauteurInstrumentale_Hi_enDegre + hauteurParallaxe_Hv_enDegre);
+		return (-hauteurInstrumentale_Hi.asDegre() + hauteurParallaxe_Hv_enDegre);
 	}
 	
 	private double correctionEnDegreAbaque (Angle hauteurInstrumentale_Hi, double hauteurOeil, eBordSoleil bord) {
 		boolean noInterval = false;
 		double correction = 0.0;
 		final int Hi = 0;
-		final double[] _hauteurOeil = { 0, 	2, 	3, 	4, 	5};		
+		final double[] _hauteurOeil = { 0.0, 	2.0, 	3.0, 	4.0, 	5.0};		
 		final double[][] _correctionEnMinuteDeArc = {
 				// Hi, 	0m, 	2m, 	3m, 	4m, 	5m		
 				{	6, 	7.5,	5,		4.5,	4,		3.5},
@@ -75,43 +81,57 @@ public class CorrectionDeVisee {
 				{	90,	16, 	13.5, 	13, 	12, 	12},
 		};
 		
+		int iInf = 0, iSup = 0, jInfInCorrectionTable = 0, jSupInCorrectionTable = 0, jInfInOeilTable = 0, jSupInOeilTable = 0;;
 		int i = 0;
-		int iLigne = 0, jColone = 0;
-		
-
-		i = 0;
-		while ((i < _correctionEnMinuteDeArc.length) && (_correctionEnMinuteDeArc[i][Hi] < hauteurInstrumentale_Hi.asDegre())) {
+		while ((i < _correctionEnMinuteDeArc.length) && (_correctionEnMinuteDeArc[i][Hi] <= hauteurInstrumentale_Hi.asDegre())) {
 			i++;
 		}
-		iLigne = i;
-		if ((iLigne == 0) || (iLigne == _correctionEnMinuteDeArc.length)) {
-			noInterval = true;
-			iLigne = ((iLigne == 0) ? iLigne: iLigne-1);
+		if (i == 0) {
+			iInf = iSup = 0;
+		}
+		else if (i == _correctionEnMinuteDeArc.length) {
+			iInf = iSup = _correctionEnMinuteDeArc.length - 1;
+		}
+		else {
+			iInf = i -1;
+			iSup = i;
 		}
 			
 		i = 0;
-		while ((i < _hauteurOeil.length) && (_hauteurOeil[i] < hauteurOeil)) {
+		while ((i < _hauteurOeil.length) && (_hauteurOeil[i] <= hauteurOeil)) {
 			i++;
 		}
-		jColone = i;
-		if ((jColone == 0) || (jColone == _hauteurOeil.length)) {
-			jColone = ((jColone == 0) ? 1: jColone);
-			noInterval = true;
+		if (i == 0) {
+			jInfInOeilTable = jSupInOeilTable = 0;
+			jInfInCorrectionTable = jSupInCorrectionTable = jInfInOeilTable + 1;
 		}
-		
-		if (noInterval)
-			correction = _correctionEnMinuteDeArc[iLigne][jColone];
+		else if (i == _hauteurOeil.length) {
+			jInfInOeilTable = jSupInOeilTable =  _hauteurOeil.length - 1;
+			jInfInCorrectionTable = jSupInCorrectionTable = jInfInOeilTable + 1;;
+		}
 		else {
-			double penteHauteurOeilInferieur = ((_correctionEnMinuteDeArc[iLigne][jColone -1] - _correctionEnMinuteDeArc[iLigne-1][jColone -1]) / (_correctionEnMinuteDeArc[iLigne][Hi] - _correctionEnMinuteDeArc[iLigne-1][Hi]));
-			double correctionHauteurOeilInferieur =  penteHauteurOeilInferieur * hauteurInstrumentale_Hi.asDegre() + _correctionEnMinuteDeArc[iLigne-1][jColone -1]; 
-
-			double penteHauteurOeilSuperieur = ((_correctionEnMinuteDeArc[iLigne][jColone] - _correctionEnMinuteDeArc[iLigne-1][jColone]) / (_correctionEnMinuteDeArc[iLigne][Hi] - _correctionEnMinuteDeArc[iLigne-1][Hi]));
-			double correctionHauteurOeilSuperieur =  penteHauteurOeilSuperieur * hauteurInstrumentale_Hi.asDegre() + _correctionEnMinuteDeArc[iLigne-1][jColone]; 
-
-			double pente = ((correctionHauteurOeilSuperieur - correctionHauteurOeilInferieur) / (_hauteurOeil[jColone] - _hauteurOeil[jColone-1]));
-			correction =  pente * hauteurOeil + correctionHauteurOeilInferieur; 
-
+			jInfInOeilTable = i - 1;
+			jSupInOeilTable = i;
+			jInfInCorrectionTable = jInfInOeilTable + 1;
+			jSupInCorrectionTable = jSupInOeilTable + 1;
 		}
+
+		// pente: DELTA(Correction)/DELTA(Hauteur)
+		double deltaCorrection =  (_correctionEnMinuteDeArc[iSup][jInfInCorrectionTable] - _correctionEnMinuteDeArc[iInf][jInfInCorrectionTable]);
+		double deltaHauteur = (_correctionEnMinuteDeArc[iSup][Hi] - _correctionEnMinuteDeArc[iInf][Hi]);
+		double pente = (deltaHauteur == 0.0 ? 0.0 : deltaCorrection / deltaHauteur);
+		double correctionPourHauterOeilInferieur =  pente * (hauteurInstrumentale_Hi.asDegre() - _correctionEnMinuteDeArc[iInf][Hi])  + _correctionEnMinuteDeArc[iInf][jInfInCorrectionTable]; 
+
+		deltaCorrection =  (_correctionEnMinuteDeArc[iSup][jSupInCorrectionTable] - _correctionEnMinuteDeArc[iInf][jSupInCorrectionTable]);
+		deltaHauteur = (_correctionEnMinuteDeArc[iSup][Hi] - _correctionEnMinuteDeArc[iInf][Hi]);
+		pente = (deltaHauteur == 0.0 ? 0.0 : deltaCorrection / deltaHauteur);
+		double correctionPourHauterOeilSuperieur =  pente * (hauteurInstrumentale_Hi.asDegre() - _correctionEnMinuteDeArc[iInf][Hi])  + _correctionEnMinuteDeArc[iInf][jSupInCorrectionTable]; 
+
+		deltaCorrection =  (correctionPourHauterOeilSuperieur - correctionPourHauterOeilInferieur);
+		deltaHauteur = (_hauteurOeil[jSupInOeilTable] - _hauteurOeil[jInfInOeilTable]);
+		pente = (deltaHauteur == 0.0 ? 0.0 : deltaCorrection / deltaHauteur);
+		correction =  pente * (hauteurOeil - _hauteurOeil[jInfInOeilTable])  + correctionPourHauterOeilInferieur; 
+
 		
 		
 		if (bord == eBordSoleil.etoile)

@@ -133,7 +133,8 @@ public class Ephemerides {
 		
 		double gradiant = (ephe2.declinaison().asDegre() - ephe1.declinaison().asDegre()) / (ephe2.heureRefEnSeconde() - ephe1.heureRefEnSeconde());
 	
-		double interpolation = gradiant * (dateObservationEnSecondes - ephe1.heureRefEnSeconde()) + ephe1.declinaison().asDegre();
+		double dureeEnSeconde = (dateObservationEnSecondes - ephe1.heureRefEnSeconde());
+		double interpolation = gradiant * dureeEnSeconde + ephe1.declinaison().asDegre();
 		Declinaison retour = DeclinaisonFactory.fromDegre(interpolation);
 		
 		return retour;
@@ -147,7 +148,8 @@ public class Ephemerides {
 		
 		double gradiant = (ephe2.GHA().asDegre() - ephe1.GHA().asDegre()) /  (ephe2.heureRefEnSeconde() - ephe1.heureRefEnSeconde());
 	
-		double interpolation = gradiant * (dateObservationEnSecondes - ephe1.heureRefEnSeconde()) + ephe1.GHA().asDegre();
+		double dureeEnSeconde = (dateObservationEnSecondes - ephe1.heureRefEnSeconde());
+		double interpolation = gradiant * (dureeEnSeconde) + ephe1.GHA().asDegre();
 		AngleOriente retour = AngleOrienteFactory.fromDegre(interpolation);
 		return retour;
 	}

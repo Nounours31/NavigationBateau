@@ -81,7 +81,7 @@ public class AngleFactory extends Angle {
         		seconde = seconde + Double.parseDouble(matcher.group(4)) / 100.0;
         	
         	if ((minute < 60.0) && (seconde < 60.0)) {
-	        	retour.set(heure + minute / 60.0 + seconde / (3600.0));
+	        	retour._internalSetInDegre(heure + minute / 60.0 + seconde / (3600.0));
 	        	find = true;
         	}
         }	
@@ -110,7 +110,7 @@ public class AngleFactory extends Angle {
 	        	}
 		        	
 	        	if ((minute < 60.0) && (seconde < 60.0)) {
-	        		retour.set(heure + minute / 60.0 + seconde / 3600.0);
+	        		retour._internalSetInDegre(heure + minute / 60.0 + seconde / 3600.0);
 		        	find = true;
 	        	}
 	        }	
@@ -141,7 +141,7 @@ public class AngleFactory extends Angle {
 	        	}
 		        
 	        	if (minute < 60.0) {
-		        	retour.set(heure + minute / 60.0);
+		        	retour._internalSetInDegre(heure + minute / 60.0);
 		        	find = true;
 	        	}
 	        }	
@@ -166,7 +166,7 @@ public class AngleFactory extends Angle {
 	        	}
 		        	
 	        	if (minute < 60.0) {
-	        		retour.set(heure + minute / 60.0);
+	        		retour._internalSetInDegre(heure + minute / 60.0);
 		        	find = true;
 	        	}
 	        }	
@@ -185,7 +185,7 @@ public class AngleFactory extends Angle {
 	        	if ((matcher.group(1) != null) && (matcher.group(1).length() > 0))
 	        		heure = Double.parseDouble(matcher.group(1));
 	
-	        	retour.set(heure);
+	        	retour._internalSetInDegre(heure);
 	        	find = true;
 	        }	
         }        
@@ -198,7 +198,7 @@ public class AngleFactory extends Angle {
 	
 	static public Angle fromDegre (double x) {
 		Angle retour = new Angle();
-		retour.set(x);
+		retour._internalSetInDegre(x);
 		return retour;
 	}
 	
