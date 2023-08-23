@@ -19,6 +19,12 @@ public class CorrectionDeVisee {
 		}
 		final AngleOriente collimacon;
 		final AngleOriente exentricite;
+		
+		@Override
+		public String toString() {
+			return "ErreurSextan [collimacon=" + collimacon + ", exentricite=" + exentricite + "]";
+		}
+		
 	}
 
 	private final eTypeCorrection type;
@@ -145,4 +151,11 @@ public class CorrectionDeVisee {
 		}		
 		return (-hauteurInstrumentale_Hi.asDegre() + hauteurParallaxe_Hv_enDegre);
 	}
+	
+	
+	@Override
+	public String toString() {
+		return "CorrectionDeVisee [type=" + type + ", err=" + err + "]";
+	}
+
 }
