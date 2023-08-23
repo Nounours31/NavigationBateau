@@ -27,6 +27,8 @@ import sfa.nav.model.Latitude;
 import sfa.nav.model.LatitudeFactory;
 import sfa.nav.model.Longitude;
 import sfa.nav.model.LongitudeFactory;
+import sfa.nav.model.NavDateHeure;
+import sfa.nav.model.NavDateHeureFactory;
 import sfa.nav.model.PointGeographique;
 import sfa.nav.model.PointGeographiqueFactory;
 import sfa.nav.model.VitesseAngulaireFactory;
@@ -70,7 +72,7 @@ public class SiteNaveAstro {
 		Longitude lon = LongitudeFactory.fromString("2°53 W");
 		PointGeographique positionEstimee = PointGeographiqueFactory.fromLatLong(lat, lon); 
 		Angle HauteurInstruentale_Hi = AngleFactory.fromString("22°59"); 
-		double heureObservation = new Date(1998, 03, 04, 15, 24, 0).getTime() * 1.0 / 1000.0;
+		NavDateHeure heureObservation = NavDateHeureFactory.fromString("04/03/1998 15:24:00 GMT");
 		double hauteurOeil = 2;
 		AngleOriente sextan_exentricite = AngleOrienteFactory.fromString("0°0");
 		AngleOriente sextan_collimasson = AngleOrienteFactory.fromString("-0°03");
@@ -79,7 +81,7 @@ public class SiteNaveAstro {
 		Ephemerides ephe = new Ephemerides(
 				AngleFactory.fromString("177°1.9'"),        VitesseAngulaireFactory.fromDegreParHeure(15.002),		// 15 deg/h
 				DeclinaisonFactory.fromString("6°35.9' S"), VitesseAngulaireFactory.fromDegreParHeure(1.0 / 60.0),  // 1 minute/heure
-				(new Date(1998, 03, 04, 00, 00, 0).getTime()) * 1.0 / 1000.0);
+				NavDateHeureFactory.fromString("04/03/1998 03:04:00 GMT"));
 		
 		
 		DroiteHauteurPositionnee res = dh.droitedeHauteur ( positionEstimee, 

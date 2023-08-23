@@ -77,8 +77,7 @@ public class HeureTest extends NavDateHeure {
 		NavDateHeure h = null;
 		for (HandlerStringStringString val : allVals) {
 			String s = val._v;
-			String ref = val._w.replaceAll("xxxx", formatterZ.format(instant)).replaceAll("yyyy",
-					formatterZ.format(hier));
+			String ref = val._w.replaceAll("xxxx", formatterZ.format(instant)).replaceAll("yyyy", formatterZ.format(hier));
 			h = NavDateHeureFactory.fromString(s);
 			logger.debug("Cas: {} / heure: >{}< / depuis {} -- Refrence {}", val._u, h.toString(), val._v, val._w);
 			assertEquals(h.toString(), ref);

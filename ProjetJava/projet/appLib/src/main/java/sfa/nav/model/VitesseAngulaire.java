@@ -1,7 +1,5 @@
 package sfa.nav.model;
 
-import sfa.nav.model.tools.Constantes;
-
 public class VitesseAngulaire {
 	private double vitesseInDegreParSeconde = 0.0;
 
@@ -11,6 +9,10 @@ public class VitesseAngulaire {
 
 	public double asDegreParSeconde() {
 		return vitesseInDegreParSeconde;
+	}
+
+	public double asDegreParHeure() {
+		return vitesseInDegreParSeconde * 3600.0;
 	}
 
 	@Override

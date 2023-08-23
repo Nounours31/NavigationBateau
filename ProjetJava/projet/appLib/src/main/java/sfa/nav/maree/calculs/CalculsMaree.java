@@ -76,12 +76,12 @@ public class CalculsMaree {
 		if (!isValid)
 			return null;
 
-		double DureeMaree = fin.heure().asHeureDecimale() - debut.heure().asHeureDecimale();
+		double DureeMaree = fin.heure().asHeureDecimaleEpoch() - debut.heure().asHeureDecimaleEpoch();
 		double DeltaH = hauteurRecherchee.getValInMetre() - debut.hauteur().getValInMetre();
 		double marnage = Math.abs(fin.hauteur().moins(debut.hauteur()).getValInMetre());
 		double DeltaT = (DureeMaree / (Math.PI / 2)) * Math.asin(Math.sqrt(Math.abs(DeltaH / marnage)));
 
-		NavDateHeure retour = NavDateHeureFactory.fromZonedDateTime(debut.heure().add(DeltaT));
+		NavDateHeure retour = debut.heure().plusHeureDecimale(DeltaT);
 		return retour;
 	}
 
@@ -106,10 +106,10 @@ public class CalculsMaree {
 			sens = eSensMaree.Montante;
 		}
 
-		double dureeMaree = (fin.heure().getHeureDecimaleFromEpoch() - (debut.heure().getHeureDecimaleFromEpoch()));
+		double dureeMaree = (fin.heure().asHeureDecimaleEpoch() - (debut.heure().asHeureDecimaleEpoch()));
 		double marnage = Math.abs(fin.hauteur().moins(debut.hauteur()).getValInMetre())
 				* ((sens == eSensMaree.Montante) ? 1.0 : -1.0);
-		double DeltaT = h.asHeureDecimale() - debut.heure().asHeureDecimale();
+		double DeltaT = h.asHeureDecimaleEpoch() - debut.heure().asHeureDecimaleEpoch();
 		double DeltaH = marnage * Math.pow(Math.sin((Math.PI / 2.0) * DeltaT / dureeMaree), 2.0);
 
 		Hauteur retour = new Hauteur(debut.hauteur());
@@ -142,12 +142,12 @@ public class CalculsMaree {
 			sens = eSensMaree.Montante;
 		}
 
-		double HeureMaree = (fin.heure().getHeureDecimaleFromEpoch() - (debut.heure().getHeureDecimaleFromEpoch()))
+		double HeureMaree = (fin.heure().asHeureDecimaleEpoch() - (debut.heure().asHeureDecimaleEpoch()))
 				/ 6.0;
 		double Marnage = Math.abs(fin.hauteur().moins(debut.hauteur()).getValInMetre());
 		double Douzieme = Marnage / 12.0;
 
-		double nbHeureMaree = h.getHeureDecimaleFromEpoch() - debut.heure().getHeureDecimaleFromEpoch();
+		double nbHeureMaree = h.asHeureDecimaleEpoch() - debut.heure().asHeureDecimaleEpoch();
 		nbHeureMaree = nbHeureMaree / HeureMaree;
 
 		int nbHeureEntiere = (int) Math.floor(nbHeureMaree);
@@ -188,7 +188,7 @@ public class CalculsMaree {
 		if (!isValid)
 			return null;
 
-		double HeureMaree = (fin.heure().getHeureDecimaleFromEpoch() - debut.heure().getHeureDecimaleFromEpoch()) / 6.0;
+		double HeureMaree = (fin.heure().asHeureDecimaleEpoch() - debut.heure().asHeureDecimaleEpoch()) / 6.0;
 		double Marnage = Math.abs(fin.hauteur().moins(debut.hauteur()).getValInMetre());
 		double Douzieme = Marnage / 12.0;
 
@@ -217,7 +217,7 @@ public class CalculsMaree {
 
 		double nbHeureDecimale = nbHeureMaree * HeureMaree;
 
-		NavDateHeure retour = NavDateHeureFactory.fromZonedDateTime(debut.heure().add(nbHeureDecimale));
+		NavDateHeure retour = debut.heure().plusHeureDecimale(nbHeureDecimale);
 		return retour;
 	}
 

@@ -13,6 +13,7 @@ import sfa.nav.model.AngleOrienteFactory;
 import sfa.nav.model.Declinaison;
 import sfa.nav.model.Distance;
 import sfa.nav.model.DistanceFactory;
+import sfa.nav.model.NavDateHeure;
 import sfa.nav.model.PointGeographique;
 import sfa.nav.model.tools.Constantes;
 
@@ -48,17 +49,18 @@ public class DroiteDeHauteur {
 
 
 
-	public DroiteHauteurPositionnee droitedeHauteur (PointGeographique positionEstimee, 
-			Angle HauteurInstruentale_Hi, 
-			double heureObservationSecondeEpoch,
-			double hauteurOeil,
-			ErreurSextan sextanErr,
-			Ephemerides ephe) throws NavException {
+	public DroiteHauteurPositionnee droitedeHauteur (
+			PointGeographique 	positionEstimee, 
+			Angle 				HauteurInstruentale_Hi, 
+			NavDateHeure 		heureObservation,
+			double 				hauteurOeil,
+			ErreurSextan 		sextanErr,
+			Ephemerides 		ephe) throws NavException {
 		// Etape 1: Declinaison astre
-		Declinaison declinaisonAstreHeureObservation = ephe.declinaison(heureObservationSecondeEpoch);
+		Declinaison declinaisonAstreHeureObservation = ephe.declinaison(heureObservation);
 		
 		// Etape 2: Latitude astre
-		Angle AHL_LHA = ephe.AngleHoraireLocal_AHL_LHA(heureObservationSecondeEpoch);
+		Angle AHL_LHA = ephe.AngleHoraireLocal_AHL_LHA(heureObservation);
 		
 		// Etape 3: position estimee
 		

@@ -95,7 +95,7 @@ public class MareeTest {
 		Maree m2 = new Maree(Heure2, Hauteur2, 0);
 
 		NavDateHeure h = cm.CalculHeure(m1, m2, new Hauteur(0.0), new Hauteur(5.54));
-		assertEquals(h.asHeureDecimale(), 11.0, precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), 11.0, precisionEnMinute);
 	}
 
 	@Test

@@ -53,7 +53,7 @@ public class CalculsAstro {
 		Declinaison D = new Declinaison();
 		double NbHeure = 0;
 		try {
-			NbHeure = HMeusure.moins(hReference);
+			NbHeure = HMeusure.moins(hReference).asHeureDecimaleEpoch();
 		} catch (NavException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -86,7 +86,7 @@ public class CalculsAstro {
 			_logger.error("Heure de meusure ou interval incorrect: on devrai avoir Hd < H < Hf [et on a: {} < {} < {}]", hDebutInterval.toString(), HMeusure.toString(), hFinInterval.toString());
 			throw new NavException("Heure de meusure invalide");
 		}
-		double taux = HMeusure.moins(hDebutInterval) / hFinInterval.moins(hDebutInterval);
+		double taux = HMeusure.moins(hDebutInterval).asHeureDecimaleEpoch() / hFinInterval.moins(hDebutInterval).asHeureDecimaleEpoch();
 
 
 		double declinaison1AsDouble = dDebutInterval.asDegre() * ((dDebutInterval.getSens() == ePointsCardinaux.Nord) ? (+1.0) : (-1.0)); 

@@ -58,48 +58,48 @@ public class MareeTestTordu {
 		CalculsMaree cm = new CalculsMaree();
 		Hauteur piedPilote = new Hauteur(0.0);
 		NavDateHeure h = cm.CalculHeure(m1, m2, piedPilote, new Hauteur(0.0));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("12:00").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("12:00").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeure(m1, m2, piedPilote, new Hauteur(1.0));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("13:30").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("13:30").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeure(m1, m2, piedPilote, new Hauteur(2.0));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("14:20").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("14:20").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeure(m1, m2, piedPilote, new Hauteur(3.0));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("15:00").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("15:00").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeure(m1, m2, piedPilote, new Hauteur(4.0));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("15:40").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("15:40").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeure(m1, m2, piedPilote, new Hauteur(5.0));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("16:30").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("16:30").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeure(m1, m2, piedPilote, new Hauteur(6.0));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("18:00").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("18:00").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		// --------------------------------------------------------
 
 		h = cm.CalculHeureV2(m1, m2, piedPilote, new Hauteur(0.0));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("12:00").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("12:00").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeureV2(m1, m2, piedPilote, new Hauteur(1.0));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("13:36").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("13:36").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeureV2(m1, m2, piedPilote, new Hauteur(2.0));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("14:21").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("14:21").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeureV2(m1, m2, piedPilote, new Hauteur(3.0));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("15:00").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("15:00").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeureV2(m1, m2, piedPilote, new Hauteur(4.0));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("15:38").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("15:38").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeureV2(m1, m2, piedPilote, new Hauteur(5.0));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("16:24").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("16:24").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeureV2(m1, m2, piedPilote, new Hauteur(6.0));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("18:00").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("18:00").asHeureDecimaleFromMidnight(), precisionEnMinute);
 	}
 
 	@Test
@@ -161,42 +161,42 @@ public class MareeTestTordu {
 		CalculsMaree cm = new CalculsMaree();
 		Hauteur piedPilote = new Hauteur(0.0);
 		NavDateHeure h = cm.CalculHeure(m1, m2, piedPilote, new Hauteur(0.5));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("13:00").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("13:00").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeure(m1, m2, piedPilote, new Hauteur(1.5));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("14:00").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("14:00").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeure(m1, m2, piedPilote, new Hauteur(2.5));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("14:40").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("14:40").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeure(m1, m2, piedPilote, new Hauteur(3.5));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("15:20").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("15:20").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeure(m1, m2, piedPilote, new Hauteur(4.5));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("16:00").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("16:00").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeure(m1, m2, piedPilote, new Hauteur(5.5));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("17:00").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("17:00").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		// --------------------------------------------------------
 
 		h = cm.CalculHeureV2(m1, m2, piedPilote, new Hauteur(0.5));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("13:07").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("13:07").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeureV2(m1, m2, piedPilote, new Hauteur(1.5));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("14:00").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("14:00").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeureV2(m1, m2, piedPilote, new Hauteur(2.5));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("14:41").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("14:41").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeureV2(m1, m2, piedPilote, new Hauteur(3.5));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("15:19").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("15:19").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeureV2(m1, m2, piedPilote, new Hauteur(4.5));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("16:00").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("16:00").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 		h = cm.CalculHeureV2(m1, m2, piedPilote, new Hauteur(5.5));
-		assertEquals(h.asHeureDecimale(), NavDateHeureFactory.fromString("16:53").asHeureDecimale(), precisionEnMinute);
+		assertEquals(h.asHeureDecimaleFromMidnight(), NavDateHeureFactory.fromString("16:53").asHeureDecimaleFromMidnight(), precisionEnMinute);
 
 	}
 

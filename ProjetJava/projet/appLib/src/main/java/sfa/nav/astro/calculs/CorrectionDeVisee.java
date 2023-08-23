@@ -39,30 +39,8 @@ public class CorrectionDeVisee {
 		return correctionEnDegreAbaque(hauteurInstrumentale_Hi, hauteurOeilenMetre, bord);
 	}
 	
-	private double correctionEnDegreCalcul (Angle hauteurInstrumentale_Hi, double hauteurOeil,  eBordSoleil bord) throws NavException {
-		
-		double hauteurObservee_Ho_enDegre = hauteurInstrumentale_Hi.asDegre() + err.exentricite.asDegre() + err.collimacon.asDegre();
-		
-		double refractionAtmospheriqueEnMinuteDeArc = (1.77 * Math.sqrt(hauteurOeil));
-		double hauteurApparente_Har_enDegre = hauteurObservee_Ho_enDegre - refractionAtmospheriqueEnMinuteDeArc / 60.0;
-		
-		double hauteurRefractee_Ha_enDegre = hauteurApparente_Har_enDegre - 0.97 * (1.0 / Math.tan(hauteurApparente_Har_enDegre * Constantes.DEG2RAD));
-		double hauteurParallaxe_Hv_enDegre = hauteurRefractee_Ha_enDegre;
-		
-		if (bord != eBordSoleil.etoile) {
-			hauteurParallaxe_Hv_enDegre = hauteurRefractee_Ha_enDegre + 0.15 * Math.cos(hauteurRefractee_Ha_enDegre * Constantes.DEG2RAD);
-		
-			// demi dametre
-			hauteurParallaxe_Hv_enDegre = hauteurParallaxe_Hv_enDegre + AngleFactory.fromString("0°16").asDegre();
-		}
-		if (bord == eBordSoleil.sup) {
-			hauteurParallaxe_Hv_enDegre = hauteurParallaxe_Hv_enDegre - AngleFactory.fromString("0°32").asDegre();
-		}		
-		return (-hauteurInstrumentale_Hi.asDegre() + hauteurParallaxe_Hv_enDegre);
-	}
 	
 	private double correctionEnDegreAbaque (Angle hauteurInstrumentale_Hi, double hauteurOeil, eBordSoleil bord) {
-		boolean noInterval = false;
 		double correction = 0.0;
 		final int Hi = 0;
 		final double[] _hauteurOeil = { 0.0, 	2.0, 	3.0, 	4.0, 	5.0};		
@@ -144,4 +122,27 @@ public class CorrectionDeVisee {
 		return correction;
 	}
 
+
+	
+	private double correctionEnDegreCalcul (Angle hauteurInstrumentale_Hi, double hauteurOeil,  eBordSoleil bord) throws NavException {
+		
+		double hauteurObservee_Ho_enDegre = hauteurInstrumentale_Hi.asDegre() + err.exentricite.asDegre() + err.collimacon.asDegre();
+		
+		double refractionAtmospheriqueEnMinuteDeArc = (1.77 * Math.sqrt(hauteurOeil));
+		double hauteurApparente_Har_enDegre = hauteurObservee_Ho_enDegre - refractionAtmospheriqueEnMinuteDeArc / 60.0;
+		
+		double hauteurRefractee_Ha_enDegre = hauteurApparente_Har_enDegre - 0.97 * (1.0 / Math.tan(hauteurApparente_Har_enDegre * Constantes.DEG2RAD));
+		double hauteurParallaxe_Hv_enDegre = hauteurRefractee_Ha_enDegre;
+		
+		if (bord != eBordSoleil.etoile) {
+			hauteurParallaxe_Hv_enDegre = hauteurRefractee_Ha_enDegre + 0.15 * Math.cos(hauteurRefractee_Ha_enDegre * Constantes.DEG2RAD);
+		
+			// demi dametre
+			hauteurParallaxe_Hv_enDegre = hauteurParallaxe_Hv_enDegre + AngleFactory.fromString("0°16").asDegre();
+		}
+		if (bord == eBordSoleil.sup) {
+			hauteurParallaxe_Hv_enDegre = hauteurParallaxe_Hv_enDegre - AngleFactory.fromString("0°32").asDegre();
+		}		
+		return (-hauteurInstrumentale_Hi.asDegre() + hauteurParallaxe_Hv_enDegre);
+	}
 }

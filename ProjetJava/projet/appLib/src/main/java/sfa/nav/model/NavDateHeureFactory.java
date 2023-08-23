@@ -139,7 +139,7 @@ public class NavDateHeureFactory extends NavDateHeure {
 				if ((matcher.groupCount() <= 4) && (matcher.group(3) != null))
 					secondes = Double.parseDouble(matcher.group(3).replaceAll(":", ""));
 
-				h.setTodayHeureDecimale(heure + minutes / 60.0 + secondes / 3600.0);
+				h.setTodaysecondes((long)(heure * 3600.0 + minutes * 60.0 + secondes * 1.0));
 				find = true;
 			}
 		}
@@ -151,9 +151,15 @@ public class NavDateHeureFactory extends NavDateHeure {
 		return h;
 	}
 
+	public static NavDateHeure fromSecondes(long s) {
+		NavDateHeure h = new NavDateHeure();
+		h.setEpochsecondes(s);
+		return h;
+	}
+
 	public static NavDateHeure fromHeureDecimale(double d) {
 		NavDateHeure h = new NavDateHeure();
-		h.setTodayHeureDecimale(d);
+		h.setEpochHeureDecimale(d);
 		return h;
 	}
 

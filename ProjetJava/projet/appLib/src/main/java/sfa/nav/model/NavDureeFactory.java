@@ -101,7 +101,7 @@ public class NavDureeFactory extends NavDateHeure {
 
 	public static NavDateHeure fromHeureDecimale(double d) {
 		NavDateHeure h = new NavDateHeure();
-		h.setTodayHeureDecimale(d);
+		h.setEpochHeureDecimale(d);
 		return h;
 	}
 

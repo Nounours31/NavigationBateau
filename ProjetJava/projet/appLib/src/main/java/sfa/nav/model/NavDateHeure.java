@@ -4,11 +4,14 @@
  */
 package sfa.nav.model;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,16 +29,12 @@ public class NavDateHeure {
 	private static DateTimeFormatter formatterZ = DateTimeFormatter.ofPattern("yyyy/MM/dd kk:mm:ss z");
 	private static ZoneId GMT = ZoneId.of("UTC");
 	private static ZoneId _myZone = ZoneId.of("Europe/Paris");
-	private static ZonedDateTime _ceMatinAMinuit = ZonedDateTime.of(LocalDate.now(), LocalTime.of(0, 0), _myZone);
 
 	private ZonedDateTime _value = null;
 
 	protected NavDateHeure() {
 	}
 
-	static private void initCeMatinAMinuit() {
-		_ceMatinAMinuit = ZonedDateTime.of(LocalDate.now(), LocalTime.of(0, 0), _myZone);
-	}
 
 	static public ZoneId myZone() {
 		return _myZone;
@@ -45,34 +44,43 @@ public class NavDateHeure {
 	// 'GMT+2' or 'UTC+01:00'
 	static public void myZone(String s) {
 		_myZone = ZoneId.of(s);
-		initCeMatinAMinuit();
 	}
 
-	public double getHeureDecimaleFromEpoch() {
+	public double asHeureDecimaleFromMidnight() {
+		LocalTime heureMinuit = LocalTime.of(0, 0, 0);
+		ZonedDateTime aujourdhuiMinuit = ZonedDateTime.of(_value.toLocalDate(), heureMinuit , _myZone);
+		return (_value.toEpochSecond() - aujourdhuiMinuit.toEpochSecond()) / (60.0 * 60.0);
+	}
+
+	
+	public double asHeureDecimaleEpoch() {
 		return _value.toEpochSecond() / (60.0 * 60.0);
 	}
 
-	public double asHeureDecimale() {
-		return (_value.toEpochSecond() - _ceMatinAMinuit.toEpochSecond()) / (60.0 * 60.0);
+	public void setTodaysecondes(long s) {
+		LocalTime heureMinuit = LocalTime.of(0, 0, 0);
+		ZonedDateTime aujourdhuiMinuit = ZonedDateTime.of(LocalDate.now(), heureMinuit , _myZone);
+		
+		Instant i = Instant.ofEpochSecond(aujourdhuiMinuit.toEpochSecond() + s);
+		_value = ZonedDateTime.ofInstant(i, _myZone);
 	}
 
 	public void setTodayHeureDecimale(double d) {
-		int h = (int) Math.floor(d);
-		double dMn = (d - (double) h) * 60.0;
-		int iMn = (int) Math.floor(dMn);
+		LocalTime heureMinuit = LocalTime.of(0, 0, 0);
+		ZonedDateTime aujourdhuiMinuit = ZonedDateTime.of(LocalDate.now(), heureMinuit , _myZone);
+		
+		Instant i = Instant.ofEpochSecond(aujourdhuiMinuit.toEpochSecond() + (long) (d * 60.0 * 60.0));
+		_value = ZonedDateTime.ofInstant(i, _myZone);
+	}
+	
+	public void setEpochsecondes(long s) {
+		Instant i = Instant.ofEpochSecond(s);
+		_value = ZonedDateTime.ofInstant(i, _myZone);
+	}
 
-		double dSec = (dMn - (double) iMn) * 60.0;
-		int iSec = (int) Math.floor(dSec);
-
-		double dNano = ((((d - (double) h) * 60.0 - (double) iMn) * 60.0) - iSec) * toNano;
-		int iNano = (int) dNano;
-
-		int nanoOffset = 0;
-		if (iNano > 0) {
-			nanoOffset = (int) (1.0 * toNano - iNano);
-		}
-		_value = ZonedDateTime.of(LocalDate.now(), LocalTime.of(h, iMn, iSec, iNano), _myZone);
-		_value = _value.plusNanos(nanoOffset);
+	public void setEpochHeureDecimale(double d) {
+		Instant i = Instant.ofEpochSecond((long) (d * 60.0 * 60.0));
+		_value = ZonedDateTime.ofInstant(i, _myZone);
 	}
 
 	private ZonedDateTime getHeureGMT() {
@@ -89,7 +97,7 @@ public class NavDateHeure {
 	}
 
 	public String toStringDecimale() {
-		return Double.toString(getHeureDecimaleFromEpoch());
+		return Double.toString(asHeureDecimaleEpoch());
 	}
 
 	protected void setValeur(ZonedDateTime zdt) {
@@ -108,17 +116,31 @@ public class NavDateHeure {
 		return (this._value.isAfter(h._value) || this._value.isEqual(h._value));
 	}
 
-	public ZonedDateTime add(double nbHeureDecimale) {
-		long nanosecondes = (long) (nbHeureDecimale * 60 * 60 * NavDateHeure.toNano);
-		return this._value.plusNanos(nanosecondes);
+	public NavDateHeure plusHeureDecimale(double nbHeureDecimale) {
+		return NavDateHeureFactory.fromHeureDecimale(this.asHeureDecimaleEpoch() + nbHeureDecimale);
 	}
 
-	public double moins(NavDateHeure hReference) throws NavException {
-		throw new NavException("Not implemented");
+	public NavDateHeure add(NavDateHeure h) {
+		return this.plusHeureDecimale(h.asHeureDecimaleEpoch());
+	}
+
+	public NavDateHeure moins(NavDateHeure h) throws NavException {
+		return this.moinsHeureDecimale(h.asHeureDecimaleEpoch());
+	}
+
+	public NavDateHeure moinsHeureDecimale(double nbHeureDecimale) throws NavException {
+		return NavDateHeureFactory.fromHeureDecimale(this.asHeureDecimaleEpoch() - nbHeureDecimale);
 	}
 
 	public boolean apres(NavDateHeure hFinInterval) throws NavException {
-		throw new NavException("Not implemented");
+		return !this.avantOrEqual(hFinInterval);
 	}
+
+	public static NavDateHeure moyenne(NavDateHeure debut, NavDateHeure fin) throws NavException {
+		return NavDateHeureFactory.fromHeureDecimale((fin.asHeureDecimaleEpoch() + debut.asHeureDecimaleEpoch())/ 2.0);
+	}
+
+
+
 
 }
