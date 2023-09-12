@@ -310,8 +310,8 @@ public class AngleTest extends Angle {
 	public void test101_tostring () throws NavException {
 		Angle a;
 		HandlerStringString[] allVals = {
-				new HandlerStringString("25°25.99", "025.433°[25°25'59.40\"][0.44 Rad]"),
-				new HandlerStringString("25°5'59",  "025.100°[25°05'59.00\"][0.44 Rad]"),
+				new HandlerStringString("25°25.99", "025.433°[25°25.99][25°25'59.40\"][0.44 Rad]"),
+				new HandlerStringString("25°5'59",  "025.100°[25°05.98][25°05'59.00\"][0.44 Rad]"),
 		};
 		
 		for (HandlerStringString val : allVals) {
@@ -328,10 +328,10 @@ public class AngleTest extends Angle {
 	public void test102_Coverage () throws NavException  {
 		Angle a = new Angle ();
 			a.asDegre();
-			assertEquals(a.toString(), "000.000°[00°00'00.00\"][0.00 Rad]");
+			assertEquals(a.toString(), "000.000°[00°00.00][00°00'00.00\"][0.00 Rad]");
 
 			a.asRadian();
-			assertEquals(a.toString(), "000.000°[00°00'00.00\"][0.00 Rad]");
+			assertEquals(a.toString(), "000.000°[00°00.00][00°00'00.00\"][0.00 Rad]");
 
 	}
 }

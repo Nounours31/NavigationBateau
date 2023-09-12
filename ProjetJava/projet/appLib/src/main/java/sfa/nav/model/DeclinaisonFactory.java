@@ -10,6 +10,12 @@ public class DeclinaisonFactory {
 		return retour;
 	}
 
+	static public Declinaison fromDegreSafe (double x) {
+		Declinaison retour = new Declinaison();
+		retour._internalSetInDegre(x);
+		return retour;
+	}
+
 	public static Declinaison fromString(String s) throws NavException {
 		Latitude l = LatitudeFactory.fromString(s);
 		return fromDegre (l.asDegre());

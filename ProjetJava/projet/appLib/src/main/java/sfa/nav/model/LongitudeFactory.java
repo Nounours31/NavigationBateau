@@ -24,12 +24,18 @@ public class LongitudeFactory extends Longitude {
 	}
 	
 	static public Longitude fromDegre (double x)  {
-		Longitude l = new Longitude();
-		if (Longitude.isValideAngleInDegre(x)) {
-			l._internalSetInDegre(x);
-			return l;	
-		}
-		return null;
+		while (x > 360.0)
+			x -= 360.0;
+
+		while (x < 0.0)
+			x += 360.0;
+			
+		if (x > 180.0)
+			x = x - 360.0;
+		
+		Longitude longi = new Longitude();
+		longi._internalSetInDegre(x);
+		return longi;
 	}
 	
 	public static Longitude fromDegreAndSens(double d, ePointsCardinaux sensLongiVertex) throws NavException {

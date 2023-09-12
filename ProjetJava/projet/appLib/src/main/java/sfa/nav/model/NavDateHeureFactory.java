@@ -334,4 +334,16 @@ public class NavDateHeureFactory extends NavDateHeure {
 		retour.setValeur(plus);
 		return retour;
 	}
+
+	public static NavDateHeure fromStringSafe(String s) {
+		try {
+			return fromString(s);
+		} catch (NavException e) {
+			try {
+				return fromString("1/1/2000 0:0:0 UTC");
+			} catch (NavException e1) {
+				return null;
+			}
+		}
+	}
 }

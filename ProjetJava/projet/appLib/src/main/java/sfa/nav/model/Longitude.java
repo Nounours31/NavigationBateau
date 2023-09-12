@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import sfa.nav.model.tools.ToStringOptions;
 import sfa.nav.model.tools.ePointsCardinaux;
+import sfa.nav.model.tools.ToStringOptions.eToStringMode;
 
 // -----------------------------------------------------------------
 // Une longitude, généralement notée λ, est donc une mesure angulaire sur 360° par rapport à un méridien de référence, 
@@ -43,6 +44,14 @@ public class Longitude extends Angle {
 		return "Long:" + a.myToString(opts) + " " + getSens().getTag();
 	}
 
+	public String toCanevas() {
+		ToStringOptions opts = new ToStringOptions(
+				ToStringOptions.or(eToStringMode.canevas, eToStringMode.MinuteDecimale, eToStringMode.Negatif));
+
+		Angle a = AngleFactory.fromDegre(Math.abs(this.asDegre()));
+		return "[" + a.myToString(opts) + " " + getSens().getTag() + "]";
+	}
+
 	public ePointsCardinaux getSens() {
 		if ((super.asDegre() >= 0.0) && (super.asDegre() <= 180.0))
 			return ePointsCardinaux.Est;
@@ -61,12 +70,12 @@ public class Longitude extends Angle {
 	public Longitude plusDegre(double variationLongitudeEnDegre) {
 		double inDegre = this.asDegre();
 		inDegre += variationLongitudeEnDegre;
-		
-		Angle a = AngleFactory.fromDegre(inDegre);
-		if (a.asDegre() < 180.0)
-			return LongitudeFactory.fromDegre(inDegre);
-		
-		inDegre = a.asDegre() - 360.0;
+		return LongitudeFactory.fromDegre(inDegre);
+	}
+
+	public Longitude moinsDegre(double variationLongitudeEnDegre) {
+		double inDegre = this.asDegre();
+		inDegre -= variationLongitudeEnDegre;
 		return LongitudeFactory.fromDegre(inDegre);
 	}
 }

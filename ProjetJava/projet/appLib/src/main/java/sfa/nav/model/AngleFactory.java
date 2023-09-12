@@ -48,6 +48,7 @@ public class AngleFactory extends Angle {
 	*/
 
 	
+	
 	public static Angle fromString (String s) throws NavException {
         Angle retour = new Angle();
         final Pattern pattern_regexp_3ChiffresSecondeDecimale_Groupe1DegreOptionel = Pattern.compile(regexp_3ChiffresSecondeDecimale_Groupe1DegreOptionel);
@@ -210,5 +211,14 @@ public class AngleFactory extends Angle {
 
 	static public Angle fromAngle(Angle s)  {
 		return AngleFactory.fromDegre(s.asDegre());
+	}
+
+
+	public static Angle fromStringSafe(String s) {
+		try {
+			return fromString(s);
+		} catch (NavException e) {
+			return null;
+		}
 	}
 }

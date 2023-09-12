@@ -43,39 +43,61 @@ public class Angle {
 	@Override
 	public String toString() {
 		ToStringOptions opts = new ToStringOptions(
-				ToStringOptions.or(eToStringMode.full, eToStringMode.deg, eToStringMode.rad));
+				ToStringOptions.or(eToStringMode.full, eToStringMode.deg, eToStringMode.rad, eToStringMode.MinuteDecimale));
 		return myToString(opts);
 	}
 
 	public String myToString(ToStringOptions opts) {
 		double x = this.asDegre();
+		String Signe = "";
+		if (opts.isA(eToStringMode.Negatif)) {
+			if (x < 0) Signe = "-";
+		}
+		x = Math.abs(x);
+		
 		double h = Math.floor(x);
 		double m = Math.floor((x - h) * 60.0);
+		double mDecimale = ((x - h) * 60.0);
 		double s = ((((x - h) * 60.0) - m) * 60.0);
 
 		DecimalFormat dfPosition = new DecimalFormat("000.000°");
 		DecimalFormat dfSeconde = new DecimalFormat("00.00\"");
+		DecimalFormat dfMinutDecimal = new DecimalFormat("00.00");
 		DecimalFormat dfRad = new DecimalFormat("0.00 Rad");
 		StringBuffer sb = new StringBuffer();
+		
+		String asDegre = null;
+		String asDegreDecimal = null;
+		String asMinuteDecimale = null;
+		String asRadian = null;
 
+		asDegreDecimal = dfPosition.format(x);
+		asDegre = String.format("[%s%02d°%02d'%s]", Signe, (int) Math.floor(h), (int) Math.floor(m), dfSeconde.format(s));
+		asMinuteDecimale = String.format("%s%02d°%s", Signe, (int) Math.floor(h), dfMinutDecimal.format(mDecimale));
+		
+		double asRad = this.asRadian();
+		asRadian = String.format("[%s%s]", Signe, dfRad.format(asRad));
+		
+		
 		if (opts.isA(eToStringMode.light)) {
-			sb.append(dfPosition.format(x));
+			sb.append(Signe + asDegreDecimal);
 		} else if (opts.isA(eToStringMode.full)) {
-			sb.append(dfPosition.format(x));
-
-			if (opts.isA(eToStringMode.deg))
-				sb.append(
-						String.format("[%02d°%02d'%s]", (int) Math.floor(h), (int) Math.floor(m), dfSeconde.format(s)));
-
-			if (opts.isA(eToStringMode.rad)) {
-				double asRad = this.asRadian();
-				sb.append(String.format("[%s]", dfRad.format(asRad)));
-			}
+			sb.append(Signe + asDegreDecimal + "[" + asMinuteDecimale + "]" + asDegre  + asRadian);
+		} else if (opts.isA(eToStringMode.canevas)) {
+			sb.append(asMinuteDecimale );
 		} else {
 			sb.append("xxxxxxxxxxx");
 		}
 		return sb.toString();
 	}
+	
+	public String toCanevas() {
+		ToStringOptions opts = new ToStringOptions(
+				ToStringOptions.or(eToStringMode.canevas, eToStringMode.deg, eToStringMode.MinuteDecimale, eToStringMode.Negatif));
+
+		return myToString(opts);
+	}
+
 
 	public static double DegreToRadian(double asDegre) {
 		return asDegre * Constantes.DEG2RAD;
@@ -86,13 +108,11 @@ public class Angle {
 	}
 
 	public Angle plus(Angle dz) {
-		this._internalSetInDegre(this._angleInDegre + dz._angleInDegre);
-		return this;
+		return AngleFactory.fromDegre(this._angleInDegre + dz._angleInDegre);
 	}
 
 	public Angle multiplyByDouble(double coef) {
-		this._internalSetInDegre(this._angleInDegre * coef);
-		return this;
+		return AngleFactory.fromDegre(this._angleInDegre * coef);
 	}
 
 	public void setOriente() {

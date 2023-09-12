@@ -12,6 +12,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
+import java.util.Formatter.BigDecimalLayoutForm;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,32 @@ public class NavDateHeure {
 	protected NavDateHeure() {
 	}
 
+	public enum NavMoisDeAnnee {
+		Janvier (0), Fevrier(1), Mars(2), Avril(3), Mai(4), Juin(5), Juillet(6), Aout(7), Septembre(8), Octobre(9), Novembre(10), Decembre(11);
+		
+		public static NavMoisDeAnnee FromNavDateHeure(NavDateHeure x) {
+			int i = x._value.getMonthValue();
+			switch (i) {
+			case 1: return Janvier;
+			case 2: return Fevrier;
+			case 3: return Mars;
+			case 4: return Avril;
+			case 5: return Mai;
+			case 6: return Juin;
+			case 7: return Juillet;
+			case 8: return Aout;
+			case 9: return Septembre;
+			case 10: return Octobre;
+			case 11: return Novembre;
+			case 12: return Decembre;
+			default: return Janvier;
+			}
+		}
+		
+		private final int ordinal;
+		private NavMoisDeAnnee(int i) { ordinal = i; }
+		public int indice() { return ordinal; }
+	}
 
 	static public ZoneId myZone() {
 		return _myZone;

@@ -8,7 +8,11 @@ public class ToStringOptions {
 		light(1 << 2),
 		full (1 << 3), 
 		MilleNautique(1 << 4),
-		KM(1 << 5);
+		KM(1 << 5), 
+		Negatif (1 << 6), 
+		MinuteDecimale (1 << 7), 
+		degDecimal(1 << 8), 
+		canevas (1 << 9);
 
 		final private int _val;
 		private eToStringMode(int val) {

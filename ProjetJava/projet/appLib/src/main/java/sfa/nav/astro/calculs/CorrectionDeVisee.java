@@ -1,17 +1,11 @@
 package sfa.nav.astro.calculs;
 
-import sfa.nav.astro.calculs.DroiteDeHauteur.eBordSoleil;
-import sfa.nav.infra.tools.error.NavException;
+import sfa.nav.astro.calculs.CorrectionDeVisee_TableDeNavigation.eTypeVisee;
 import sfa.nav.model.Angle;
-import sfa.nav.model.AngleFactory;
 import sfa.nav.model.AngleOriente;
-import sfa.nav.model.tools.Constantes;
+import sfa.nav.model.NavDateHeure.NavMoisDeAnnee;
 
 public class CorrectionDeVisee {
-	public enum eTypeCorrection {
-		soleil, lune, venus, mars, etoile
-	}
-
 	public static class ErreurSextan {
 		public ErreurSextan(AngleOriente sextan_collimasson, AngleOriente sextan_exentricite) {
 			collimacon = sextan_collimasson;
@@ -22,59 +16,155 @@ public class CorrectionDeVisee {
 		
 		@Override
 		public String toString() {
-			return "ErreurSextan [collimacon=" + collimacon + ", exentricite=" + exentricite + "]";
+			return "ErreurSextan [collimacon=" + collimacon 
+					+ ", exentricite=" + exentricite + "]";
+		}
+
+		public String toCanevas() {
+			return "Sextan [collimacon=[" + collimacon.toCanevas() + "], exentricite=[" + exentricite.toCanevas() + "]]";
 		}
 		
 	}
-
-	private final eTypeCorrection type;
-	private final ErreurSextan err;
 	
-	public CorrectionDeVisee (eTypeCorrection _type, ErreurSextan _err) {
-		type = _type;
+	public enum eTypeCorrectonVisee {
+		correctionSoleil, correctionLune
+	}
+
+	private final ErreurSextan err;
+	private eTypeCorrectonVisee typeCorrection;
+	
+	public CorrectionDeVisee (ErreurSextan _err) {
 		err = _err;
 	}
 	
-	public double correctionEnDegre (Angle hauteurInstrumentale_Hi, double hauteurOeilenMetre, eBordSoleil bord) throws NavException {
-		return correctionEnDegre ( hauteurInstrumentale_Hi,  hauteurOeilenMetre, bord, false);
-	}
-
-	public double correctionEnDegre (Angle hauteurInstrumentale_Hi, double hauteurOeilenMetre, eBordSoleil bord, boolean byCalcul) throws NavException {
-		if (byCalcul)
-			return correctionEnDegreCalcul(hauteurInstrumentale_Hi, hauteurOeilenMetre, bord);
-		return correctionEnDegreAbaque(hauteurInstrumentale_Hi, hauteurOeilenMetre, bord);
-	}
 	
-	
-	private double correctionEnDegreAbaque (Angle hauteurInstrumentale_Hi, double hauteurOeil, eBordSoleil bord) {
+	public double correctionEnDegreLune (Angle hauteurApparente_Ha, double hauteurOeil, eTypeVisee type, double indiceRefraction_PI) {
+		typeCorrection = eTypeCorrectonVisee.correctionLune;
 		double correction = 0.0;
-		final int Hi = 0;
-		final double[] _hauteurOeil = { 0.0, 	2.0, 	3.0, 	4.0, 	5.0};		
-		final double[][] _correctionEnMinuteDeArc = {
-				// Hi, 	0m, 	2m, 	3m, 	4m, 	5m		
-				{	6, 	7.5,	5,		4.5,	4,		3.5},
-				{	7, 	8.7,	6,		5.5, 	5, 		4.5},
-				{	8,	9.6,	7, 		6.5, 	6, 		5.5},
-				{	9, 	10.3,	8,		7,		6.5, 	6},
-				{	10, 10.8,	8.5, 	8,		7,		7},
-				{	12, 11.7,	9,		8.5, 	8, 		7.5},
-				{	15,	12.6, 	10,		9.5, 	9, 		8.5},
-				{	20,	13.5,	11, 	10.5, 	10, 	9.5},
-				{	30,	14.5,	12, 	11, 	11, 	10.5},
-				{	50, 15.3, 	13, 	12, 	12, 	11},
-				{	90,	16, 	13.5, 	13, 	12, 	12},
-		};
-		
-		int iInf = 0, iSup = 0, jInfInCorrectionTable = 0, jSupInCorrectionTable = 0, jInfInOeilTable = 0, jSupInOeilTable = 0;;
+		final int Ha = 0;
+	
 		int i = 0;
-		while ((i < _correctionEnMinuteDeArc.length) && (_correctionEnMinuteDeArc[i][Hi] <= hauteurInstrumentale_Hi.asDegre())) {
+		int iInf = 0, iSup = 0, jRefractionInf = 0, jRefractionSup = 0;
+		int borneSup = CorrectionDeVisee_TableDeNavigation._hauteurOeilEnMetre_Lune.length;
+		while ( (i < borneSup) && (CorrectionDeVisee_TableDeNavigation._hauteurOeilEnMetre_Lune[i] < hauteurOeil)) {
 			i++;
 		}
 		if (i == 0) {
 			iInf = iSup = 0;
 		}
-		else if (i == _correctionEnMinuteDeArc.length) {
-			iInf = iSup = _correctionEnMinuteDeArc.length - 1;
+		else if (i == borneSup) {
+			iSup = borneSup -1;
+			iInf = iSup;
+		}
+		else {
+			iInf = i -1;
+			iSup = i;
+		}
+		double depressionApparenteHorizon = Interpolation(
+				CorrectionDeVisee_TableDeNavigation._hauteurOeilEnMetre_Lune[iInf],
+				CorrectionDeVisee_TableDeNavigation.Lune_PremiereCorrection_Depression_EnMinuteDeArc[iInf], 
+				CorrectionDeVisee_TableDeNavigation._hauteurOeilEnMetre_Lune[iSup],
+				CorrectionDeVisee_TableDeNavigation.Lune_PremiereCorrection_Depression_EnMinuteDeArc[iSup], 
+				hauteurOeil);
+		
+		correction += depressionApparenteHorizon;
+		
+		
+		// -------------------------
+		// Paralaxe
+		final int nbHauteurApparenteInTableauCorrection = CorrectionDeVisee_TableDeNavigation.Lune_SecondeCorrection_RefractionParallaxe_Demidiametre_EnMinuteDeArc.length;
+		
+		int iHauteurAppInf = 0, iHauteurAppSup = 0;
+		i = 0;
+		while ((i < nbHauteurApparenteInTableauCorrection) && (
+				CorrectionDeVisee_TableDeNavigation.Lune_SecondeCorrection_RefractionParallaxe_Demidiametre_EnMinuteDeArc[i][Ha] <= hauteurApparente_Ha.asDegre())) {
+			i++;
+		}
+		if (i == 0) {
+			iHauteurAppInf = iHauteurAppSup = 0;
+		}
+		else if (i == nbHauteurApparenteInTableauCorrection) {
+			iHauteurAppInf = iHauteurAppSup = nbHauteurApparenteInTableauCorrection - 1;
+		}
+		else {
+			iHauteurAppInf = i -1;
+			iHauteurAppSup = i;
+		}
+			
+		i = 0;
+		while ((i < CorrectionDeVisee_TableDeNavigation.Lune_PI_HP_HorizontaleParallaxe.length) && 
+				(CorrectionDeVisee_TableDeNavigation.Lune_PI_HP_HorizontaleParallaxe[i] <= indiceRefraction_PI)) {
+			i++;
+		}
+		if (i == 0) {
+			jRefractionInf = jRefractionSup = 1;
+		}
+		else if (i == CorrectionDeVisee_TableDeNavigation.Lune_PI_HP_HorizontaleParallaxe.length) {
+			jRefractionInf = jRefractionSup = CorrectionDeVisee_TableDeNavigation.Lune_PI_HP_HorizontaleParallaxe.length;
+		}
+		else {
+			jRefractionInf = i;
+			jRefractionSup = i+1;
+		}
+
+		double correctionPourHauteurApparenteInferieur =  Interpolation (
+				CorrectionDeVisee_TableDeNavigation.Lune_SecondeCorrection_RefractionParallaxe_Demidiametre_EnMinuteDeArc[iHauteurAppSup][Ha],
+				CorrectionDeVisee_TableDeNavigation.Lune_SecondeCorrection_RefractionParallaxe_Demidiametre_EnMinuteDeArc[iHauteurAppSup][jRefractionInf],
+				CorrectionDeVisee_TableDeNavigation.Lune_SecondeCorrection_RefractionParallaxe_Demidiametre_EnMinuteDeArc[iHauteurAppInf][Ha],
+				CorrectionDeVisee_TableDeNavigation.Lune_SecondeCorrection_RefractionParallaxe_Demidiametre_EnMinuteDeArc[iHauteurAppInf][jRefractionInf],
+				hauteurApparente_Ha.asDegre());
+
+		double correctionPourHauteurApparenteSuperieur = Interpolation (
+				CorrectionDeVisee_TableDeNavigation.Lune_SecondeCorrection_RefractionParallaxe_Demidiametre_EnMinuteDeArc[iHauteurAppSup][Ha],
+				CorrectionDeVisee_TableDeNavigation.Lune_SecondeCorrection_RefractionParallaxe_Demidiametre_EnMinuteDeArc[iHauteurAppSup][jRefractionSup],
+				CorrectionDeVisee_TableDeNavigation.Lune_SecondeCorrection_RefractionParallaxe_Demidiametre_EnMinuteDeArc[iHauteurAppInf][Ha],
+				CorrectionDeVisee_TableDeNavigation.Lune_SecondeCorrection_RefractionParallaxe_Demidiametre_EnMinuteDeArc[iHauteurAppInf][jRefractionSup],
+				hauteurApparente_Ha.asDegre());
+
+		correction +=  Interpolation (
+				CorrectionDeVisee_TableDeNavigation.Lune_PI_HP_HorizontaleParallaxe[jRefractionInf-1],
+				correctionPourHauteurApparenteInferieur,
+				CorrectionDeVisee_TableDeNavigation.Lune_PI_HP_HorizontaleParallaxe[jRefractionSup-1],
+				correctionPourHauteurApparenteSuperieur,
+				indiceRefraction_PI);
+
+		correction -= (err.collimacon.asDegre() * 60.0);
+		correction -= (err.exentricite.asDegre() * 60.0);
+		
+		if (type == eTypeVisee.luneBordSup) {
+			double correctionBordSup = Interpolation(
+					CorrectionDeVisee_TableDeNavigation.Lune_PI_HP_HorizontaleParallaxe[jRefractionSup -1],
+					CorrectionDeVisee_TableDeNavigation.Lune_Diametre_EnMinuteDeArc[jRefractionSup-1],
+					CorrectionDeVisee_TableDeNavigation.Lune_PI_HP_HorizontaleParallaxe[jRefractionInf -1],
+					CorrectionDeVisee_TableDeNavigation.Lune_Diametre_EnMinuteDeArc[jRefractionInf-1],
+					indiceRefraction_PI);
+			correction -= correctionBordSup;
+		}
+		
+		// correction en degre
+		correction = correction / 60.0;
+		return correction;
+	}
+
+	
+	public double correctionEnDegre (Angle hauteurInstrumentale_Hi, double hauteurOeil, NavMoisDeAnnee mois, eTypeVisee type) {
+		typeCorrection = eTypeCorrectonVisee.correctionSoleil;
+		double correction = 0.0;
+		final int Hi = 0;
+	
+		final int nbHauteurinstrumentaleInTableauCorrection = CorrectionDeVisee_TableDeNavigation.Soleil_PremiereCorrection_RefractionDepressionParallaxe_Demidiametre_EnMinuteDeArc.length;
+		
+		int iInf = 0, iSup = 0, jInfInCorrectionTable = 0, jSupInCorrectionTable = 0, jInfInOeilTable = 0, jSupInOeilTable = 0;;
+		int i = 0;
+		while ((i < nbHauteurinstrumentaleInTableauCorrection) && (
+				CorrectionDeVisee_TableDeNavigation.Soleil_PremiereCorrection_RefractionDepressionParallaxe_Demidiametre_EnMinuteDeArc[i][Hi] <= hauteurInstrumentale_Hi.asDegre())) {
+			i++;
+		}
+		if (i == 0) {
+			iInf = iSup = 0;
+		}
+		else if (i == nbHauteurinstrumentaleInTableauCorrection) {
+			iInf = iSup = nbHauteurinstrumentaleInTableauCorrection - 1;
 		}
 		else {
 			iInf = i -1;
@@ -82,15 +172,15 @@ public class CorrectionDeVisee {
 		}
 			
 		i = 0;
-		while ((i < _hauteurOeil.length) && (_hauteurOeil[i] <= hauteurOeil)) {
+		while ((i < CorrectionDeVisee_TableDeNavigation._hauteurOeilEnMetre.length) && (CorrectionDeVisee_TableDeNavigation._hauteurOeilEnMetre[i] <= hauteurOeil)) {
 			i++;
 		}
 		if (i == 0) {
 			jInfInOeilTable = jSupInOeilTable = 0;
 			jInfInCorrectionTable = jSupInCorrectionTable = jInfInOeilTable + 1;
 		}
-		else if (i == _hauteurOeil.length) {
-			jInfInOeilTable = jSupInOeilTable =  _hauteurOeil.length - 1;
+		else if (i == CorrectionDeVisee_TableDeNavigation._hauteurOeilEnMetre.length) {
+			jInfInOeilTable = jSupInOeilTable =  CorrectionDeVisee_TableDeNavigation._hauteurOeilEnMetre.length - 1;
 			jInfInCorrectionTable = jSupInCorrectionTable = jInfInOeilTable + 1;;
 		}
 		else {
@@ -100,62 +190,73 @@ public class CorrectionDeVisee {
 			jSupInCorrectionTable = jSupInOeilTable + 1;
 		}
 
-		// pente: DELTA(Correction)/DELTA(Hauteur)
-		double deltaCorrection =  (_correctionEnMinuteDeArc[iSup][jInfInCorrectionTable] - _correctionEnMinuteDeArc[iInf][jInfInCorrectionTable]);
-		double deltaHauteur = (_correctionEnMinuteDeArc[iSup][Hi] - _correctionEnMinuteDeArc[iInf][Hi]);
-		double pente = (deltaHauteur == 0.0 ? 0.0 : deltaCorrection / deltaHauteur);
-		double correctionPourHauterOeilInferieur =  pente * (hauteurInstrumentale_Hi.asDegre() - _correctionEnMinuteDeArc[iInf][Hi])  + _correctionEnMinuteDeArc[iInf][jInfInCorrectionTable]; 
+		double correctionPourHauterOeilInferieur =  Interpolation (
+				CorrectionDeVisee_TableDeNavigation.Soleil_PremiereCorrection_RefractionDepressionParallaxe_Demidiametre_EnMinuteDeArc[iSup][Hi],
+				CorrectionDeVisee_TableDeNavigation.Soleil_PremiereCorrection_RefractionDepressionParallaxe_Demidiametre_EnMinuteDeArc[iSup][jInfInCorrectionTable],
+				CorrectionDeVisee_TableDeNavigation.Soleil_PremiereCorrection_RefractionDepressionParallaxe_Demidiametre_EnMinuteDeArc[iInf][Hi],
+				CorrectionDeVisee_TableDeNavigation.Soleil_PremiereCorrection_RefractionDepressionParallaxe_Demidiametre_EnMinuteDeArc[iInf][jInfInCorrectionTable],
+				hauteurInstrumentale_Hi.asDegre());
 
-		deltaCorrection =  (_correctionEnMinuteDeArc[iSup][jSupInCorrectionTable] - _correctionEnMinuteDeArc[iInf][jSupInCorrectionTable]);
-		deltaHauteur = (_correctionEnMinuteDeArc[iSup][Hi] - _correctionEnMinuteDeArc[iInf][Hi]);
-		pente = (deltaHauteur == 0.0 ? 0.0 : deltaCorrection / deltaHauteur);
-		double correctionPourHauterOeilSuperieur =  pente * (hauteurInstrumentale_Hi.asDegre() - _correctionEnMinuteDeArc[iInf][Hi])  + _correctionEnMinuteDeArc[iInf][jSupInCorrectionTable]; 
+		double correctionPourHauterOeilSuperieur = Interpolation (
+				CorrectionDeVisee_TableDeNavigation.Soleil_PremiereCorrection_RefractionDepressionParallaxe_Demidiametre_EnMinuteDeArc[iSup][Hi],
+				CorrectionDeVisee_TableDeNavigation.Soleil_PremiereCorrection_RefractionDepressionParallaxe_Demidiametre_EnMinuteDeArc[iSup][jSupInCorrectionTable],
+				CorrectionDeVisee_TableDeNavigation.Soleil_PremiereCorrection_RefractionDepressionParallaxe_Demidiametre_EnMinuteDeArc[iInf][Hi],
+				CorrectionDeVisee_TableDeNavigation.Soleil_PremiereCorrection_RefractionDepressionParallaxe_Demidiametre_EnMinuteDeArc[iInf][jSupInCorrectionTable],
+				hauteurInstrumentale_Hi.asDegre());
 
-		deltaCorrection =  (correctionPourHauterOeilSuperieur - correctionPourHauterOeilInferieur);
-		deltaHauteur = (_hauteurOeil[jSupInOeilTable] - _hauteurOeil[jInfInOeilTable]);
-		pente = (deltaHauteur == 0.0 ? 0.0 : deltaCorrection / deltaHauteur);
-		correction =  pente * (hauteurOeil - _hauteurOeil[jInfInOeilTable])  + correctionPourHauterOeilInferieur; 
+		correction =  Interpolation (
+				CorrectionDeVisee_TableDeNavigation._hauteurOeilEnMetre[jInfInOeilTable],
+				correctionPourHauterOeilInferieur,
+				CorrectionDeVisee_TableDeNavigation._hauteurOeilEnMetre[jSupInOeilTable],
+				correctionPourHauterOeilSuperieur,
+				hauteurOeil);
 
+		correction += CorrectionDeVisee_TableDeNavigation.Soleil_DeuxiemeCorrection_BordInferieur_parmois[mois.indice()];
+
+		correction -= (err.collimacon.asDegre() * 60.0);
+		correction -= (err.exentricite.asDegre() * 60.0);
 		
+		if (type == eTypeVisee.etoile)
+			correction += (
+					(CorrectionDeVisee_TableDeNavigation.Soleil_DeuxiemeCorrection_BordInferieur_parmois[mois.indice()]
+					+ CorrectionDeVisee_TableDeNavigation.Soleil_TroisiemeCorrection_BordSuperieur_parmois[mois.indice()]) / 2.0);
 		
-		if (bord == eBordSoleil.etoile)
-			correction -= 16.0;
+		if (type == eTypeVisee.soleilBordSup)
+			correction += CorrectionDeVisee_TableDeNavigation.Soleil_TroisiemeCorrection_BordSuperieur_parmois[mois.indice()];
 		
-		if (bord == eBordSoleil.sup)
-			correction -= 32.0;
-		
+		// correction en degre
 		correction = correction / 60.0;
 		return correction;
 	}
 
 
-	
-	private double correctionEnDegreCalcul (Angle hauteurInstrumentale_Hi, double hauteurOeil,  eBordSoleil bord) throws NavException {
-		
-		double hauteurObservee_Ho_enDegre = hauteurInstrumentale_Hi.asDegre() + err.exentricite.asDegre() + err.collimacon.asDegre();
-		
-		double refractionAtmospheriqueEnMinuteDeArc = (1.77 * Math.sqrt(hauteurOeil));
-		double hauteurApparente_Har_enDegre = hauteurObservee_Ho_enDegre - refractionAtmospheriqueEnMinuteDeArc / 60.0;
-		
-		double hauteurRefractee_Ha_enDegre = hauteurApparente_Har_enDegre - 0.97 * (1.0 / Math.tan(hauteurApparente_Har_enDegre * Constantes.DEG2RAD));
-		double hauteurParallaxe_Hv_enDegre = hauteurRefractee_Ha_enDegre;
-		
-		if (bord != eBordSoleil.etoile) {
-			hauteurParallaxe_Hv_enDegre = hauteurRefractee_Ha_enDegre + 0.15 * Math.cos(hauteurRefractee_Ha_enDegre * Constantes.DEG2RAD);
-		
-			// demi dametre
-			hauteurParallaxe_Hv_enDegre = hauteurParallaxe_Hv_enDegre + AngleFactory.fromString("0°16").asDegre();
+	private double Interpolation (double xDebut, double yDebut, double xFin, double yFin, double x) {
+		if (Math.abs(xFin - xDebut) < 0.001) {
+			return (yFin + yDebut) / 2.0;
 		}
-		if (bord == eBordSoleil.sup) {
-			hauteurParallaxe_Hv_enDegre = hauteurParallaxe_Hv_enDegre - AngleFactory.fromString("0°32").asDegre();
-		}		
-		return (-hauteurInstrumentale_Hi.asDegre() + hauteurParallaxe_Hv_enDegre);
+
+		double pente = (yFin - yDebut) / (xFin - xDebut);
+		double interpolation = pente * (x - xDebut) + yDebut;
+		return interpolation;
 	}
-	
-	
+
+
 	@Override
 	public String toString() {
-		return "CorrectionDeVisee [type=" + type + ", err=" + err + "]";
+		return "CorrectionDeVisee [" + 
+				"typeCorrection=" + typeCorrection + 
+				", ErreurSextan = " + err +" ]";
 	}
+
+
+	public String forCanevas() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("CorrectionDeVisee [" + "typeCorrection=" + typeCorrection +  ", ErreurSextan = " + err.toCanevas() + " ]");
+		return sb.toString();
+	}
+	
+	
+	
+
 
 }

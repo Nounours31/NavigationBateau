@@ -143,12 +143,16 @@ public abstract class AMyHttpHandler implements IMyHttpHandler {
 		for (String key : headers.keySet()) {
 			if (eHeaderKeys.ContentType.is(key)) {
 				List<String> ContentType = headers.get(key);
-				if (!ContentType.equals("application/json")) {
+				for (String s : ContentType) {
+					if (s.equals("application/json")) {		
+						isJson = true;
+						break;
+					}
+				}
+				if (!isJson) {
 					retour.put(ERROR, String.format("ContentType non prevue %s", ContentType));
 					break;
-				} else {
-					isJson = true;
-				}
+				} 
 			}
 		}
 
@@ -192,12 +196,16 @@ public abstract class AMyHttpHandler implements IMyHttpHandler {
 		for (String key : headers.keySet()) {
 			if (eHeaderKeys.Accept.is(key)) {
 				List<String> Accept = headers.get(key);
-				if (!Accept.equals("application/json")) {
+				for (String s : Accept) {
+					if (Accept.equals("application/json")) {
+						isJson = true;
+						break;
+					}					
+				}
+				if (!isJson) {
 					requestParamValue.put(ERROR, String.format("Accept non prevue %s", Accept));
 					break;
-				} else {
-					isJson = true;
-				}
+				} 
 			}
 		}
 

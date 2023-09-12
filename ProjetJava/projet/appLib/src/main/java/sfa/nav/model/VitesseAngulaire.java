@@ -20,5 +20,9 @@ public class VitesseAngulaire {
 		return "VitesseAngulaire [vitesseInDegreParSeconde=" + vitesseInDegreParSeconde + "]";
 	}
 
+	public String toCanevas() {
+		return "[" + asDegreParHeure() + "°/h]";
+	}
+
 	
 }

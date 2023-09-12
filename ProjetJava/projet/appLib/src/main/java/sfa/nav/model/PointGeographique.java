@@ -31,4 +31,9 @@ public class PointGeographique {
 		ToStringOptions opts = new ToStringOptions(eToStringMode.light);
 		return "PtGeo [" + _latitude.myToString(opts) + ", " + _longitude.myToString(opts) + "]";
 	}
+
+	public String toCanevas() {
+		ToStringOptions opts = new ToStringOptions(eToStringMode.canevas);
+		return "PtGeo [" + _latitude.myToString(opts) + ", " + _longitude.myToString(opts) + "]";
+	}
 }
