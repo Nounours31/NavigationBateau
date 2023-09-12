@@ -61,7 +61,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 7.0);
 		double hOeil = 0.0;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil, NavMoisDeAnnee.FromNavDateHeure(heureObservation), bord );
+		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil, heureObservation, bord );
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 9.0, EPSILON_ANGLE);
@@ -72,7 +72,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 6.0);
 		double hOeil = 1.0;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil,  NavMoisDeAnnee.FromNavDateHeure(heureObservation), bord );
+		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil, heureObservation, bord );
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 6.55, EPSILON_ANGLE);
@@ -83,7 +83,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 5.0);
 		double hOeil = 1.0;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil,  NavMoisDeAnnee.FromNavDateHeure(heureObservation), bord );
+		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil, heureObservation, bord );
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 6.55, EPSILON_ANGLE);
@@ -93,7 +93,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 91.0);
 		double hOeil = 1.0;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil,  NavMoisDeAnnee.FromNavDateHeure(heureObservation), bord );
+		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil, heureObservation, bord );
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 15.05, EPSILON_ANGLE);
@@ -103,7 +103,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 6.0);
 		double hOeil = 6.0;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil,  NavMoisDeAnnee.FromNavDateHeure(heureObservation), bord );
+		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil, heureObservation, bord );
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 3.5, EPSILON_ANGLE);
@@ -114,7 +114,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 7.0);
 		double hOeil = 2.0;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil,  NavMoisDeAnnee.FromNavDateHeure(heureObservation), bord );
+		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil, heureObservation, bord );
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 6.5, EPSILON_ANGLE);
@@ -125,7 +125,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 8.0);
 		double hOeil = 1.99;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil,  NavMoisDeAnnee.FromNavDateHeure(heureObservation), bord );
+		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil, heureObservation, bord );
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 7.4125, EPSILON_ANGLE);
@@ -136,7 +136,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 8.0);
 		double hOeil = 2.01;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil,  NavMoisDeAnnee.FromNavDateHeure(heureObservation), bord );
+		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil, heureObservation, bord );
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 7.3945, EPSILON_ANGLE);
@@ -147,7 +147,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 15.0);
 		double hOeil = 2;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil,  NavMoisDeAnnee.FromNavDateHeure(heureObservation), bord );
+		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil, heureObservation, bord );
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 10.4, EPSILON_ANGLE);
@@ -158,7 +158,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 91.0);
 		double hOeil = 6;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil,  NavMoisDeAnnee.FromNavDateHeure(heureObservation), bord );
+		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil, heureObservation, bord );
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 12.0, EPSILON_ANGLE);
@@ -169,7 +169,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 15.0);
 		double hOeil = 2;
 		eTypeVisee bord = eTypeVisee.etoile;
-		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil,  NavMoisDeAnnee.FromNavDateHeure(heureObservation), bord );
+		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil, heureObservation, bord );
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, -5.599999999999, EPSILON_ANGLE);
@@ -180,7 +180,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 15.0);
 		double hOeil = 2;
 		eTypeVisee bord = eTypeVisee.soleilBordSup;
-		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil,  NavMoisDeAnnee.FromNavDateHeure(heureObservation), bord );
+		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil, heureObservation, bord );
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, -21.9, EPSILON_ANGLE);
@@ -191,12 +191,15 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 15.0);
 		double hOeil = 2;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil,  NavMoisDeAnnee.Decembre, bord );
+		
+		NavDateHeure decembre = NavDateHeureFactory.fromStringSafe("10/12/1968 10:00:00");
+		double hEnDegre = cv.correctionEnDegre(Hi,  hOeil, decembre, bord );
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 10.4, EPSILON_ANGLE);
 
-		hEnDegre = cv.correctionEnDegre(Hi,  hOeil,  NavMoisDeAnnee.Juillet, bord );
+		NavDateHeure juillet = NavDateHeureFactory.fromStringSafe("10/07/1968 10:00:00");
+		hEnDegre = cv.correctionEnDegre(Hi,  hOeil,  juillet, bord );
 		hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 9.9, EPSILON_ANGLE);
 	}

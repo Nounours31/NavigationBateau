@@ -74,7 +74,7 @@ public class EphemeridesTest {
 		NavDateHeure hRef = NavDateHeureFactory.fromString("2023/01/01 01:00:00 GMT");
 		Ephemerides e = new Ephemerides(gha, varHA, dec, varDec, hRef);
 		assertEquals (e.toString(), 
-				"Ephemerides [ephe1=Ephemerides [GHA=000.000°[00°00.00][00°00'00.00\"][0.00 Rad], declinaison=lat:000.000°[00°00.00][00°00'00.00\"][0.00 Rad] N, heureEnSeconde=2023/01/01 02:00:00 CET [2023/01/01 01:00:00 UTC], varHA=VitesseAngulaire [vitesseInDegreParSeconde=2.777777777777778E-5], varDecli=VitesseAngulaire [vitesseInDegreParSeconde=2.777777777777778E-5], type=ParGradiant], ephe2=null, type=ParGradiant]");
+				"Ephemerides [ephe1=Ephemerides [Astre= Soleil, GHA=000.000°[00°00.00][00°00'00.00\"][0.00 Rad], declinaison=lat:000.000°[00°00.00][00°00'00.00\"][0.00 Rad] N, heureEnSeconde=2023/01/01 02:00:00 CET [2023/01/01 01:00:00 UTC], varHA=VitesseAngulaire [vitesseInDegreParSeconde=2.777777777777778E-5], varDecli=VitesseAngulaire [vitesseInDegreParSeconde=2.777777777777778E-5], type=ParGradiant], ephe2=null, type=ParGradiant]");
 		
 		Angle a = e.AngleHoraireAHeureObservation(hRef.plusHeureDecimale(1.0));
 		assertEquals (a.asDegre(), 0.1, EPSILON_ANGLE);
@@ -94,7 +94,7 @@ public class EphemeridesTest {
 		NavDateHeure hRef2 = NavDateHeureFactory.fromString("2023/01/01 11:00:00 GMT");
 		Ephemerides e = new Ephemerides(gha, dec, 0.0, hRef, gha2, dec2, 0.0, hRef2);		
 		assertEquals (e.toString(), 
-				"Ephemerides [ephe1=Ephemerides [GHA=000.000°[00°00.00][00°00'00.00\"][0.00 Rad], declinaison=lat:000.000°[00°00.00][00°00'00.00\"][0.00 Rad] N, heureEnSeconde=2023/01/01 02:00:00 CET [2023/01/01 01:00:00 UTC], varHA=null, varDecli=null, type=parInterval], ephe2=Ephemerides [GHA=010.000°[10°00.00][10°00'00.00\"][0.17 Rad], declinaison=lat:010.000°[10°00.00][10°00'00.00\"][0.17 Rad] N, heureEnSeconde=2023/01/01 12:00:00 CET [2023/01/01 11:00:00 UTC], varHA=null, varDecli=null, type=parInterval], type=parInterval]"
+				"Ephemerides [ephe1=Ephemerides [Astre= Soleil, GHA=000.000°[00°00.00][00°00'00.00\"][0.00 Rad], declinaison=lat:000.000°[00°00.00][00°00'00.00\"][0.00 Rad] N, heureEnSeconde=2023/01/01 02:00:00 CET [2023/01/01 01:00:00 UTC], varHA=null, varDecli=null, type=parInterval], ephe2=Ephemerides [Astre= Soleil, GHA=010.000°[10°00.00][10°00'00.00\"][0.17 Rad], declinaison=lat:010.000°[10°00.00][10°00'00.00\"][0.17 Rad] N, heureEnSeconde=2023/01/01 12:00:00 CET [2023/01/01 11:00:00 UTC], varHA=null, varDecli=null, type=parInterval], type=parInterval]"
 );
 		Angle a = e.AngleHoraireAHeureObservation(NavDateHeure.moyenne(hRef, hRef2));
 		assertEquals(a.asDegre(), 5.0, EPSILON_ANGLE);
@@ -114,7 +114,7 @@ public class EphemeridesTest {
 		NavDateHeure hRef2 = NavDateHeureFactory.fromString("2023/01/01 11:00:00 GMT");
 		Ephemerides e = new Ephemerides(gha, dec, 0.0, hRef, gha2, dec2, 0.0, hRef2);		
 		assertEquals (e.toString(), 
-				"Ephemerides [ephe1=Ephemerides [GHA=000.000°[00°00.00][00°00'00.00\"][0.00 Rad], declinaison=lat:000.000°[00°00.00][00°00'00.00\"][0.00 Rad] N, heureEnSeconde=2023/01/01 02:00:00 CET [2023/01/01 01:00:00 UTC], varHA=null, varDecli=null, type=parInterval], ephe2=Ephemerides [GHA=010.000°[10°00.00][10°00'00.00\"][0.17 Rad], declinaison=lat:010.000°[10°00.00][10°00'00.00\"][0.17 Rad] N, heureEnSeconde=2023/01/01 12:00:00 CET [2023/01/01 11:00:00 UTC], varHA=null, varDecli=null, type=parInterval], type=parInterval]"
+				"Ephemerides [ephe1=Ephemerides [Astre= Soleil, GHA=000.000°[00°00.00][00°00'00.00\"][0.00 Rad], declinaison=lat:000.000°[00°00.00][00°00'00.00\"][0.00 Rad] N, heureEnSeconde=2023/01/01 02:00:00 CET [2023/01/01 01:00:00 UTC], varHA=null, varDecli=null, type=parInterval], ephe2=Ephemerides [Astre= Soleil, GHA=010.000°[10°00.00][10°00'00.00\"][0.17 Rad], declinaison=lat:010.000°[10°00.00][10°00'00.00\"][0.17 Rad] N, heureEnSeconde=2023/01/01 12:00:00 CET [2023/01/01 11:00:00 UTC], varHA=null, varDecli=null, type=parInterval], type=parInterval]"
 );
 		
 		Angle a = e.AngleHoraireAHeureObservation(hRef.plusHeureDecimale(0.001));
@@ -146,7 +146,7 @@ public class EphemeridesTest {
 		Declinaison dec2 = DeclinaisonFactory.fromString("10°00 S");
 		NavDateHeure hRef2 = NavDateHeureFactory.fromString("2023/01/01 11:00:00 GMT");
 		Ephemerides e = new Ephemerides(gha, dec, 0.0, hRef, gha2, dec2, 0.0, hRef2);		
-		assertEquals (e.toString(), "Ephemerides [ephe1=Ephemerides [GHA=000.000°[00°00.00][00°00'00.00\"][0.00 Rad], declinaison=lat:000.000°[00°00.00][00°00'00.00\"][0.00 Rad] N, heureEnSeconde=2023/01/01 02:00:00 CET [2023/01/01 01:00:00 UTC], varHA=null, varDecli=null, type=parInterval], ephe2=Ephemerides [GHA=010.000°[10°00.00][10°00'00.00\"][0.17 Rad], declinaison=lat:010.000°[10°00.00][10°00'00.00\"][0.17 Rad] S, heureEnSeconde=2023/01/01 12:00:00 CET [2023/01/01 11:00:00 UTC], varHA=null, varDecli=null, type=parInterval], type=parInterval]");
+		assertEquals (e.toString(), "Ephemerides [ephe1=Ephemerides [Astre= Soleil, GHA=000.000°[00°00.00][00°00'00.00\"][0.00 Rad], declinaison=lat:000.000°[00°00.00][00°00'00.00\"][0.00 Rad] N, heureEnSeconde=2023/01/01 02:00:00 CET [2023/01/01 01:00:00 UTC], varHA=null, varDecli=null, type=parInterval], ephe2=Ephemerides [Astre= Soleil, GHA=010.000°[10°00.00][10°00'00.00\"][0.17 Rad], declinaison=lat:010.000°[10°00.00][10°00'00.00\"][0.17 Rad] S, heureEnSeconde=2023/01/01 12:00:00 CET [2023/01/01 11:00:00 UTC], varHA=null, varDecli=null, type=parInterval], type=parInterval]");
 		
 		Angle a = e.AngleHoraireAHeureObservation(NavDateHeure.moyenne(hRef, hRef2));
 		assertEquals(a.asDegre(), +5.0, EPSILON_ANGLE);
@@ -164,7 +164,7 @@ public class EphemeridesTest {
 		NavDateHeure hRef = NavDateHeureFactory.fromString("2023/01/01 01:00:00 GMT");
 		Ephemerides e = new Ephemerides(gha, varHA, dec, varDec, hRef);
 		assertEquals (e.toString(), 
-				"Ephemerides [ephe1=Ephemerides [GHA=000.000°[00°00.00][00°00'00.00\"][0.00 Rad], declinaison=lat:001.000°[01°00.00][01°00'00.00\"][0.02 Rad] S, heureEnSeconde=2023/01/01 02:00:00 CET [2023/01/01 01:00:00 UTC], varHA=VitesseAngulaire [vitesseInDegreParSeconde=-2.777777777777778E-5], varDecli=VitesseAngulaire [vitesseInDegreParSeconde=-2.777777777777778E-5], type=ParGradiant], ephe2=null, type=ParGradiant]"
+				"Ephemerides [ephe1=Ephemerides [Astre= Soleil, GHA=000.000°[00°00.00][00°00'00.00\"][0.00 Rad], declinaison=lat:001.000°[01°00.00][01°00'00.00\"][0.02 Rad] S, heureEnSeconde=2023/01/01 02:00:00 CET [2023/01/01 01:00:00 UTC], varHA=VitesseAngulaire [vitesseInDegreParSeconde=-2.777777777777778E-5], varDecli=VitesseAngulaire [vitesseInDegreParSeconde=-2.777777777777778E-5], type=ParGradiant], ephe2=null, type=ParGradiant]"
 );
 		
 		Angle a = e.AngleHoraireAHeureObservation(hRef.plusHeureDecimale(1.0));

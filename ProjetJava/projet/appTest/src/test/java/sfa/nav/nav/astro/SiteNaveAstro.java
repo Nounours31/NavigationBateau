@@ -211,25 +211,30 @@ public class SiteNaveAstro {
 		AngleOriente sextan_collimasson = AngleOrienteFactory.fromString("-0°02");
 		ErreurSextan errSextan = new ErreurSextan(sextan_collimasson, sextan_exentricite);
 		
+		String astre = "Aldebaran";
 		Ephemerides epheEtoileArcturus = new Ephemerides(
+				astre,
 				AngleFactory.fromString("145°57.4"),        VitesseAngulaireFactory.fromDegreParHeure(0.0),		// 15 deg/h
 				DeclinaisonFactory.fromString("19°07.6 N"), VitesseAngulaireFactory.fromDegreParHeure(0),  // +0.96 minute/heure
 				NavDateHeureFactory.fromString("29/05/2010 00:00:00 GMT"));
 
 		Ephemerides ephePointVernal = new Ephemerides(
+				"Point Vernal - Aries",
 				AngleFactory.fromString("232°21.7"), DeclinaisonFactory.fromString("0° N"), 0.0, NavDateHeureFactory.fromString("29/05/2010 23:00:00 GMT"),
 				AngleFactory.fromString("247°24.2"), DeclinaisonFactory.fromString("0° N"), 0.0, NavDateHeureFactory.fromString("30/05/2010 00:00:00 GMT"));
 
 		
 		
-		DroiteHauteurPositionnee res = dh.droitedeHauteurEtoile ( positionEstimee, 
-				 HauteurInstruentale_Hi, 
-				 heureObservation,
-				 hauteurOeil,
-				 errSextan,
-				 ephePointVernal,
-				 epheEtoileArcturus
-				 );
+		DroiteHauteurPositionnee res = dh.droitedeHauteurEtoile ( 
+				astre,
+				positionEstimee, 
+				HauteurInstruentale_Hi, 
+				heureObservation,
+				hauteurOeil,
+				errSextan,
+				ephePointVernal,
+				epheEtoileArcturus
+		);
 		
 		assertEquals(res.getIntercept().distanceInMilleNautique(), -8.604, EPISILON_DISTANCE);
 		assertEquals(res.getSens(), eSensIntercept.opposePg);

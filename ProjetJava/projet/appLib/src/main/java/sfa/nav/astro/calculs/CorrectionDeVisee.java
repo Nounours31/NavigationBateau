@@ -3,9 +3,15 @@ package sfa.nav.astro.calculs;
 import sfa.nav.astro.calculs.CorrectionDeVisee_TableDeNavigation.eTypeVisee;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleOriente;
+import sfa.nav.model.NavDateHeure;
 import sfa.nav.model.NavDateHeure.NavMoisDeAnnee;
 
 public class CorrectionDeVisee {
+	public final ErreurSextan getErr() {
+		return err;
+	}
+
+
 	public static class ErreurSextan {
 		public ErreurSextan(AngleOriente sextan_collimasson, AngleOriente sextan_exentricite) {
 			collimacon = sextan_collimasson;
@@ -26,12 +32,13 @@ public class CorrectionDeVisee {
 		
 	}
 	
-	public enum eTypeCorrectonVisee {
+/*
+  	public enum eTypeCorrectonVisee {
 		correctionSoleil, correctionLune
 	}
-
-	private final ErreurSextan err;
 	private eTypeCorrectonVisee typeCorrection;
+*/
+	private final ErreurSextan err;
 	
 	public CorrectionDeVisee (ErreurSextan _err) {
 		err = _err;
@@ -39,7 +46,6 @@ public class CorrectionDeVisee {
 	
 	
 	public double correctionEnDegreLune (Angle hauteurApparente_Ha, double hauteurOeil, eTypeVisee type, double indiceRefraction_PI) {
-		typeCorrection = eTypeCorrectonVisee.correctionLune;
 		double correction = 0.0;
 		final int Ha = 0;
 	
@@ -147,8 +153,22 @@ public class CorrectionDeVisee {
 	}
 
 	
-	public double correctionEnDegre (Angle hauteurInstrumentale_Hi, double hauteurOeil, NavMoisDeAnnee mois, eTypeVisee type) {
-		typeCorrection = eTypeCorrectonVisee.correctionSoleil;
+	public double correctionEnDegre (Angle hauteurInstrumentale_Hi, double hauteurOeil, NavDateHeure heureObservation, eTypeVisee type) {
+		NavMoisDeAnnee mois = NavMoisDeAnnee.FromNavDateHeure(heureObservation);
+		double correction = correctionReflexionHauteurOeil(hauteurInstrumentale_Hi, hauteurOeil);
+
+
+		correction += correctionEnDegreTypeVisee(heureObservation, type);
+		correction -= (err.collimacon.asDegre() * 60.0);
+		correction -= (err.exentricite.asDegre() * 60.0);
+
+		// correction en degre
+		correction = correction / 60.0;
+		return correction;
+	}
+
+
+	public double correctionReflexionHauteurOeil(Angle hauteurInstrumentale_Hi, double hauteurOeil) {
 		double correction = 0.0;
 		final int Hi = 0;
 	
@@ -210,22 +230,6 @@ public class CorrectionDeVisee {
 				CorrectionDeVisee_TableDeNavigation._hauteurOeilEnMetre[jSupInOeilTable],
 				correctionPourHauterOeilSuperieur,
 				hauteurOeil);
-
-		correction += CorrectionDeVisee_TableDeNavigation.Soleil_DeuxiemeCorrection_BordInferieur_parmois[mois.indice()];
-
-		correction -= (err.collimacon.asDegre() * 60.0);
-		correction -= (err.exentricite.asDegre() * 60.0);
-		
-		if (type == eTypeVisee.etoile)
-			correction += (
-					(CorrectionDeVisee_TableDeNavigation.Soleil_DeuxiemeCorrection_BordInferieur_parmois[mois.indice()]
-					+ CorrectionDeVisee_TableDeNavigation.Soleil_TroisiemeCorrection_BordSuperieur_parmois[mois.indice()]) / 2.0);
-		
-		if (type == eTypeVisee.soleilBordSup)
-			correction += CorrectionDeVisee_TableDeNavigation.Soleil_TroisiemeCorrection_BordSuperieur_parmois[mois.indice()];
-		
-		// correction en degre
-		correction = correction / 60.0;
 		return correction;
 	}
 
@@ -244,19 +248,31 @@ public class CorrectionDeVisee {
 	@Override
 	public String toString() {
 		return "CorrectionDeVisee [" + 
-				"typeCorrection=" + typeCorrection + 
 				", ErreurSextan = " + err +" ]";
 	}
 
 
 	public String forCanevas() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("CorrectionDeVisee [" + "typeCorrection=" + typeCorrection +  ", ErreurSextan = " + err.toCanevas() + " ]");
+		sb.append("CorrectionDeVisee [" + "typeCorrection=" + "********" +  ", ErreurSextan = " + err.toCanevas() + " ]");
 		return sb.toString();
 	}
-	
-	
-	
 
 
+	public double correctionEnDegreTypeVisee(NavDateHeure heureObservation, eTypeVisee typeVisee) {
+		NavMoisDeAnnee mois = NavMoisDeAnnee.FromNavDateHeure(heureObservation);
+		
+		double correction = CorrectionDeVisee_TableDeNavigation.Soleil_DeuxiemeCorrection_BordInferieur_parmois[mois.indice()];
+
+		
+		if (typeVisee == eTypeVisee.etoile)
+			correction += (
+					(CorrectionDeVisee_TableDeNavigation.Soleil_DeuxiemeCorrection_BordInferieur_parmois[mois.indice()]
+					+ CorrectionDeVisee_TableDeNavigation.Soleil_TroisiemeCorrection_BordSuperieur_parmois[mois.indice()]) / 2.0);
+		
+		if (typeVisee == eTypeVisee.soleilBordSup)
+			correction += CorrectionDeVisee_TableDeNavigation.Soleil_TroisiemeCorrection_BordSuperieur_parmois[mois.indice()];
+
+		return correction;
+	}
 }

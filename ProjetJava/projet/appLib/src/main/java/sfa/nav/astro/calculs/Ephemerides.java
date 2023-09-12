@@ -35,16 +35,28 @@ public class Ephemerides {
 		private VitesseAngulaire varDecli; 
 		
 		private double piLune;
+		final private String astre;
 
-		public Ephemeride(Angle _GHA, Declinaison _dec, double _piLune, NavDateHeure _heureRef) {
+		public Ephemeride(String _astre, Angle _GHA, Declinaison _dec, double _piLune, NavDateHeure _heureRef) {
 			GHA = _GHA;
 			declinaison = _dec;
 			heureDeRef = _heureRef;
 			varHA = null;
 			varDecli = null;			
 			piLune = _piLune;
+			astre = _astre;
 		}
-		public Ephemeride(Angle _GHA, VitesseAngulaire _varHA, Declinaison _dec, VitesseAngulaire _varDecli, NavDateHeure _heureRef) {
+		
+		public Ephemeride(Angle _GHA, Declinaison _dec, NavDateHeure _heureRef) {
+			this ("Soleil", _GHA, _dec, 0.0, _heureRef);
+		}
+		
+		public Ephemeride(Angle _GHA, Declinaison _dec, double _piLune, NavDateHeure _heureRef) {
+			this ("Lune", _GHA, _dec, _piLune, _heureRef);
+		}
+
+		public Ephemeride(String _astre, Angle _GHA, VitesseAngulaire _varHA, Declinaison _dec, VitesseAngulaire _varDecli, NavDateHeure _heureRef) {
+			astre = _astre;
 			GHA = _GHA;
 			declinaison = _dec;
 			heureDeRef = _heureRef;
@@ -53,9 +65,15 @@ public class Ephemerides {
 			piLune = 0.0;
 		}
 
+		public Ephemeride(Angle _GHA, VitesseAngulaire _varHA, Declinaison _dec, VitesseAngulaire _varDecli, NavDateHeure _heureRef) {
+			this ("Soleil", _GHA, _varHA, _dec, _varDecli, _heureRef);
+		}
+
+		
+
 		@Override
 		public String toString() {
-			return "Ephemerides [GHA=" + GHA + ", declinaison=" + declinaison + ", heureEnSeconde=" + heureDeRef + ", varHA=" + varHA
+			return "Ephemerides [Astre= " + astre +", GHA=" + GHA + ", declinaison=" + declinaison + ", heureEnSeconde=" + heureDeRef + ", varHA=" + varHA
 					+ ", varDecli=" + varDecli + ", type=" + type + "]";
 		}
 
@@ -77,6 +95,9 @@ public class Ephemerides {
 		public double piLune() {
 			return piLune;
 		}
+		public String astre() {
+			return astre;
+		}
 	}
 
 	
@@ -85,13 +106,20 @@ public class Ephemerides {
 	final private EphemeridesType type; 
 	
 	public Ephemerides(Angle _GHA, Declinaison _dec, double piLune, NavDateHeure _heureRef, Angle _GHA2, Declinaison _dec2, double piLune2, NavDateHeure _heureRef2) {
-		ephe1 = new Ephemeride(_GHA, _dec, piLune, _heureRef);
-		ephe2 = new Ephemeride(_GHA2, _dec2, piLune2, _heureRef2);
+		this("Soleil", _GHA,  _dec,  piLune,  _heureRef,  _GHA2,  _dec2,  piLune2,  _heureRef2);
+	}
+	public Ephemerides(String astre, Angle _GHA, Declinaison _dec, double piLune, NavDateHeure _heureRef, Angle _GHA2, Declinaison _dec2, double piLune2, NavDateHeure _heureRef2) {
+		ephe1 = new Ephemeride(astre, _GHA, _dec, piLune, _heureRef);
+		ephe2 = new Ephemeride(astre, _GHA2, _dec2, piLune2, _heureRef2);
 		type = EphemeridesType.parInterval;
 	}
 
 	public Ephemerides(Angle _GHA, VitesseAngulaire _varHA, Declinaison _dec, VitesseAngulaire _varDecli, NavDateHeure _heureRef) {
-		ephe1 = new Ephemeride(_GHA, _varHA, _dec, _varDecli, _heureRef);
+		this("Soleil",  _GHA, _varHA,  _dec,  _varDecli,  _heureRef);
+	}
+
+	public Ephemerides(String astre, Angle _GHA, VitesseAngulaire _varHA, Declinaison _dec, VitesseAngulaire _varDecli, NavDateHeure _heureRef) {
+		ephe1 = new Ephemeride(astre, _GHA, _varHA, _dec, _varDecli, _heureRef);
 		ephe2 = null;
 		type = EphemeridesType.ParGradiant;
 	}
@@ -205,6 +233,8 @@ public class Ephemerides {
 
 	public String toCanevas(NavDateHeure dateObservation, boolean isDeclinaison, boolean isLongitude, String offset) {
 		StringBuffer sb = new StringBuffer();
+		sb.append(offset + "Astre                     = " + this.ephe1.astre() + "\n");
+		sb.append(offset + "Interval de temps " + getDureeEnHeure(dateObservation, ephe1) + "\n\n");			
 		if (type == EphemeridesType.ParGradiant) {
 			if (isDeclinaison) {
 				sb.append(offset + "DECLINAISON par gradiant :" + "\n");
@@ -222,7 +252,6 @@ public class Ephemerides {
 			}
 		}
 		else if (type == EphemeridesType.parInterval) {
-			sb.append(offset + "   interval de temps " + getDureeEnHeure(dateObservation, ephe1) + "\n\n");			
 			if (isDeclinaison) {
 				sb.append(offset + "DECLINAISON par interval" + "\n");
 				sb.append(offset + "   from: " + this.ephe1.declinaison.toCanevas() + " à " + this.ephe1.heureDeRef + "\n");

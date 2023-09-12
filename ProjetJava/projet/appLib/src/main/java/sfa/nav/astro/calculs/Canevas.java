@@ -2,6 +2,8 @@ package sfa.nav.astro.calculs;
 
 import java.nio.charset.StandardCharsets;
 
+import sfa.nav.astro.calculs.CorrectionDeVisee.ErreurSextan;
+import sfa.nav.astro.calculs.CorrectionDeVisee_TableDeNavigation.eTypeVisee;
 import sfa.nav.astro.calculs.DroiteDeHauteur.eSensIntercept;
 import sfa.nav.astro.calculs.DroiteDeHauteur.eTypeDroiteHauteur;
 import sfa.nav.model.Angle;
@@ -14,6 +16,7 @@ import sfa.nav.model.tools.ePointsCardinaux;
 public class Canevas {
 	final private eTypeDroiteHauteur type;
 
+	private String  astre = "Soleil";
 	private NavDateHeure heureVisee = null;
 
 	private Ephemerides epheAstre = null;
@@ -31,6 +34,17 @@ public class Canevas {
 	private Angle Hi = null;
 	private Angle Hv = null;
 	private CorrectionDeVisee cv = null;
+	private eTypeVisee typeVisee = eTypeVisee.inconnues;
+	public final eTypeVisee getTypeVisee() {
+		return typeVisee;
+	}
+
+
+	public final void setTypeVisee(eTypeVisee typeVisee) {
+		this.typeVisee = typeVisee;
+	}
+
+
 	private double hOeil = -9999.9;
 
 	private Angle azimut = null;
@@ -69,14 +83,14 @@ public class Canevas {
 	private String toStringForDroiteSoleil() {
 		StringBuffer canevas = new StringBuffer(); 
 		canevas.append("-----------------------------------------" + "\n");
-		canevas.append("|    CANEVAS DROITE DE HAUTEUR SOLEIL    |" + "\n");
+		canevas.append("|    CANEVAS DROITE DE HAUTEUR           |" + "\n");
 		canevas.append("-----------------------------------------" + "\n");
 		canevas.append("0- Info " + "\n");
 		canevas.append("---------" + "\n");
 		canevas.append("	a - Date Corrigee" + "\n");
 		canevas.append("		" + (heureVisee == null? "NULL" : heureVisee) + "\n");
 		canevas.append("	b - Astre" + "\n");
-		canevas.append("		Soleil" + "\n");
+		canevas.append("		"+ astre + "\n");
 		canevas.append("		Hi: " + (Hi == null? "NULL" : Hi.toCanevas()) + "\n");
 		canevas.append("	c - Position estimee" + "\n");
 		canevas.append("		" + (positionEstimee == null ? "NULL" : positionEstimee.toCanevas())+ "\n");
@@ -104,7 +118,7 @@ public class Canevas {
 				(ephePointVernal == null ? "NULL" : ephePointVernal.AngleHoraireAHeureObservation(heureVisee).toCanevas()) + " + " +
 				(epheAstre == null ? "NULL" : epheAstre.AngleHoraireAHeureObservation(heureVisee).toCanevas()) + " + " +
 				(positionEstimee == null ? "NULL" : positionEstimee.longitude().toCanevas()) +  
-				" = " + (getLHAAstre() == null ? "NULL" : getLHAAstre().toCanevas()) + "\n\n");
+				" = " + (getLHAAstre() == null ? "NULL" : getLHAAstre().toCanevas()) + "        "+getLHAAstre().toString()+"\n\n");
 		
 		canevas.append("3- Latitude Estimee" + "\n");
 		canevas.append("--------------------" + "\n");
@@ -117,10 +131,27 @@ public class Canevas {
 		canevas.append("5- Intercept" + "\n");
 		canevas.append("-------------" + "\n");
 		canevas.append("	=======>> " + (intercept == null ? "NULL" : intercept) + "\n\n");
+		canevas.append("	Hi         : " +  (Hi == null? "NULL" : Hi.toCanevas()) + "\n");
+		canevas.append("	Collimation: " + cv.getErr().toCanevas() + "\n");
+		canevas.append("	Tables corrections: " + cv.correctionEnDegre(Hi, hOeil, heureVisee, typeVisee)+"\n" );
+		canevas.append("	  Refraction hauteur oeil: " + cv.correctionReflexionHauteurOeil (Hi, hOeil)+"\n");
+		canevas.append("	  Par type de visee : " + cv.correctionEnDegreTypeVisee (heureVisee, typeVisee)+"\n");
+		canevas.append("	===>> Hv: " + (Hi.asDegre() + 
+											cv.getErr().collimacon.asDegre() +  
+											cv.correctionEnDegre(Hi, hOeil, heureVisee, typeVisee)) + "\n");
+		canevas.append("	          Hv = Hi + Coll + Correction 1 + Correction 2 = " + 
+											Hi.toCanevas() + " " + 
+											cv.getErr().collimacon.toCanevas() + " " + 
+											+ cv.correctionReflexionHauteurOeil (Hi, hOeil) + " " +
+											+ cv.correctionEnDegreTypeVisee (heureVisee, typeVisee) + " " +
+											"\n" );
+		canevas.append("	===>> intercept: "+ intercept +" \n" );
+		canevas.append("	===>> intercept: (Hv - Hc) * 60.0 = ("+ Hv.toCanevas() +" - " + Hc.toCanevas() + ") * 60.0 \n\n" );
 		
 		canevas.append("6- Azimut" + "\n");
 		canevas.append("----------" + "\n");
 		canevas.append("	=======>> " + (azimut == null ? "NULL" : azimut) + "\n");
+		canevas.append("	AHL = xxx < 360° \n");
 		
 		return canevas.toString();
 	}
@@ -254,6 +285,11 @@ public class Canevas {
 
 	public final void setIntercept(Distance intercept) {
 		this.intercept = intercept;
+	}
+
+
+	public void setAstre(String _astre) {
+		astre = _astre;		
 	}
 
 }

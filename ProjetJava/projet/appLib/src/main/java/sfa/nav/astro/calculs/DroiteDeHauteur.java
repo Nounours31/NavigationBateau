@@ -76,10 +76,11 @@ public class DroiteDeHauteur {
 			ErreurSextan 		sextanErr,
 			Ephemerides 		epheLune) throws NavException {
 		internalCanevas = new Canevas(eTypeDroiteHauteur.lune);
-		return droitedeHauteur(positionEstimee, HauteurInstruentale_Hi, heureObservation, hauteurOeil, sextanErr, null, epheLune, visee, eTypeDroiteHauteur.lune);
+		return droitedeHauteur("Lune", positionEstimee, HauteurInstruentale_Hi, heureObservation, hauteurOeil, sextanErr, null, epheLune, visee, eTypeDroiteHauteur.lune);
 	}
 
 	public DroiteHauteurPositionnee droitedeHauteurEtoile (
+			String 				astre,
 			PointGeographique 	positionEstimee, 
 			Angle 				HauteurInstruentale_Hi, 
 			NavDateHeure 		heureObservation,
@@ -88,7 +89,7 @@ public class DroiteDeHauteur {
 			Ephemerides 		ephePointVernal, // GHA Aries, Point vernal, AHso (Angle Horaire Sideral Origine)
 			Ephemerides 		epheEtoile) throws NavException {
 		internalCanevas = new Canevas(eTypeDroiteHauteur.etoile);
-		return this.droitedeHauteur(positionEstimee, HauteurInstruentale_Hi, heureObservation, hauteurOeil, sextanErr, ephePointVernal, epheEtoile, eTypeVisee.etoile, eTypeDroiteHauteur.etoile);
+		return this.droitedeHauteur(astre, positionEstimee, HauteurInstruentale_Hi, heureObservation, hauteurOeil, sextanErr, ephePointVernal, epheEtoile, eTypeVisee.etoile, eTypeDroiteHauteur.etoile);
 	}
 
 	public DroiteHauteurPositionnee droitedeHauteurSoleil (
@@ -100,10 +101,11 @@ public class DroiteDeHauteur {
 			ErreurSextan 		sextanErr,
 			Ephemerides 		ephe) throws NavException {
 		internalCanevas = new Canevas(eTypeDroiteHauteur.soleil);
-		return this.droitedeHauteur(positionEstimee, HauteurInstruentale_Hi, heureObservation, hauteurOeil, sextanErr, null, ephe, visee, eTypeDroiteHauteur.soleil);
+		return this.droitedeHauteur("Soleil", positionEstimee, HauteurInstruentale_Hi, heureObservation, hauteurOeil, sextanErr, null, ephe, visee, eTypeDroiteHauteur.soleil);
 	}
 
 	private DroiteHauteurPositionnee droitedeHauteur (
+			String 				astre,
 			PointGeographique 	positionEstimee, 
 			Angle 				HauteurInstruentale_Hi, 
 			NavDateHeure 		heureObservation,
@@ -114,6 +116,7 @@ public class DroiteDeHauteur {
 			eTypeVisee			visee,
 			eTypeDroiteHauteur	typeDroiteHauteur) throws NavException {
 
+		internalCanevas.setAstre(astre);
 		internalCanevas.setHeurevisee(heureObservation);
 		internalCanevas.setHauteurOeil(hauteurOeil);
 		internalCanevas.setPositionEstimee(positionEstimee);
@@ -160,13 +163,14 @@ public class DroiteDeHauteur {
 		
 		// Etape 5: Intercept
 		CorrectionDeVisee cv = new CorrectionDeVisee(sextanErr);
+		internalCanevas.setTypeVisee(visee);
 		AngleOriente correction = null;
 		if(typeDroiteHauteur == eTypeDroiteHauteur.lune) {
 			double indiceRefraction_PI = epheAstre.pi(heureObservation);	
 			correction = AngleOrienteFactory.fromDegre(cv.correctionEnDegreLune(HauteurInstruentale_Hi, hauteurOeil, visee, indiceRefraction_PI));		
 		}
 		else if((typeDroiteHauteur == eTypeDroiteHauteur.soleil) || (typeDroiteHauteur == eTypeDroiteHauteur.etoile)) {
-			correction = AngleOrienteFactory.fromDegre(cv.correctionEnDegre(HauteurInstruentale_Hi, hauteurOeil, NavMoisDeAnnee.FromNavDateHeure(heureObservation) ,visee));
+			correction = AngleOrienteFactory.fromDegre(cv.correctionEnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation ,visee));
 		}
 		else {
 			throw (new NavException("Cas non prevu " + typeDroiteHauteur));

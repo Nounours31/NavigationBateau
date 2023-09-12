@@ -4,7 +4,7 @@ import sfa.nav.model.AngleFactory;
 
 public class CorrectionDeVisee_TableDeNavigation {
 	public enum eTypeVisee {
-		soleilBordSup, soleilBordInf, luneBordSup, luneBordInf, venus, mars, etoile
+		soleilBordSup, soleilBordInf, luneBordSup, luneBordInf, planete, etoile, inconnues;
 	}
 	
 	
