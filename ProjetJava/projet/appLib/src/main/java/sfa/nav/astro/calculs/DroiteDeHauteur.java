@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sfa.nav.astro.calculs.CorrectionDeVisee.ErreurSextan;
-import sfa.nav.astro.calculs.CorrectionDeVisee_TableDeNavigation.eTypeVisee;
+import sfa.nav.astro.calculs.CorrectionDeVisee.eTypeVisee;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
@@ -116,17 +116,18 @@ public class DroiteDeHauteur {
 			eTypeVisee			visee,
 			eTypeDroiteHauteur	typeDroiteHauteur) throws NavException {
 
-		internalCanevas.setAstre(astre);
-		internalCanevas.setHeurevisee(heureObservation);
-		internalCanevas.setHauteurOeil(hauteurOeil);
-		internalCanevas.setPositionEstimee(positionEstimee);
-		internalCanevas.setEpheAstre(epheAstre);
-		internalCanevas.setEphePointVernal(ephePointVernal);
-		internalCanevas.setHi(HauteurInstruentale_Hi);
+		internalCanevas.droiteDeHauteur(this);
+		internalCanevas.astre(astre);
+		internalCanevas.heureVisee(heureObservation);
+		internalCanevas.hauteurOeil(hauteurOeil);
+		internalCanevas.positionEstimee(positionEstimee);
+		internalCanevas.epheAstre(epheAstre);
+		internalCanevas.ephePointVernal(ephePointVernal);
+		internalCanevas.Hi(HauteurInstruentale_Hi);
 
 		// Etape 1: Declinaison astre
 		Declinaison declinaisonAstreHeureObservation = epheAstre.declinaison(heureObservation);
-		internalCanevas.setDeclianaisonAstre(declinaisonAstreHeureObservation);
+		internalCanevas.declinaisonAstre(declinaisonAstreHeureObservation);
 		
 		// Etape 2: Latitude POintVernal
 		Angle LHA_LocalHoraireAngle = null;
@@ -138,14 +139,14 @@ public class DroiteDeHauteur {
 		
 			// Etape 3: position estimee
 			LHA_LocalHoraireAngle = AngleHoraireAHeureObservation_Astre.plus(positionEstimee.longitude());
-			internalCanevas.setLHAAstre(LHA_LocalHoraireAngle);
+			internalCanevas.angleHoraireLocalAstre(LHA_LocalHoraireAngle);
 		}
 		else if((typeDroiteHauteur == eTypeDroiteHauteur.soleil) || (typeDroiteHauteur == eTypeDroiteHauteur.lune)) {
 			Angle AngleHoraireAHeureObservation_Astre = epheAstre.AngleHoraireAHeureObservation(heureObservation);
 		
 			// Etape 3: position estimee
 			LHA_LocalHoraireAngle = AngleHoraireAHeureObservation_Astre.plus(positionEstimee.longitude());
-			internalCanevas.setLHAAstre(LHA_LocalHoraireAngle);
+			internalCanevas.angleHoraireLocalAstre(LHA_LocalHoraireAngle);
 		}
 		else {
 			throw (new NavException("Cas non prevu " + typeDroiteHauteur));
@@ -158,51 +159,60 @@ public class DroiteDeHauteur {
 				(Math.sin(declinaisonAstreHeureObservation.asRadian()) * Math.sin (positionEstimee.latitude().asRadian())) +
 				(Math.cos(declinaisonAstreHeureObservation.asRadian()) * Math.cos (positionEstimee.latitude().asRadian()) * Math.cos (LHA_LocalHoraireAngle.asRadian())));
 		Angle aHauteurCalculee_Hc = AngleFactory.fromDegre(hauteurCalculee_Hc);
-		internalCanevas.setHc(aHauteurCalculee_Hc);
+		internalCanevas.Hc(aHauteurCalculee_Hc);
 		
 		
 		// Etape 5: Intercept
-		CorrectionDeVisee cv = new CorrectionDeVisee(sextanErr);
-		internalCanevas.setTypeVisee(visee);
+		CorrectionDeVisee cv = null;
+		internalCanevas.typeVisee(visee);
 		AngleOriente correction = null;
 		if(typeDroiteHauteur == eTypeDroiteHauteur.lune) {
 			double indiceRefraction_PI = epheAstre.pi(heureObservation);	
-			correction = AngleOrienteFactory.fromDegre(cv.correctionEnDegreLune(HauteurInstruentale_Hi, hauteurOeil, visee, indiceRefraction_PI));		
+			CorrectionDeViseeLune cvLune = new CorrectionDeViseeLune(sextanErr);
+			cv = cvLune;
+			correction = AngleOrienteFactory.fromDegre(cvLune.correctionEnDegreLune(HauteurInstruentale_Hi, hauteurOeil, visee, indiceRefraction_PI));		
 		}
 		else if((typeDroiteHauteur == eTypeDroiteHauteur.soleil) || (typeDroiteHauteur == eTypeDroiteHauteur.etoile)) {
-			correction = AngleOrienteFactory.fromDegre(cv.correctionEnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation ,visee));
+			CorrectionDeViseeSoleil cvSoleil = new CorrectionDeViseeSoleil(sextanErr);
+			cv = cvSoleil;
+			correction = AngleOrienteFactory.fromDegre(cvSoleil.correctionEnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation ,visee));
 		}
 		else {
 			throw (new NavException("Cas non prevu " + typeDroiteHauteur));
 		}
-		internalCanevas.setCv(cv);
+		internalCanevas.cv(cv);
 
 		Angle  hauteurVraie_Hv = HauteurInstruentale_Hi.plus(correction);
-		internalCanevas.setHv(hauteurVraie_Hv);
+		internalCanevas.Hv(hauteurVraie_Hv);
 
 		double interceptEnDegre = hauteurVraie_Hv.asDegre() - aHauteurCalculee_Hc.asDegre();
 		Distance intercept = DistanceFactory.fromMn(interceptEnDegre * 60.00);
 		eSensIntercept sens =  (intercept.distanceInMilleNautique() > 0 ? eSensIntercept.versPg : eSensIntercept.opposePg);
 		
 		// Etape 6: Azimut
-		double azimut_Z = Constantes.RAD2DEG * Math.acos(
-				(Math.sin(declinaisonAstreHeureObservation.asRadian()) - (Math.sin (positionEstimee.latitude().asRadian()) * Math.sin (aHauteurCalculee_Hc.asRadian()))) /
-				(Math.cos (positionEstimee.latitude().asRadian()) * Math.cos (aHauteurCalculee_Hc.asRadian())));
-
+		double azimut_Z = azimutCalculed(positionEstimee, declinaisonAstreHeureObservation, aHauteurCalculee_Hc);
 		azimut_Z = correctionAzimutale(azimut_Z, LHA_LocalHoraireAngle, positionEstimee.latitude());
 		Angle Z = AngleFactory.fromDegre(azimut_Z);
 
-		internalCanevas.setSensIntercept(sens);
-		internalCanevas.setAzimut(Z);
-		internalCanevas.setIntercept(intercept);
+		internalCanevas.sensIntercept(sens);
+		internalCanevas.azimut(Z);
+		internalCanevas.intercept(intercept);
 		
 		System.out.println(internalCanevas.toString());
 		return new DroiteHauteurPositionnee (intercept, sens, Z);
 	}
 
+	public double azimutCalculed(PointGeographique positionEstimee, Declinaison declinaisonAstreHeureObservation,
+			Angle aHauteurCalculee_Hc) {
+		double azimut_Z = Constantes.RAD2DEG * Math.acos(
+				(Math.sin(declinaisonAstreHeureObservation.asRadian()) - (Math.sin (positionEstimee.latitude().asRadian()) * Math.sin (aHauteurCalculee_Hc.asRadian()))) /
+				(Math.cos (positionEstimee.latitude().asRadian()) * Math.cos (aHauteurCalculee_Hc.asRadian())));
+		return azimut_Z;
+	}
+
 	
 	
-	private double correctionAzimutale(double azimut_Z, Angle LHA, Latitude latEstimee) {	
+	public double correctionAzimutale(double azimut_Z, Angle LHA, Latitude latEstimee) {	
 		double z = azimut_Z; 
 		
 		double x = LHA.asDegre();
@@ -223,7 +233,6 @@ public class DroiteDeHauteur {
 				
 		}
 		z = Math.abs(z);
-		internalCanevas.setAzimutCorrection(latEstimee.getSens(), LHA.asDegre(), azimut_Z, z);
 		return z;
 	}
 

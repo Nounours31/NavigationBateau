@@ -17,7 +17,7 @@ import sfa.nav.astro.calculs.DroiteDeHauteur.DroiteHauteurPositionnee;
 import sfa.nav.astro.calculs.DroiteDeHauteur.eSensIntercept;
 import sfa.nav.astro.calculs.Ephemerides;
 import sfa.nav.astro.calculs.CorrectionDeVisee.ErreurSextan;
-import sfa.nav.astro.calculs.CorrectionDeVisee_TableDeNavigation.eTypeVisee;
+import sfa.nav.astro.calculs.CorrectionDeVisee.eTypeVisee;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
@@ -255,6 +255,7 @@ public class SiteNaveAstro {
 		ErreurSextan errSextan = new ErreurSextan(sextan_collimasson, sextan_exentricite);
 		
 		Ephemerides epheLune = new Ephemerides(
+				"Lune",
 				AngleFactory.fromString("35°40.5"), DeclinaisonFactory.fromString("17°02.5 S"), 54.5, NavDateHeureFactory.fromString("05/05/2010 08:00:00 GMT"),
 				AngleFactory.fromString("50°13.4"), DeclinaisonFactory.fromString("16°52.9 S"), 54.4, NavDateHeureFactory.fromString("05/05/2010 09:00:00 GMT"));
 

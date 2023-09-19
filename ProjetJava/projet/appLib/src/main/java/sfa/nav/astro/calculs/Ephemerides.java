@@ -233,38 +233,36 @@ public class Ephemerides {
 
 	public String toCanevas(NavDateHeure dateObservation, boolean isDeclinaison, boolean isLongitude, String offset) {
 		StringBuffer sb = new StringBuffer();
-		sb.append(offset + "Astre                     = " + this.ephe1.astre() + "\n");
-		sb.append(offset + "Interval de temps " + getDureeEnHeure(dateObservation, ephe1) + "\n\n");			
+		sb.append(offset + "Astre....................... = " + this.ephe1.astre() + "\n");
+		sb.append(offset + "Interval de temps (heure)... : " + getDureeEnHeure(dateObservation, ephe1) + "\n\n");			
 		if (type == EphemeridesType.ParGradiant) {
 			if (isDeclinaison) {
 				sb.append(offset + "DECLINAISON par gradiant :" + "\n");
-				sb.append(offset + "    Origine                   = " + this.ephe1.declinaison.toCanevas() + " à " + this.ephe1.heureDeRef + "\n");
-				sb.append(offset + "    Vitesse angulaire         = " + this.ephe1.varDecli.toCanevas() + "\n");
-				sb.append(offset + "    Interval de temps (heure) = " + getDureeEnHeure(dateObservation, ephe1) + "\n");
-				sb.append(offset + "               ==> variation (°) " + getDureeEnHeure(dateObservation, ephe1) * this.ephe1.varDecli.asDegreParHeure() + "\n");
+				sb.append(offset + "    Origine................. = " + this.ephe1.declinaison.toCanevas() + " à " + this.ephe1.heureDeRef + "\n");
+				sb.append(offset + "    Vitesse angulaire....... = " + this.ephe1.varDecli.toCanevas() + "\n");
+				sb.append(offset + "    ==> variation (°) Dt * V = " + getDureeEnHeure(dateObservation, ephe1) * this.ephe1.varDecli.asDegreParHeure() + "\n");
 			}
 			if (isLongitude) {
 				sb.append(offset + "LONGITUDE par gradiant :" + "\n");
-				sb.append(offset + "    Origine                   = " + this.ephe1.GHA.toCanevas() + " à " + this.ephe1.heureDeRef + "\n");
-				sb.append(offset + "    Vitesse angulaire         = " + this.ephe1.varHA.toCanevas() + "\n");
-				sb.append(offset + "    Interval de temps (heure) = " + getDureeEnHeure(dateObservation, ephe1) + "\n");
-				sb.append(offset + "               ==> variation (°) " + getDureeEnHeure(dateObservation, ephe1) * this.ephe1.varHA.asDegreParHeure() + "\n");
+				sb.append(offset + "    Origine................. = " + this.ephe1.GHA.toCanevas() + " à " + this.ephe1.heureDeRef + "\n");
+				sb.append(offset + "    Vitesse angulaire....... = " + this.ephe1.varHA.toCanevas() + "\n");
+				sb.append(offset + "    ==> variation (°) Dt * V = " + getDureeEnHeure(dateObservation, ephe1) * this.ephe1.varHA.asDegreParHeure() + "\n");
 			}
 		}
 		else if (type == EphemeridesType.parInterval) {
 			if (isDeclinaison) {
 				sb.append(offset + "DECLINAISON par interval" + "\n");
-				sb.append(offset + "   from: " + this.ephe1.declinaison.toCanevas() + " à " + this.ephe1.heureDeRef + "\n");
-				sb.append(offset + "   to  : " + this.ephe2.declinaison.toCanevas() + " à " + this.ephe2.heureDeRef + "\n");	
-				sb.append(offset + "   gradiant (Deg par Heure) :" + getGradiantDeclinaisonEnDegreParHeure(ephe1, ephe2) + "\n");
-				sb.append(offset + "   		==> variation Declinaison (°) " + getDureeEnHeure(dateObservation, ephe1) * getGradiantDeclinaisonEnDegreParHeure(ephe1, ephe2) + "\n");			
+				sb.append(offset + "   from .................... : " + this.ephe1.declinaison.toCanevas() + " à " + this.ephe1.heureDeRef + "\n");
+				sb.append(offset + "   to ...................... : " + this.ephe2.declinaison.toCanevas() + " à " + this.ephe2.heureDeRef + "\n");	
+				sb.append(offset + "   gradiant (Deg par Heure)  : " + getGradiantDeclinaisonEnDegreParHeure(ephe1, ephe2) + "\n");
+				sb.append(offset + "   ==> variation (°) Dt * V  = " + getDureeEnHeure(dateObservation, ephe1) * getGradiantDeclinaisonEnDegreParHeure(ephe1, ephe2) + "\n");			
 			}
 			if (isLongitude) {
-				sb.append(offset + "LONGITUDE par gradiant :" + "\n");
-				sb.append(offset + "   from: " + this.ephe1.GHA.toCanevas() + " à " + this.ephe1.heureDeRef + "\n");
-				sb.append(offset + "   to  : " + this.ephe2.GHA.toCanevas() + " à " + this.ephe2.heureDeRef + "\n");
-				sb.append(offset + "   gradiant (Deg par Heure) :" + getGradiantLongitudeEnDegreParHeure(ephe1, ephe2) + "\n");
-				sb.append(offset + "   		==> variation Declinaison (°) " + getDureeEnHeure(dateObservation, ephe1) * getGradiantLongitudeEnDegreParHeure(ephe1, ephe2) + "\n");			
+				sb.append(offset + "LONGITUDE par interval :" + "\n");
+				sb.append(offset + "   from .................... : " + this.ephe1.GHA.toCanevas() + " à " + this.ephe1.heureDeRef + "\n");
+				sb.append(offset + "   to ...................... : " + this.ephe2.GHA.toCanevas() + " à " + this.ephe2.heureDeRef + "\n");
+				sb.append(offset + "   gradiant (Deg par Heure)  : " + getGradiantLongitudeEnDegreParHeure(ephe1, ephe2) + "\n");
+				sb.append(offset + "   ==> variation (°) Dt * V  = " + getDureeEnHeure(dateObservation, ephe1) * getGradiantLongitudeEnDegreParHeure(ephe1, ephe2) + "\n");			
 			}
 		}
 		else {

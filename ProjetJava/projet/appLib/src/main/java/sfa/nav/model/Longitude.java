@@ -49,7 +49,16 @@ public class Longitude extends Angle {
 				ToStringOptions.or(eToStringMode.canevas, eToStringMode.MinuteDecimale, eToStringMode.Negatif));
 
 		Angle a = AngleFactory.fromDegre(Math.abs(this.asDegre()));
-		return "[" + a.myToString(opts) + " " + getSens().getTag() + "]";
+		return "[" + getSens().getSigne() +  a.myToString(opts)  + "]";
+	}
+
+	public String toCanevasLong() {
+		ToStringOptions opts = new ToStringOptions(
+				ToStringOptions.or(eToStringMode.canevas, eToStringMode.MinuteDecimale, eToStringMode.Negatif));
+
+		Angle a = AngleFactory.fromDegre(Math.abs(this.asDegre()));
+			return "[" + a.myToString(opts) + " " + getSens().getTag() + "] (memo: +E / -W)  //  [" + 
+					getSens().getSigne() +  a.myToString(opts)  + "]";
 	}
 
 	public ePointsCardinaux getSens() {

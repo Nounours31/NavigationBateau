@@ -1,12 +1,13 @@
 package sfa.nav.model.tools;
 
 public enum ePointsCardinaux {
-	Nord("N"), Sud("S"), Est("E"), Ouest ("W"), Error("xx"),
-	N("N"), S("S"), E("E"), W ("W");
+	Nord("N", "+"), Sud("S","-"), Est("E","+"), Ouest ("W","-"), Error("xx","="),
+	N("N","+"), S("S","-"), E("E","+"), W ("W","-");
 	
 	final private String _Tag;
+	final private String _Signe;
 	
-	private ePointsCardinaux (String s) {_Tag = s;}
+	private ePointsCardinaux (String s, String t) {_Tag = s; _Signe = t;}
 	
 	static ePointsCardinaux inverse(ePointsCardinaux sens) {
 		if (sens == Nord) return Sud;
@@ -26,4 +27,5 @@ public enum ePointsCardinaux {
 	}
 
 	public String getTag() { return _Tag;}
+	public String getSigne() { return _Signe;}
 }
