@@ -36,7 +36,7 @@ public class NavDateHeure {
 	protected NavDateHeure() {
 	}
 
-	public enum NavMoisDeAnnee {
+	private enum NavMoisDeAnnee {
 		Janvier (0), Fevrier(1), Mars(2), Avril(3), Mai(4), Juin(5), Juillet(6), Aout(7), Septembre(8), Octobre(9), Novembre(10), Decembre(11);
 		
 		public static NavMoisDeAnnee FromNavDateHeure(NavDateHeure x) {
@@ -62,7 +62,12 @@ public class NavDateHeure {
 		private NavMoisDeAnnee(int i) { ordinal = i; }
 		public int indice() { return ordinal; }
 	}
-
+	
+	public int getMois() {
+		 return NavMoisDeAnnee.FromNavDateHeure(this).indice();
+	}
+	
+	
 	static public ZoneId myZone() {
 		return _myZone;
 	}
@@ -166,8 +171,4 @@ public class NavDateHeure {
 	public static NavDateHeure moyenne(NavDateHeure debut, NavDateHeure fin) throws NavException {
 		return NavDateHeureFactory.fromHeureDecimale((fin.asHeureDecimaleEpoch() + debut.asHeureDecimaleEpoch())/ 2.0);
 	}
-
-
-
-
 }

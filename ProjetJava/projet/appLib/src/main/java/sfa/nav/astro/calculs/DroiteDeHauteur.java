@@ -3,29 +3,20 @@ package sfa.nav.astro.calculs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.nav.astro.calculs.CorrectionDeVisee.ErreurSextan;
 import sfa.nav.astro.calculs.CorrectionDeVisee.eTypeVisee;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
 import sfa.nav.model.AngleOriente;
 import sfa.nav.model.AngleOrienteFactory;
-import sfa.nav.model.Cap;
 import sfa.nav.model.Declinaison;
 import sfa.nav.model.Distance;
 import sfa.nav.model.DistanceFactory;
 import sfa.nav.model.Latitude;
-import sfa.nav.model.LatitudeFactory;
-import sfa.nav.model.LongitudeFactory;
 import sfa.nav.model.NavDateHeure;
-import sfa.nav.model.NavDateHeure.NavMoisDeAnnee;
 import sfa.nav.model.PointGeographique;
-import sfa.nav.model.PointGeographiqueFactory;
 import sfa.nav.model.tools.Constantes;
-import sfa.nav.model.tools.DataLoxodromieCapDistance;
-import sfa.nav.model.tools.DataOrthoDromie;
 import sfa.nav.model.tools.ePointsCardinaux;
-import sfa.nav.nav.calculs.CalculsDeNavigation;
 
 
 public class DroiteDeHauteur {
@@ -170,12 +161,12 @@ public class DroiteDeHauteur {
 			double indiceRefraction_PI = epheAstre.pi(heureObservation);	
 			CorrectionDeViseeLune cvLune = new CorrectionDeViseeLune(sextanErr);
 			cv = cvLune;
-			correction = AngleOrienteFactory.fromDegre(cvLune.correctionEnDegreLune(HauteurInstruentale_Hi, hauteurOeil, visee, indiceRefraction_PI));		
+			correction = AngleOrienteFactory.fromDegre(cvLune.correctionTotaleEnDegreLune(HauteurInstruentale_Hi, hauteurOeil, visee, indiceRefraction_PI));		
 		}
 		else if((typeDroiteHauteur == eTypeDroiteHauteur.soleil) || (typeDroiteHauteur == eTypeDroiteHauteur.etoile)) {
 			CorrectionDeViseeSoleil cvSoleil = new CorrectionDeViseeSoleil(sextanErr);
 			cv = cvSoleil;
-			correction = AngleOrienteFactory.fromDegre(cvSoleil.correctionEnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation ,visee));
+			correction = AngleOrienteFactory.fromDegre(cvSoleil.correctionTotale_EnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation ,visee));
 		}
 		else {
 			throw (new NavException("Cas non prevu " + typeDroiteHauteur));

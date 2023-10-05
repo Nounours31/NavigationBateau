@@ -243,20 +243,20 @@ public class Canevas {
 
 	private String infoCalculIntercept_CorrectionSoleil(DecimalFormat fmt) {
 		StringBuffer canevas = new StringBuffer();
-		canevas.append("	Tables corrections (°) ........................ : " + fmt.format(cvSolaire().correctionEnDegre(Hi(), hauteurOeil(), heureVisee(), typeVisee()))+"\n" );
+		canevas.append("	Tables corrections (°) ........................ : " + fmt.format(cvSolaire().correctionTotale_EnDegre(Hi(), hauteurOeil(), heureVisee(), typeVisee()))+"\n" );
 		canevas.append("	  Correction  sextan  (Collimation) ........... : " +  fmt.format(cvSolaire().correctionEnMinuteArcPourLeSextan ()/60.0)+"°"+
 				"        # " + fmt.format(cvSolaire().correctionEnMinuteArcPourLeSextan ())+"'\n");
-		canevas.append("	  Correction1 refraction hauteur oeil ......... : " + fmt.format((cvSolaire().correctionEnMinuteArcPourReflexionHauteurOeil (Hi(), hauteurOeil())/60.0))+"°"+
-										"        # " + fmt.format(cvSolaire().correctionEnMinuteArcPourReflexionHauteurOeil (Hi(), hauteurOeil()))+"'\n");
-		canevas.append("	  Correction2 par type de visee ["+String.format("%1$14s", typeVisee())+"]: " + fmt.format((cvSolaire().correctionEnMinuteArcTypeVisee (heureVisee(), typeVisee())/60.0))+"°"+
-				"        # " + fmt.format(cvSolaire().correctionEnMinuteArcTypeVisee (heureVisee(), typeVisee()))+"'\n");
-		canevas.append("	  Correction Totale = -Collimat + Corr1 + Corr2 = " + fmt.format((cvSolaire().correctionEnDegre (Hi(), hauteurOeil(), heureVisee(), typeVisee())))+"°"+
-				"        # " + fmt.format(cvSolaire().correctionEnDegre (Hi(), hauteurOeil(), heureVisee(), typeVisee()) * 60.0)+"'\n");
+		canevas.append("	  Correction1 refraction hauteur oeil ......... : " + fmt.format((cvSolaire().correctionHoeilDipRefractionParallaxeDemiDiametre_EnMinuteArc (Hi(), hauteurOeil())/60.0))+"°"+
+										"        # " + fmt.format(cvSolaire().correctionHoeilDipRefractionParallaxeDemiDiametre_EnMinuteArc (Hi(), hauteurOeil()))+"'\n");
+		canevas.append("	  Correction2 par type de visee ["+String.format("%1$14s", typeVisee())+"]: " + fmt.format((cvSolaire().correctionSemiDiametre_EnMinuteArc (heureVisee(), typeVisee())/60.0))+"°"+
+				"        # " + fmt.format(cvSolaire().correctionSemiDiametre_EnMinuteArc (heureVisee(), typeVisee()))+"'\n");
+		canevas.append("	  Correction Totale = -Collimat + Corr1 + Corr2 = " + fmt.format((cvSolaire().correctionTotale_EnDegre (Hi(), hauteurOeil(), heureVisee(), typeVisee())))+"°"+
+				"        # " + fmt.format(cvSolaire().correctionTotale_EnDegre (Hi(), hauteurOeil(), heureVisee(), typeVisee()) * 60.0)+"'\n");
 		
 		canevas.append("\n	Hv         : " + Hv().toCanevas() +  "       [" + fmt.format (Hv().asDegre())+ "°]\n");
 		canevas.append("	   Hv = Hi + Correction Totale = " + 
 											fmt.format(Hi().asDegre()) + "°  +  " + 
-											fmt.format(cvSolaire().correctionEnDegre(Hi(), hauteurOeil(), heureVisee(), typeVisee())) + "°  =  " +
+											fmt.format(cvSolaire().correctionTotale_EnDegre(Hi(), hauteurOeil(), heureVisee(), typeVisee())) + "°  =  " +
 											Hv().toCanevas() + "       [" + fmt.format (Hv().asDegre())+ "°]\n\n"  );
 		return canevas.toString();
 	}
@@ -266,35 +266,35 @@ public class Canevas {
 		double indiceRefraction_PI = 0.0;
 		try { indiceRefraction_PI = epheAstre().pi(heureVisee()); } catch (NavException e) {}
 		canevas.append("	Pi ............................................ : " + indiceRefraction_PI +"\n" );
-		canevas.append("	Tables corrections Lune (°) ................... : " + fmt.format(cvLunaire().correctionEnDegreLune(Hi(), 
+		canevas.append("	Tables corrections Lune (°) ................... : " + fmt.format(cvLunaire().correctionTotaleEnDegreLune(Hi(), 
 				hauteurOeil(), 
 				typeVisee(),
 				indiceRefraction_PI))+"\n" );
 		canevas.append("	  Correction Collimation sextan ............... : " +  fmt.format(cvLunaire().correctionEnMinuteArcPourLeSextan ()/60.0)+"°"+
 				"        # " + fmt.format(cvLunaire().correctionEnMinuteArcPourLeSextan ())+"'\n");
 		canevas.append("	  Correction1 depression apparente hauteur oeil : " + 
-				fmt.format((cvLunaire().deppressionApparante (hauteurOeil())/60.0))+"°"+"        # " + 
-				fmt.format(cvLunaire().deppressionApparante (hauteurOeil()))+"'\n");
+				fmt.format((cvLunaire().DIP_ParLaTable (hauteurOeil())/60.0))+"°"+"        # " + 
+				fmt.format(cvLunaire().DIP_ParLaTable (hauteurOeil()))+"'\n");
 		
-		correctionLunaireDeViseeHandler parallaxe = cvLunaire().correctionParallaxeEtTypeVisee(Hi(), indiceRefraction_PI, typeVisee());
+		correctionLunaireDeViseeHandler parallaxe = cvLunaire().correctionHoeilDipRefractionParallaxeDemiDiametre_EnMinuteArc(Hi(), indiceRefraction_PI, typeVisee());
 		canevas.append("	  Correction2 parallaxe ....................... : " + fmt.format(parallaxe.parallaxe / 60.0) +"°"+
 				"        # " + fmt.format(parallaxe.parallaxe)+"'\n");
 		canevas.append("	  Correction3 par type de visee ["+String.format("%1$10s", typeVisee())+"]   : " + fmt.format(parallaxe.visee/60.0)+"°"+
 				"        # " + fmt.format(parallaxe.visee)+"'\n");
 		canevas.append("	  Correc. Tot. = -Colli + Corr1 + Corr2 + Corr3 = " + 
 				fmt.format((-1.0) * cvLunaire().correctionEnMinuteArcPourLeSextan () + 
-						cvLunaire().deppressionApparante (hauteurOeil()) +
+						cvLunaire().DIP_ParLaTable (hauteurOeil()) +
 						parallaxe.parallaxe +
 						parallaxe.visee )+"'"+"        # " + 
 				fmt.format(((-1.0) * cvLunaire().correctionEnMinuteArcPourLeSextan () + 
-						cvLunaire().deppressionApparante (hauteurOeil()) +
+						cvLunaire().DIP_ParLaTable (hauteurOeil()) +
 						parallaxe.parallaxe +
 						parallaxe.visee) / 60.0)+"°\n");
 		
 		canevas.append("\n	Hv         : " + Hv().toCanevas() +  "       [" + fmt.format (Hv().asDegre())+ "°]\n");
 		canevas.append("	   Hv = Hi + Correction Totale = " + 
 											fmt.format(Hi().asDegre()) + "°  +  " + 
-											fmt.format(cvLunaire().correctionEnDegreLune(Hi(), 
+											fmt.format(cvLunaire().correctionTotaleEnDegreLune(Hi(), 
 													hauteurOeil(), 
 													typeVisee(),
 													indiceRefraction_PI)) + "°  =  " +
