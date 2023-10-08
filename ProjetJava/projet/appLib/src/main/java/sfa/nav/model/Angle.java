@@ -23,18 +23,23 @@ public class Angle {
 	}
 
 	protected void _internalSetInDegre(double d) {
-		if (!_isOriente) { 
-			while (d >= 360.0)
-				d -= 360.0;
-	
-			while (d < 0.0)
-				d += 360.0;
-		} else {
-			while (d >= 360.0)
-				d -= 360.0;
-	
-			while (d <= -360.0)
-				d += 360.0;			
+		this._internalSetInDegre(d, true);
+	}
+	protected void _internalSetInDegre(double d, boolean withModulo) {
+		if (withModulo) {
+			if (!_isOriente) { 
+				while (d >= 360.0)
+					d -= 360.0;
+		
+				while (d < 0.0)
+					d += 360.0;
+			} else {
+				while (d >= 360.0)
+					d -= 360.0;
+		
+				while (d <= -360.0)
+					d += 360.0;			
+			}
 		}
 		_angleInDegre = d;
 	}

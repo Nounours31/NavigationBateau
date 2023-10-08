@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 import sfa.nav.astro.calculs.DroiteDeHauteur;
 import sfa.nav.astro.calculs.DroiteDeHauteur.DroiteHauteurPositionnee;
 import sfa.nav.astro.calculs.DroiteDeHauteur.eSensIntercept;
+import sfa.nav.astro.calculs.internal.CorrectionDeVisee.eTypeVisee;
 import sfa.nav.astro.calculs.Ephemerides;
 import sfa.nav.astro.calculs.ErreurSextan;
-import sfa.nav.astro.calculs.CorrectionDeVisee.eTypeVisee;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
@@ -144,7 +144,7 @@ public class SiteNaveAstroExercices extends ANavAstroMotherTestClass {
 
 		
 		Ephemerides epheVernal = new Ephemerides(
-				AngleFactory.fromString("180°2.0'"),        VitesseAngulaireFactory.fromDegreParHeure(14.998),		// 15 deg/h
+				AngleFactory.fromString("180°2.0'", false),        VitesseAngulaireFactory.fromDegreParHeure(14.998),		// 15 deg/h
 				DeclinaisonFactory.fromString("23°10.6 N"), VitesseAngulaireFactory.fromDegreParHeure(0.2 / 60.0),  // +0.96 minute/heure
 				NavDateHeureFactory.fromString("13/06/2007 00:00:00 GMT"));
 

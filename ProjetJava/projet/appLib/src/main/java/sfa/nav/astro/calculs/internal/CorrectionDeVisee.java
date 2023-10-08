@@ -1,32 +1,43 @@
-package sfa.nav.astro.calculs;
+package sfa.nav.astro.calculs.internal;
 
-import sfa.nav.astro.calculs.internal.CorrectionDeViseeTablesDeNavigation;
+import sfa.nav.astro.calculs.ErreurSextan;
+import sfa.nav.astro.calculs.ICorrectionDeVisee;
 
-public abstract class CorrectionDeVisee {
+public abstract class CorrectionDeVisee implements ICorrectionDeVisee {
 	public enum eTypeVisee {
 		soleilBordSup, soleilBordInf, luneBordSup, luneBordInf, venus, mars, planete, etoile;
 	}
 
+	public class correctionDeViseeHandler {
+		public double correctionRefractionParallaxeEventuellementSDetDIP;
+		public double correctionSemiDiametre;
+		public double correctionDIP;
+	}
+	
 	
 	private final ErreurSextan err;	
-	public CorrectionDeVisee (ErreurSextan _err) {
+	protected final eTypeVisee visee;	
+	protected final boolean isParCalcul = false;	
+
+	protected CorrectionDeVisee (ErreurSextan _err, eTypeVisee _visee) {
 		err = _err;
+		visee = _visee;
 	}
-
 	
-
 	public final ErreurSextan getErr() {
 		return err;
 	}
 
 
-	
 	public double correctionEnMinuteArcPourLeSextan() {
-		double correction = +(err.collimacon.asDegre() * 60.0);
-		correction += (err.exentricite.asDegre() * 60.0);
+		double correction = +(err.collimacon().asDegre() * 60.0);
+		correction += (err.exentricite().asDegre() * 60.0);
 		return correction;
 	}
 
+
+
+	
 	protected double Interpolation (double xDebut, double yDebut, double xFin, double yFin, double x) {
 		if (Math.abs(xFin - xDebut) < 0.001) {
 			return (yFin + yDebut) / 2.0;
@@ -36,6 +47,7 @@ public abstract class CorrectionDeVisee {
 		double interpolation = pente * (x - xDebut) + yDebut;
 		return interpolation;
 	}
+	
 
 
 	@Override

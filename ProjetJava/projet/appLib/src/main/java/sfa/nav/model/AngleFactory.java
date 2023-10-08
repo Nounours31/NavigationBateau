@@ -50,6 +50,10 @@ public class AngleFactory extends Angle {
 	
 	
 	public static Angle fromString (String s) throws NavException {
+		return AngleFactory.fromString (s, true);
+	}
+	
+	public static Angle fromString (String s, boolean avecModulo) throws NavException {
         Angle retour = new Angle();
         final Pattern pattern_regexp_3ChiffresSecondeDecimale_Groupe1DegreOptionel = Pattern.compile(regexp_3ChiffresSecondeDecimale_Groupe1DegreOptionel);
         final Pattern pattern_regexp_3ChiffresSecondeSexa_Groupe1DegreOptionel = Pattern.compile(regexp_3ChiffresSecondeSexa_Groupe1DegreOptionel);
@@ -82,7 +86,7 @@ public class AngleFactory extends Angle {
         		seconde = seconde + Double.parseDouble(matcher.group(4)) / 100.0;
         	
         	if ((minute < 60.0) && (seconde < 60.0)) {
-	        	retour._internalSetInDegre(heure + minute / 60.0 + seconde / (3600.0));
+	        	retour._internalSetInDegre(heure + minute / 60.0 + seconde / (3600.0), avecModulo);
 	        	find = true;
         	}
         }	
@@ -111,7 +115,7 @@ public class AngleFactory extends Angle {
 	        	}
 		        	
 	        	if ((minute < 60.0) && (seconde < 60.0)) {
-	        		retour._internalSetInDegre(heure + minute / 60.0 + seconde / 3600.0);
+	        		retour._internalSetInDegre(heure + minute / 60.0 + seconde / 3600.0, avecModulo);
 		        	find = true;
 	        	}
 	        }	
@@ -142,7 +146,7 @@ public class AngleFactory extends Angle {
 	        	}
 		        
 	        	if (minute < 60.0) {
-		        	retour._internalSetInDegre(heure + minute / 60.0);
+		        	retour._internalSetInDegre(heure + minute / 60.0, avecModulo);
 		        	find = true;
 	        	}
 	        }	
@@ -167,7 +171,7 @@ public class AngleFactory extends Angle {
 	        	}
 		        	
 	        	if (minute < 60.0) {
-	        		retour._internalSetInDegre(heure + minute / 60.0);
+	        		retour._internalSetInDegre(heure + minute / 60.0, avecModulo);
 		        	find = true;
 	        	}
 	        }	
@@ -186,7 +190,7 @@ public class AngleFactory extends Angle {
 	        	if ((matcher.group(1) != null) && (matcher.group(1).length() > 0))
 	        		heure = Double.parseDouble(matcher.group(1));
 	
-	        	retour._internalSetInDegre(heure);
+	        	retour._internalSetInDegre(heure, avecModulo);
 	        	find = true;
 	        }	
         }        

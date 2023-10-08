@@ -20,4 +20,12 @@ public class ErreurSextan {
 	public String toCanevas() {
 		return "Sextan [collimacon=[" + collimacon.toCanevas() + "], exentricite=[" + exentricite.toCanevas() + "]]";
 	}
+
+	public final AngleOriente collimacon() {
+		return collimacon;
+	}
+
+	public final AngleOriente exentricite() {
+		return exentricite;
+	}
 }

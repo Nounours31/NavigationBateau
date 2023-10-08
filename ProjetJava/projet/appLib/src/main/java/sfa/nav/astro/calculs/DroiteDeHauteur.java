@@ -3,7 +3,11 @@ package sfa.nav.astro.calculs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.nav.astro.calculs.CorrectionDeVisee.eTypeVisee;
+import sfa.nav.astro.calculs.internal.CorrectionDeVisee;
+import sfa.nav.astro.calculs.internal.CorrectionDeViseeLune;
+import sfa.nav.astro.calculs.internal.CorrectionDeViseeSoleil;
+import sfa.nav.astro.calculs.internal.ICorrectionDeViseeFactory;
+import sfa.nav.astro.calculs.internal.CorrectionDeVisee.eTypeVisee;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
@@ -154,19 +158,19 @@ public class DroiteDeHauteur {
 		
 		
 		// Etape 5: Intercept
-		CorrectionDeVisee cv = null;
+		ICorrectionDeVisee cv = null;
 		internalCanevas.typeVisee(visee);
 		AngleOriente correction = null;
 		if(typeDroiteHauteur == eTypeDroiteHauteur.lune) {
 			double indiceRefraction_PI = epheAstre.pi(heureObservation);	
-			CorrectionDeViseeLune cvLune = new CorrectionDeViseeLune(sextanErr);
+			ICorrectionDeVisee cvLune = ICorrectionDeViseeFactory.getCorrectionVisse(visee, true, sextanErr);
 			cv = cvLune;
-			correction = AngleOrienteFactory.fromDegre(cvLune.correctionTotaleEnDegreLune(HauteurInstruentale_Hi, hauteurOeil, visee, indiceRefraction_PI));		
+			correction = AngleOrienteFactory.fromDegre(cvLune.correctionTotale_EnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation, indiceRefraction_PI));		
 		}
 		else if((typeDroiteHauteur == eTypeDroiteHauteur.soleil) || (typeDroiteHauteur == eTypeDroiteHauteur.etoile)) {
-			CorrectionDeViseeSoleil cvSoleil = new CorrectionDeViseeSoleil(sextanErr);
+			ICorrectionDeVisee cvSoleil = ICorrectionDeViseeFactory.getCorrectionVisse(visee, true, sextanErr); 
 			cv = cvSoleil;
-			correction = AngleOrienteFactory.fromDegre(cvSoleil.correctionTotale_EnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation ,visee));
+			correction = AngleOrienteFactory.fromDegre(cvSoleil.correctionTotale_EnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation, 0.0));
 		}
 		else {
 			throw (new NavException("Cas non prevu " + typeDroiteHauteur));
