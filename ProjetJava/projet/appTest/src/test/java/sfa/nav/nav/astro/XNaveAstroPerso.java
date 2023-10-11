@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import sfa.nav.astro.calculs.DroiteDeHauteur;
 import sfa.nav.astro.calculs.DroiteDeHauteur.DroiteHauteurPositionnee;
 import sfa.nav.astro.calculs.DroiteDeHauteur.eSensIntercept;
-import sfa.nav.astro.calculs.internal.CorrectionDeVisee.eTypeVisee;
+import sfa.nav.astro.calculs.correctionvisee.internal.CorrectionDeVisee.eTypeVisee;
 import sfa.nav.astro.calculs.Ephemerides;
 import sfa.nav.astro.calculs.ErreurSextan;
 import sfa.nav.infra.tools.error.NavException;
@@ -76,6 +76,7 @@ public class XNaveAstroPerso extends ANavAstroMotherTestClass {
 		ErreurSextan errSextan = new ErreurSextan(sextan_collimasson, sextan_exentricite);
 		
 		Ephemerides ephe = new Ephemerides(
+				"Soleil",
 				AngleFactory.fromString("345°08.2", false), DeclinaisonFactory.fromString("07°33.2 N"), 0, NavDateHeureFactory.fromString("03/9/2023 11:00:00 UTC"), 
 				AngleFactory.fromString("360°08.4", false), DeclinaisonFactory.fromString("07°32.3 N"), 0, NavDateHeureFactory.fromString("03/9/2023 12:00:00 UTC") 
 				);

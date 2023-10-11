@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import sfa.nav.astro.calculs.DroiteDeHauteur;
 import sfa.nav.astro.calculs.DroiteDeHauteur.DroiteHauteurPositionnee;
 import sfa.nav.astro.calculs.DroiteDeHauteur.eSensIntercept;
-import sfa.nav.astro.calculs.internal.CorrectionDeVisee.eTypeVisee;
+import sfa.nav.astro.calculs.correctionvisee.internal.CorrectionDeVisee.eTypeVisee;
 import sfa.nav.astro.calculs.Ephemerides;
 import sfa.nav.astro.calculs.ErreurSextan;
 import sfa.nav.infra.tools.error.NavException;
@@ -76,6 +76,7 @@ public class SiteNaveAstroExercices extends ANavAstroMotherTestClass {
 		ErreurSextan errSextan = new ErreurSextan(sextan_collimasson, sextan_exentricite);
 		
 		Ephemerides ephe = new Ephemerides(
+				"Soleil",
 				AngleFactory.fromString("180°2.0'"),        VitesseAngulaireFactory.fromDegreParHeure(14.998),		// 15 deg/h
 				DeclinaisonFactory.fromString("23°10.6 N"), VitesseAngulaireFactory.fromDegreParHeure(0.2 / 60.0),  // +0.96 minute/heure
 				NavDateHeureFactory.fromString("13/06/2007 00:00:00 GMT"));
@@ -89,7 +90,7 @@ public class SiteNaveAstroExercices extends ANavAstroMotherTestClass {
 				 errSextan,
 				 ephe);
 		
-		assertEquals(res.getIntercept().distanceInMilleNautique(), 43.779, EPISILON_DISTANCE);
+		assertEquals(res.getIntercept().distanceInMilleNautique(), 43.979, EPISILON_DISTANCE);
 		assertEquals(res.getSens(), eSensIntercept.versPg);
 		assertEquals(res.getZ().asDegre(), 274.6658, EPISILON_ANGLE);
 	}
@@ -109,6 +110,7 @@ public class SiteNaveAstroExercices extends ANavAstroMotherTestClass {
 		ErreurSextan errSextan = new ErreurSextan(sextan_collimasson, sextan_exentricite);
 		
 		Ephemerides ephe = new Ephemerides(
+				"Soleil",
 				AngleFactory.fromString("180°2.0'"),        VitesseAngulaireFactory.fromDegreParHeure(14.998),		// 15 deg/h
 				DeclinaisonFactory.fromString("23°10.6 N"), VitesseAngulaireFactory.fromDegreParHeure(0.2 / 60.0),  // +0.96 minute/heure
 				NavDateHeureFactory.fromString("13/06/2007 00:00:00 GMT"));
@@ -122,7 +124,7 @@ public class SiteNaveAstroExercices extends ANavAstroMotherTestClass {
 				 errSextan,
 				 ephe);
 		
-		assertEquals(res.getIntercept().distanceInMilleNautique(), -16.6466, EPISILON_DISTANCE);
+		assertEquals(res.getIntercept().distanceInMilleNautique(), -16.4466, EPISILON_DISTANCE);
 		assertEquals(res.getSens(), eSensIntercept.opposePg);
 		assertEquals(res.getZ().asDegre(), 274.02628, EPISILON_ANGLE);
 	}
@@ -144,11 +146,13 @@ public class SiteNaveAstroExercices extends ANavAstroMotherTestClass {
 
 		
 		Ephemerides epheVernal = new Ephemerides(
+				"Point Vernal",
 				AngleFactory.fromString("180°2.0'", false),        VitesseAngulaireFactory.fromDegreParHeure(14.998),		// 15 deg/h
 				DeclinaisonFactory.fromString("23°10.6 N"), VitesseAngulaireFactory.fromDegreParHeure(0.2 / 60.0),  // +0.96 minute/heure
 				NavDateHeureFactory.fromString("13/06/2007 00:00:00 GMT"));
 
 		Ephemerides epheAstre = new Ephemerides(
+				"Vega",
 				AngleFactory.fromString("180°2.0'"),        VitesseAngulaireFactory.fromDegreParHeure(14.998),		// 15 deg/h
 				DeclinaisonFactory.fromString("23°10.6 N"), VitesseAngulaireFactory.fromDegreParHeure(0.2 / 60.0),  // +0.96 minute/heure
 				NavDateHeureFactory.fromString("13/06/2007 00:00:00 GMT"));
@@ -159,6 +163,7 @@ public class SiteNaveAstroExercices extends ANavAstroMotherTestClass {
 				HauteurInstruentale_Hi, 
 				heureObservation, 
 				hauteurOeil, 
+				eTypeVisee.etoile,
 				errSextan, 
 				epheVernal, 
 				epheAstre); 

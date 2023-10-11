@@ -15,4 +15,8 @@ dependencies {
 	// Loger slf4j
 	implementation 'org.slf4j:slf4j-api:2.0.6'
 	implementation 'ch.qos.logback:logback-classic:1.4.5'	
+	
+	// pdf 
+	// implementation 'com.itextpdf:itextpdf:5.5.13.3'
+	implementation 'com.itextpdf:itext-core:8.0.1'
 }

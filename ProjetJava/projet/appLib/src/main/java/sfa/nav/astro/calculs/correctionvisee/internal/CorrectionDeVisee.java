@@ -1,13 +1,32 @@
-package sfa.nav.astro.calculs.internal;
+package sfa.nav.astro.calculs.correctionvisee.internal;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import sfa.nav.astro.calculs.ErreurSextan;
 import sfa.nav.astro.calculs.ICorrectionDeVisee;
+import sfa.nav.model.NavDateHeure;
 
 public abstract class CorrectionDeVisee implements ICorrectionDeVisee {
+	final Logger logger = LoggerFactory.getLogger(getClass()) ;
+	
 	public enum eTypeVisee {
 		soleilBordSup, soleilBordInf, luneBordSup, luneBordInf, venus, mars, planete, etoile;
+
+		public static String getTypeDroiteHauteur(eTypeVisee e) {
+			switch (e) {
+			case soleilBordSup, soleilBordInf: return "Soleil";
+			case luneBordSup, luneBordInf: return "Lune";
+			case venus: return "Planete(Venus)";
+			case mars: return "Planete(Mars)";
+			case planete: return "Planete";
+			case etoile: return "Etoile";
+			default: return "Inconnu";
+			}
+		}
 	}
 
+	
 	public class correctionDeViseeHandler {
 		public double correctionRefractionParallaxeEventuellementSDetDIP;
 		public double correctionSemiDiametre;
@@ -29,9 +48,10 @@ public abstract class CorrectionDeVisee implements ICorrectionDeVisee {
 	}
 
 
-	public double correctionEnMinuteArcPourLeSextan() {
+	public double correctionSextan_EnMinuteArc() {
 		double correction = +(err.collimacon().asDegre() * 60.0);
 		correction += (err.exentricite().asDegre() * 60.0);
+		logger.debug("correctionSextan_EnMinuteArc {}", correction);
 		return correction;
 	}
 
@@ -57,12 +77,6 @@ public abstract class CorrectionDeVisee implements ICorrectionDeVisee {
 	}
 
 
-	public String forCanevas() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("CorrectionDeVisee [" + err.toCanevas() + " ]");
-		return sb.toString();
-	}
-
 	public double DIP_ParLaTable(double hauteurOeil) {
 		int i = 0;
 		int iInf = 0, iSup = 0;
@@ -87,7 +101,47 @@ public abstract class CorrectionDeVisee implements ICorrectionDeVisee {
 				CorrectionDeViseeTablesDeNavigation.DIP_HauteurOeilEnMetre[iSup],
 				CorrectionDeViseeTablesDeNavigation.DIP_CorrectionDepression_EnMinuteDeArc[iSup], 
 				hauteurOeil);
+
+		logger.debug("DIP_ParLaTable {}", depressionApparenteHorizon);
 		return depressionApparenteHorizon;
 	}
 
+
+
+
+	@Override
+	public double correctionHauteurOeilMetre_EnMinuteArc(double hauteurOeil)  {
+		double d = 1.760 * Math.sqrt(hauteurOeil);
+		logger.debug("correctionHauteurOeilMetre_EnMinuteArc {}", d);
+		return d;
+	}
+
+	@Override
+	public double HaFromHi_EnDegre (double Hi, double HauteurOeilEnMetre) {
+		double Ha = Hi + (correctionSextan_EnMinuteArc() - correctionHauteurOeilMetre_EnMinuteArc(HauteurOeilEnMetre)) / 60.0; 
+		logger.debug("HaFromHi_EnDegre {}", Ha);
+		return Ha;
+	}
+	
+	@Override
+	public double correctionRefraction_EnMinuteArc(double Ha)  {
+		return correctionRefraction_EnMinuteArc(Ha, 1010, 10);
+	}
+
+
+	@Override
+	public double correctionRefraction_EnMinuteArc(double Ha, double pression_hectopascal, double temperatureCelcius)  {
+		double R =  1.0 / Math.tan ((Ha + (7.31 / (Ha + 4.4))) * Math.PI / 180.0);
+		double F = 0.28 * pression_hectopascal / (temperatureCelcius + 273);
+		logger.debug("correctionRefraction_EnMinuteArc {}", R * F);
+		return R * F;
+	}
+
+
+	@Override
+	public double correctionParallaxe_EnMinuteArc(double Ha, double HP_HorizontalParallaxe)  {
+		double d = HP_HorizontalParallaxe * Math.cos(Ha * Math.PI / 180.0); 
+		logger.debug("correctionParallaxe_EnMinuteArc {}", d);
+		return d;
+	}
 }

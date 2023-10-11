@@ -28,7 +28,10 @@ public class PointGeographique {
 
 	@Override
 	public String toString() {
-		ToStringOptions opts = new ToStringOptions(eToStringMode.light);
+		ToStringOptions opts = new ToStringOptions(
+				ToStringOptions.or(eToStringMode.canevas, eToStringMode.MinuteDecimale));
+		
+		// ToStringOptions opts = new ToStringOptions(eToStringMode.light);
 		return "PtGeo [" + _latitude.myToString(opts) + ", " + _longitude.myToString(opts) + "]";
 	}
 

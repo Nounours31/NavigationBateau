@@ -34,7 +34,7 @@ public class Ephemerides {
 		private VitesseAngulaire varHA;
 		private VitesseAngulaire varDecli; 
 		
-		private double piLune;
+		private double HP_PI;
 		final private String astre;
 
 		public Ephemeride(String _astre, Angle _GHA, Declinaison _dec, double _piLune, NavDateHeure _heureRef) {
@@ -43,7 +43,7 @@ public class Ephemerides {
 			heureDeRef = _heureRef;
 			varHA = null;
 			varDecli = null;			
-			piLune = _piLune;
+			HP_PI = _piLune;
 			astre = _astre;
 		}
 		
@@ -62,7 +62,7 @@ public class Ephemerides {
 			heureDeRef = _heureRef;
 			varHA = _varHA;
 			varDecli = _varDecli;			
-			piLune = 0.0;
+			HP_PI = 0.0;
 		}
 
 		public Ephemeride(Angle _GHA, VitesseAngulaire _varHA, Declinaison _dec, VitesseAngulaire _varDecli, NavDateHeure _heureRef) {
@@ -92,8 +92,8 @@ public class Ephemerides {
 		public VitesseAngulaire variationDeclinaison() {
 			return varDecli;
 		}
-		public double piLune() {
-			return piLune;
+		public double HP_PI() {
+			return HP_PI;
 		}
 		public String astre() {
 			return astre;
@@ -105,7 +105,7 @@ public class Ephemerides {
 	final private Ephemeride ephe2;
 	final private EphemeridesType type; 
 	
-	public Ephemerides(Angle _GHA, Declinaison _dec, double piLune, NavDateHeure _heureRef, Angle _GHA2, Declinaison _dec2, double piLune2, NavDateHeure _heureRef2) {
+	private Ephemerides(Angle _GHA, Declinaison _dec, double piLune, NavDateHeure _heureRef, Angle _GHA2, Declinaison _dec2, double piLune2, NavDateHeure _heureRef2) {
 		this("Soleil", _GHA,  _dec,  piLune,  _heureRef,  _GHA2,  _dec2,  piLune2,  _heureRef2);
 	}
 	public Ephemerides(String astre, Angle _GHA, Declinaison _dec, double piLune, NavDateHeure _heureRef, Angle _GHA2, Declinaison _dec2, double piLune2, NavDateHeure _heureRef2) {
@@ -114,7 +114,7 @@ public class Ephemerides {
 		type = EphemeridesType.parInterval;
 	}
 
-	public Ephemerides(Angle _GHA, VitesseAngulaire _varHA, Declinaison _dec, VitesseAngulaire _varDecli, NavDateHeure _heureRef) {
+	private Ephemerides(Angle _GHA, VitesseAngulaire _varHA, Declinaison _dec, VitesseAngulaire _varDecli, NavDateHeure _heureRef) {
 		this("Soleil",  _GHA, _varHA,  _dec,  _varDecli,  _heureRef);
 	}
 
@@ -219,14 +219,17 @@ public class Ephemerides {
 	}
 
 	public double pi(NavDateHeure dateObservation) throws NavException {
+		if ((ephe1 != null) && (ephe1.HP_PI() == 0.0))
+			return 0.0;
+		
 		boolean isValid = ((ephe1.heureDeRef().avant(dateObservation)) && (dateObservation.avant(ephe2.heureDeRef())));
 		if (!isValid)
 			throw new NavException("Date observation pas entre les deux bornes");
 		
-		double gradiantParHeure = (ephe2.piLune() - ephe1.piLune()) / (ephe2.heureDeRef().asHeureDecimaleEpoch() - ephe1.heureDeRef().asHeureDecimaleEpoch());
+		double gradiantParHeure = (ephe2.HP_PI() - ephe1.HP_PI()) / (ephe2.heureDeRef().asHeureDecimaleEpoch() - ephe1.heureDeRef().asHeureDecimaleEpoch());
 	
 		double dureeEnHeure = getDureeEnHeure(dateObservation, ephe1);
-		double interpolation = gradiantParHeure * dureeEnHeure + ephe1.piLune();
+		double interpolation = gradiantParHeure * dureeEnHeure + ephe1.HP_PI();
 		return interpolation;
 	}
 

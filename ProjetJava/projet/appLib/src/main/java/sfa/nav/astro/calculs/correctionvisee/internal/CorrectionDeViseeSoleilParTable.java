@@ -1,12 +1,18 @@
-package sfa.nav.astro.calculs.internal;
+package sfa.nav.astro.calculs.correctionvisee.internal;
+
+import org.checkerframework.common.reflection.qual.GetClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import sfa.nav.astro.calculs.ErreurSextan;
 import sfa.nav.model.Angle;
 import sfa.nav.model.NavDateHeure;
 
 
-public class CorrectionDeViseeSoleilParTable extends CorrectionDeViseeSoleil {
-
+public class CorrectionDeViseeSoleilParTable extends CorrectionDeViseeSoleil
+{
+	final static Logger logger = LoggerFactory.getLogger(CorrectionDeViseeSoleilParTable.class);
+	
 	public CorrectionDeViseeSoleilParTable (ErreurSextan _err, eTypeVisee _visee) {
 		super (_err, _visee);
 	}
@@ -15,37 +21,31 @@ public class CorrectionDeViseeSoleilParTable extends CorrectionDeViseeSoleil {
 	public double correctionTotale_EnDegre(Angle hauteurInstrumentale_Hi, 
 			double hauteurOeil,
 			NavDateHeure heureObservation, 
-			double indiceRefraction_PI) {
+			double indiceRefraction_PI,
+			eTypeVisee t) {
 
 		correctionDeViseeHandler correctionH = correctionHoeilDipRefractionParallaxeDemiDiametre_EnMinuteArc(hauteurInstrumentale_Hi, hauteurOeil, indiceRefraction_PI);
+	
 		double correction = correctionH.correctionRefractionParallaxeEventuellementSDetDIP;
-		correction += correctionSemiDiametre_EnMinuteArc(heureObservation);
-		correction -= correctionEnMinuteArcPourLeSextan();
+		logger.debug("Corrrection correctionRefractionParallaxeEventuellementSDetDIP {}", correction);
+		
+		correction -= correctionSextan_EnMinuteArc();
+		logger.debug("Corrrection avec sextan {}", correction);
+
+		if ((t == eTypeVisee.etoile) || (t == eTypeVisee.mars) ||(t == eTypeVisee.planete) ||(t == eTypeVisee.venus))
+			correction -= this.diametre_EnMinuteArc(heureObservation, indiceRefraction_PI) / 2.0;
+		logger.debug("Corrrection avec etoile {}", correction);
+		
+		correction += this.corrrectionTypeVisee_EnMinuteArc(t, heureObservation, indiceRefraction_PI);
+		logger.debug("Corrrection avec bordDSup {}", correction);
 
 		// correction en degre
 		correction = correction / 60.0;
 		return correction;
 	}
 
-	@Override
-	public double correctionSemiDiametre_EnMinuteArc(NavDateHeure heureObservation) {
-		int iMois = heureObservation.getMois();
-		
-		double correction = CorrectionDeViseeTablesDeNavigation.Soleil_DeuxiemeCorrection_BordInferieur_parmoisEnMinuteArc[iMois];
 
-		
-		if (visee == eTypeVisee.etoile)
-			correction += (
-					(CorrectionDeViseeTablesDeNavigation.Soleil_DeuxiemeCorrection_BordInferieur_parmoisEnMinuteArc[iMois]
-					+ CorrectionDeViseeTablesDeNavigation.Soleil_TroisiemeCorrection_BordSuperieur_parmoisEnMinuteArc[iMois]) / 2.0);
-		
-		if (visee == eTypeVisee.soleilBordSup)
-			correction += CorrectionDeViseeTablesDeNavigation.Soleil_TroisiemeCorrection_BordSuperieur_parmoisEnMinuteArc[iMois];
 
-		return correction;
-	}
-
-	@Override
 	public correctionDeViseeHandler correctionHoeilDipRefractionParallaxeDemiDiametre_EnMinuteArc(
 			Angle hauteurInstrumentale_Hi,
 			double hauteurOeil, 

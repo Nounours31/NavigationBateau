@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import sfa.nav.astro.calculs.DroiteDeHauteur;
 import sfa.nav.astro.calculs.DroiteDeHauteur.DroiteHauteurPositionnee;
 import sfa.nav.astro.calculs.DroiteDeHauteur.eSensIntercept;
-import sfa.nav.astro.calculs.internal.CorrectionDeVisee.eTypeVisee;
+import sfa.nav.astro.calculs.correctionvisee.internal.CorrectionDeVisee.eTypeVisee;
 import sfa.nav.astro.calculs.Ephemerides;
 import sfa.nav.astro.calculs.ErreurSextan;
 import sfa.nav.infra.tools.error.NavException;
@@ -76,6 +76,7 @@ public class SiteNaveAstroDebutant extends ANavAstroMotherTestClass {
 		ErreurSextan errSextan = new ErreurSextan(sextan_collimasson, sextan_exentricite);
 		
 		Ephemerides ephe = new Ephemerides(
+				"Soleil",
 				AngleFactory.fromString("177°1.9'"),        VitesseAngulaireFactory.fromDegreParHeure(15.002),		// 15 deg/h
 				DeclinaisonFactory.fromString("6°36' S"), VitesseAngulaireFactory.fromDegreParHeure(0.96 / 60.0),  // +0.96 minute/heure
 				NavDateHeureFactory.fromString("04/03/1998 00:00:00 GMT"));
@@ -89,11 +90,45 @@ public class SiteNaveAstroDebutant extends ANavAstroMotherTestClass {
 				 errSextan,
 				 ephe);
 		
-		assertEquals(res.getIntercept().distanceInMilleNautique(), 9.741, EPISILON_DISTANCE);
+		assertEquals(res.getIntercept().distanceInMilleNautique(), 9.640, EPISILON_DISTANCE);
 		assertEquals(res.getSens(), eSensIntercept.versPg);
 		assertEquals(res.getZ().asDegre(), 230.033, EPISILON_ANGLE);
 	}
 	
+	@Test
+	public void test001_PremierCanevasDroiteHauteurV2() throws NavException {
+		DroiteDeHauteur dh = new DroiteDeHauteur();
+		Latitude lat = LatitudeFactory.fromString("47°29 N");
+		Longitude lon = LongitudeFactory.fromString("2°53 W");
+		PointGeographique positionEstimee = PointGeographiqueFactory.fromLatLong(lat, lon); 
+
+		Angle HauteurInstruentale_Hi = AngleFactory.fromString("22°59"); 
+		NavDateHeure heureObservation = NavDateHeureFactory.fromString("04/03/2015 15:24:04 GMT");
+		double hauteurOeil = 2;
+		AngleOriente sextan_exentricite = AngleOrienteFactory.fromString("0°0");
+		AngleOriente sextan_collimasson = AngleOrienteFactory.fromString("-0°03");
+		ErreurSextan errSextan = new ErreurSextan(sextan_collimasson, sextan_exentricite);
+		
+		Ephemerides ephe = new Ephemerides(
+				"Soleil",
+				AngleFactory.fromString("177°2.0'"),        VitesseAngulaireFactory.fromDegreParHeure(15.002),		// 15 deg/h
+				DeclinaisonFactory.fromString("6°38.8' S"), VitesseAngulaireFactory.fromDegreParHeure(0.96 / 60.0),  // +0.96 minute/heure
+				NavDateHeureFactory.fromString("04/03/2015 00:00:00 GMT"));
+		
+		
+		DroiteHauteurPositionnee res = dh.droitedeHauteurSoleil ( positionEstimee, 
+				 HauteurInstruentale_Hi, 
+				 heureObservation,
+				 hauteurOeil,
+				 eTypeVisee.soleilBordInf,
+				 errSextan,
+				 ephe);
+		
+		assertEquals(res.getIntercept().distanceInMilleNautique(), 12.083, EPISILON_DISTANCE);
+		assertEquals(res.getSens(), eSensIntercept.versPg);
+		assertEquals(res.getZ().asDegre(), 230.008, EPISILON_ANGLE);
+	}
+
 	@Test
 	public void test001_PremierCanevasDroiteHauteurEtoile() throws NavException {
 		DroiteDeHauteur dh = new DroiteDeHauteur();
@@ -127,12 +162,13 @@ public class SiteNaveAstroDebutant extends ANavAstroMotherTestClass {
 				HauteurInstruentale_Hi, 
 				heureObservation,
 				hauteurOeil,
+				eTypeVisee.etoile,
 				errSextan,
 				ephePointVernal,
 				epheEtoileArcturus
 		);
 		
-		assertEquals(res.getIntercept().distanceInMilleNautique(), -8.604, EPISILON_DISTANCE);
+		assertEquals(res.getIntercept().distanceInMilleNautique(), -8.404, EPISILON_DISTANCE);
 		assertEquals(res.getSens(), eSensIntercept.opposePg);
 		assertEquals(res.getZ().asDegre(), 174.431, EPISILON_ANGLE);
 	}
@@ -140,8 +176,8 @@ public class SiteNaveAstroDebutant extends ANavAstroMotherTestClass {
 	@Test
 	public void test001_PremierCanevasDroiteHauteurLune() throws NavException {
 		DroiteDeHauteur dh = new DroiteDeHauteur();
-		Latitude lat = LatitudeFactory.fromString("40° N");
-		Longitude lon = LongitudeFactory.fromString("3°45 E");
+		Latitude lat = LatitudeFactory.fromString("40°30' N");
+		Longitude lon = LongitudeFactory.fromString("3°30' E");
 		PointGeographique positionEstimee = PointGeographiqueFactory.fromLatLong(lat, lon); 
 		Angle HauteurInstruentale_Hi = AngleFactory.fromString("18°55"); 
 		NavDateHeure heureObservation = NavDateHeureFactory.fromString("05/05/2010 08:18:53 GMT");
@@ -165,8 +201,51 @@ public class SiteNaveAstroDebutant extends ANavAstroMotherTestClass {
 				 errSextan,
 				 epheLune);
 		
-		assertEquals(res.getIntercept().distanceInMilleNautique(), -25.9073, EPISILON_DISTANCE);
+		assertEquals(res.getIntercept().distanceInMilleNautique(), -12.667, EPISILON_DISTANCE);
 		assertEquals(res.getSens(), eSensIntercept.opposePg);
-		assertEquals(res.getZ().asDegre(), 224.929, EPISILON_ANGLE);
+		assertEquals(res.getZ().asDegre(), 224.592, EPISILON_ANGLE);
+	}
+
+	@Test
+	public void test001_PremierCanevasDroiteHauteurPlaneteVenus() throws NavException {
+		DroiteDeHauteur dh = new DroiteDeHauteur();
+		Latitude lat = LatitudeFactory.fromString("30° N");
+		Longitude lon = LongitudeFactory.fromString("24° W");
+		PointGeographique positionEstimee = PointGeographiqueFactory.fromLatLong(lat, lon); 
+		Angle HauteurInstruentale_Hi = AngleFactory.fromString("24°06'"); 
+		NavDateHeure heureObservation = NavDateHeureFactory.fromString("12/05/2010 20:37:42 GMT");
+		double hauteurOeil = 2.0;
+		AngleOriente sextan_exentricite = AngleOrienteFactory.fromString("0°0");
+		AngleOriente sextan_collimasson = AngleOrienteFactory.fromString("-0°02");
+		ErreurSextan errSextan = new ErreurSextan(sextan_collimasson, sextan_exentricite);
+		
+		String astre = "Venus";
+		Ephemerides ephe = new Ephemerides(
+				astre,
+				AngleFactory.fromString("90°00.3'"), DeclinaisonFactory.fromString("24°27.1' N"), 0.1, NavDateHeureFactory.fromString("12/05/2010 20:00:00 GMT"),
+				AngleFactory.fromString("104°59.4'"), DeclinaisonFactory.fromString("24°27.4' N"), 0.1, NavDateHeureFactory.fromString("12/05/2010 21:00:00 GMT"));
+	
+		Ephemerides ephePointVernal = new Ephemerides(
+				"Point Vernal - Aries",
+				AngleFactory.fromString("170°29'"), DeclinaisonFactory.fromString("0° N"), 0.0, NavDateHeureFactory.fromString("12/05/2010 20:00:00 GMT"),
+				AngleFactory.fromString("185°31.4"), DeclinaisonFactory.fromString("0° N"), 0.0, NavDateHeureFactory.fromString("12/05/2010 21:00:00 GMT"));
+	
+		
+		
+		DroiteHauteurPositionnee res = dh.droitedeHauteurPlanete ( 
+				astre,
+				positionEstimee, 
+				HauteurInstruentale_Hi, 
+				heureObservation,
+				hauteurOeil,
+				eTypeVisee.planete,
+				errSextan,
+				ephePointVernal,
+				ephe
+		);
+		
+		assertEquals(res.getIntercept().distanceInMilleNautique(), -8.404, EPISILON_DISTANCE);
+		assertEquals(res.getSens(), eSensIntercept.opposePg);
+		assertEquals(res.getZ().asDegre(), 174.431, EPISILON_ANGLE);
 	}
 }

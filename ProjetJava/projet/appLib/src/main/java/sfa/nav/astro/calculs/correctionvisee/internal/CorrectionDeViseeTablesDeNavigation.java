@@ -1,4 +1,4 @@
-package sfa.nav.astro.calculs.internal;
+package sfa.nav.astro.calculs.correctionvisee.internal;
 
 import sfa.nav.model.AngleFactory;
 

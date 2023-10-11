@@ -89,18 +89,19 @@ public class Angle {
 		} else if (opts.isA(eToStringMode.full)) {
 			sb.append(Signe + asDegreDecimal + "[" + asMinuteDecimale + "]" + asDegre  + asRadian);
 		} else if (opts.isA(eToStringMode.canevas)) {
-			sb.append(asMinuteDecimale );
+			sb.append(asDegreDecimal + "[" + asMinuteDecimale + "]" );
 		} else {
 			sb.append("xxxxxxxxxxx");
 		}
 		return sb.toString();
 	}
 	
-	public String toCanevas() {
+	public String toCanevas() { /*
 		ToStringOptions opts = new ToStringOptions(
 				ToStringOptions.or(eToStringMode.canevas, eToStringMode.deg, eToStringMode.MinuteDecimale, eToStringMode.Negatif));
 
-		return myToString(opts);
+		return myToString(opts); */
+		return this.toString();
 	}
 
 

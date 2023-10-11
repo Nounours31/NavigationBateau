@@ -3,11 +3,8 @@ package sfa.nav.astro.calculs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sfa.nav.astro.calculs.internal.CorrectionDeVisee;
-import sfa.nav.astro.calculs.internal.CorrectionDeViseeLune;
-import sfa.nav.astro.calculs.internal.CorrectionDeViseeSoleil;
-import sfa.nav.astro.calculs.internal.ICorrectionDeViseeFactory;
-import sfa.nav.astro.calculs.internal.CorrectionDeVisee.eTypeVisee;
+import sfa.nav.astro.calculs.correctionvisee.internal.CorrectionDeVisee.eTypeVisee;
+import sfa.nav.astro.calculs.correctionvisee.internal.ICorrectionDeViseeFactory;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
@@ -80,10 +77,25 @@ public class DroiteDeHauteur {
 			Angle 				HauteurInstruentale_Hi, 
 			NavDateHeure 		heureObservation,
 			double 				hauteurOeil,
+			eTypeVisee			visee,
 			ErreurSextan 		sextanErr,
 			Ephemerides 		ephePointVernal, // GHA Aries, Point vernal, AHso (Angle Horaire Sideral Origine)
 			Ephemerides 		epheEtoile) throws NavException {
 		internalCanevas = new Canevas(eTypeDroiteHauteur.etoile);
+		return this.droitedeHauteur(astre, positionEstimee, HauteurInstruentale_Hi, heureObservation, hauteurOeil, sextanErr, ephePointVernal, epheEtoile, eTypeVisee.etoile, eTypeDroiteHauteur.etoile);
+	}
+
+	public DroiteHauteurPositionnee droitedeHauteurPlanete (
+			String 				astre,
+			PointGeographique 	positionEstimee, 
+			Angle 				HauteurInstruentale_Hi, 
+			NavDateHeure 		heureObservation,
+			double 				hauteurOeil,
+			eTypeVisee			visee,
+			ErreurSextan 		sextanErr,
+			Ephemerides 		ephePointVernal, // GHA Aries, Point vernal, AHso (Angle Horaire Sideral Origine)
+			Ephemerides 		epheEtoile) throws NavException {
+		internalCanevas = new Canevas(eTypeDroiteHauteur.planete);
 		return this.droitedeHauteur(astre, positionEstimee, HauteurInstruentale_Hi, heureObservation, hauteurOeil, sextanErr, ephePointVernal, epheEtoile, eTypeVisee.etoile, eTypeDroiteHauteur.etoile);
 	}
 
@@ -127,7 +139,7 @@ public class DroiteDeHauteur {
 		// Etape 2: Latitude POintVernal
 		Angle LHA_LocalHoraireAngle = null;
 		
-		if(typeDroiteHauteur == eTypeDroiteHauteur.etoile) {
+		if((typeDroiteHauteur == eTypeDroiteHauteur.etoile) || (typeDroiteHauteur == eTypeDroiteHauteur.planete)) {
 			Angle AngleHoraireAHeureObservation_PointVernal = ephePointVernal.AngleHoraireAHeureObservation(heureObservation);
 			Angle AngleHoraireAHeureObservation_AstreVsPOintVernal = epheAstre.AngleHoraireAHeureObservation(heureObservation);
 			Angle AngleHoraireAHeureObservation_Astre = AngleHoraireAHeureObservation_PointVernal.plus(AngleHoraireAHeureObservation_AstreVsPOintVernal);
@@ -161,19 +173,51 @@ public class DroiteDeHauteur {
 		ICorrectionDeVisee cv = null;
 		internalCanevas.typeVisee(visee);
 		AngleOriente correction = null;
+		double indiceRefraction_PI = epheAstre.pi(heureObservation);	
 		if(typeDroiteHauteur == eTypeDroiteHauteur.lune) {
-			double indiceRefraction_PI = epheAstre.pi(heureObservation);	
-			ICorrectionDeVisee cvLune = ICorrectionDeViseeFactory.getCorrectionVisse(visee, true, sextanErr);
-			cv = cvLune;
-			correction = AngleOrienteFactory.fromDegre(cvLune.correctionTotale_EnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation, indiceRefraction_PI));		
+			cv = ICorrectionDeViseeFactory.getCorrectionVisse(visee, true, sextanErr);
+			correction = AngleOrienteFactory.fromDegre(cv.correctionTotale_EnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation, indiceRefraction_PI, visee));		
 		}
 		else if((typeDroiteHauteur == eTypeDroiteHauteur.soleil) || (typeDroiteHauteur == eTypeDroiteHauteur.etoile)) {
-			ICorrectionDeVisee cvSoleil = ICorrectionDeViseeFactory.getCorrectionVisse(visee, true, sextanErr); 
-			cv = cvSoleil;
-			correction = AngleOrienteFactory.fromDegre(cvSoleil.correctionTotale_EnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation, 0.0));
+			cv = ICorrectionDeViseeFactory.getCorrectionVisse(visee, true, sextanErr); 
+			correction = AngleOrienteFactory.fromDegre(cv.correctionTotale_EnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation, indiceRefraction_PI, visee));
 		}
 		else {
 			throw (new NavException("Cas non prevu " + typeDroiteHauteur));
+		}
+		if (logger.isDebugEnabled()) {
+			double Ha = cv.HaFromHi_EnDegre(HauteurInstruentale_Hi.asDegre(), hauteurOeil);
+			double corrOeil = cv.correctionHauteurOeilMetre_EnMinuteArc(hauteurOeil);
+			double corrParalaxe = cv.correctionParallaxe_EnMinuteArc(Ha, indiceRefraction_PI);
+			double corrRefrac = cv.correctionRefraction_EnMinuteArc(Ha);
+			double corrSextan = cv.correctionSextan_EnMinuteArc();
+			double corrDiam = cv.correctionAjoutSemiDiametreAstre_EnMinuteArc(heureObservation, indiceRefraction_PI);
+			double corrTypeVisee = cv.corrrectionTypeVisee_EnMinuteArc(visee, heureObservation, indiceRefraction_PI);
+			double diametre = cv.diametre_EnMinuteArc(heureObservation, indiceRefraction_PI);
+			
+			double correctioncalculee = -corrSextan - corrOeil - corrRefrac + corrParalaxe + corrDiam - corrTypeVisee;
+			double correction1 = -corrOeil - corrRefrac + corrParalaxe + corrDiam;
+			double correction2 = corrTypeVisee;
+			
+			logger.debug("Correction debug");
+			logger.debug("	Correction totale: {}°  // {}'", 
+					cv.correctionTotale_EnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation, indiceRefraction_PI, visee),
+					cv.correctionTotale_EnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation, indiceRefraction_PI, visee) * 60.0);
+			logger.debug("  HP - PI: {}", indiceRefraction_PI);
+			logger.debug("  --------------------------------------------------");
+			logger.debug("  Ha           : {}°", Ha);
+			logger.debug("  corrOeil     : {}'", corrOeil);
+			logger.debug("  corrParalaxe : {}'", corrParalaxe);
+			logger.debug("  corrRefrac   : {}'", corrRefrac);
+			logger.debug("  corrSextan   : {}'", corrSextan);
+			logger.debug("  corrDiam     : {}'", corrDiam);
+			logger.debug("  corrTypeVisee: {}'", corrTypeVisee);
+			logger.debug("  diametre     : {}'", diametre);
+			logger.debug("  --------------------------------------------------");
+			logger.debug("  Correction totale [I -d -R + P +SD - typeVisee] : {}", correctioncalculee);
+			logger.debug("  --------------------------------------------------");
+			logger.debug("  Correction 1 [-d -R +P +SD] : {}'", correction1);
+			logger.debug("  Correction 2 [typevisee] : {}'", correction2);
 		}
 		internalCanevas.cv(cv);
 

@@ -1,11 +1,13 @@
 package sfa.nav.astro.calculs;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import sfa.nav.astro.calculs.DroiteDeHauteur.eSensIntercept;
 import sfa.nav.astro.calculs.DroiteDeHauteur.eTypeDroiteHauteur;
-import sfa.nav.astro.calculs.internal.CorrectionDeVisee.correctionDeViseeHandler;
-import sfa.nav.astro.calculs.internal.CorrectionDeVisee.eTypeVisee;
+import sfa.nav.astro.calculs.correctionvisee.internal.CorrectionDeVisee.correctionDeViseeHandler;
+import sfa.nav.astro.calculs.correctionvisee.internal.CorrectionDeVisee.eTypeVisee;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.Declinaison;
@@ -13,6 +15,7 @@ import sfa.nav.model.Distance;
 import sfa.nav.model.NavDateHeure;
 import sfa.nav.model.PointGeographique;
 import sfa.nav.model.tools.ePointsCardinaux;
+import sfa.nav.pdf.PDF4DroiteDeHauteur;
 
 public class Canevas {
 	final private eTypeDroiteHauteur _type;
@@ -97,16 +100,7 @@ public class Canevas {
 		StringBuffer sb = new StringBuffer();
 		sb.append("CanevasDroiteHauteur : \n");
 		try {
-			if (typeDroiteHauteur() == eTypeDroiteHauteur.etoile) 
-				sb.append(myToString());
-			else if (typeDroiteHauteur() == eTypeDroiteHauteur.lune) 
-				sb.append(myToString());
-			else if (typeDroiteHauteur() == eTypeDroiteHauteur.planete) 
-				sb.append(myToString());
-			else if (typeDroiteHauteur() == eTypeDroiteHauteur.soleil) 
-				sb.append(myToString());
-			else 
-				sb.append("type inconnu " + typeDroiteHauteur());
+			sb.append(myToString(true));
 		}
 		catch (Exception e) {
 			sb.append(e.getMessage());
@@ -114,22 +108,32 @@ public class Canevas {
 		return sb.toString();
 	}
 
-	private String myToString() throws NoSuchMethodException {
+	private String myToString(boolean withPDF) throws NoSuchMethodException {
+		PDF4DroiteDeHauteur pdf = null;
+		if (withPDF) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH-mm-ss.SSSZ");
+			String id = sdf.format( new Date());
+			pdf = new PDF4DroiteDeHauteur(id);
+		}
 		DecimalFormat fmt = new DecimalFormat("+##00.0000;-#");
 		StringBuffer canevas = new StringBuffer(); 
-		canevas.append(introductionEtInfoVisee());
+		canevas.append(introductionEtInfoVisee(fmt));
 		canevas.append(infoCalculDeclinaison(fmt));
 		canevas.append(infoCalculAngleHoraireLocal(fmt));
 		canevas.append(infoCalculHauteurLatitudeEstimee());
 		canevas.append(infoCalculHauteurCalculee());
 		canevas.append(infoCalculIntercept(fmt));
 		canevas.append(infoCalculAzimut(fmt));
+		
+		pdf.addTextSansTitre(0, canevas.toString());
+		pdf.generePDF();
+		
 		return canevas.toString();
 	}
 	
 	
 
-	private String introductionEtInfoVisee() {
+	private String introductionEtInfoVisee(DecimalFormat fmt) {
 		StringBuffer canevas = new StringBuffer();
 		canevas.append("-----------------------------------------" + "\n");
 		canevas.append("|    CANEVAS DROITE DE HAUTEUR   "+ typeDroiteHauteur()  + "\n");
@@ -140,12 +144,14 @@ public class Canevas {
 		canevas.append("		" + (heureVisee() == null? "NULL" : heureVisee()) + "\n");
 		canevas.append("	b - Astre" + "\n");
 		canevas.append("		"+ astre() + "\n");
-		canevas.append("		Hi: " + (Hi() == null? "NULL" : Hi().toCanevas()) + "\n");
+		canevas.append("		Hi               : " + (Hi() == null? "NULL" : Hi().toCanevas()) + "\n");
+		canevas.append("		Ha [Hi + I - dip]: " + fmt.format(Hi().asDegre() + (cv().correctionSextan_EnMinuteArc() - cv().correctionHauteurOeilMetre_EnMinuteArc(hauteurOeil()))/60.0) + "° \n");
 		canevas.append("	c - Position estimee" + "\n");
 		canevas.append("		" + (positionEstimee() == null ? "NULL" : positionEstimee().toCanevas())+ "\n");
 		canevas.append("	d - Erreur sextan et Oeil" + "\n");
-		canevas.append("		" + (cv() == null ? "NULL" : cv().forCanevas()) + "\n");
-		canevas.append("		Hauteur oeil: " + hauteurOeil() +" metre" + "\n\n");
+		canevas.append("		collimation : " + (cv() == null ? "NULL" : fmt.format(cv().correctionSextan_EnMinuteArc()) + "' \n"));
+		canevas.append("		Dip         : " + (cv() == null ? "NULL" : fmt.format(cv().correctionHauteurOeilMetre_EnMinuteArc(hauteurOeil()))) + "' \n");
+		canevas.append("		Hauteur oeil: " + fmt.format(hauteurOeil()) +" metre" + "\n\n");
 		return canevas.toString();
 	}
 
@@ -186,12 +192,12 @@ public class Canevas {
 				(epheAstre() == null ? "NULL" : epheAstre().toCanevas(heureVisee(), false, true,"\t\t")) + "\n");
 		canevas.append("	Longitude Estimée: " + 
 				(positionEstimee() == null ? "NULL" : positionEstimee().longitude().toCanevasLong()) + "\n");
-		canevas.append("	Calcul =  Vernal + Astre + Longi = " + 
-				(ephePointVernal() == null ? "NULL" : ephePointVernal().AngleHoraireAHeureObservation(heureVisee()).toCanevas()) + " + " +
-				(epheAstre() == null ? "NULL" : epheAstre().AngleHoraireAHeureObservation(heureVisee()).toCanevas()) + " + " +
-				(positionEstimee() == null ? "NULL" : positionEstimee().longitude().toCanevas()) +  
-				" = " + (angleHoraireLocalAstre() == null ? "NULL" : angleHoraireLocalAstre().toCanevas()) + 
-				"        "+angleHoraireLocalAstre().toString()+"\n\n");
+		canevas.append("	Calcul =  Vernal + Astre + Longi \n"); 
+		canevas.append("	       =  " + 
+				"Verval[" + (ephePointVernal() == null ? "NULL" : ephePointVernal().AngleHoraireAHeureObservation(heureVisee()).toCanevas()) + "]  +  Astre[" +
+				(epheAstre() == null ? "NULL" : epheAstre().AngleHoraireAHeureObservation(heureVisee()).toCanevas()) + "] + Longi[" +
+				(positionEstimee() == null ? "NULL" : positionEstimee().longitude().toCanevas()) + "]");
+		canevas.append("	       =  " + (angleHoraireLocalAstre() == null ? "NULL" : angleHoraireLocalAstre().toCanevas()) + "\n\n");
 		return canevas.toString();
 	}
 	
@@ -201,10 +207,12 @@ public class Canevas {
 		canevas.append("	   Element de calculs: \n" + 
 				(epheAstre() == null ? "NULL" : epheAstre().toCanevas(heureVisee(), false, true,"\t\t\t")) + "\n");
 		canevas.append("	Longitude Estimée: " + (positionEstimee() == null ? "NULL" : positionEstimee().longitude().toCanevasLong()) + "\n");
-		canevas.append("	Calcul = Astre + Longi = " + 
-				(epheAstre() == null ? "NULL" : epheAstre().AngleHoraireAHeureObservation(heureVisee()).toCanevas()) + " + " +
-				(positionEstimee() == null ? "NULL" : positionEstimee().longitude().toCanevas()) +  
-				" = " + (angleHoraireLocalAstre() == null ? "NULL" : angleHoraireLocalAstre().toCanevas()) + "        "+angleHoraireLocalAstre().toString()+"\n\n");
+		canevas.append("	Calcul = Astre + Longi  \n"); 
+		canevas.append("	       = " + 
+				"Astre[ " + (epheAstre() == null ? "NULL" : epheAstre().AngleHoraireAHeureObservation(heureVisee()).toCanevas()) + "] + Longi[" +
+				(positionEstimee() == null ? "NULL" : positionEstimee().longitude().toCanevas()) + "]\n"); 
+		canevas.append("	       = " + 
+				(angleHoraireLocalAstre() == null ? "NULL" : angleHoraireLocalAstre().toCanevas()) +"\n\n");
 		return canevas.toString();
 	}
 
@@ -240,28 +248,39 @@ public class Canevas {
 			canevas.append("##################################################################");
 			
 		canevas.append("	Intercept: "+ intercept() +" \n" );
-		canevas.append("	   intercept: (Hv - Hc) * 60.0 = ("+ fmt.format(Hv().asDegre()) +" - " + fmt.format(Hc().asDegre()) + ") * 60.0 = ("+ fmt.format(Hv().asDegre() - Hc().asDegre()) + ") * 60.0  = "+ fmt.format((Hv().asDegre() - Hc().asDegre()) * 60.0) + "\n\n" );
+		canevas.append("	   intercept: (Hv - Hc) * 60.0 = ("+ fmt.format(Hv().asDegre()) +" - (" + fmt.format(Hc().asDegre()) + ")) * 60.0 = ("+ fmt.format(Hv().asDegre() - Hc().asDegre()) + ") * 60.0  = "+ fmt.format((Hv().asDegre() - Hc().asDegre()) * 60.0) + " Mn \n" );
+		canevas.append("	                " + (intercept().distanceInMilleNautique() > 0 ? " I > 0 " : "I < 0 ") +
+				"  sens: " +  sensIntercept()  + "\n\n");
 		return canevas.toString();
 	}
 
 	private String infoCalculIntercept_CorrectionSoleil(DecimalFormat fmt) throws NoSuchMethodException {
 		StringBuffer canevas = new StringBuffer();
-		canevas.append("	Tables corrections (°) ........................ : " + fmt.format(cv().correctionTotale_EnDegre(Hi(), hauteurOeil(), heureVisee(), 0.0))+"\n" );
-		canevas.append("	  Correction  sextan  (Collimation) ........... : " +  fmt.format(cv().correctionEnMinuteArcPourLeSextan ()/60.0)+"°"+
-				"        # " + fmt.format(cv().correctionEnMinuteArcPourLeSextan ())+"'\n");
+		canevas.append("	Tables corrections (°) ........................ : " + fmt.format(cv().correctionTotale_EnDegre(Hi(), hauteurOeil(), heureVisee(), 0.0, typeVisee()))+"\n" );
+		canevas.append("	  Correction  sextan  (Collimation) ........... : " +  fmt.format(cv().correctionSextan_EnMinuteArc ()/60.0)+"°"+
+				"        # " + fmt.format(cv().correctionSextan_EnMinuteArc ())+"'\n");
 
-		correctionDeViseeHandler parallaxe = cv().correctionHoeilDipRefractionParallaxeDemiDiametre_EnMinuteArc(Hi(), hauteurOeil(), 0.0);
-		canevas.append("	  Correction1 refraction + hauteur oeil ....... : " + fmt.format((parallaxe.correctionSemiDiametre + parallaxe.correctionDIP)/60.0)+"°"+
-										"        # " + fmt.format(parallaxe.correctionSemiDiametre + parallaxe.correctionDIP)+"'\n");
-		canevas.append("	  Correction2 par type de visee ["+String.format("%1$14s", typeVisee())+"]: " + fmt.format((cv().correctionSemiDiametre_EnMinuteArc (heureVisee())/60.0))+"°"+
-				"        # " + fmt.format(cv().correctionSemiDiametre_EnMinuteArc (heureVisee()))+"'\n");
-		canevas.append("	  Correction Totale = -Collimat + Corr1 + Corr2 = " + fmt.format((cv().correctionTotale_EnDegre (Hi(), hauteurOeil(), heureVisee(), 0.0)))+"°"+
-				"        # " + fmt.format(cv().correctionTotale_EnDegre (Hi(), hauteurOeil(), heureVisee(), 0.0) * 60.0)+"'\n");
+		double correctionDIP = cv().correctionHauteurOeilMetre_EnMinuteArc(hauteurOeil());
+		double Ha = cv().HaFromHi_EnDegre(Hi().asDegre(), hauteurOeil());
+		double correctionSemiDiametre = cv().correctionAjoutSemiDiametreAstre_EnMinuteArc(heureVisee(), 0.0);
+		double correctionTYpeVisee = cv().corrrectionTypeVisee_EnMinuteArc(typeVisee(),_heureVisee, 0.0);
+		double correctionParallaxe = cv().correctionParallaxe_EnMinuteArc(Ha, 0.0);
+		double correctionRefraction = cv().correctionRefraction_EnMinuteArc(Ha);
+		double DemiDiametre = cv().diametre_EnMinuteArc(_heureVisee, 0.0) / 2.0;
+
+		canevas.append("	  Correction1 refraction + Parallaxe + 1/2 Diam + hauteur oeil ....... : " + 
+				fmt.format((-correctionDIP - correctionRefraction + correctionParallaxe + DemiDiametre)/60.0)+"°"+
+				"        # " + 
+				fmt.format(-correctionDIP - correctionRefraction + correctionParallaxe + DemiDiametre)+"'\n");
+		canevas.append("	  Correction2 par type de visee ["+String.format("%1$14s", typeVisee())+"]: " + fmt.format(correctionTYpeVisee/60.0)+"°"+
+				"        # " + fmt.format(correctionTYpeVisee)+"'\n");
+		canevas.append("	  Correction Totale = -Collimat + Corr1 + Corr2 = " + fmt.format((cv().correctionTotale_EnDegre (Hi(), hauteurOeil(), heureVisee(), 0.0,typeVisee())))+"°"+
+				"        # " + fmt.format(cv().correctionTotale_EnDegre (Hi(), hauteurOeil(), heureVisee(), 0.0,typeVisee()) * 60.0)+"'\n");
 		
 		canevas.append("\n	Hv         : " + Hv().toCanevas() +  "       [" + fmt.format (Hv().asDegre())+ "°]\n");
 		canevas.append("	   Hv = Hi + Correction Totale = " + 
-											fmt.format(Hi().asDegre()) + "°  +  " + 
-											fmt.format(cv().correctionTotale_EnDegre(Hi(), hauteurOeil(), heureVisee(), 0.0)) + "°  =  " +
+											fmt.format(Hi().asDegre()) + "°  +  (" + 
+											fmt.format(cv().correctionTotale_EnDegre(Hi(), hauteurOeil(), heureVisee(), 0.0,typeVisee())) + "°)  =  " +
 											Hv().toCanevas() + "       [" + fmt.format (Hv().asDegre())+ "°]\n\n"  );
 		return canevas.toString();
 	}
@@ -274,37 +293,47 @@ public class Canevas {
 		canevas.append("	Tables corrections Lune (°) ................... : " + fmt.format(cv().correctionTotale_EnDegre(Hi(), 
 				hauteurOeil(), 
 				heureVisee(),
-				indiceRefraction_PI))+"\n" );
-		canevas.append("	  Correction Collimation sextan ............... : " +  fmt.format(cv().correctionEnMinuteArcPourLeSextan ()/60.0)+"°"+
-				"        # " + fmt.format(cv().correctionEnMinuteArcPourLeSextan ())+"'\n");
+				indiceRefraction_PI,
+				typeVisee()))+"\n" );
+		canevas.append("	  Correction Collimation sextan ............... : " +  fmt.format(cv().correctionSextan_EnMinuteArc ()/60.0)+"°"+
+				"        # " + fmt.format(cv().correctionSextan_EnMinuteArc ())+"'\n");
 		
-		correctionDeViseeHandler parallaxe = cv().correctionHoeilDipRefractionParallaxeDemiDiametre_EnMinuteArc(Hi(), hauteurOeil(), indiceRefraction_PI);
+		double correctionDIP = cv().correctionHauteurOeilMetre_EnMinuteArc(hauteurOeil());
+		double Ha = cv().HaFromHi_EnDegre(Hi().asDegre(), hauteurOeil());
+		double correctionRefractionParallaxeEventuellementSDetDIP = (-1.0) * cv().correctionRefraction_EnMinuteArc(Ha)
+				+ cv().correctionParallaxe_EnMinuteArc(Ha, indiceRefraction_PI)
+				+ cv().correctionAjoutSemiDiametreAstre_EnMinuteArc(_heureVisee, indiceRefraction_PI);
+		double correctionTypeVisee = cv().corrrectionTypeVisee_EnMinuteArc(typeVisee(),heureVisee(), indiceRefraction_PI);
 
 		canevas.append("	  Correction1 depression apparente hauteur oeil : " + 
-				fmt.format((parallaxe.correctionDIP /60.0))+"°"+"        # " + 
-				fmt.format(parallaxe.correctionDIP)+"'\n");
+				fmt.format((correctionDIP /60.0))+"°"+"        # " + 
+				fmt.format(correctionDIP)+"'\n");
 		
-		canevas.append("	  Correction2 parallaxe ....................... : " + fmt.format(parallaxe.correctionRefractionParallaxeEventuellementSDetDIP / 60.0) +"°"+
-				"        # " + fmt.format(parallaxe.correctionRefractionParallaxeEventuellementSDetDIP)+"'\n");
-		canevas.append("	  Correction3 par type de visee ["+String.format("%1$10s", typeVisee())+"]   : " + fmt.format(parallaxe.correctionSemiDiametre/60.0)+"°"+
-				"        # " + fmt.format(parallaxe.correctionSemiDiametre)+"'\n");
+		canevas.append("	  Correction2 parallaxe ....................... : " + 
+				fmt.format(correctionRefractionParallaxeEventuellementSDetDIP / 60.0) +"°"+
+				"        # " + 
+				fmt.format(correctionRefractionParallaxeEventuellementSDetDIP)+"'\n");
+		canevas.append("	  Correction3 par type de visee ["+String.format("%1$10s", typeVisee())+"]   : " + 
+				fmt.format(correctionTypeVisee/60.0)+"°"+
+				"        # " + fmt.format(correctionTypeVisee)+"'\n");
 		canevas.append("	  Correc. Tot. = -Colli + Corr1 + Corr2 + Corr3 = " + 
-				fmt.format((-1.0) * cv().correctionEnMinuteArcPourLeSextan () + 
-						parallaxe.correctionDIP +
-						parallaxe.correctionRefractionParallaxeEventuellementSDetDIP +
-						parallaxe.correctionSemiDiametre )+"'"+"        # " + 
-				fmt.format(((-1.0) * cv().correctionEnMinuteArcPourLeSextan () + 
-						parallaxe.correctionDIP +
-						parallaxe.correctionRefractionParallaxeEventuellementSDetDIP +
-						parallaxe.correctionSemiDiametre) / 60.0)+"°\n");
+				fmt.format((-1.0) * cv().correctionSextan_EnMinuteArc () + 
+						correctionDIP +
+						correctionRefractionParallaxeEventuellementSDetDIP +
+						correctionTypeVisee )+"'"+"        # " + 
+				fmt.format(((-1.0) * cv().correctionSextan_EnMinuteArc () + 
+						correctionDIP +
+						correctionRefractionParallaxeEventuellementSDetDIP +
+						correctionTypeVisee) / 60.0)+"°\n"); 
 		
 		canevas.append("\n	Hv         : " + Hv().toCanevas() +  "       [" + fmt.format (Hv().asDegre())+ "°]\n");
 		canevas.append("	   Hv = Hi + Correction Totale = " + 
-											fmt.format(Hi().asDegre()) + "°  +  " + 
+											fmt.format(Hi().asDegre()) + "°  +  (" + 
 											fmt.format(cv().correctionTotale_EnDegre(Hi(), 
 													hauteurOeil(), 
 													heureVisee(),
-													indiceRefraction_PI)) + "°  =  " +
+													indiceRefraction_PI,
+													typeVisee())) + "°)  =  " +
 											Hv().toCanevas() + "       [" + fmt.format (Hv().asDegre())+ "°]\n\n"  );
 		return canevas.toString();
 	}
@@ -348,4 +377,6 @@ public class Canevas {
 				positionEstimee().latitude()) +"\n");
 		return canevas.toString();
 	}
+	
+	
 }

@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import sfa.nav.astro.calculs.ErreurSextan;
 import sfa.nav.astro.calculs.ICorrectionDeVisee;
-import sfa.nav.astro.calculs.internal.CorrectionDeVisee.eTypeVisee;
-import sfa.nav.astro.calculs.internal.ICorrectionDeViseeFactory;
+import sfa.nav.astro.calculs.correctionvisee.internal.ICorrectionDeViseeFactory;
+import sfa.nav.astro.calculs.correctionvisee.internal.CorrectionDeVisee.eTypeVisee;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
@@ -62,10 +62,10 @@ public class CorrectionsTest  {
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
 		
 		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
-		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0);
+		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
-		assertEquals (hEnMinuteDArc, 9.0, EPSILON_ANGLE);
+		assertEquals (hEnMinuteDArc, 8.7, EPSILON_ANGLE);
 	}
 
 	@Test
@@ -75,10 +75,10 @@ public class CorrectionsTest  {
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
 
 		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
-		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0);
+		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
-		assertEquals (hEnMinuteDArc, 6.55, EPSILON_ANGLE);
+		assertEquals (hEnMinuteDArc, 6.25, EPSILON_ANGLE);
 	}
 
 	@Test
@@ -87,10 +87,10 @@ public class CorrectionsTest  {
 		double hOeil = 1.0;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
 		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
-		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0);
+		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
-		assertEquals (hEnMinuteDArc, 6.55, EPSILON_ANGLE);
+		assertEquals (hEnMinuteDArc, 6.25, EPSILON_ANGLE);
 	}
 	@Test
 	public void test003() throws NavException {
@@ -98,10 +98,10 @@ public class CorrectionsTest  {
 		double hOeil = 1.0;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
 		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
-		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0);
+		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
-		assertEquals (hEnMinuteDArc, 15.05, EPSILON_ANGLE);
+		assertEquals (hEnMinuteDArc, 14.75, EPSILON_ANGLE);
 	}
 	@Test
 	public void test004() throws NavException {
@@ -109,10 +109,10 @@ public class CorrectionsTest  {
 		double hOeil = 6.0;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
 		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
-		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0);
+		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
-		assertEquals (hEnMinuteDArc, 3.5, EPSILON_ANGLE);
+		assertEquals (hEnMinuteDArc, 3.2, EPSILON_ANGLE);
 	}
 
 	@Test
@@ -121,10 +121,10 @@ public class CorrectionsTest  {
 		double hOeil = 2.0;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
 		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
-		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0);
+		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
-		assertEquals (hEnMinuteDArc, 6.5, EPSILON_ANGLE);
+		assertEquals (hEnMinuteDArc, 6.2, EPSILON_ANGLE);
 	}
 
 	@Test
@@ -133,10 +133,10 @@ public class CorrectionsTest  {
 		double hOeil = 1.99;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
 		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
-		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0);
+		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
-		assertEquals (hEnMinuteDArc, 7.4125, EPSILON_ANGLE);
+		assertEquals (hEnMinuteDArc, 7.1125, EPSILON_ANGLE);
 	}
 	
 	@Test
@@ -145,10 +145,10 @@ public class CorrectionsTest  {
 		double hOeil = 2.01;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
 		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
-		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0);
+		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
-		assertEquals (hEnMinuteDArc, 7.3945, EPSILON_ANGLE);
+		assertEquals (hEnMinuteDArc, 7.0945, EPSILON_ANGLE);
 	}
 
 	@Test
@@ -157,10 +157,10 @@ public class CorrectionsTest  {
 		double hOeil = 2;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
 		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
-		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0);
+		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
-		assertEquals (hEnMinuteDArc, 10.4, EPSILON_ANGLE);
+		assertEquals (hEnMinuteDArc, 10.1, EPSILON_ANGLE);
 	}
 
 	@Test
@@ -169,10 +169,10 @@ public class CorrectionsTest  {
 		double hOeil = 6;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
 		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
-		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0);
+		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
-		assertEquals (hEnMinuteDArc, 12.0, EPSILON_ANGLE);
+		assertEquals (hEnMinuteDArc, 11.7, EPSILON_ANGLE);
 	}
 
 	@Test
@@ -181,10 +181,10 @@ public class CorrectionsTest  {
 		double hOeil = 2;
 		eTypeVisee bord = eTypeVisee.etoile;
 		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
-		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0);
+		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
-		assertEquals (hEnMinuteDArc, -5.599999999999, EPSILON_ANGLE);
+		assertEquals (hEnMinuteDArc, -6.1999999999, EPSILON_ANGLE);
 	}
 
 	@Test
@@ -193,10 +193,10 @@ public class CorrectionsTest  {
 		double hOeil = 2;
 		eTypeVisee bord = eTypeVisee.soleilBordSup;
 		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
-		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0);
+		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
-		assertEquals (hEnMinuteDArc, -21.9, EPSILON_ANGLE);
+		assertEquals (hEnMinuteDArc, -22.49999999, EPSILON_ANGLE);
 	}
 
 	@Test
@@ -207,16 +207,16 @@ public class CorrectionsTest  {
 		
 		NavDateHeure decembre = NavDateHeureFactory.fromStringSafe("10/12/1968 10:00:00");
 		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
-		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, decembre, 0.0);
+		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, decembre, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
-		assertEquals (hEnMinuteDArc, 10.4, EPSILON_ANGLE);
+		assertEquals (hEnMinuteDArc, 10.1, EPSILON_ANGLE);
 
 		NavDateHeure juillet = NavDateHeureFactory.fromStringSafe("10/07/1968 10:00:00");
-		hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, juillet, 0.0);
+		hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, juillet, 0.0, bord);
 
 		hEnMinuteDArc =hEnDegre * 60.0;
-		assertEquals (hEnMinuteDArc, 9.9, EPSILON_ANGLE);
+		assertEquals (hEnMinuteDArc, 10.1, EPSILON_ANGLE);
 	}
 
 	@Test
@@ -225,33 +225,33 @@ public class CorrectionsTest  {
 		double hOeil = 0;
 		eTypeVisee bord = eTypeVisee.luneBordInf;
 		ICorrectionDeVisee cvLunaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
-		double hEnDegre = cvLunaire.correctionTotale_EnDegre(Hi,  hOeil,  heureObservation, 53);
+		double hEnDegre = cvLunaire.correctionTotale_EnDegre(Hi,  hOeil,  heureObservation, 53, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 63.4, EPSILON_ANGLE);
 
 		// ----------------------------------------------------------
-		hEnDegre = cvLunaire.correctionTotale_EnDegre(Hi,  hOeil,  heureObservation, 62);
+		hEnDegre = cvLunaire.correctionTotale_EnDegre(Hi,  hOeil,  heureObservation, 62, bord);
 		hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 72.1, EPSILON_ANGLE);
 
 		// ----------------------------------------------------------
-		hEnDegre = cvLunaire.correctionTotale_EnDegre(Hi,  0.0,  heureObservation, 61);
+		hEnDegre = cvLunaire.correctionTotale_EnDegre(Hi,  0.0,  heureObservation, 61, bord);
 		hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 72.1, EPSILON_ANGLE);
 
 		// ----------------------------------------------------------
-		hEnDegre = cvLunaire.correctionTotale_EnDegre(Hi,  24.0,  heureObservation, 61);
+		hEnDegre = cvLunaire.correctionTotale_EnDegre(Hi,  24.0,  heureObservation, 61, bord);
 		hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 66.0, EPSILON_ANGLE);
 
 		// ----------------------------------------------------------
-		hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(0.0),  0.0,  heureObservation, 61);
+		hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(0.0),  0.0,  heureObservation, 61, bord);
 		hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 67.4, EPSILON_ANGLE);
 
 		// ----------------------------------------------------------
-		hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(50.0),  0.0,  heureObservation, 61);
+		hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(50.0),  0.0,  heureObservation, 61, bord);
 		hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 58.9, EPSILON_ANGLE);
 	}
@@ -260,23 +260,23 @@ public class CorrectionsTest  {
 	public void test012_lune_01() throws NavException {
 		eTypeVisee bord = eTypeVisee.luneBordInf;
 		ICorrectionDeVisee cvLunaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
-		double hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(6.0),  0,  heureObservation, 54.5);
+		double hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(6.0),  0,  heureObservation, 54.5, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 60.8, EPSILON_ANGLE);
 
 		// ----------------------------------------------------------
-		hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(6.0),  3.0,  heureObservation, 54.5);
+		hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(6.0),  3.0,  heureObservation, 54.5, bord);
 		hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 57.8, EPSILON_ANGLE);
 
 		// ----------------------------------------------------------
-		hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(10.0),  3.0,  heureObservation, 55);
+		hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(10.0),  3.0,  heureObservation, 55, bord);
 		hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 61.0, EPSILON_ANGLE);
 
 		// ----------------------------------------------------------
-		hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(10.5),  3.0,  heureObservation, 55);
+		hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(10.5),  3.0,  heureObservation, 55, bord);
 		hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 61.1, EPSILON_ANGLE);
 	}
@@ -285,23 +285,23 @@ public class CorrectionsTest  {
 	public void test012_lune_02() throws NavException {
 		eTypeVisee bord = eTypeVisee.luneBordSup;
 		ICorrectionDeVisee cvLunaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
-		double hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(6.0),  0,  heureObservation, 54.5);
+		double hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(6.0),  0,  heureObservation, 54.5, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 31.09999999, EPSILON_ANGLE);
 
 		// ----------------------------------------------------------
-		hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(6.0),  3.0,  heureObservation, 54.5);
+		hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(6.0),  3.0,  heureObservation, 54.5, bord);
 		hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 28.09999999, EPSILON_ANGLE);
 
 		// ----------------------------------------------------------
-		hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(10.0),  3.0,  heureObservation, 55);
+		hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(10.0),  3.0,  heureObservation, 55, bord);
 		hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 31.0, EPSILON_ANGLE);
 
 		// ----------------------------------------------------------
-		hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(10.5),  3.0,  heureObservation, 55);
+		hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(10.5),  3.0,  heureObservation, 55, bord);
 		hEnMinuteDArc =hEnDegre * 60.0;
 		assertEquals (hEnMinuteDArc, 31.099999999, EPSILON_ANGLE);
 	}

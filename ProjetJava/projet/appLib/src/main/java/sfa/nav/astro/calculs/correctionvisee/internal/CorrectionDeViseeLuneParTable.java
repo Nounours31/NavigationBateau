@@ -1,11 +1,12 @@
-package sfa.nav.astro.calculs.internal;
+package sfa.nav.astro.calculs.correctionvisee.internal;
 
 import sfa.nav.astro.calculs.ErreurSextan;
-import sfa.nav.astro.calculs.internal.CorrectionDeVisee.eTypeVisee;
+import sfa.nav.astro.calculs.correctionvisee.internal.CorrectionDeVisee.correctionDeViseeHandler;
+import sfa.nav.astro.calculs.correctionvisee.internal.CorrectionDeVisee.eTypeVisee;
 import sfa.nav.model.Angle;
 import sfa.nav.model.NavDateHeure;
 
-public class CorrectionDeViseeLuneParTable extends CorrectionDeViseeLune{
+public class CorrectionDeViseeLuneParTable extends CorrectionDeViseeLune {
 
 	public CorrectionDeViseeLuneParTable (ErreurSextan _err, eTypeVisee _visee) {
 		super (_err, _visee);
@@ -16,27 +17,30 @@ public class CorrectionDeViseeLuneParTable extends CorrectionDeViseeLune{
 	public double correctionTotale_EnDegre(Angle hauteurInstruentale_Hi, 
 			double hauteurOeil,
 			NavDateHeure heureObservation, 
-			double indiceRefraction_PI) {
+			double indiceRefraction_PI,
+			eTypeVisee t) {
 
 		double correction = 0.0;
 	
 		double depressionApparenteHorizon = DIP_ParLaTable(hauteurOeil);
 		correction += depressionApparenteHorizon;
 		
-		correctionDeViseeHandler parallaxe = correctionHoeilDipRefractionParallaxeDemiDiametre_EnMinuteArc(hauteurInstruentale_Hi, hauteurOeil, indiceRefraction_PI);
+		correctionDeViseeHandler parallaxe = correctionHoeilDipRefractionParallaxeDemiDiametre_EnMinuteArc(hauteurInstruentale_Hi, hauteurOeil, indiceRefraction_PI, t);
+		
 		correction += parallaxe.correctionRefractionParallaxeEventuellementSDetDIP;
 		correction += parallaxe.correctionSemiDiametre;
-		correction -= correctionEnMinuteArcPourLeSextan();
+		correction -= correctionSextan_EnMinuteArc();
 		
 		// correction en degre
 		correction = correction / 60.0;
 		return correction;
 	}
 
-	@Override
+
 	public correctionDeViseeHandler correctionHoeilDipRefractionParallaxeDemiDiametre_EnMinuteArc(Angle hauteurApparente_Ha,
 			double hauteurOeil, 
-			double indiceRefraction_PI) {
+			double indiceRefraction_PI,
+			eTypeVisee t) {
 		correctionDeViseeHandler retour = new correctionDeViseeHandler();
 		final int Ha = 0;
 		int i;
@@ -99,7 +103,7 @@ public class CorrectionDeViseeLuneParTable extends CorrectionDeViseeLune{
 				indiceRefraction_PI);
 		
 		double correctionBordSup = 0.0;
-		if (visee == eTypeVisee.luneBordSup) {
+		if (t == eTypeVisee.luneBordSup) {
 			correctionBordSup = (-1.0) * Interpolation(
 					CorrectionDeViseeTablesDeNavigation.Lune_PI_HP_HorizontaleParallaxeEnMinuteARc[jRefractionSup -1],
 					CorrectionDeViseeTablesDeNavigation.Lune_Diametre_EnMinuteDeArc[jRefractionSup-1],
@@ -113,11 +117,5 @@ public class CorrectionDeViseeLuneParTable extends CorrectionDeViseeLune{
 		retour.correctionSemiDiametre = correctionBordSup;
 		retour.correctionDIP = DIP_ParLaTable(hauteurOeil);
 		return retour;
-	}
-
-
-	@Override
-	public double correctionSemiDiametre_EnMinuteArc(NavDateHeure heureVisee) throws NoSuchMethodException {
-		throw new NoSuchMethodException();
 	}
 }
