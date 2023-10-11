@@ -12,17 +12,14 @@ public class ICorrectionDeViseeFactory {
 			case etoile:
 			case mars:
 			case planete:
+			case venus: 
+				return new CorrectionDeViseePlanete (err, visee);
 			case soleilBordInf:
 			case soleilBordSup:
-			case venus: 
-				if (!byTable)
-					return new CorrectionDeViseeSoleilParCalcul (err, visee);
-				return new CorrectionDeViseeSoleilParTable (err, visee);
+				return new CorrectionDeViseeSoleil (err, visee);
 			case luneBordInf:
 			case luneBordSup: 
-				if (!byTable)
-					return new CorrectionDeViseeLuneParCalcul (err, visee);
-				return new CorrectionDeViseeLuneParTable (err, visee);
+				return new CorrectionDeViseeLune (err, visee);
 			default: return null;
 		}
 	}

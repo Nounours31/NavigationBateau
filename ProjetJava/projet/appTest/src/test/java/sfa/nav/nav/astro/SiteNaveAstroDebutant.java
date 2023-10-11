@@ -90,7 +90,7 @@ public class SiteNaveAstroDebutant extends ANavAstroMotherTestClass {
 				 errSextan,
 				 ephe);
 		
-		assertEquals(res.getIntercept().distanceInMilleNautique(), 9.640, EPISILON_DISTANCE);
+		assertEquals(res.getIntercept().distanceInMilleNautique(), 9.517, EPISILON_DISTANCE);
 		assertEquals(res.getSens(), eSensIntercept.versPg);
 		assertEquals(res.getZ().asDegre(), 230.033, EPISILON_ANGLE);
 	}
@@ -124,7 +124,7 @@ public class SiteNaveAstroDebutant extends ANavAstroMotherTestClass {
 				 errSextan,
 				 ephe);
 		
-		assertEquals(res.getIntercept().distanceInMilleNautique(), 12.083, EPISILON_DISTANCE);
+		assertEquals(res.getIntercept().distanceInMilleNautique(), 11.959, EPISILON_DISTANCE);
 		assertEquals(res.getSens(), eSensIntercept.versPg);
 		assertEquals(res.getZ().asDegre(), 230.008, EPISILON_ANGLE);
 	}
@@ -168,7 +168,7 @@ public class SiteNaveAstroDebutant extends ANavAstroMotherTestClass {
 				epheEtoileArcturus
 		);
 		
-		assertEquals(res.getIntercept().distanceInMilleNautique(), -8.404, EPISILON_DISTANCE);
+		assertEquals(res.getIntercept().distanceInMilleNautique(), -8.467, EPISILON_DISTANCE);
 		assertEquals(res.getSens(), eSensIntercept.opposePg);
 		assertEquals(res.getZ().asDegre(), 174.431, EPISILON_ANGLE);
 	}
@@ -201,13 +201,13 @@ public class SiteNaveAstroDebutant extends ANavAstroMotherTestClass {
 				 errSextan,
 				 epheLune);
 		
-		assertEquals(res.getIntercept().distanceInMilleNautique(), -12.667, EPISILON_DISTANCE);
+		assertEquals(res.getIntercept().distanceInMilleNautique(), -12.825, EPISILON_DISTANCE);
 		assertEquals(res.getSens(), eSensIntercept.opposePg);
 		assertEquals(res.getZ().asDegre(), 224.592, EPISILON_ANGLE);
 	}
 
 	@Test
-	public void test001_PremierCanevasDroiteHauteurPlaneteVenus() throws NavException {
+	public void test001_PremierCanevasDroiteHauteurPlanete() throws NavException {
 		DroiteDeHauteur dh = new DroiteDeHauteur();
 		Latitude lat = LatitudeFactory.fromString("30° N");
 		Longitude lon = LongitudeFactory.fromString("24° W");
@@ -224,12 +224,7 @@ public class SiteNaveAstroDebutant extends ANavAstroMotherTestClass {
 				astre,
 				AngleFactory.fromString("90°00.3'"), DeclinaisonFactory.fromString("24°27.1' N"), 0.1, NavDateHeureFactory.fromString("12/05/2010 20:00:00 GMT"),
 				AngleFactory.fromString("104°59.4'"), DeclinaisonFactory.fromString("24°27.4' N"), 0.1, NavDateHeureFactory.fromString("12/05/2010 21:00:00 GMT"));
-	
-		Ephemerides ephePointVernal = new Ephemerides(
-				"Point Vernal - Aries",
-				AngleFactory.fromString("170°29'"), DeclinaisonFactory.fromString("0° N"), 0.0, NavDateHeureFactory.fromString("12/05/2010 20:00:00 GMT"),
-				AngleFactory.fromString("185°31.4"), DeclinaisonFactory.fromString("0° N"), 0.0, NavDateHeureFactory.fromString("12/05/2010 21:00:00 GMT"));
-	
+		
 		
 		
 		DroiteHauteurPositionnee res = dh.droitedeHauteurPlanete ( 
@@ -240,12 +235,11 @@ public class SiteNaveAstroDebutant extends ANavAstroMotherTestClass {
 				hauteurOeil,
 				eTypeVisee.planete,
 				errSextan,
-				ephePointVernal,
 				ephe
 		);
 		
-		assertEquals(res.getIntercept().distanceInMilleNautique(), -8.404, EPISILON_DISTANCE);
-		assertEquals(res.getSens(), eSensIntercept.opposePg);
-		assertEquals(res.getZ().asDegre(), 174.431, EPISILON_ANGLE);
+		assertEquals(res.getIntercept().distanceInMilleNautique(), 8.309, EPISILON_DISTANCE);
+		assertEquals(res.getSens(), eSensIntercept.versPg);
+		assertEquals(res.getZ().asDegre(), 285.477, EPISILON_ANGLE);
 	}
 }

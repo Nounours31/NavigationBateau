@@ -93,10 +93,9 @@ public class DroiteDeHauteur {
 			double 				hauteurOeil,
 			eTypeVisee			visee,
 			ErreurSextan 		sextanErr,
-			Ephemerides 		ephePointVernal, // GHA Aries, Point vernal, AHso (Angle Horaire Sideral Origine)
-			Ephemerides 		epheEtoile) throws NavException {
+			Ephemerides 		ephe) throws NavException {
 		internalCanevas = new Canevas(eTypeDroiteHauteur.planete);
-		return this.droitedeHauteur(astre, positionEstimee, HauteurInstruentale_Hi, heureObservation, hauteurOeil, sextanErr, ephePointVernal, epheEtoile, eTypeVisee.etoile, eTypeDroiteHauteur.etoile);
+		return this.droitedeHauteur(astre, positionEstimee, HauteurInstruentale_Hi, heureObservation, hauteurOeil, sextanErr, null, ephe, eTypeVisee.planete, eTypeDroiteHauteur.planete);
 	}
 
 	public DroiteHauteurPositionnee droitedeHauteurSoleil (
@@ -139,7 +138,7 @@ public class DroiteDeHauteur {
 		// Etape 2: Latitude POintVernal
 		Angle LHA_LocalHoraireAngle = null;
 		
-		if((typeDroiteHauteur == eTypeDroiteHauteur.etoile) || (typeDroiteHauteur == eTypeDroiteHauteur.planete)) {
+		if(typeDroiteHauteur == eTypeDroiteHauteur.etoile)  {
 			Angle AngleHoraireAHeureObservation_PointVernal = ephePointVernal.AngleHoraireAHeureObservation(heureObservation);
 			Angle AngleHoraireAHeureObservation_AstreVsPOintVernal = epheAstre.AngleHoraireAHeureObservation(heureObservation);
 			Angle AngleHoraireAHeureObservation_Astre = AngleHoraireAHeureObservation_PointVernal.plus(AngleHoraireAHeureObservation_AstreVsPOintVernal);
@@ -148,7 +147,7 @@ public class DroiteDeHauteur {
 			LHA_LocalHoraireAngle = AngleHoraireAHeureObservation_Astre.plus(positionEstimee.longitude());
 			internalCanevas.angleHoraireLocalAstre(LHA_LocalHoraireAngle);
 		}
-		else if((typeDroiteHauteur == eTypeDroiteHauteur.soleil) || (typeDroiteHauteur == eTypeDroiteHauteur.lune)) {
+		else if((typeDroiteHauteur == eTypeDroiteHauteur.soleil) || (typeDroiteHauteur == eTypeDroiteHauteur.lune) || (typeDroiteHauteur == eTypeDroiteHauteur.planete)) {
 			Angle AngleHoraireAHeureObservation_Astre = epheAstre.AngleHoraireAHeureObservation(heureObservation);
 		
 			// Etape 3: position estimee
@@ -174,17 +173,10 @@ public class DroiteDeHauteur {
 		internalCanevas.typeVisee(visee);
 		AngleOriente correction = null;
 		double indiceRefraction_PI = epheAstre.pi(heureObservation);	
-		if(typeDroiteHauteur == eTypeDroiteHauteur.lune) {
-			cv = ICorrectionDeViseeFactory.getCorrectionVisse(visee, true, sextanErr);
-			correction = AngleOrienteFactory.fromDegre(cv.correctionTotale_EnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation, indiceRefraction_PI, visee));		
-		}
-		else if((typeDroiteHauteur == eTypeDroiteHauteur.soleil) || (typeDroiteHauteur == eTypeDroiteHauteur.etoile)) {
-			cv = ICorrectionDeViseeFactory.getCorrectionVisse(visee, true, sextanErr); 
-			correction = AngleOrienteFactory.fromDegre(cv.correctionTotale_EnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation, indiceRefraction_PI, visee));
-		}
-		else {
-			throw (new NavException("Cas non prevu " + typeDroiteHauteur));
-		}
+
+		cv = ICorrectionDeViseeFactory.getCorrectionVisse(visee, true, sextanErr);
+		correction = AngleOrienteFactory.fromDegre(cv.correctionTotale_EnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation, indiceRefraction_PI, visee));		
+
 		if (logger.isDebugEnabled()) {
 			double Ha = cv.HaFromHi_EnDegre(HauteurInstruentale_Hi.asDegre(), hauteurOeil);
 			double corrOeil = cv.correctionHauteurOeilMetre_EnMinuteArc(hauteurOeil);

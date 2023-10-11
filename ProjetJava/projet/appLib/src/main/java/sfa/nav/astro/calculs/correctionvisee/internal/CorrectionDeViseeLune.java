@@ -9,7 +9,7 @@ import sfa.nav.model.Angle;
 import sfa.nav.model.NavDateHeure;
 
 
-public abstract class CorrectionDeViseeLune extends CorrectionDeVisee {
+public class CorrectionDeViseeLune extends CorrectionDeVisee {
 	final Logger logger = LoggerFactory.getLogger(getClass()) ;
 	
 	public CorrectionDeViseeLune (ErreurSextan _err, eTypeVisee _visee) {
@@ -19,36 +19,32 @@ public abstract class CorrectionDeViseeLune extends CorrectionDeVisee {
 	@Override
 	public double diametre_EnMinuteArc(NavDateHeure heureObservation, double HP) {
 		double diametreLune = 0.0;
-		int i = 0;
-		while (CorrectionDeViseeTablesDeNavigation.Lune_PI_HP_HorizontaleParallaxeEnMinuteARc[i] < HP)
-			i++;
+		int iBorneInf = 0;
+		int iBorneSup = 0;
+		final int iMax = CorrectionDeViseeTablesDeNavigation.Lune_PI_HP_HorizontaleParallaxeEnMinuteARc.length;
+		while ((iBorneInf < iMax) && (CorrectionDeViseeTablesDeNavigation.Lune_PI_HP_HorizontaleParallaxeEnMinuteARc[iBorneInf] < HP))
+			iBorneInf++;
 
+		// en dessous du tableau
+		if (iBorneInf == 0) {
+			iBorneInf = iBorneSup = 0;
+		}
+		else if (iBorneInf == iMax) {
+			iBorneInf = iBorneSup = iMax - 1;
+		}
+		else {
+			iBorneSup = iBorneInf;
+			iBorneInf = iBorneInf - 1;
+		}
+			
 		diametreLune = Interpolation(
-				CorrectionDeViseeTablesDeNavigation.Lune_PI_HP_HorizontaleParallaxeEnMinuteARc[i -1],
-				CorrectionDeViseeTablesDeNavigation.Lune_Diametre_EnMinuteDeArc[i-1],
-				CorrectionDeViseeTablesDeNavigation.Lune_PI_HP_HorizontaleParallaxeEnMinuteARc[i],
-				CorrectionDeViseeTablesDeNavigation.Lune_Diametre_EnMinuteDeArc[i],
+				CorrectionDeViseeTablesDeNavigation.Lune_PI_HP_HorizontaleParallaxeEnMinuteARc[iBorneInf],
+				CorrectionDeViseeTablesDeNavigation.Lune_Diametre_EnMinuteDeArc[iBorneInf],
+				CorrectionDeViseeTablesDeNavigation.Lune_PI_HP_HorizontaleParallaxeEnMinuteARc[iBorneSup],
+				CorrectionDeViseeTablesDeNavigation.Lune_Diametre_EnMinuteDeArc[iBorneSup],
 				HP);
 
 		logger.debug("diametre_EnMinuteArc {}", diametreLune);
 		return diametreLune;
 	}
-
-	@Override
-	public double correctionAjoutSemiDiametreAstre_EnMinuteArc (NavDateHeure heureObservation, double HP) {
-		double d = diametre_EnMinuteArc(heureObservation, HP) / 2.0;
-		logger.debug("corrrectionDiametre_EnMinuteArc {}", d);
-		return d;
-	}
-
-	@Override
-	public double corrrectionTypeVisee_EnMinuteArc (eTypeVisee t, NavDateHeure heureObservation, double HP) {
-		double d = 0.0;
-		if (t == eTypeVisee.luneBordSup)
-			d = 1.0 * diametre_EnMinuteArc(heureObservation, HP);
-		
-		logger.debug("corrrectionVisee_EnMinuteArc {}", d);
-		return d;
-	}
-
 }

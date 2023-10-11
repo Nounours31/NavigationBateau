@@ -5,7 +5,6 @@ import sfa.nav.model.Angle;
 import sfa.nav.model.NavDateHeure;
 
 public interface ICorrectionDeVisee {
-
 	double correctionTotale_EnDegre(
 			Angle hauteurInstruentale_Hi, 
 			double hauteurOeil, 
@@ -23,9 +22,9 @@ public interface ICorrectionDeVisee {
 	// Ha : ?
 	//		Hs = Ha = Hi + I - d                     avec I: collimaton // d = dip
 	//
-	//      Hv = Ho = (Hi + I - d)  - R - P +/- SD   avec R: Refraction // P : parallaxe // SD 1/2 diametre 
-	//              =       Ha      - R - P +/- SD
-	
+	//      Hv = Ho = (Hi + I - d)  - R - P + SD   avec R: Refraction // P : parallaxe // SD 1/2 diametre 
+	//              =       Ha      - R - P + SD
+	//                                             + TypeVisee (qui vaut le diametre)
 	double correctionSextan_EnMinuteArc();
 	double correctionHauteurOeilMetre_EnMinuteArc(double hauteurOeilEnMetre);
 
