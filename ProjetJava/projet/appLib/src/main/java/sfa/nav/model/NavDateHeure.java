@@ -6,13 +6,10 @@ package sfa.nav.model;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
-import java.util.Formatter.BigDecimalLayoutForm;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +79,21 @@ public class NavDateHeure {
 		LocalTime heureMinuit = LocalTime.of(0, 0, 0);
 		ZonedDateTime aujourdhuiMinuit = ZonedDateTime.of(_value.toLocalDate(), heureMinuit , _myZone);
 		return (_value.toEpochSecond() - aujourdhuiMinuit.toEpochSecond()) / (60.0 * 60.0);
+	}
+
+	public double NbHourDecimaleToGMTMidDay() {
+		LocalTime heureMidi = LocalTime.of(12, 0, 0);
+		ZonedDateTime aujourdhuiMidiGMT = ZonedDateTime.of(_value.toLocalDate(), heureMidi , GMT);
+		return (_value.toEpochSecond() - aujourdhuiMidiGMT.toEpochSecond()) / (60.0 * 60.0);
+	}
+
+	public static NavDateHeure todayMidiGMT() {
+		LocalTime heureMidi = LocalTime.of(12, 0, 0);
+		LocalDate aujourdhui = LocalDate.now();
+		ZonedDateTime aujourdhuiMidiGMT = ZonedDateTime.of(aujourdhui, heureMidi , GMT);
+		NavDateHeure retour = new NavDateHeure();
+		retour._value = aujourdhuiMidiGMT;
+		return retour;
 	}
 
 	

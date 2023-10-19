@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import sfa.nav.astro.calculs.ErreurSextan;
 import sfa.nav.astro.calculs.ICorrectionDeVisee;
-import sfa.nav.astro.calculs.correctionvisee.internal.ICorrectionDeViseeFactory;
+import sfa.nav.astro.calculs.correctionvisee.internal.CorrectionDeViseeFactory;
 import sfa.nav.astro.calculs.correctionvisee.internal.CorrectionDeVisee.eTypeVisee;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
@@ -61,7 +61,7 @@ public class CorrectionsTest  {
 		double hOeil = 0.0;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
 		
-		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
+		ICorrectionDeVisee cvSolaire = CorrectionDeViseeFactory.getCorrectionVisse(bord, errSextan);
 		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
@@ -74,7 +74,7 @@ public class CorrectionsTest  {
 		double hOeil = 1.0;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
 
-		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
+		ICorrectionDeVisee cvSolaire = CorrectionDeViseeFactory.getCorrectionVisse(bord, errSextan);
 		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
@@ -86,7 +86,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 5.0);
 		double hOeil = 1.0;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
+		ICorrectionDeVisee cvSolaire = CorrectionDeViseeFactory.getCorrectionVisse(bord, errSextan);
 		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
@@ -97,7 +97,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 91.0);
 		double hOeil = 1.0;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
+		ICorrectionDeVisee cvSolaire = CorrectionDeViseeFactory.getCorrectionVisse(bord, errSextan);
 		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
@@ -108,7 +108,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 6.0);
 		double hOeil = 6.0;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
+		ICorrectionDeVisee cvSolaire = CorrectionDeViseeFactory.getCorrectionVisse(bord, errSextan);
 		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
@@ -120,7 +120,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 7.0);
 		double hOeil = 2.0;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
+		ICorrectionDeVisee cvSolaire = CorrectionDeViseeFactory.getCorrectionVisse(bord, errSextan);
 		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
@@ -132,7 +132,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 8.0);
 		double hOeil = 1.99;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
+		ICorrectionDeVisee cvSolaire = CorrectionDeViseeFactory.getCorrectionVisse(bord, errSextan);
 		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
@@ -144,7 +144,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 8.0);
 		double hOeil = 2.01;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
+		ICorrectionDeVisee cvSolaire = CorrectionDeViseeFactory.getCorrectionVisse(bord, errSextan);
 		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
@@ -156,7 +156,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 15.0);
 		double hOeil = 2;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
+		ICorrectionDeVisee cvSolaire = CorrectionDeViseeFactory.getCorrectionVisse(bord, errSextan);
 		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
@@ -168,7 +168,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 91.0);
 		double hOeil = 6;
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
-		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
+		ICorrectionDeVisee cvSolaire = CorrectionDeViseeFactory.getCorrectionVisse(bord, errSextan);
 		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
@@ -180,7 +180,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 15.0);
 		double hOeil = 2;
 		eTypeVisee bord = eTypeVisee.etoile;
-		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
+		ICorrectionDeVisee cvSolaire = CorrectionDeViseeFactory.getCorrectionVisse(bord, errSextan);
 		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
@@ -192,7 +192,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 15.0);
 		double hOeil = 2;
 		eTypeVisee bord = eTypeVisee.soleilBordSup;
-		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
+		ICorrectionDeVisee cvSolaire = CorrectionDeViseeFactory.getCorrectionVisse(bord, errSextan);
 		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, heureObservation, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
@@ -206,7 +206,7 @@ public class CorrectionsTest  {
 		eTypeVisee bord = eTypeVisee.soleilBordInf;
 		
 		NavDateHeure decembre = NavDateHeureFactory.fromStringSafe("10/12/1968 10:00:00");
-		ICorrectionDeVisee cvSolaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
+		ICorrectionDeVisee cvSolaire = CorrectionDeViseeFactory.getCorrectionVisse(bord, errSextan);
 		double hEnDegre = cvSolaire.correctionTotale_EnDegre(Hi,  hOeil, decembre, 0.0, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
@@ -224,7 +224,7 @@ public class CorrectionsTest  {
 		Angle Hi = AngleFactory.fromDegre( 15.0);
 		double hOeil = 0;
 		eTypeVisee bord = eTypeVisee.luneBordInf;
-		ICorrectionDeVisee cvLunaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
+		ICorrectionDeVisee cvLunaire = CorrectionDeViseeFactory.getCorrectionVisse(bord, errSextan);
 		
 		double hEnDegre = cvLunaire.correctionTotale_EnDegre(Hi,  hOeil,  heureObservation, 54, bord);
 		double hEnMinuteDArc =hEnDegre * 60.0;
@@ -263,7 +263,7 @@ public class CorrectionsTest  {
 	@Test
 	public void test012_lune_01() throws NavException {
 		eTypeVisee bord = eTypeVisee.luneBordInf;
-		ICorrectionDeVisee cvLunaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
+		ICorrectionDeVisee cvLunaire = CorrectionDeViseeFactory.getCorrectionVisse(bord, errSextan);
 		double hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(6.0),  0,  heureObservation, 54.5, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;
@@ -288,7 +288,7 @@ public class CorrectionsTest  {
 	@Test
 	public void test012_lune_02() throws NavException {
 		eTypeVisee bord = eTypeVisee.luneBordSup;
-		ICorrectionDeVisee cvLunaire = ICorrectionDeViseeFactory.getCorrectionVisse(bord, true, errSextan);
+		ICorrectionDeVisee cvLunaire = CorrectionDeViseeFactory.getCorrectionVisse(bord, errSextan);
 		double hEnDegre = cvLunaire.correctionTotale_EnDegre(AngleFactory.fromDegre(6.0),  0,  heureObservation, 54.5, bord);
 
 		double hEnMinuteDArc =hEnDegre * 60.0;

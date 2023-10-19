@@ -1,6 +1,6 @@
-package sfa.nav.astro.calculs.correctionvisee.internal;
+package sfa.nav.astro.calculs;
 
-public class CorrectionDeViseeTablesDeNavigation {
+public class ConstantesCelestes {
 
 	//		janvier, fevrier, ...., decembre
 	final public static double[] Soleil_DeuxiemeCorrection_BordInferieur_parmoisEnMinuteArc = {
@@ -17,4 +17,7 @@ public class CorrectionDeViseeTablesDeNavigation {
 	
 	final public static double[] Lune_Diametre_EnMinuteDeArc = {			 			
 			29.4,	30.0,	30.3,	30.6,	30.8,	31.1,	31.4,	31.7,	32.0,	32.2,	32.5,	32.8,	33.3};
+	
+	final public static double RayonTerrestreEnMetre = 67000000;
+	final public static double VitesseSoleinDegreParHeure = 15.004;
 }

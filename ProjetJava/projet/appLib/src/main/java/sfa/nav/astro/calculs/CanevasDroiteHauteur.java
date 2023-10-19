@@ -20,8 +20,8 @@ import sfa.nav.model.PointGeographique;
 import sfa.nav.model.tools.ePointsCardinaux;
 import sfa.nav.pdf.PDF4DroiteDeHauteur;
 
-public class Canevas {
-	final static Logger logger = LoggerFactory.getLogger(Canevas.class);
+public class CanevasDroiteHauteur {
+	final static Logger logger = LoggerFactory.getLogger(CanevasDroiteHauteur.class);
 	
 	final private eTypeDroiteHauteur _type;
 	eTypeDroiteHauteur typeDroiteHauteur() {return _type;}
@@ -97,7 +97,7 @@ public class Canevas {
 
 
 
-	public Canevas(eTypeDroiteHauteur t) { _type = t; }
+	public CanevasDroiteHauteur(eTypeDroiteHauteur t) { _type = t; }
 
 
 	@Override

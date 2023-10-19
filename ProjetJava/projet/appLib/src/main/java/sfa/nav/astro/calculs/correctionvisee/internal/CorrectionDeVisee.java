@@ -13,7 +13,9 @@ public abstract class CorrectionDeVisee implements ICorrectionDeVisee {
 	final Logger logger = LoggerFactory.getLogger(getClass()) ;
 	
 	public enum eTypeVisee {
-		soleilBordSup, soleilBordInf, luneBordSup, luneBordInf, venus, mars, planete, etoile;
+		soleilBordSup, soleilBordInf, luneBordSup, luneBordInf, venus, mars, planete, etoile,
+		// meridienne
+		meridienneSoleil, meridiennePolaris;
 
 		public static String getTypeDroiteHauteur(eTypeVisee e) {
 			switch (e) {

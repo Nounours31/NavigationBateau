@@ -4,10 +4,9 @@ import sfa.nav.astro.calculs.ErreurSextan;
 import sfa.nav.astro.calculs.ICorrectionDeVisee;
 import sfa.nav.astro.calculs.correctionvisee.internal.CorrectionDeVisee.eTypeVisee;
 
-public class ICorrectionDeViseeFactory {
+public class CorrectionDeViseeFactory {
 
-	public static ICorrectionDeVisee getCorrectionVisse (eTypeVisee visee, boolean byTable, ErreurSextan err) {
-		byTable = false;
+	public static ICorrectionDeVisee getCorrectionVisse (eTypeVisee visee, ErreurSextan err) {
 		switch (visee) {
 			case etoile:
 			case mars:

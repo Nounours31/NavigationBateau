@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sfa.nav.astro.calculs.correctionvisee.internal.CorrectionDeVisee.eTypeVisee;
-import sfa.nav.astro.calculs.correctionvisee.internal.ICorrectionDeViseeFactory;
+import sfa.nav.astro.calculs.correctionvisee.internal.CorrectionDeViseeFactory;
 import sfa.nav.infra.tools.error.NavException;
 import sfa.nav.model.Angle;
 import sfa.nav.model.AngleFactory;
@@ -22,7 +22,7 @@ import sfa.nav.model.tools.ePointsCardinaux;
 
 public class DroiteDeHauteur {
 	private static final Logger logger = LoggerFactory.getLogger(DroiteDeHauteur.class);
-	private Canevas internalCanevas = null;
+	private CanevasDroiteHauteur internalCanevas = null;
 	
 	public enum eTypeDroiteHauteur {
 		soleil, lune, etoile, planete
@@ -67,7 +67,7 @@ public class DroiteDeHauteur {
 			eTypeVisee			visee,
 			ErreurSextan 		sextanErr,
 			Ephemerides 		epheLune) throws NavException {
-		internalCanevas = new Canevas(eTypeDroiteHauteur.lune);
+		internalCanevas = new CanevasDroiteHauteur(eTypeDroiteHauteur.lune);
 		return droitedeHauteur("Lune", positionEstimee, HauteurInstruentale_Hi, heureObservation, hauteurOeil, sextanErr, null, epheLune, visee, eTypeDroiteHauteur.lune);
 	}
 
@@ -81,7 +81,7 @@ public class DroiteDeHauteur {
 			ErreurSextan 		sextanErr,
 			Ephemerides 		ephePointVernal, // GHA Aries, Point vernal, AHso (Angle Horaire Sideral Origine)
 			Ephemerides 		epheEtoile) throws NavException {
-		internalCanevas = new Canevas(eTypeDroiteHauteur.etoile);
+		internalCanevas = new CanevasDroiteHauteur(eTypeDroiteHauteur.etoile);
 		return this.droitedeHauteur(astre, positionEstimee, HauteurInstruentale_Hi, heureObservation, hauteurOeil, sextanErr, ephePointVernal, epheEtoile, eTypeVisee.etoile, eTypeDroiteHauteur.etoile);
 	}
 
@@ -94,7 +94,7 @@ public class DroiteDeHauteur {
 			eTypeVisee			visee,
 			ErreurSextan 		sextanErr,
 			Ephemerides 		ephe) throws NavException {
-		internalCanevas = new Canevas(eTypeDroiteHauteur.planete);
+		internalCanevas = new CanevasDroiteHauteur(eTypeDroiteHauteur.planete);
 		return this.droitedeHauteur(astre, positionEstimee, HauteurInstruentale_Hi, heureObservation, hauteurOeil, sextanErr, null, ephe, eTypeVisee.planete, eTypeDroiteHauteur.planete);
 	}
 
@@ -106,7 +106,7 @@ public class DroiteDeHauteur {
 			eTypeVisee			visee,
 			ErreurSextan 		sextanErr,
 			Ephemerides 		ephe) throws NavException {
-		internalCanevas = new Canevas(eTypeDroiteHauteur.soleil);
+		internalCanevas = new CanevasDroiteHauteur(eTypeDroiteHauteur.soleil);
 		return this.droitedeHauteur("Soleil", positionEstimee, HauteurInstruentale_Hi, heureObservation, hauteurOeil, sextanErr, null, ephe, visee, eTypeDroiteHauteur.soleil);
 	}
 
@@ -174,7 +174,7 @@ public class DroiteDeHauteur {
 		AngleOriente correction = null;
 		double indiceRefraction_PI = epheAstre.pi(heureObservation);	
 
-		cv = ICorrectionDeViseeFactory.getCorrectionVisse(visee, true, sextanErr);
+		cv = CorrectionDeViseeFactory.getCorrectionVisse(visee, sextanErr);
 		correction = AngleOrienteFactory.fromDegre(cv.correctionTotale_EnDegre(HauteurInstruentale_Hi, hauteurOeil, heureObservation, indiceRefraction_PI, visee));		
 
 		if (logger.isDebugEnabled()) {

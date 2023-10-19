@@ -3,6 +3,7 @@ package sfa.nav.astro.calculs.correctionvisee.internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import sfa.nav.astro.calculs.ConstantesCelestes;
 import sfa.nav.astro.calculs.ErreurSextan;
 import sfa.nav.astro.calculs.correctionvisee.internal.CorrectionDeVisee.eTypeVisee;
 import sfa.nav.model.Angle;
@@ -21,8 +22,8 @@ public class CorrectionDeViseeLune extends CorrectionDeVisee {
 		double diametreLune = 0.0;
 		int iBorneInf = 0;
 		int iBorneSup = 0;
-		final int iMax = CorrectionDeViseeTablesDeNavigation.Lune_PI_HP_HorizontaleParallaxeEnMinuteARc.length;
-		while ((iBorneInf < iMax) && (CorrectionDeViseeTablesDeNavigation.Lune_PI_HP_HorizontaleParallaxeEnMinuteARc[iBorneInf] < HP))
+		final int iMax = ConstantesCelestes.Lune_PI_HP_HorizontaleParallaxeEnMinuteARc.length;
+		while ((iBorneInf < iMax) && (ConstantesCelestes.Lune_PI_HP_HorizontaleParallaxeEnMinuteARc[iBorneInf] < HP))
 			iBorneInf++;
 
 		// en dessous du tableau
@@ -38,10 +39,10 @@ public class CorrectionDeViseeLune extends CorrectionDeVisee {
 		}
 			
 		diametreLune = Interpolation(
-				CorrectionDeViseeTablesDeNavigation.Lune_PI_HP_HorizontaleParallaxeEnMinuteARc[iBorneInf],
-				CorrectionDeViseeTablesDeNavigation.Lune_Diametre_EnMinuteDeArc[iBorneInf],
-				CorrectionDeViseeTablesDeNavigation.Lune_PI_HP_HorizontaleParallaxeEnMinuteARc[iBorneSup],
-				CorrectionDeViseeTablesDeNavigation.Lune_Diametre_EnMinuteDeArc[iBorneSup],
+				ConstantesCelestes.Lune_PI_HP_HorizontaleParallaxeEnMinuteARc[iBorneInf],
+				ConstantesCelestes.Lune_Diametre_EnMinuteDeArc[iBorneInf],
+				ConstantesCelestes.Lune_PI_HP_HorizontaleParallaxeEnMinuteARc[iBorneSup],
+				ConstantesCelestes.Lune_Diametre_EnMinuteDeArc[iBorneSup],
 				HP);
 
 		logger.debug("diametre_EnMinuteArc {}", diametreLune);
