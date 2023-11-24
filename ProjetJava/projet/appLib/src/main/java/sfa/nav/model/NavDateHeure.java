@@ -24,7 +24,7 @@ public class NavDateHeure {
 	private static final double toNano = 1_000_000_000.0;
 
 	private static Logger _logger = LoggerFactory.getLogger(NavDateHeure.class);
-	private static DateTimeFormatter formatterZ = DateTimeFormatter.ofPattern("yyyy/MM/dd kk:mm:ss z");
+	private static DateTimeFormatter formatterZ = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss z");
 	private static ZoneId GMT = ZoneId.of("UTC");
 	private static ZoneId _myZone = ZoneId.of("Europe/Paris");
 

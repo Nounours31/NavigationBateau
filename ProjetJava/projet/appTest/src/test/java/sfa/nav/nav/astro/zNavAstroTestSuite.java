@@ -9,6 +9,7 @@ import org.junit.runners.Suite;
 	XNaveAstroPerso.class,
 	EphemeridesTest.class,
 	CorrectionsTest.class,
+	MeridienneTest.class
 	})
 
 public class zNavAstroTestSuite {

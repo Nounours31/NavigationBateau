@@ -52,4 +52,6 @@ public abstract class Ephemeride {
 	public abstract String toCanevas(ArrayList<Ephemeride> lEphe, NavDateHeure dateObservation, boolean isDeclinaison, boolean isLongitude, String offset, DecimalFormat fmt);
 	public abstract NavDateHeure getHeureGMTPassageGreenwich(ArrayList<Ephemeride> lEphe);
 
+	public abstract double getLongitudeVitesseDegreParHeure(ArrayList<Ephemeride> lEphe);
+
 }

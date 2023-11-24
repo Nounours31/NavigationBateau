@@ -22,7 +22,7 @@ public class Meridienne {
     private static Logger _logger = LoggerFactory.getLogger(Meridienne.class);
 	private CanevasMedienne canevas = null;
 
-    private Meridienne() {
+    public Meridienne() {
     }
 
 
@@ -47,7 +47,7 @@ public class Meridienne {
     }
 
 
-	private void LatitudeMeridiennePolaire(PointGeographique positionEstimee, Ephemerides eph) {
+    private void LatitudeMeridiennePolaire(PointGeographique positionEstimee, Ephemerides eph) {
 		 _logger.error("LatitudeMeridiennePolaire n'existe pas encore");
 	}
 
@@ -59,7 +59,7 @@ public class Meridienne {
 		 _logger.debug("Predetermination de l'heure de la meridienne");
 		 Longitude longitudeEstimee = positionEstimee.longitude();
 		 double longitudeEstimeeAsDegre = longitudeEstimee.asDegre();
-		 double intervalHoraireEnHeure = (longitudeEstimeeAsDegre / ConstantesCelestes.VitesseSoleinDegreParHeure);
+		 double intervalHoraireEnHeure = (longitudeEstimeeAsDegre / eph.getLongitudeVitesseDegreParHeure());
 		 
 		 
 		 NavDateHeure PassageGreenWitch = eph.getHeureGMTPassageGreenwich();
@@ -67,6 +67,26 @@ public class Meridienne {
 		 _logger.debug("-->> LatitudeMeridienneSoleil heure de passage :" + heureMeridienneLocale);
 		  
 		 _logger.debug("--<< LatitudeMeridienneSoleil stop");
+	}
+
+	public NavDateHeure LatitudeMeridienneSoleil_EstimationHeureLocaleCulmination(PointGeographique positionEstimee, Ephemerides eph) {
+		 _logger.debug("-->> LatitudeMeridienneSoleil start");
+		 
+		 // 1. predetermination heure de la meridienne
+		 _logger.debug("Predetermination de l'heure de la meridienne");
+		 Longitude longitudeEstimee = positionEstimee.longitude();
+		 double longitudeEstimeeAsDegre = longitudeEstimee.asDegre();
+		 double intervalHoraireEnHeure = /* si longi ouest <0 il faut ajouter donc -1.0 */ -1.0 * (longitudeEstimeeAsDegre / eph.getLongitudeVitesseDegreParHeure());
+		 _logger.debug("-->> LatitudeMeridienneSoleil decalage horaire :" + intervalHoraireEnHeure);
+		 
+		 
+		 NavDateHeure PassageGreenWitch = eph.getHeureGMTPassageGreenwich();
+		 NavDateHeure heureMeridienneLocale = PassageGreenWitch.plusHeureDecimale(intervalHoraireEnHeure);
+		 _logger.debug("-->> LatitudeMeridienneSoleil heure culmination greenwich :" + PassageGreenWitch);
+		 _logger.debug("-->> LatitudeMeridienneSoleil heure culmination locale :" + heureMeridienneLocale);
+		  
+		 _logger.debug("--<< LatitudeMeridienneSoleil stop");
+		return heureMeridienneLocale;
 	}
 
 	private void LongitudeMeridiennePolaire(PointGeographique positionEstimee, Ephemerides eph) {

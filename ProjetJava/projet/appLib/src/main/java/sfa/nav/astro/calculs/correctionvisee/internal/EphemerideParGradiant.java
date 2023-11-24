@@ -144,4 +144,11 @@ public class EphemerideParGradiant extends Ephemeride {
 		NavDateHeure heureGMTPassageGreenwich = self.heureDeRef.plusHeureDecimale(intervalHoraire);
 		return (heureGMTPassageGreenwich);		
 	}
+
+
+	@Override
+	public double getLongitudeVitesseDegreParHeure(ArrayList<Ephemeride> lEphe) {
+		EphemerideParGradiant self = (EphemerideParGradiant)lEphe.get(0);
+		return self.varHA.asDegreParHeure();
+	}
 }

@@ -97,4 +97,14 @@ public class Ephemerides {
 		return sb.toString();
 	}
 
+	public void add(EphemerideParInterval e) {
+		_lEphe.add(e);		
+	}
+
+	public double getLongitudeVitesseDegreParHeure() {
+		Ephemeride self = _lEphe.get(0);
+		ArrayList<Ephemeride> lEphe = new ArrayList<Ephemeride>(List.of(_lEphe.get(0), (_lEphe.size() > 1 ? _lEphe.get(1) : _lEphe.get(0))));
+		return self.getLongitudeVitesseDegreParHeure(lEphe);
+	}
+
 }

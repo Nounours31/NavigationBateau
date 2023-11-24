@@ -162,7 +162,7 @@ public class EphemerideParInterval extends Ephemeride {
 		
 		int i = 0;
 		for (Ephemeride e : lEphe) {
-			if (e.GHA.asDegre() > dernierAvant360.GHA.asDegre()) {
+			if ((e.GHA.asDegre() > dernierAvant360.GHA.asDegre()) && (e.GHA.asDegre() <= 360.0)) {
 				dernierAvant360 = e;
 				indiceDernierAvant360 = i;
 			}
@@ -170,12 +170,22 @@ public class EphemerideParInterval extends Ephemeride {
 		}
 		
 		// rien apres c'est foutu
-		if (i ==  (lEphe.size() - 1))
+		if (indiceDernierAvant360 >=  (lEphe.size() - 1))
 			return null;
 		
-		double gradiantParHeure = (360.0 - lEphe.get(i).GHA.asDegre()) / ((lEphe.get(i+1).GHA.asDegre() + 360.0) - lEphe.get(i).GHA.asDegre());
-		double dureeEnHeureDecimale = (lEphe.get(i+1).heureDeRef.asHeureDecimaleEpoch() - lEphe.get(i).heureDeRef.asHeureDecimaleEpoch());
-		double interpolation = gradiantParHeure * dureeEnHeureDecimale + lEphe.get(i).heureDeRef.asHeureDecimaleEpoch();	
+		double gradiantParHeure = 
+				(360.0 -                                             lEphe.get(indiceDernierAvant360).GHA.asDegre()) / 
+				(lEphe.get(indiceDernierAvant360+1).GHA.asDegre() -  lEphe.get(indiceDernierAvant360).GHA.asDegre());
+		double dureeEnHeureDecimale = (lEphe.get(indiceDernierAvant360+1).heureDeRef.asHeureDecimaleEpoch() - lEphe.get(indiceDernierAvant360).heureDeRef.asHeureDecimaleEpoch());
+
+		double interpolation = gradiantParHeure * dureeEnHeureDecimale + lEphe.get(indiceDernierAvant360).heureDeRef.asHeureDecimaleEpoch();	
 		return NavDateHeureFactory.fromHeureDecimale(interpolation);
+	}
+
+
+	@Override
+	public double getLongitudeVitesseDegreParHeure(ArrayList<Ephemeride> lEphe) {
+		double gradiantParHeure = (lEphe.get(1).GHA.asDegre() - lEphe.get(0).GHA.asDegre()) /(lEphe.get(1).heureDeRef.asHeureDecimaleEpoch() - lEphe.get(0).heureDeRef.asHeureDecimaleEpoch());
+		return gradiantParHeure;
 	}
 }

@@ -18,6 +18,5 @@ public class ConstantesCelestes {
 	final public static double[] Lune_Diametre_EnMinuteDeArc = {			 			
 			29.4,	30.0,	30.3,	30.6,	30.8,	31.1,	31.4,	31.7,	32.0,	32.2,	32.5,	32.8,	33.3};
 	
-	final public static double RayonTerrestreEnMetre = 67000000;
-	final public static double VitesseSoleinDegreParHeure = 15.004;
+	final public static double RayonTerrestreEnMetre = 6371009.7714;
 }
