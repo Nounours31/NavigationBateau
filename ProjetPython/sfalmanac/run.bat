@@ -1,4 +1,4 @@
-set type=install
+set type=run
 
 if "%type%" == "install" (
  echo install

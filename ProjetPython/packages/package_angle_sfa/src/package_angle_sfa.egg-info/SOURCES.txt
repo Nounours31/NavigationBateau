@@ -1,9 +1,0 @@
-LICENSE
-README.md
-pyproject.toml
-src/package_angle_sfa/__init__.py
-src/package_angle_sfa/angle.py
-src/package_angle_sfa.egg-info/PKG-INFO
-src/package_angle_sfa.egg-info/SOURCES.txt
-src/package_angle_sfa.egg-info/dependency_links.txt
-src/package_angle_sfa.egg-info/top_level.txt
