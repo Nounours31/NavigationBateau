@@ -7,4 +7,4 @@ if "%type%" == "install" (
  python -m pip install sfalmanac
 )
 
-"python -m sfalmanac" 
+python -m sfalmanac
