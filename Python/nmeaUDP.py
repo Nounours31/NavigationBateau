@@ -125,6 +125,64 @@ def getGSV() -> list[bytes] :
     nmeaMessage.append ("$GPGSV,3,3,09,25,11,060,,1*4E".encode(encoding="utf-8"))
     return  nmeaMessage
 
+def getDepth(i: int) -> bytes:
+    depth = abs(5 + cos(i) * 100)
+    distanceSondeQuille = 1.2
+    nmeaMessage = "IIDPT,{depth:02.1f},{ecart:02.1f},".format(
+        depth =  depth,
+        ecart = -abs(distanceSondeQuille))        
+    return addNMEACheckSum(nmeaMessage)
+
+def getHDG(i: int, cap:float, variation:float) -> bytes:
+    capM = (cap + variation)
+    if capM < 0:
+        capM += 360
+    if capM > 360:
+        capM -= 360
+
+    nmeaMessage = "IIHDG,{capM:04.2f},{variationM:04.2f},{variationS:s},,".format(
+        capM =  capM,
+        variationM =  abs(variation),
+        variationS = "E" if variation>0 else "W")        
+    return addNMEACheckSum(nmeaMessage)
+
+def getWindInfo(i: int, type: str, angle:float, speedInKnot:float) -> bytes:
+    reference = "R" if "Relative" == type else "T"
+    nmeaMessage = "IIMWV,{angle:04.2f},{reference:s},{speed:04.2f},K,A".format(
+        angle =  angle,
+        reference =  reference,
+        speed =  speedInKnot)        
+    return addNMEACheckSum(nmeaMessage)
+
+def getWayPointInfoBWC(now: datetime, latDecimale: float, longDecimale: float, bearing:float,  variation:float, distance:float, id:str) -> bytes:
+    bearingM = bearing + variation
+    nmeaMessage = "IIBWC,{heure:09.2f},{lat:011.6f},{latSens},{long:012.6f},{longSens},{bearing:05.2f},T,{bearingM:05.2f},M,{distance:05.2f},N,{id:s}".format(
+        heure =  heure2GPSDecimale(now),
+        lat = abs(angleDecimalToMinuteSexa(latDecimale) * 100),
+        latSens = "N" if latDecimale > 0 else "S",
+        long = abs(angleDecimalToMinuteSexa(longDecimale) * 100),
+        longSens = "E" if longDecimale > 0 else "W",
+        bearing = bearing,
+        bearingM = bearingM,
+        distance = distance,
+        id = id)      
+    return addNMEACheckSum(nmeaMessage)
+
+# BWR Bearing and Distance to Waypoint – Rhumb Line Latitude, N/S, Longitude, E/W,
+def getWayPointInfoBWR(now: datetime, latDecimale: float, longDecimale: float, bearing:float,  variation:float, distance:float, id:str) -> bytes:
+    bearingM = bearing + variation
+    nmeaMessage = "IIBWR,{heure:09.2f},{lat:011.6f},{latSens},{long:012.6f},{longSens},{bearing:05.2f},T,{bearingM:05.2f},M,{distance:05.2f},N,{id:s}".format(
+        heure =  heure2GPSDecimale(now),
+        lat = abs(angleDecimalToMinuteSexa(latDecimale) * 100),
+        latSens = "N" if latDecimale > 0 else "S",
+        long = abs(angleDecimalToMinuteSexa(longDecimale) * 100),
+        longSens = "E" if longDecimale > 0 else "W",
+        bearing = bearing,
+        bearingM = bearingM,
+        distance = distance,
+        id = id)      
+    return addNMEACheckSum(nmeaMessage)
+
 # ----------------------------------------------------------------------------------
 #
 # ----------------------------------------------------------------------------------
@@ -156,7 +214,7 @@ def main():
     nbSecondes=0
     vitesseEnNoeud = 5.0
     cap = 45.0
-    
+    variationMagnetique = -1.2
     # Port de St Quay
     latPortStQuay = 48.649665  # angleSexaToDecimal(degre = 2, minute = 56.23)
     longPortStQuay = -2.813217 # angleSexaToDecimal(degre = 2, minute = 56.23)
@@ -167,7 +225,8 @@ def main():
 
     while True:
         now = datetime.now(tz = timezone.utc)
-
+        cap = cap + 5 * cos(nbSecondes)
+        vitesseEnNoeud = vitesseEnNoeud + 2 * cos(nbSecondes)
         positionLatitudeDecimale, positionLongitudeDecimale = nav (nbSecondes, vitesseEnNoeud, cap, latitudeEstimeeDecimale, positionDepartLatitudeDecimale, positionDepartLongitudeDecimale)
 
         gga = getGGA(now, positionLatitudeDecimale, positionLongitudeDecimale)  
@@ -180,6 +239,12 @@ def main():
         print (gsa)
         print (vtg)
         print (rmc)
+        print (getDepth(nbSecondes))
+        print (getHDG(nbSecondes, cap, variationMagnetique))
+        print (getWindInfo(nbSecondes, "Relative", 150.0, 12.2))
+        print (getWindInfo(nbSecondes, "True", 150.0, 12.2))
+        print (getWayPointInfoBWR(now, positionDepartLatitudeDecimale + 2.0, positionDepartLongitudeDecimale + 2.0, 45.0, variationMagnetique, 2.98, "WP1"))
+        print (getWayPointInfoBWC(now, positionDepartLatitudeDecimale + 2.0, positionDepartLongitudeDecimale + 2.0, 45.0, variationMagnetique, 2.98, "WP1"))
         print ("Position lat:{lat} long:{long}".format(lat=fromLatDecimalToStr(positionLatitudeDecimale), long=fromLongDecimalToStr(positionLongitudeDecimale)))
         
 
@@ -197,10 +262,22 @@ def main():
         sock.sendto('\x0d\x0a'.encode(encoding="utf-8"), (UDP_IP, UDP_PORT))
         sock.sendto(rmc, (UDP_IP, UDP_PORT))
         sock.sendto('\x0d\x0a'.encode(encoding="utf-8"), (UDP_IP, UDP_PORT))
+        sock.sendto(getDepth(nbSecondes), (UDP_IP, UDP_PORT))
+        sock.sendto('\x0d\x0a'.encode(encoding="utf-8"), (UDP_IP, UDP_PORT))
+        sock.sendto(getHDG(nbSecondes, cap, variationMagnetique), (UDP_IP, UDP_PORT))
+        sock.sendto('\x0d\x0a'.encode(encoding="utf-8"), (UDP_IP, UDP_PORT))
+        sock.sendto(getWindInfo(nbSecondes, "Relative", 150.0, 12.2), (UDP_IP, UDP_PORT))
+        sock.sendto('\x0d\x0a'.encode(encoding="utf-8"), (UDP_IP, UDP_PORT))
+        sock.sendto(getWindInfo(nbSecondes, "True", 150.0, 12.2), (UDP_IP, UDP_PORT))
+        sock.sendto('\x0d\x0a'.encode(encoding="utf-8"), (UDP_IP, UDP_PORT))
+        sock.sendto(getWayPointInfoBWR(now, positionDepartLatitudeDecimale + 2.0, positionDepartLongitudeDecimale + 2.0, 45.0, variationMagnetique, 2.98, "WP1"), (UDP_IP, UDP_PORT))
+        sock.sendto('\x0d\x0a'.encode(encoding="utf-8"), (UDP_IP, UDP_PORT))
+        sock.sendto(getWayPointInfoBWC(now, positionDepartLatitudeDecimale + 2.0, positionDepartLongitudeDecimale + 2.0, 45.0, variationMagnetique, 2.98, "WP1"), (UDP_IP, UDP_PORT))
+        sock.sendto('\x0d\x0a'.encode(encoding="utf-8"), (UDP_IP, UDP_PORT))
 
         sleep(sleepTimeInSec)
         nbSecondes = nbSecondes + sleepTimeInSec
-        if nbSecondes > 3600:
+        if nbSecondes > 300:
             break
 
     sock.close
