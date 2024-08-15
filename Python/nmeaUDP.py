@@ -1,9 +1,23 @@
 import socket 
-from math import floor, pi, cos, sin, tan
+import signal
+import sys
+import logging
+import logging.config
 
+from math import floor, pi, cos, sin, tan
 from time import sleep
-from datetime import datetime
-from datetime import timezone
+from datetime import datetime, timezone
+import calendar
+
+
+# Initialize the logger once as the application starts up.
+logging.config.fileConfig('logging.ini')
+ 
+# Get an instance of the logger and use it to write a log!
+# Note: Do this AFTER the config is loaded above or it won't use the config.
+logger = logging.getLogger(__name__)
+logger.info("Configured the logger!")
+
 
 # ----------------------------------------------------------------------------------
 # This is a simple calculator to compute the checksum field for the NMEA protocol. 
@@ -71,6 +85,8 @@ def nav(iSecondeDepuisDepart : int, vitesseEnNoeud : float, cap : float, latitud
     positionLatitude= positionDepartLatitude + pasEnLatitude * iSecondeDepuisDepart / 3600
     positionLongitude= positionDepartLongitude + pasEnLongitude * iSecondeDepuisDepart / 3600
 
+    logger.info(">>> iSecondeDepuisDepart: {:03d}, vitesseEnNoeud: {:09.2f}, cap: {:09.2f}, latitudeEstimee: {:011.4f}, positionDepartLatitude: {:011.4f}, positionDepartLongitude: {:011.4f}".format(iSecondeDepuisDepart, vitesseEnNoeud, cap, latitudeEstimee, positionDepartLatitude, positionDepartLongitude))
+    logger.info("<<< positionLatitude: {:011.4f}, positionLongitude: {:011.4f}".format(positionLatitude, positionLongitude))
 
     return positionLatitude, positionLongitude
 
@@ -200,6 +216,23 @@ def fromLongDecimalToStr(positionLongitudeDecimale: float) -> str:
     minute = (angle - degre) * 60
     return "{degre:02d}°{minute:07.4f}' {signe:s}".format(degre = degre, minute =  minute, signe = signe)
 
+def exit_gracefully(signum, frame):
+    # restore the original signal handler as otherwise evil things will happen
+    # in raw_input when CTRL+C is pressed, and our signal handler is not re-entrant
+    signal.signal(signal.SIGINT, original_sigint)
+
+    try:
+        if input("\nReally quit? (y/n)> ").lower().startswith('y'):
+            sys.exit(1)
+
+    except KeyboardInterrupt:
+        print("Ok ok, quitting")
+        sock.close
+        sys.exit(1)
+
+    # restore the exit gracefully handler here    
+    signal.signal(signal.SIGINT, exit_gracefully)
+
 # ----------------------------------------------------------------------------------
 # main function
 # ----------------------------------------------------------------------------------
@@ -207,49 +240,62 @@ def main():
     UDP_IP = "127.0.0.1"
     UDP_PORT = 5005
 
-    print("UDP target IP: %s" % UDP_IP)
-    print("UDP target port: %s" % UDP_PORT)
+    global sock
+    sock = socket.socket(socket.AF_INET, # Internet
+                            socket.SOCK_DGRAM) # UDP
+
+    logger.debug("UDP target IP: %s" % UDP_IP)
+    logger.debug("UDP target port: %s" % UDP_PORT)
 
     sleepTimeInSec=2
     nbSecondes=0
-    vitesseEnNoeud = 5.0
-    cap = 45.0
+    now = datetime.now(tz = timezone.utc)
+    vitesseEnNoeudMoyenne = 5.0
+    capMoyen = 45.0
     variationMagnetique = -1.2
     # Port de St Quay
     latPortStQuay = 48.649665  # angleSexaToDecimal(degre = 2, minute = 56.23)
     longPortStQuay = -2.813217 # angleSexaToDecimal(degre = 2, minute = 56.23)
-    
-    latitudeEstimeeDecimale = latPortStQuay
-    positionDepartLatitudeDecimale = latPortStQuay
-    positionDepartLongitudeDecimale = longPortStQuay
+
+    # Port de 
+    latSamoa = -14.2456  # angleSexaToDecimal(degre = 2, minute = 56.23)
+    longSamoa = -169.6100 # angleSexaToDecimal(degre = 2, minute = 56.23)
+
+    positionDepartLatitudeDecimale = latSamoa
+    positionDepartLongitudeDecimale = longSamoa
+
+    positionLatitudeDecimale, positionLongitudeDecimale = positionDepartLatitudeDecimale, positionDepartLongitudeDecimale
 
     while True:
+        prev = now
         now = datetime.now(tz = timezone.utc)
-        cap = cap + 5 * cos(nbSecondes)
-        vitesseEnNoeud = vitesseEnNoeud + 2 * cos(nbSecondes)
-        positionLatitudeDecimale, positionLongitudeDecimale = nav (nbSecondes, vitesseEnNoeud, cap, latitudeEstimeeDecimale, positionDepartLatitudeDecimale, positionDepartLongitudeDecimale)
+        nbSecondes = calendar.timegm(now.timetuple()) - calendar.timegm(prev.timetuple()) 
+
+        cap = capMoyen + (5) * cos(10 * nbSecondes) # +/- 5 degre
+        vitesseEnNoeud = vitesseEnNoeudMoyenne + (vitesseEnNoeudMoyenne / 10) * cos(100 * nbSecondes) # +/- 10%
+
+        prevpositionLatitudeDecimale, prevpositionLongitudeDecimale = positionLatitudeDecimale, positionLongitudeDecimale
+        positionLatitudeDecimale, positionLongitudeDecimale = nav (nbSecondes, vitesseEnNoeud, cap, prevpositionLatitudeDecimale, prevpositionLatitudeDecimale, prevpositionLongitudeDecimale)
 
         gga = getGGA(now, positionLatitudeDecimale, positionLongitudeDecimale)  
-        gsa = getGSA()  
-        vtg = getVTG(vitesseEnNoeud, cap)  
         rmc = getRMC(now, positionLatitudeDecimale, positionLongitudeDecimale,vitesseEnNoeud, cap)  
+        vtg = getVTG(vitesseEnNoeud, cap)  
+        gsa = getGSA()  
         gsv = getGSV()  
-        print (gga)
-        print (gsv)
-        print (gsa)
-        print (vtg)
-        print (rmc)
-        print (getDepth(nbSecondes))
-        print (getHDG(nbSecondes, cap, variationMagnetique))
-        print (getWindInfo(nbSecondes, "Relative", 150.0, 12.2))
-        print (getWindInfo(nbSecondes, "True", 150.0, 12.2))
-        print (getWayPointInfoBWR(now, positionDepartLatitudeDecimale + 2.0, positionDepartLongitudeDecimale + 2.0, 45.0, variationMagnetique, 2.98, "WP1"))
-        print (getWayPointInfoBWC(now, positionDepartLatitudeDecimale + 2.0, positionDepartLongitudeDecimale + 2.0, 45.0, variationMagnetique, 2.98, "WP1"))
-        print ("Position lat:{lat} long:{long}".format(lat=fromLatDecimalToStr(positionLatitudeDecimale), long=fromLongDecimalToStr(positionLongitudeDecimale)))
+        logger.debug (gga)
+        logger.debug (gsv)
+        logger.debug (gsa)
+        logger.debug (vtg)
+        logger.debug (rmc)
+        logger.debug (getDepth(nbSecondes))
+        logger.debug (getHDG(nbSecondes, cap, variationMagnetique))
+        logger.debug (getWindInfo(nbSecondes, "Relative", 150.0, 12.2))
+        logger.debug (getWindInfo(nbSecondes, "True", 150.0, 12.2))
+        logger.debug (getWayPointInfoBWR(now, positionDepartLatitudeDecimale + 2.0, positionDepartLongitudeDecimale + 2.0, 45.0, variationMagnetique, 2.98, "WP1"))
+        logger.debug (getWayPointInfoBWC(now, positionDepartLatitudeDecimale + 2.0, positionDepartLongitudeDecimale + 2.0, 45.0, variationMagnetique, 2.98, "WP1"))
+        logger.info ("Position duree:{duree:d} lat:{lat} long:{long}".format(duree=nbSecondes, lat=fromLatDecimalToStr(positionLatitudeDecimale), long=fromLongDecimalToStr(positionLongitudeDecimale)))
         
 
-        sock = socket.socket(socket.AF_INET, # Internet
-                            socket.SOCK_DGRAM) # UDP
         sock.sendto(gga, (UDP_IP, UDP_PORT))
         sock.sendto('\x0d\x0a'.encode(encoding="utf-8"), (UDP_IP, UDP_PORT))
         
@@ -277,10 +323,14 @@ def main():
 
         sleep(sleepTimeInSec)
         nbSecondes = nbSecondes + sleepTimeInSec
-        if nbSecondes > 300:
-            break
+        #if nbSecondes > 300:
+        #    break
 
     sock.close
 
 if __name__ == '__main__':
+    global original_sigint
+    original_sigint = signal.getsignal(signal.SIGINT)
+    signal.signal(signal.SIGINT, exit_gracefully)
     main()
+    print ("The end ...")
