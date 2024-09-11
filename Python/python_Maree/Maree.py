@@ -22,13 +22,16 @@ Logging : pbs
 """
 import logging
 import logging.config
+
 # Initialize the logger once as the application starts up.
-logging.config.fileConfig('E:\\data\\git\\NavigationBateau\\Python\\python_Maree\\logging.ini')
- 
+loggingInitPath = os.path.join(os.path.dirname(__file__), ".\\logging.ini") 
+logging.config.fileConfig(loggingInitPath)
+
 # Get an instance of the logger and use it to write a log!
 # Note: Do this AFTER the config is loaded above or it won't use the config.
 logger = logging.getLogger(__name__)
 logger.info("Configured the logger!")
+
 
 
 # --------------------------------------------------------------
@@ -49,13 +52,14 @@ def getPortPrincipaux () -> tuple:
     print ("==== Liste des ports principaux ====")
     retour = {}
     htmlparser = etree.HTMLParser()
-    tree = etree.parse("E:\\data\\git\\NavigationBateau\\Python\\python_Maree\\maree.info.ports.html", htmlparser)
+    tree = etree.parse(".\\maree.info.ports.html", htmlparser)
     
 
     for elem in tree.xpath('//*[@id="PortsListe_Content_0"]/table/tr/td'):
         for child in elem:
             if (child.attrib["class"] == TAG_PORT_PP):
-                logger.info("{} {} {}".format(child.text, child.attrib["class"], child.attrib["href"]))
+                logger.debug("{} {} {}".format(child.text, child.attrib["class"], child.attrib["href"]))
+                print("Port principal: {:30s}  / id:{}".format(child.text, child.attrib["href"][1:]))
                 retour[child.text] = {"type": child.attrib["class"], "Id": child.attrib["href"]}
     return retour
 
@@ -70,7 +74,7 @@ def getPortSecondaire (portPrincipal : str = None, idPortPrincipal: int = None) 
         return retour
     
     htmlparser = etree.HTMLParser()
-    tree = etree.parse("E:\\data\\git\\NavigationBateau\\Python\\python_Maree\\maree.info.ports.html", htmlparser)
+    tree = etree.parse(".\\maree.info.ports.html", htmlparser)
     
 
     found : bool = False
@@ -95,10 +99,38 @@ def getPortSecondaire (portPrincipal : str = None, idPortPrincipal: int = None) 
             if (not (found)):
                 continue
                 
-            logger.info("Port principal: {} - Port rataché {} / {} / id:{}".format(portPrincipal, child.text, child.attrib["class"], child.attrib["href"]))
+            logger.debug("Port principal: {} - Port rataché {} / {} / id:{}".format(portPrincipal, child.text, child.attrib["class"], child.attrib["href"]))
+            print("Port principal: {:30s} - Port rataché: {:35s} / id:{}".format(portPrincipal, child.text, child.attrib["href"][1:]))
             retour[child.attrib["href"][1:]] = {"NomPP": portPrincipal, "Nom": child.text, "type": child.attrib["class"], "Id": child.attrib["href"]}
     return retour
 
+
+
+# --------------------------------------------------------------
+# Recupere un port par son nom
+#   https://maree.info/
+# --------------------------------------------------------------
+def getPortIdFromName (portName : str) -> int: 
+    retour = -1
+    if (portName == None):
+        return retour
+    
+    htmlparser = etree.HTMLParser()
+    tree = etree.parse(".\\maree.info.ports.html", htmlparser)
+    
+
+    found : bool = False
+    for elem in tree.xpath('//*[@id="PortsListe_Content_0"]/table/tr/td'):
+        for child in elem:
+            if child.text != portName:
+                continue
+
+            retour = int(child.attrib["href"][1:])
+            found = True
+            break
+        if found:
+            break
+    return retour
 
 # --------------------------------------------------------------
 # Parse UTC+2 en decalage horaire
@@ -118,6 +150,23 @@ def privateGetUTCZone (utcInfo: str) -> int :
             retour = 0
     return retour
 
+
+# --------------------------------------------------------------
+# conversion de la date au formay 'YearMonthDay' + offset day 
+# --------------------------------------------------------------
+def isDateValide (debut: str) -> bool: 
+    retour : bool = False
+    if len(debut) != 8: 
+        return retour
+    
+    try:
+        jourdebut: datetime.datetime = datetime.datetime(int(debut[:4]), int(debut[4:6]), int(debut[6:8]), 0, 0, 0, 0, pytz.utc)
+    except Exception as e:
+        logger.error ("{} is not a valid date - err:{}".format(debut, e))
+        return retour
+
+    retour = True
+    return retour
 
 # --------------------------------------------------------------
 # conversion de la date au formay 'YearMonthDay' + offset day 
@@ -343,23 +392,54 @@ def exit_gracefully(signum, frame):
 # --------------------------------------------------------------
 if __name__ == '__main__':
     logger.info ("Start ...")
+    
     global original_sigint
     original_sigint = signal.getsignal(signal.SIGINT)
     signal.signal(signal.SIGINT, exit_gracefully)
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument(        '--cgi',        action='store_true',                                                help='run as CGI server')
-    parser.add_argument('-b',   '--bind',       metavar='ADDRESS',                                                  help='bind to this address (default: all interfaces)')
-    parser.add_argument('-d',   '--directory',                      default=os.getcwd(),                            help='serve this directory (default: current directory)')
-    parser.add_argument('-p',   '--protocol',   metavar='VERSION',  default='HTTP/1.0',                             help='conform to this HTTP version (default: %(default)s)')
-    parser.add_argument(        'port',                             default=8000,           type=int, nargs='?',    help='bind to this port (default: %(default)s)')
+    parser = argparse.ArgumentParser(
+        prog="Maree",
+        description="Extraction des info maree du site maree.info"
+    )
+    parser.add_argument('-l',   '--listPortPrincipaux',  dest="arg_listp", action="store_true",  default=False,  help='Liste des ports principaux')
+    parser.add_argument('-q',   '--portPrincipal',       dest="arg_pp",                      default=None,  help='definit un port principal')
+    parser.add_argument('-m',   '--listPortRattaches',   dest="arg_lists", action="store_true", default=False,  help='Liste des ports rataches')
+    parser.add_argument('-p',   '--port',                dest="arg_port",type=str, default=None,                             help='Nom du port ou chercher les infos maree Ex: Paimpol')
+    parser.add_argument('-d',   '--date',                dest="arg_date",type=str, default=None,                             help='definit la date de calcul au format yyyymmdd. Ex: 20151003 = 3 oct. 2015')
+    parser.add_argument('-x',   '--duree',               dest="arg_duree",type=int, default=7,                             help='definit la duree de calcul (reponse en multiple de 7)')
     args = parser.parse_args()
 
-    getPortPrincipaux()
-    getPortSecondaire(None, 52)
-    depuis = "20151003" 
-    dureeEnJour = 12
-    x: tuple = getPortMareeUTC (52, depuis, dureeEnJour)
-    s: str = convertTupleForXLS(x, "E:\\data\\git\\NavigationBateau\\Python\\python_Maree\\maree.csv")
+    isOK : bool = False
+    if args.arg_listp:
+        getPortPrincipaux()
+        isOK = True
+
+    elif args.arg_lists and args.arg_pp != None:
+        getPortSecondaire(args.arg_pp)
+        isOK = True
+
+    elif args.arg_port != None and args.arg_date != None:
+        depuis = args.arg_date
+        if not isDateValide(depuis):
+            print ("Format date debut INVALIDE")
+            parser.print_help()
+            sys.exit (1)
+
+        
+        portId : int = getPortIdFromName (args.arg_port)
+        if portId == -1:
+            print ("Nom port INVALIDE - n'existe pas faire une recherche pport principaux/ratachés")
+            parser.print_help()
+            sys.exit (1)
+
+        x: tuple = getPortMareeUTC (portId, args.arg_date, args.arg_duree)
+        s: str = convertTupleForXLS(x, ".\\maree.csv")
+        with open(".\\maree.csv") as f:
+            print (f.read())
+        isOK = True
+
+    else:
+        parser.print_help()
+        sys.exit (1)
 
     logger.info ("The end ...")

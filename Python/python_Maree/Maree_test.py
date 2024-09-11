@@ -3,6 +3,7 @@ import platform
 import pytz
 import Maree
 import datetime
+import os
 
 class maree_test(unittest.TestCase):
     def cc(self):
@@ -12,6 +13,8 @@ class maree_test(unittest.TestCase):
             platform.release()
             )
         )
+
+        print ("Current dir: {}\n".format(os.getcwd))
 
 
     def test_getPortPrincipaux(self):
@@ -72,7 +75,7 @@ class maree_test(unittest.TestCase):
                          [2, datetime.datetime(2015, 3, 4, 2, 0, tzinfo=pytz.utc), -1])
 
     def test_getPortMareeUTC (self) -> None: 
-        with open("E:\\data\\git\\NavigationBateau\\Python\\python_Maree\\maree.info.52.odt.html") as f:
+        with open(".\\maree.info.52.odt.html") as f:
             contents = f.read()
  
         x = Maree.getPortMareeUTC(52, "20150301", 5, contents)
@@ -93,14 +96,14 @@ class maree_test(unittest.TestCase):
 
 
     def test_convertTupleForXLS (self) -> None: 
-        with open("E:\\data\\git\\NavigationBateau\\Python\\python_Maree\\maree.info.52.odt.html") as f:
+        with open(".\\maree.info.52.odt.html") as f:
             contents = f.read()
  
         x = Maree.getPortMareeUTC(52, "20150301", 5, contents)
-        filePath = "E:\\data\\git\\NavigationBateau\\Python\\python_Maree\\maree.csv"
+        filePath = ".\\maree.csv"
         Maree.convertTupleForXLS(x, filePath)
 
-        with open("E:\\data\\git\\NavigationBateau\\Python\\python_Maree\\maree.odt.csv") as f:
+        with open(".\\maree.odt.csv") as f:
             contentsRef = f.read()
 
         with open(filePath) as f:
@@ -108,6 +111,40 @@ class maree_test(unittest.TestCase):
         
         self.assertEqual (contents, contentsRef)
 
+    def test_isDateValide (self) -> None: 
+        x = Maree.isDateValide("20150301")
+        self.assertTrue (x)
+
+        x = Maree.isDateValide("201503010")
+        self.assertFalse (x)
+
+        x = Maree.isDateValide("20150399")
+        self.assertFalse (x)
+
+        x = Maree.isDateValide("20152201")
+        self.assertFalse (x)
+
+        x = Maree.isDateValide("20152299")
+        self.assertFalse (x)
+
+        x = Maree.isDateValide("99991201")
+        self.assertTrue (x)
+
+    def test_getPortIdFromName (self) -> None: 
+        x = Maree.getPortIdFromName(None)
+        self.assertEqual (x, -1)
+        x = Maree.getPortIdFromName("Toto")
+        self.assertEqual (x, -1)
+        x = Maree.getPortIdFromName("Saint-Malo")
+        self.assertEqual (x, 52)
+        x = Maree.getPortIdFromName("Arcachon (Jetée d'Eyrac)")
+        self.assertEqual (x, 136)
+        x = Maree.getPortIdFromName("Iles Saint-Marcouf")
+        self.assertEqual (x, 30)
+
 
 if __name__ == '__main__':
+    print ("Current dir: {} - prgm dir: {}\n".format(os.getcwd(), os.path.dirname(__file__)))
+    print ("change to prgm dir ... \n")
+    os.chdir (os.path.dirname(__file__))
     unittest.main()
