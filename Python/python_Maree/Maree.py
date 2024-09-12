@@ -254,13 +254,18 @@ def privateConvertionTextVersValeurMaree (iData: list, jour: datetime.datetime, 
     return retour
 
 
+def getODTStringSecondCallJ14() -> str :
+    with open(".\\maree.info.52.14j.part2.odt.html") as f:
+        contents = f.read()
+    return contents
+
 
 # --------------------------------------------------------------
 # Calcul des hauteurs d'eau / maree
 # --------------------------------------------------------------
-def getPortMareeUTC (idPort: int, debut: str, duree: int, responseAsText : str = None) -> tuple: 
+def getPortMareeUTC (idPort: int, debut: str, duree: int, responseAsText : str = None, isODT : bool = False) -> tuple: 
     htmlparser = etree.HTMLParser()
-    if responseAsText == None:
+    if (responseAsText == None):
         response = private_getPortMareeWS(idPort, debut)
         tree = etree.parse(StringIO(response.text), htmlparser)
         logger.info(response.text)
@@ -333,7 +338,11 @@ def getPortMareeUTC (idPort: int, debut: str, duree: int, responseAsText : str =
         duree = duree - 7
         debut = getDebut (debut, +7)
 
-        nextAllInfosMaree = getPortMareeUTC (idPort, debut, duree) 
+        nextContent : str = None
+        if isODT:
+            nextContent = getODTStringSecondCallJ14()
+
+        nextAllInfosMaree = getPortMareeUTC (idPort, debut, duree, nextContent, isODT) 
         allInfosMaree.update (nextAllInfosMaree) 
 
     logger.info (allInfosMaree)

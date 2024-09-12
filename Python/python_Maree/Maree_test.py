@@ -78,7 +78,8 @@ class maree_test(unittest.TestCase):
         with open(".\\maree.info.52.odt.html") as f:
             contents = f.read()
  
-        x = Maree.getPortMareeUTC(52, "20150301", 5, contents)
+        isODT : bool = True
+        x = Maree.getPortMareeUTC(52, "20150301", 5, contents, isODT)
         self.assertEqual (len(x), 7)   
         self.assertEqual (len(x[datetime.datetime(2015, 3, 1, 0, 0, tzinfo=pytz.utc)]), 3)    
         self.assertEqual (len(x[datetime.datetime(2015, 3, 1, 0, 0, tzinfo=pytz.utc)][0]), 4)    
@@ -93,6 +94,14 @@ class maree_test(unittest.TestCase):
 
         self.assertEqual (x[datetime.datetime(2015, 3, 7, 0, 0, tzinfo=pytz.utc)], 
                           [[datetime.datetime(2015, 3, 7, 2, 23, tzinfo=pytz.utc), datetime.datetime(2015, 3, 7, 8, 59, tzinfo=pytz.utc), datetime.datetime(2015, 3, 7, 15, 3, tzinfo=pytz.utc), datetime.datetime(2015, 3, 7, 21, 44, tzinfo=pytz.utc)], [8.59, 4.99, 9.19, 4.12], [37, -1, 45, -1]])
+
+
+        with open(".\\maree.info.52.14j.odt.html") as f:
+            contents = f.read()
+ 
+        x = Maree.getPortMareeUTC(52, "20150301", 14, contents, isODT)
+        self.assertEqual (len(x), 14)   
+
 
 
     def test_convertTupleForXLS (self) -> None: 
@@ -110,6 +119,18 @@ class maree_test(unittest.TestCase):
             contents = f.read()
         
         self.assertEqual (contents, contentsRef)
+
+        with open(".\\maree.info.52.14j.odt.html") as f:
+            contents = f.read()
+        isODT : bool = True
+        x = Maree.getPortMareeUTC(52, "20150301", 14, contents, isODT)
+        filePath = ".\\maree.14j.csv"
+        Maree.convertTupleForXLS(x, filePath)
+        with open(filePath) as f:
+            contents = f.read()        
+
+        x = Maree.getPortMareeUTC(62, "20240911", 14)
+
 
     def test_isDateValide (self) -> None: 
         x = Maree.isDateValide("20150301")
