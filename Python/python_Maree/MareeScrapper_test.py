@@ -12,4 +12,4 @@ x.getListPort(xml=xml)
 loggingInitPath = os.path.join(os.path.dirname(__file__), ".\\odtref\\shom.odt.maregramme.txt")
 with open(loggingInitPath, "r") as f:
     xml = f.read()
-x.getPortMaree(port="PAIMPOL",dateDebut="20240911", dureeEnJour=14, xml=xml)
+x.getPortMaree(port="PAIMPOL",dateDebut="20240911", dureeEnJour=14, outputName="maree.shom.csv", xml=xml)

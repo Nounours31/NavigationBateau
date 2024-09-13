@@ -55,7 +55,7 @@ class MareeScrapperShom (MareeScrapper):
         info = self.__parsePortReponse(xml)
         self.__afficheInfo(info)
 
-    def getPortMaree(self, port : str, dateDebut : str, dureeEnJour: int, xml : str = None) -> list:
+    def getPortMaree(self, port : str, dateDebut : str, dureeEnJour: int, outputName: str = ".\\maree.shom.csv", xml : str = None) -> list:
         logger.info("getPortMaree")
         if xml == None:
             shomDate = "{}-{}-{}".format(dateDebut[0:4],dateDebut[4:6],dateDebut[6:8])
@@ -94,7 +94,7 @@ class MareeScrapperShom (MareeScrapper):
                 return []
             else:
                 logger.info(" OK getListPort")
-        self.__afficheCSVPortMareeInfo(xml)
+        self.__afficheCSVPortMareeInfo(xml, outputName)
 
     def __parsePortReponse(self, xml : str) -> dict :
         retour : dict = {}
@@ -115,13 +115,18 @@ class MareeScrapperShom (MareeScrapper):
         for x in info:
             print("code: {:25s} - info: {:40s}/{:30s}/utc:{:3s}".format(info[x]["tag"], info[x]["nom"], info[x]["pays"], info[x]["UTC"]))
 
-    def __afficheCSVPortMareeInfo(self, info: str) -> None :
+    def __afficheCSVPortMareeInfo(self, info: str, outputName:str) -> None :
         infoMaree = json.loads(info)
+        f = open(os.path.join(os.path.dirname(__file__), outputName),"wt") 
         for unJour in infoMaree:
-            # 2015/03/06;00:06;28;08,22
-            # jour;heure;coeff;hauteur
-            for i in range(len(infoMaree[unJour])):
-                print("{};{};{};{}".format(unJour, infoMaree[unJour][i][1], infoMaree[unJour][i][3], infoMaree[unJour][i][2] if infoMaree[unJour][i][2] != "---" else ""))
+                for i in range(len(infoMaree[unJour])):
+                    if (infoMaree[unJour][i][1] != "--:--"):
+                        # 2015/03/06;00:06;28;08,22
+                        # jour;heure;coeff;hauteur
+                        s : str = "{};{};{};{}".format(unJour, infoMaree[unJour][i][1], infoMaree[unJour][i][3] if infoMaree[unJour][i][3] != "---" else "", infoMaree[unJour][i][2])
+                        print(s)
+                        f.write (s + "\n")
+        f.close
 
     @property
     def type(self) -> str:

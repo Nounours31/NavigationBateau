@@ -34,6 +34,17 @@
             "level": "DEBUG",
             "handlers": ["file", "console"],
             "propagate": false
+        },
+        "MareeScrapperMareeInfo": {
+            "level": "DEBUG",
+            "handlers": ["file", "console"],
+            "propagate": false
+        },
+        "MareeScrapper": {
+            "level": "DEBUG",
+            "handlers": ["file", "console"],
+            "propagate": false
         }
+
     }
 }
