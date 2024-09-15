@@ -1,4 +1,4 @@
-from MareeScrapper import MareeScrapper
+from maree import MareeScrapper
 import logging
 import logging.config
 import os
@@ -18,13 +18,16 @@ logging.config.dictConfig(json.loads(CONFIG))
 logger = logging.getLogger("MareeScrapperShom")
 
 
-class MareeScrapperShom (MareeScrapper):
+class MareeScrapperShom (MareeScrapper.MareeScrapper):
     def __init__(self) -> None:
         super().__init__()
         self.type = "Shom"
 
     def __str__(self) -> str:
         return self.type
+
+    def getType(self) -> str:
+        return "Shom"
 
     def getListPort(self, xml : str = None) -> list:
         if xml == None:
@@ -55,13 +58,13 @@ class MareeScrapperShom (MareeScrapper):
         info = self.__parsePortReponse(xml)
         self.__afficheInfo(info)
 
-    def getPortMaree(self, port : str, dateDebut : str, dureeEnJour: int, outputName: str = ".\\maree.shom.csv", xml : str = None) -> list:
+    def getPortMaree(self, port : str, dateDebut : str, iDureeEnJour: int, outputName: str = ".\\maree.shom.csv", content4Odt: str = None) -> list:
         logger.info("getPortMaree")
-        if xml == None:
+        if content4Odt == None:
             shomDate = "{}-{}-{}".format(dateDebut[0:4],dateDebut[4:6],dateDebut[6:8])
-            if dureeEnJour > 10: 
+            if iDureeEnJour > 10: 
                 idureeEnJour = 10
-            url2Port : str = "https://services.data.shom.fr/b2q8lrcdl4s04cbabsj4nhcb/hdm/spm/hlt?harborName={}&duration={}&date={}&utc=0&correlation=1".format(port, idureeEnJour, shomDate)
+            url2Port : str = "https://services.data.shom.fr/b2q8lrcdl4s04cbabsj4nhcb/hdm/spm/hlt?harborName={}&duration={}&date={}&utc=0&correlation=1".format(port, iDureeEnJour, shomDate)
             headers = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0",
                 "Accept": "*/*",
@@ -128,10 +131,3 @@ class MareeScrapperShom (MareeScrapper):
                         f.write (s + "\n")
         f.close
 
-    @property
-    def type(self) -> str:
-        return self.__type 
-    @type.setter
-    def type(self, value):
-        logger.info("Setting value...")
-        self.__type = value
