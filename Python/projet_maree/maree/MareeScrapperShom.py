@@ -1,4 +1,4 @@
-from maree import MareeScrapper
+from maree.MareeScrapper import MareeScrapper
 import logging
 import logging.config
 import os
@@ -18,7 +18,7 @@ logging.config.dictConfig(json.loads(CONFIG))
 logger = logging.getLogger("MareeScrapperShom")
 
 
-class MareeScrapperShom (MareeScrapper.MareeScrapper):
+class MareeScrapperShom (MareeScrapper):
     def __init__(self) -> None:
         super().__init__()
         self.type = "Shom"

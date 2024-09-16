@@ -1,4 +1,6 @@
-from maree import MareeScrapper, MareeScrapperMareeInfo, MareeScrapperShom
+from maree.MareeScrapper import MareeScrapper
+from maree.MareeScrapperMareeInfo import MareeScrapperMareeInfo
+from maree.MareeScrapperShom import MareeScrapperShom
 
 import os
 import logging
@@ -28,6 +30,6 @@ class MareeScrapperFactory ():
     def getScrapper(i : int = 0) -> MareeScrapper : 
         logger.info("creation source de type: " + str(i))
         if i == 1:
-            return MareeScrapperMareeInfo.MareeScrapperMareeInfo()
-        return MareeScrapperShom.MareeScrapperShom()
+            return MareeScrapperMareeInfo()
+        return MareeScrapperShom()
         

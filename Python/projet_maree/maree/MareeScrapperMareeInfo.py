@@ -1,4 +1,4 @@
-from maree import MareeScrapper
+from maree.MareeScrapper import MareeScrapper
 
 import os
 import sys
@@ -41,7 +41,7 @@ TAG_UTC_ATTR_MAREE: Final[str] = "title"
 TAG_UTC_ENCODE_MAREE: Final[str] = "UTC"
 
 
-class MareeScrapperMareeInfo (MareeScrapper.MareeScrapper):
+class MareeScrapperMareeInfo (MareeScrapper):
     def __init__(self) -> None:
         super().__init__()
         self.type = "Shom"
