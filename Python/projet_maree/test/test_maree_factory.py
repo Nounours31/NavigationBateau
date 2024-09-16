@@ -31,11 +31,6 @@ class test_maree_factory(unittest.TestCase):
 
         xx = MareeScrapperFactory.getScrapper(1)
         self.assertTrue(type(xx) is MareeScrapperMareeInfo)
-        
-
-
-
-
 
 if __name__ == '__main__':
     print ("Current dir: {} - prgm dir: {}\n".format(os.getcwd(), os.path.dirname(__file__)))

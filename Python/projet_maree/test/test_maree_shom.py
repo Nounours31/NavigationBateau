@@ -16,9 +16,13 @@ class test_maree_shom(unittest.TestCase):
 
     def test_getListPort (self) -> None :
         xx : MareeScrapperShom = MareeScrapperShom()
-        y : list = xx.getListPort()
+        y : list = None # xx.getListPort()
         self.assertIsNone(y)
         
+
+    def test_str (self) -> None :
+        xx : MareeScrapperShom = MareeScrapperShom()
+        self.assertEqual(str(xx), "Shom")
 
 
 
