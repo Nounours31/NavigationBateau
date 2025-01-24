@@ -77,7 +77,7 @@ def myLongDisplay(a : Angle) -> str:
     retour = retour + "{:04.1f}".format(abs)
     return retour
     
-def computePlanet(name:str, t:Time) -> tuple :
+# def computePlanet(name:str, t:Time) -> tuple :
     
    
 planets = load('de421.bsp')
@@ -85,7 +85,7 @@ earth, sun, moon = planets['earth'], planets['sun'], planets['moon']
 moon = planets['moon']
 
 ts = load.timescale()
-t : Time = ts.utc(2024, 11, 6, 11, 0, 0)
+t : Time = ts.utc(2010, 5, 5, 8, 0, 0)
 
 point = wgs84.subpoint(earth.at(t).observe(sun))
 distanceauSoleil =  point.elevation.km
