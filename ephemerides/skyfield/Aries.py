@@ -1,4 +1,6 @@
-# depuis stack over flow
+# -*- coding: utf-8 -*-
+# 
+# # depuis stack over flow
 # https://stackoverflow.com/questions/13664935/is-this-how-to-compute-greenwich-hour-angle-with-pyephem-under-python-3
 #
 # I have been using python3 and pyephem to study celestial navigation mostly working through some calculations 

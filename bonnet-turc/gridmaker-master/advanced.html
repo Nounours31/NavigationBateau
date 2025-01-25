@@ -1,0 +1,187 @@
+<html>
+
+<head>
+<link href="styles/knots.css" type="text/css" rel="stylesheet"/>
+    <link href="styles/style.css" type="text/css" rel="stylesheet"/>
+    <link href="styles/print.css" type="text/css" rel="stylesheet" media="print"/>
+    <script language="Javascript" src="js/unFocus-History-p.js"></script>
+    <script language="Javascript" src="js/bmp_lib.js"></script>
+    <script language="Javascript" src="js/MochiKit.js"></script>
+    <script language="Javascript" src="js/knot_grid.js"></script>
+    <script language="Javascript" src="js/knot_grid_walker.js"></script>
+    <script language="Javascript" src="js/knot_canvas.js"></script>
+    <script language="Javascript" src="js/knot_canvas_controller.js"></script>
+    <script language="Javascript" src="js/knot_instructions.js"></script>
+    <script language="Javascript" src="js/knot_app.js"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-38964774-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    <style>
+        #knot_canvas {
+            background: white;
+            border: 1px solid black;
+        }
+    </style>
+    <script language="Javascript">
+        var knot_app;
+        addLoadEvent(function(e) {
+            knot_app = new KnotApp();
+        });
+    </script>
+</head>
+<body>
+<div class="hide_when_printing">
+<h3>If you like this tool, please consider liking my Facebook page: <a href="https://www.facebook.com/freakinsweetknots">https://www.facebook.com/freakinsweetknots</a></h3>
+<h3>Or purchasing something from my online store: <a href="http://freakinsweetapps.com/shop">http://freakinsweetapps.com/shop</a></h3>
+
+<p>
+Recommend browsers are Chrome or Firefox. IE is not supported.
+</p>
+<p>
+To get a brief description of the different features you can check out 
+<a href="http://freakinsweetapps.com/knots/knotgrid/Gridmaker_info.pdf">this document</a> which was put together by 
+Steve Harris from several different posts of mine on Facebook.
+</p>
+<p>
+To see how to set up several Turk's Heads described in <a href="http://freakinsweetapps.com/knots/knotgrid/TomHallIntroToTH.pdf">Tom Hall's Introduction To Turk's Head Knots</a>, check out <a href="http://freakinsweetapps.com/knots/knotgrid/AdvGridMakerKnotExamplesV1.3.pdf">this document</a> which was written by Phil Scoltock.
+</p>
+<p>
+In <a href="http://freakinsweetapps.com/knots/knotgrid/Knot_Sizing_V141106.pdf">this document</a>, Phil details how to use the grid maker to help plan out a very advanced 
+knot using the Grid Maker (both in terms of sizing the physical knot, and using
+the grid maker to set it up).
+</p>
+    <button id="stretch">Stretch</button><button id="resize">Resize</button><br/>
+    <button id="rowcoding">Row Coding</button><button id="colcoding">Column Coding</button><input type="text" value="OU" id="coding"/><br/>
+    <button id="tilecoding">Tile Coding</button><input type="text" value="4" id="tile_size"/><input type="text" value="O" id="tile_topcoding"/><input type="text" value="U" id="tile_botcoding"/><input type="text" value="0" id="tile_row_offset"/><input type="text" value="0" id="tile_col_offset"/><br/>
+    <button id="gauchocoding">Locked Gaucho Coding</button><input type="text" value="2" id="gaucho_size"/><input type="text" value="O" id="gaucho_topcoding"/><br/>
+    <button id="dogbonecoding">Dog Bone Coding</button> Rows <input type="text" value="7" id="dog_bone_coding_rows"/> Top Coding <input type="text" value="OU" id="dog_bone_top_coding"/> Middle Coding <input type="text" value="OOUU" id="dog_bone_mid_coding"/> Bottom Coding <input type="text" value="UO" id="dog_bone_bot_coding"/><br/>
+    Colors <input type="text" value="peru" id="colors" size="50"/><br/>
+    Shadow Colors <input type="text" value="saddlebrown" id="shadow_colors" size="50"/><br/>
+    Strand Width: <input type="text" id="strand_width_inches" style="width: 100px"/> inches <input type="text" id="strand_width_cm"/> cm<br/>
+    Strand Gap Size: <input type="text" id="strand_gap_inches" style="width: 100px"/> inches <input type="text" id="strand_gap_cm"/> cm<br/>
+    DPI: <input type="text" id="dpi" style="width: 100px"/><br/>
+    Display Scale: <input type="text" id="display_scale" style="width: 100px"/><br/>
+    Parts: <input type="text" id="parts_input" value="13" style="width: 100px"/><br/>
+    Bights: <input type="text" id="bights_input" value="9" style="width: 100px"/><br/><br/>
+
+    <span title="Options that affect how the grid is displayed.">Display Options:</span><br/>
+    <button id="toggle_pins">Toggle Pins</button><button id="toggle_grid_points">Toggle Grid Points</button><br/>
+
+    <br/>
+    <span title="When resizing the grid (and autofill is on), automatically fill the grid using the given option.">Autofill Grid Options:</span><br/>
+    <input type="checkbox" id="autofill" checked="1"/> Autofill Grid<br/>
+    <button id="standard_grid">Standard Grid</button><button id="mat_grid">Mat Grid</button><button id="braid_grid">Round Braid Grid</button><br/>
+    <button id="pineapple_plant_hanger_grid">Pineapple Plant Hanger Grid</button><button id="bottom_pineapple_grid">Bottom Pineapple Grid</button><button id="pineapple_grid">Pineapple Grid</button> Nested Bights <input type="text" value="3" id="nested_bights"/> Shift Bottom Bights <input type="text" value="0" id="shift_bottom_bights"/><br/>
+    <button id="hansen_grid">Hansen Grid</button> Shift Bottom Bights <input type="text" value="0" id="hansen_shift_bottom_bights"/><br/>
+    <button id="dog_bone_grid">Dog Bone Grid</button> Nested Bights <input type="text" value="2" id="dog_bone_nested_bights"/> Shift Bottom Bights <input type="text" value="0" id="dog_bone_shift_bottom_bights"/> Rows <input type="text" value="7" id="dog_bone_rows"/><br/>
+    <br/>
+
+    <span title="After clicking one of these options, click on the grid to interact with it.">Interactive Options:</span><br/>
+    <button id="toggle_coding">Toggle Coding</button><button id="set_over">Set Over</button><button id="set_under">Set Under</button><br/>
+    <button id="set_empty">.</button><button id="set_upper_bight">^</button><button id="set_lower_bight">v</button><button id="set_slash">/</button><button id="set_backslash">\</button><button id="set_x">x</button><button id="set_left_bight">&lt;</button><button id="set_right_bight">&gt;</button><button id="set_horizontal_bights">K</button><button id="set_vertical_bights">Y</button><br/>
+    <select id="brushes"></select><button id="set_brush">Set Brush</button><br/>
+    <button id="remove_nonloops">Remove Non-Loop Strands</button><button id="clear_grid">Clear Grid</button><br/>
+    <button id="extend_strands">Extend Strands</button><button id="remove_strand" title="Once remove strand is clicked, click on a grid location to remove the strand on that location. Use the alt key to distinguish between two separate strands passing over the same location.">Remove Strand</button><button id="toggle_strand_coding" title="toggle strand">Toggle Strand Coding</button><br/>
+    <button id="undo">Undo</button><button id="redo">Redo</button>
+    <button id="copy">Copy</button><button id="paste">Paste</button><br/>
+</div>
+    <div>
+        <div style="float: left; margin: 5px">
+            <div class="bold">Half cycle</div>
+            <div class="small_component"><img src="images/prev.png" id="prev"/><input type="text" id="half_cycle" size=2/><img src="images/next.png" id="next"/></div>
+        </div>
+        <div style="float: left; margin: 5px">
+            <div class="bold">From</div>
+            <div class="small_component" id="from_pin"></div>
+        </div>
+        <div style="float: left; margin: 5px">
+            <div class="bold">Run list</div>
+            <div class="small_component" id="run_list"></div>
+        </div>
+        <div style="float: left; margin: 5px">
+            <div class="bold">To</div>
+            <div class="small_component" id="to_pin"></div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+    <div id="knot_canvas_border" style="padding: 10px">
+    <canvas id="knot_canvas"></canvas><br/>
+    </div>
+    <div class="page-break"></div>
+
+    Rows: <span id="rows">12</span> Cols: <span id="cols">14</span><br/>
+    Parts: <span id="parts">11</span> Bights: <span id="bights">7</span><br/>
+    Size (inches): <span id="width_inches"></span> x <span id="height_inches"></span><br/>
+    Size (cm): <span id="width_cm"></span> x <span id="height_cm"></span><br/>
+    Strands: <span id="strands">1</span><br/>
+    Crossings: <span id="crossings"></span><br/>
+    Facets: <span id="facets"></span><br/>
+
+    Coding Options: <span id="coding_options"></span><br/>
+    Grid Options: <span id="grid_options"></span><br/>
+    <div class="show_when_printing">
+        Strand Width: <span id="strand_width_print"></span><br/>
+        Strand Gap Size: <span id="strand_gap_size_print"></span><br/>
+    </div>
+<div class="hide_when_printing">
+    <img id="knot_image" src="" style="display: none"/><br/>
+    <button id="create_image" title="Click this to create an image from the grid that can be saved.">View As Image</button><br/>
+
+    <input type="checkbox" id="do_every_other"> Do every other strand<br/>
+    <input type="checkbox" id="do_short_hand"> Consolidate overs and unders<br/>
+    <input type="checkbox" id="do_half_way"> Do half way<br/>
+    <input type="checkbox" id="do_letter_pins" checked="checked"> Label pins with letters<br/>
+    <input type="checkbox" id="prefer_direction" checked="checked"> Prefer <select id="dir_preference">
+        <option value="DOWN_RIGHT">Down Right</option>
+        <option value="DOWN_LEFT">Down Left</option>
+        <option value="UP_RIGHT">Up Right</option>
+        <option value="UP_LEFT">Up Left</option>
+    </select> Strands<br/>
+    Start Corner: <select id="start_corner">
+        <option value="1">Top Left</option>
+        <option value="2">Top Right</option>
+        <option value="3">Bottom Left</option>
+        <option value="4">Bottom Right</option>
+    </select><br/>
+    Start Direction: <select id="start_direction">
+        <option value="DOWN_RIGHT">Down Right</option>
+        <option value="DOWN_LEFT">Down Left</option>
+        <option value="UP_RIGHT">Up Right</option>
+        <option value="UP_LEFT">Up Left</option>
+    </select><br/><br/>
+    Strand Lengths:<br/>
+    <textarea id="lengths" style="width: 500px; height: 200px; font-family: Monospace"></textarea><br/>
+    Instructions:<br/>
+    <textarea id="instructions" style="width: 500px; height: 400px; font-family: Monospace"></textarea><br/>
+    Save/Load Knot Data:<br/>
+    <textarea id="knot_string" style="width: 500px; height: 400px; font-family: Monospace"></textarea><br/>
+    <button id="load_knot">Load Knot</button>
+</div>
+    <div class="show_when_printing">
+        Colors: <span id="colors_printout"></span><br/>
+        Shadow Colors: <span id="shadow_colors_printout"></span><br/>
+
+        <pre id="instructions_pre">
+        </pre>
+        <pre id="lengths_pre">
+        </pre>
+        <div class="page-break"></div>
+        <pre id="knot_data_pre">
+        </pre>
+    </div>
+
+</body>
+
+</html>
