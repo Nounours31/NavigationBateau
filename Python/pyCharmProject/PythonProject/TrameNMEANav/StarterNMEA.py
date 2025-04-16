@@ -12,6 +12,7 @@ import calendar
 from types import FrameType
 from typing import Optional, Union, Any
 
+from TrameNMEANav.CAngle import CAngle
 from TrameNMEANav.CLatitude import CLatitude
 from TrameNMEANav.CLogger import CLogger
 from TrameNMEANav.CLongitude import CLongitude
@@ -53,7 +54,7 @@ if not my_file.is_dir():
     parser.print_usage()
     sys.exit(1)
 
-logger : logging.Logger = CLogger.getLogger('NMEA', args.logback, args.logdir)
+logger : logging.Logger = CLogger.getLogger('NMEA', args.logback[0], args.logdir[0])
 myNMEANetwork : CSocketNetWorkForNMEA = CSocketNetWorkForNMEA()
 original_sigint = None
 
@@ -108,6 +109,8 @@ def main():
     # Port de
     latSamoa = -14.2456  # angleSexaToDecimal(degre = 2, minute = 56.23)
     longSamoa = -169.6100  # angleSexaToDecimal(degre = 2, minute = 56.23)
+
+    a = CAngle(angleDegreDouble = latSamoa)
 
     positionDepartLatitudeDecimale = latSamoa
     positionDepartLongitudeDecimale = longSamoa
@@ -187,8 +190,8 @@ def main():
 if __name__ == '__main__':
     original_sigint = signal.getsignal(signal.SIGINT)
     signal.signal(signal.SIGINT, exit_gracefully)
-    # main()
-    cUI : CUI = CUI()
-    cUI.init()
+    main()
+#    cUI : CUI = CUI()
+#    cUI.init()
 
     print("The end ...")

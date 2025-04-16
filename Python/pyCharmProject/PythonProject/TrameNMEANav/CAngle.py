@@ -1,10 +1,41 @@
-from datetime import datetime
 from math import cos, floor
+
+from pkg_resources import non_empty_lines
+
+from TrameNMEANav.CLogger import CLogger
 
 
 class CAngle:
-    def __init__(self, uid : str) -> None:
-        self.uid = uid
+    logger : CLogger = None
+
+    def __init__(self, *,
+                 angleDegreDouble : float = None,
+                 angleDegreInt : int = None,
+                 angleMinuteInt : int = None,
+                 angleSecondeInt : int = None,
+                 angleMinuteDouble : float = None)  :
+
+        logger = CLogger.getLogger(None, None, None)
+
+        test : [bool] = [False, False, False]
+        test[0] = not angleDegreDouble is None
+        test[1] = (not angleDegreInt is None) and (not angleMinuteDouble is None)
+        test[2] = (not angleDegreInt is None) and (not angleMinuteInt is None) and (not angleSecondeInt is None)
+
+        if not (test[0] or test[1] or test[2]):
+            logger.error("Invalide init d'un angle ")
+            self.angle = 0.0
+
+        if test[0]:
+            self.angle = angleDegreDouble
+
+        if (not test[0]) and test[1]:
+            self.angle = angleDegreInt + angleMinuteDouble / 60.0
+
+        if (not test[0]) and (not test[1]) and test[2]:
+            self.angle = angleDegreInt + angleMinuteDouble / 60.0 + angleSecondeInt / 3600.0
+
+
 
     def __str__(self) -> str :
         return f"uid {self.uid}"

@@ -2,6 +2,7 @@ from datetime import datetime
 from math import cos, floor
 
 from TrameNMEANav.CAngle import CAngle
+from TrameNMEANav.CHeure import CHeure
 
 
 class CNMEA:
@@ -38,7 +39,7 @@ class CNMEA:
     # ----------------------------------------------------------------------------------
     def getGGA(self, now: datetime, latitudeDecimale: float, longitudeDecimale: float) -> bytes:
         nmeaMessage = "GPGGA,{heure:09.2f},{lat:011.6f},{latSens},{long:012.6f},{longSens},1,10,1.2,27.0,M,-34.2,M,,".format(
-            heure=CAngle.heure2GPSDecimale(now),
+            heure = CHeure.heure2GPSDecimale(now),
             lat=abs(CAngle.angleDecimalToMinuteSexa(latitudeDecimale) * 100),
             latSens="N" if latitudeDecimale > 0 else "S",
             long=abs(CAngle.angleDecimalToMinuteSexa(longitudeDecimale) * 100),
@@ -69,7 +70,7 @@ class CNMEA:
     def getRMC(self, now: datetime, latitudeDecimale, longitudeDecimale, vitesseEnNoeud, cap)-> bytes:
         dateutc = now.day * 10000 + now.month * 100 + (now.year - 100 * floor(now.year / 100))
         nmeaMessage = "GPRMC,{heure:09.2f},A,{lat:011.6f},{latSens},{long:012.6f},{longSens},{vitesseEnNoeud:06.2f},{cap:06.2f},{dateutc:06d},002.1,W,A,V".format(
-            heure=CAngle.heure2GPSDecimale(now),
+            heure=CHeure.heure2GPSDecimale(now),
             lat=abs(CAngle.angleDecimalToMinuteSexa(latitudeDecimale) * 100),
             latSens="N" if latitudeDecimale > 0 else "S",
             long=abs(CAngle.angleDecimalToMinuteSexa(longitudeDecimale) * 100),
@@ -124,7 +125,7 @@ class CNMEA:
                            distance: float, uid: str) -> bytes:
         bearingM = bearing + variation
         nmeaMessage = "IIBWC,{heure:09.2f},{lat:011.6f},{latSens},{long:012.6f},{longSens},{bearing:05.2f},T,{bearingM:05.2f},M,{distance:05.2f},N,{id:s}".format(
-            heure=CAngle.heure2GPSDecimale(now),
+            heure=CHeure.heure2GPSDecimale(now),
             lat=abs(CAngle.angleDecimalToMinuteSexa(latDecimale) * 100),
             latSens="N" if latDecimale > 0 else "S",
             long=abs(CAngle.angleDecimalToMinuteSexa(longDecimale) * 100),
@@ -141,7 +142,7 @@ class CNMEA:
                            distance: float, uid: str) -> bytes:
         bearingM = bearing + variation
         nmeaMessage = "IIBWR,{heure:09.2f},{lat:011.6f},{latSens},{long:012.6f},{longSens},{bearing:05.2f},T,{bearingM:05.2f},M,{distance:05.2f},N,{id:s}".format(
-            heure=CAngle.heure2GPSDecimale(now),
+            heure=CHeure.heure2GPSDecimale(now),
             lat=abs(CAngle.angleDecimalToMinuteSexa(latDecimale) * 100),
             latSens="N" if latDecimale > 0 else "S",
             long=abs(CAngle.angleDecimalToMinuteSexa(longDecimale) * 100),
