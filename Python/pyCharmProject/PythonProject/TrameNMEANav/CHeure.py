@@ -1,12 +1,11 @@
 from datetime import datetime
-from math import cos, floor
 
 
 class CHeure:
-    def __init__(self, uid : str) -> None:
+    def __init__(self, uid: str) -> None:
         self.uid = uid
 
-    def __str__(self) -> str :
+    def __str__(self) -> str:
         return f"uid {self.uid}"
 
     # ----------------------------------------------------------------------------------
@@ -14,5 +13,6 @@ class CHeure:
     #   hhmmss.ssss
     # ----------------------------------------------------------------------------------
     @staticmethod
-    def heure2GPSDecimale(now: datetime) -> float:
+    def heure2GPSDecimale(timestamp: float) -> float:
+        now = datetime.fromtimestamp(timestamp)
         return ((now.hour * 100 + now.minute) * 100) + now.second + (now.microsecond / 1000000)

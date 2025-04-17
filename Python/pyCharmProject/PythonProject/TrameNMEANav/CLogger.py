@@ -1,22 +1,27 @@
 import asyncio
+import logging.config
 import platform
 from logging import Logger
-import logging.config
 from pathlib import Path
 
 from TrameNMEANav.CEnv import CEnv
 
 
 class CLogger:
-    logger = None
+    logger: Logger = None
 
     def __init__(self):
         pass
 
     @staticmethod
-    def getLogger(name: str, logback : str, logdir : str) -> Logger:
+    def init(name: str, logback: str, logdir: str) -> Logger:
         logger = asyncio.run(CLogger.__getLogger__(name, logback, logdir))
         return logger
+
+    @staticmethod
+    def getLogger(info : str) -> Logger:
+        # print(f"getLogger ({info}) {CLogger.logger}")
+        return CLogger.logger
 
     @staticmethod
     async def __getLogger__(name: str, logback: str, logdir: str) -> Logger:
@@ -27,19 +32,20 @@ class CLogger:
             if name is None:
                 name = CEnv.getProjectName()
 
-            if not logback is None :
+            logbackfile = logback
+            if not logback is None:
                 my_file = Path(logback)
                 if not my_file.is_file():
+                    logbackfile = CEnv.getDefaultLogbackFile()
                     my_file = Path(CEnv.getDefaultLogbackFile())
-
 
                 if my_file.is_file():
                     osinfo: str = platform.system()
-                    if  osinfo == "Windows":
+                    if osinfo == "Windows":
                         logdir = logdir.replace('\\', "/")
 
                     # Initialize the logger once as the application starts up.
-                    logging.config.fileConfig(CEnv.getDefaultLogbackFile(), defaults={"LOG_DIR": logdir})
+                    logging.config.fileConfig(logbackfile, defaults={"LOG_DIR": logdir})
                     logger: Logger = logging.getLogger(name)
 
             if logger is None:
@@ -65,4 +71,3 @@ class CLogger:
             lock.release()
 
         return logger
-

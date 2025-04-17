@@ -1,61 +1,193 @@
-from math import cos, floor
-
-from pkg_resources import non_empty_lines
+import re
+from logging import Logger
+from math import floor
+from re import Match
 
 from TrameNMEANav.CLogger import CLogger
 
 
 class CAngle:
-    logger : CLogger = None
+    CAS_DEGRE_DOUBLE = 0
+    CAS_DEGRE_INT_MIN_DOUBLE = 1
+    CAS_DEGRE_MIN_SEC = 2
+    _logger = None
 
     def __init__(self, *,
-                 angleDegreDouble : float = None,
-                 angleDegreInt : int = None,
-                 angleMinuteInt : int = None,
-                 angleSecondeInt : int = None,
-                 angleMinuteDouble : float = None)  :
+                 angleDegreDouble: float = None,
+                 angleDegreInt: int = None,
+                 angleMinuteInt: int = None,
+                 angleSecondeInt: int = None,
+                 angleMinuteDouble: float = None):
 
-        logger = CLogger.getLogger(None, None, None)
+        self._logger = CLogger.getLogger("CAngle")
+        CAngle._logger = self._logger
 
-        test : [bool] = [False, False, False]
-        test[0] = not angleDegreDouble is None
+        test: [bool] = [False, False, False]
+        test[CAngle.CAS_DEGRE_DOUBLE] = not angleDegreDouble is None
         test[1] = (not angleDegreInt is None) and (not angleMinuteDouble is None)
         test[2] = (not angleDegreInt is None) and (not angleMinuteInt is None) and (not angleSecondeInt is None)
 
-        if not (test[0] or test[1] or test[2]):
-            logger.error("Invalide init d'un angle ")
-            self.angle = 0.0
+        # un des cas exist
+        if not (test[CAngle.CAS_DEGRE_DOUBLE] or test[CAngle.CAS_DEGRE_INT_MIN_DOUBLE] or test[CAngle.CAS_DEGRE_MIN_SEC]):
+            self._logger.error("Invalide init d'un angle ")
+            self._angle = 0.0
 
-        if test[0]:
-            self.angle = angleDegreDouble
+        # cas par cas
+        if test[CAngle.CAS_DEGRE_DOUBLE]:
+            self._angle = angleDegreDouble
 
-        if (not test[0]) and test[1]:
-            self.angle = angleDegreInt + angleMinuteDouble / 60.0
+        if (not test[CAngle.CAS_DEGRE_DOUBLE]) and test[CAngle.CAS_DEGRE_INT_MIN_DOUBLE]:
+            self._angle = angleDegreInt + angleMinuteDouble / 60.0
 
-        if (not test[0]) and (not test[1]) and test[2]:
-            self.angle = angleDegreInt + angleMinuteDouble / 60.0 + angleSecondeInt / 3600.0
+        if (not test[CAngle.CAS_DEGRE_DOUBLE]) and (not test[CAngle.CAS_DEGRE_INT_MIN_DOUBLE]) and test[CAngle.CAS_DEGRE_MIN_SEC]:
+            self._angle = angleDegreInt + angleMinuteDouble / 60.0 + angleSecondeInt / 3600.0
 
 
+    def __str__(self) -> str:
+        asDouble, signe = self.toDecimal(False)
+        asMinuteDecimale, signe =  self.toDegMinDecimal(False)
+        asMinuteSexaDecimale, signe =  self.toDegMinSecDecimal(False)
+        return f"{asDouble} [{asMinuteDecimale} - {asMinuteSexaDecimale}]"
 
-    def __str__(self) -> str :
-        return f"uid {self.uid}"
+    def __format__(self, format_spec):
+        return str(self)
 
-    # ----------------------------------------------------------------------------------
-    # doit retourner un angle en degre decimal
-    # ----------------------------------------------------------------------------------
+    def toDecimal(self, asUnSigned: bool) -> (str, int):
+        val = self._angle
+        signe: int = +1
+        if val < 0:
+            signe = -1
+            val = -1.0 * val
+
+        sSigne: str = "+"
+        if val < 0:
+            sSigne = "-"
+            val = -1.0 * val
+
+        if asUnSigned:
+            sSigne = ""
+
+        asDouble: str = f"{sSigne}{val:1.4f}°"
+        return asDouble, signe
+
+    def toDegMinDecimal(self, asUnSigned: bool) -> (str, int):
+        val = self._angle
+        signe: int = +1
+        if val < 0:
+            signe = -1
+            val = -1.0 * val
+
+        sSigne: str = "+"
+        if val < 0:
+            sSigne = "-"
+            val = -1.0 * val
+
+        if asUnSigned:
+            sSigne = ""
+
+        deg = floor(val)
+        min = ((val - floor(val)) * 60.0)
+        asMinuteDecimale = f"{sSigne}{deg:2d}°{min:2.4f}'"
+        return asMinuteDecimale, signe
+
+    def toDegMinSexaDecimalNMEA(self, asUnSigned: bool) -> str:
+        val = self._angle
+        signe: int = +1
+        if val < 0:
+            signe = -1
+            val = -1.0 * val
+
+        sSigne: str = "+"
+        if val < 0:
+            sSigne = "-"
+            val = -1.0 * val
+
+        if asUnSigned:
+            sSigne = ""
+
+        deg = floor(val)
+        min = ((val - floor(val)) * 60.0)
+        asMinuteDecimale = f"{sSigne}{deg:2d}.{min:2.4f}'"
+        return asMinuteDecimale, signe
+
+    def toDegMinSecDecimal(self, asUnSigned: bool) -> (str, int):
+        val = self._angle
+        signe: int = +1
+        if val < 0:
+            signe = -1
+            val = -1.0 * val
+
+        sSigne: str = "+"
+        if val < 0:
+            sSigne = "-"
+            val = -1.0 * val
+
+        if asUnSigned:
+            sSigne = ""
+
+        deg = floor(val)
+        min = floor ((val - floor(val)) * 60.0)
+        sec = val * 3600 - deg * 3600 - min * 60
+
+        asMinuteSexaDecimale = f"{sSigne}{deg:2d}°{min:2d}'{sec:2.4f}\""
+        return asMinuteSexaDecimale, signe
+
+
+    def value(self, val: float = None):
+        if val is None:
+            return self._angle
+        else:
+            self._angle = val
+
     @staticmethod
-    def angleSexaToDecimal(degre: int, minute: float) -> float:
-        x = 1 if degre >= 0 else -1
-        return x * (abs(degre) + abs(minute) / 60)
+    def fromString(s: str):
+        retour: CAngle = CAngle(angleDegreDouble=0.0)
 
+        regexAngle = r"([\-\+])?([0-9]{1,3})°([0-9]{1,2}(\.[0-9]+)?)[']?(([0-9]{1,2}(\.[0-9]+)?)[\"]?)?"
 
-    # ----------------------------------------------------------------------------------
-    # doit retourner un angle en degre decimal / minute sexagedecimal
-    # ----------------------------------------------------------------------------------
-    @staticmethod
-    def angleDecimalToMinuteSexa(degreDecimal: float) -> float:
-        x = 1 if degreDecimal >= 0 else -1
-        y = abs(degreDecimal)
-        degre = floor(y)
-        minute = (y - degre) * 60 / 100
-        return x * (degre + minute)
+        parseError: bool = False
+        m: Match[str] = re.match(regexAngle, s, re.MULTILINE)
+        if m:
+            maxGroup = len(m.groups())
+            if maxGroup != 7:
+                parseError = True
+
+            signe: float = 1.0
+            SIGNE = 1
+            DEGRE = 2
+            MIN = 3
+            MINDEC = 4
+            SECQUOTE = 5
+            SEC = 6
+            SECDEC = 7
+            if m.group(SIGNE) == "-":
+                signe = -1.0
+
+            a: float = 0.0
+            b : float = 0.0
+
+            b = 0.0
+            if not m.group(DEGRE) is None and m.group(DEGRE) != "":
+                b = float(m.group(DEGRE))
+            a += b
+
+            b = 0.0
+            if not m.group(MIN) is None and m.group(MIN) != "":
+                b = float(m.group(MIN))
+            a += b / 60.0
+
+            b = 0.0
+            if not m.group(SEC) is None and m.group(SEC) != "":
+                b = float(m.group(SEC))
+            a += b / 3600.0
+
+            a = a * signe
+            retour.value(a)
+
+        else:
+            parseError = True
+
+        if parseError:
+            self._logger.error(f"Ce n'est pas une latitude {s}s")
+
+        return retour

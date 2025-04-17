@@ -1,6 +1,7 @@
 # import the library
 from appJar import gui
 
+
 class CUI:
     def __init__(self):
         pass
@@ -12,7 +13,6 @@ class CUI:
             usr = self.app.getEntry("Username")
             pwd = self.app.getEntry("Password")
             print("User:", usr, "Pass:", pwd)
-
 
     def init(self):
         # create a GUI variable called app

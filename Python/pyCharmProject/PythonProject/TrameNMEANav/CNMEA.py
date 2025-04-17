@@ -1,17 +1,52 @@
 from datetime import datetime
+from logging import Logger
 from math import cos, floor
 
 from TrameNMEANav.CAngle import CAngle
 from TrameNMEANav.CHeure import CHeure
+from TrameNMEANav.CLatitude import CLatitude
+from TrameNMEANav.CLogger import CLogger
+from TrameNMEANav.CLongitude import CLongitude
+from TrameNMEANav.CPosition import CPosition
 
 
 class CNMEA:
-    def __init__(self, uid : str) -> None:
+    __logger : Logger = None
+    def __init__(self, uid: str) -> None:
         self.uid = uid
+        self.__logger : Logger = CLogger.getLogger("CNMEA")
+        CNMEA.__logger = self.__logger
 
-    def __str__(self) -> str :
+    def __str__(self) -> str:
         return f"uid {self.uid}"
 
+    # ----------------------------------------------------------------------------------
+    # Format NMEA des angles
+    #     lat  ddmm.mmmmmm 011.6f
+    #     lon dddmm.mmmmmm 012.6f
+    # Avec
+    #     dd en degre
+    #     mm en minute base 60 !!
+    # ----------------------------------------------------------------------------------
+    @staticmethod
+    def latitudeNMEA (lat : CLatitude) -> str:
+        v : float = lat.value()
+        v = (-1.0 * v) if v < 0 else v
+        d = floor(v)
+        m = (v - d) * 60.0
+        retour = f"{d:02d}{m:09.6f}"
+        CNMEA.__logger.debug(f"latitudeNMEA >{lat:s}< -> >{retour:s}<")
+        return retour
+
+    @staticmethod
+    def longitudeNMEA (lon : CLongitude) -> str:
+        v : float = lon.value()
+        v = (-1.0 * v) if v < 0 else v
+        d = floor(v)
+        m = (v - d) * 60.0
+        retour = f"{d:03d}{m:09.6f}"
+        CNMEA.__logger.debug(f"longitudeNMEA >{lon:s}< -> >{retour:s}<")
+        return retour
 
     # ----------------------------------------------------------------------------------
     # This is a simple calculator to compute the checksum field for the NMEA protocol.
@@ -27,7 +62,6 @@ class CNMEA:
             retour = "0" + retour
         return retour
 
-
     # ----------------------------------------------------------------------------------
     # concatene devant le message le "$" et ajoute en fin le "*" + checksum nmea
     # ----------------------------------------------------------------------------------
@@ -37,25 +71,26 @@ class CNMEA:
         return bytes_representation
 
     # ----------------------------------------------------------------------------------
-    def getGGA(self, now: datetime, latitudeDecimale: float, longitudeDecimale: float) -> bytes:
-        nmeaMessage = "GPGGA,{heure:09.2f},{lat:011.6f},{latSens},{long:012.6f},{longSens},1,10,1.2,27.0,M,-34.2,M,,".format(
-            heure = CHeure.heure2GPSDecimale(now),
-            lat=abs(CAngle.angleDecimalToMinuteSexa(latitudeDecimale) * 100),
-            latSens="N" if latitudeDecimale > 0 else "S",
-            long=abs(CAngle.angleDecimalToMinuteSexa(longitudeDecimale) * 100),
-            longSens="E" if longitudeDecimale > 0 else "W")
+    def getGGA(self, now: float, position: CPosition) -> bytes:
+        lat : CLatitude = position.latitude()
+        lon : CLongitude = position.longitude()
+
+        nmeaMessage = "GPGGA,{heure:09.2f},{lat:s},{latSens},{long:s},{longSens},1,10,1.2,27.0,M,-34.2,M,,".format(
+            heure=CHeure.heure2GPSDecimale(now),
+            lat=CNMEA.latitudeNMEA(lat),
+            latSens=lat.sens(),
+            long=CNMEA.longitudeNMEA(lon),
+            longSens=lon.sens())
         return self.add_nmeachecksum(nmeaMessage)
 
-
     # ----------------------------------------------------------------------------------
-    def getGSA(self)-> bytes:
+    def getGSA(self) -> bytes:
         nmeaMessage = "GPGSA,A,3,07,02,26,27,09,04,15,,,,,,1.8,1.2,1"
         return self.add_nmeachecksum(nmeaMessage)
 
-
     # ----------------------------------------------------------------------------------
     # cap t vitesse
-    def getVTG(self, vitesseEnNoeud, cap)-> bytes:
+    def getVTG(self, vitesseEnNoeud, cap) -> bytes:
         capMagnetique = cap + 2.1
         vitesseEnkm = vitesseEnNoeud * 1.852
         nmeaMessage = "GPVTG,{cap:05.1f},T,{capMagnetique:05.1f},M,{vitesseEnNoeud:05.1f},N,{vitesseEnkm:05.1f},K,A".format(
@@ -65,21 +100,23 @@ class CNMEA:
             vitesseEnkm=vitesseEnkm)
         return self.add_nmeachecksum(nmeaMessage)
 
-
     # ----------------------------------------------------------------------------------
-    def getRMC(self, now: datetime, latitudeDecimale, longitudeDecimale, vitesseEnNoeud, cap)-> bytes:
-        dateutc = now.day * 10000 + now.month * 100 + (now.year - 100 * floor(now.year / 100))
-        nmeaMessage = "GPRMC,{heure:09.2f},A,{lat:011.6f},{latSens},{long:012.6f},{longSens},{vitesseEnNoeud:06.2f},{cap:06.2f},{dateutc:06d},002.1,W,A,V".format(
+    def getRMC(self, now: float, position: CPosition, vitesseEnNoeud, cap) -> bytes:
+        lat : CLatitude = position.latitude()
+        lon : CLongitude = position.longitude()
+
+        now2 = datetime.fromtimestamp(now)
+        dateutc = now2.day * 10000 + now2.month * 100 + (now2.year - 100 * floor(now2.year / 100))
+        nmeaMessage = "GPRMC,{heure:09.2f},A,{lat:s},{latSens},{long:s},{longSens},{vitesseEnNoeud:06.2f},{cap:06.2f},{dateutc:06d},002.1,W,A,V".format(
             heure=CHeure.heure2GPSDecimale(now),
-            lat=abs(CAngle.angleDecimalToMinuteSexa(latitudeDecimale) * 100),
-            latSens="N" if latitudeDecimale > 0 else "S",
-            long=abs(CAngle.angleDecimalToMinuteSexa(longitudeDecimale) * 100),
-            longSens="E" if longitudeDecimale > 0 else "W",
+            lat=CNMEA.latitudeNMEA(lat),
+            latSens=lat.sens(),
+            long=CNMEA.longitudeNMEA(lon),
+            longSens=lon.sens(),
             vitesseEnNoeud=vitesseEnNoeud,
             cap=cap,
             dateutc=dateutc)
         return self.add_nmeachecksum(nmeaMessage)
-
 
     # ----------------------------------------------------------------------------------
     def getGSV(self) -> list[bytes]:
@@ -88,15 +125,13 @@ class CNMEA:
                        "$GPGSV,3,3,09,25,11,060,,1*4E".encode(encoding="utf-8")]
         return nmeaMessage
 
-
-    def getDepth(self, i: int) -> bytes:
+    def getDepth(self, i: float) -> bytes:
         depth = abs(5 + cos(i) * 100)
         distanceSondeQuille = 1.2
         nmeaMessage = "IIDPT,{depth:02.1f},{ecart:02.1f},".format(
             depth=depth,
             ecart=-abs(distanceSondeQuille))
         return self.add_nmeachecksum(nmeaMessage)
-
 
     def getHDG(self, cap: float, variation: float) -> bytes:
         capM = (cap + variation)
@@ -111,7 +146,6 @@ class CNMEA:
             variationS="E" if variation > 0 else "W")
         return self.add_nmeachecksum(nmeaMessage)
 
-
     def getWindInfo(self, typeDeVent: str, angle: float, speedInKnot: float) -> bytes:
         reference = "R" if "Relative" == typeDeVent else "T"
         nmeaMessage = "IIMWV,{angle:04.2f},{reference:s},{speed:04.2f},K,A".format(
@@ -120,33 +154,39 @@ class CNMEA:
             speed=speedInKnot)
         return self.add_nmeachecksum(nmeaMessage)
 
-
-    def getWayPointInfoBWC(self, now: datetime, latDecimale: float, longDecimale: float, bearing: float, variation: float,
-                           distance: float, uid: str) -> bytes:
+    def getWayPointInfoBWC(self, *, now: float,
+                           positionWayPoint: CPosition,
+                           bearing: float,
+                           variation: float,
+                           distance: float,
+                           uid: str) -> bytes:
         bearingM = bearing + variation
-        nmeaMessage = "IIBWC,{heure:09.2f},{lat:011.6f},{latSens},{long:012.6f},{longSens},{bearing:05.2f},T,{bearingM:05.2f},M,{distance:05.2f},N,{id:s}".format(
+        nmeaMessage = "IIBWC,{heure:09.2f},{lat:s},{latSens},{long:s},{longSens},{bearing:05.2f},T,{bearingM:05.2f},M,{distance:05.2f},N,{id:s}".format(
             heure=CHeure.heure2GPSDecimale(now),
-            lat=abs(CAngle.angleDecimalToMinuteSexa(latDecimale) * 100),
-            latSens="N" if latDecimale > 0 else "S",
-            long=abs(CAngle.angleDecimalToMinuteSexa(longDecimale) * 100),
-            longSens="E" if longDecimale > 0 else "W",
+            lat=CNMEA.latitudeNMEA(positionWayPoint.latitude()),
+            latSens=positionWayPoint.latitude().sens(),
+            long=CNMEA.longitudeNMEA(positionWayPoint.longitude()),
+            longSens=positionWayPoint.longitude().sens(),
             bearing=bearing,
             bearingM=bearingM,
             distance=distance,
             id=uid)
         return self.add_nmeachecksum(nmeaMessage)
 
-
     # BWR Bearing and Distance to Waypoint – Rhumb Line Latitude, N/S, Longitude, E/W,
-    def getWayPointInfoBWR(self, now: datetime, latDecimale: float, longDecimale: float, bearing: float, variation: float,
-                           distance: float, uid: str) -> bytes:
+    def getWayPointInfoBWR(self, *, now: float,
+                           positionWayPoint: CPosition,
+                           bearing: float,
+                           variation: float,
+                           distance: float,
+                           uid: str) -> bytes:
         bearingM = bearing + variation
-        nmeaMessage = "IIBWR,{heure:09.2f},{lat:011.6f},{latSens},{long:012.6f},{longSens},{bearing:05.2f},T,{bearingM:05.2f},M,{distance:05.2f},N,{id:s}".format(
+        nmeaMessage = "IIBWR,{heure:09.2f},{lat:s},{latSens},{long:s},{longSens},{bearing:05.2f},T,{bearingM:05.2f},M,{distance:05.2f},N,{id:s}".format(
             heure=CHeure.heure2GPSDecimale(now),
-            lat=abs(CAngle.angleDecimalToMinuteSexa(latDecimale) * 100),
-            latSens="N" if latDecimale > 0 else "S",
-            long=abs(CAngle.angleDecimalToMinuteSexa(longDecimale) * 100),
-            longSens="E" if longDecimale > 0 else "W",
+            lat=CNMEA.latitudeNMEA(positionWayPoint.latitude()),
+            latSens=positionWayPoint.latitude().sens(),
+            long=CNMEA.longitudeNMEA(positionWayPoint.longitude()),
+            longSens=positionWayPoint.longitude().sens(),
             bearing=bearing,
             bearingM=bearingM,
             distance=distance,
