@@ -1,12 +1,14 @@
 import re
 from logging import Logger
-from math import floor
+from math import floor, pi
 from re import Match
 
 from TrameNMEANav.CLogger import CLogger
 
 
 class CAngle:
+    DEG2RAD=(pi / 180.0)
+    RAD2DEG=(180.0/pi)
     CAS_DEGRE_DOUBLE = 0
     CAS_DEGRE_INT_MIN_DOUBLE = 1
     CAS_DEGRE_MIN_SEC = 2

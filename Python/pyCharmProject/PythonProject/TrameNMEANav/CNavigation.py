@@ -2,6 +2,7 @@ import logging
 from logging import Logger
 from math import pi, cos, sin, atan2, atan
 
+from TrameNMEANav.CAngle import CAngle
 from TrameNMEANav.CLatitude import CLatitude
 from TrameNMEANav.CLogger import CLogger
 from TrameNMEANav.CLongitude import CLongitude
@@ -9,8 +10,6 @@ from TrameNMEANav.CPosition import CPosition
 
 
 class CNavigation:
-    DEG_2_PI: float = pi / 180.0
-
     def __init__(self):
         self.__logger: Logger = CLogger.getLogger("CNavigation")
 
@@ -24,8 +23,8 @@ class CNavigation:
     def nav(self, iSecondeDepuisDepart: float, vitesseEnNoeud: float, cap: float, positionDepart: CPosition) -> CPosition:
         retour : CPosition = CPosition()
 
-        capRad = cap * CNavigation.DEG_2_PI
-        latitudeEstimeeRad = positionDepart.latitude().value() * CNavigation.DEG_2_PI
+        capRad = cap * CAngle.DEG2RAD
+        latitudeEstimeeRad = positionDepart.latitude().value() * CAngle.DEG2RAD
 
         pasEnLatitude = cos(capRad) * vitesseEnNoeud / 60  # noeud = mille/h - 1 mille = 1 minute d'arc
         pasEnLongitude = sin(capRad) * vitesseEnNoeud / (60 * cos(latitudeEstimeeRad))
@@ -35,13 +34,6 @@ class CNavigation:
         retour.latitude(CLatitude(positionLatitude))
         retour.longitude(CLongitude(positionLongitude))
 
-        if self.__logger.isEnabledFor(logging.INFO):
-            msg: str = f">>> iSecondeDepuisDepart: {iSecondeDepuisDepart:05.10f}, vitesseEnNoeud: {vitesseEnNoeud:09.2f}, cap: {cap:09.2f}, positionDepart {positionDepart:s}, position: {retour:s}"
-            self.__logger.info(msg)
-
-            msg = f"<<< position : {retour:s}"
-            self.__logger.info(msg)
-
         return retour
 
     def navLoxodromique(self, positionDepart: CPosition, positionArrivee: CPosition) -> (float, float):
@@ -49,15 +41,15 @@ class CNavigation:
         variationLat = (positionArrivee.latitude().value() - positionDepart.latitude().value())
         variationLon = (positionArrivee.longitude().value() - positionDepart.longitude().value())
 
-        latMoyenne *= CNavigation.DEG_2_PI
-        variationLat *= CNavigation.DEG_2_PI
-        variationLon *= CNavigation.DEG_2_PI
+        latMoyenne *= CAngle.DEG2RAD
+        variationLat *= CAngle.DEG2RAD
+        variationLon *= CAngle.DEG2RAD
 
         if abs(variationLat) < 0.00000001:
             RouteQuartFond = 90.0
         else:
             tanRouteQuartFond = abs(variationLon / variationLat) * cos (latMoyenne)
-            RouteQuartFond = atan(tanRouteQuartFond) / CNavigation.DEG_2_PI
+            RouteQuartFond = atan(tanRouteQuartFond) / CAngle.DEG2RAD
 
         SensRoute = "N" if variationLat > 0 else "S"
         SensRoute = SensRoute + ("E" if variationLon > 0 else "W")
@@ -72,6 +64,6 @@ class CNavigation:
         if SensRoute == "SW":
            routeFond = 180.0 + RouteQuartFond
 
-        distanceMille = (variationLat * 60.0 / CNavigation.DEG_2_PI) / cos (routeFond * CNavigation.DEG_2_PI)
+        distanceMille = (variationLat * 60.0 / CAngle.DEG2RAD) / cos (routeFond * CAngle.DEG2RAD)
 
         return distanceMille, routeFond

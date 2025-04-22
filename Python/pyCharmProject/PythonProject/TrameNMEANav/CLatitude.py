@@ -1,6 +1,5 @@
 import re
 from logging import Logger
-from math import floor
 from re import Match
 
 from TrameNMEANav.CAngle import CAngle

@@ -28,16 +28,4 @@ class CPosition:
             return self.__longitude
         self.__longitude = val
 
-    @staticmethod
-    def SAOMA():
-        return CPosition(lat=CLatitude(-14.2456), lon=CLongitude(-169.6100))
 
-    @staticmethod
-    def SAINT_QUAY():
-        # Port de St Quay
-        return CPosition(lat=CLatitude(48.649665), lon=CLongitude(-2.813217))
-
-    @staticmethod
-    def SAINT_HELIER():
-        # Port de St helier
-        return CPosition(lat=CLatitude(49.17911688235086), lon=CLongitude(-2.113543749854877))

@@ -35,7 +35,6 @@ class CNMEA:
         d = floor(v)
         m = (v - d) * 60.0
         retour = f"{d:02d}{m:09.6f}"
-        CNMEA.__logger.debug(f"latitudeNMEA >{lat:s}< -> >{retour:s}<")
         return retour
 
     @staticmethod
@@ -45,7 +44,6 @@ class CNMEA:
         d = floor(v)
         m = (v - d) * 60.0
         retour = f"{d:03d}{m:09.6f}"
-        CNMEA.__logger.debug(f"longitudeNMEA >{lon:s}< -> >{retour:s}<")
         return retour
 
     # ----------------------------------------------------------------------------------
