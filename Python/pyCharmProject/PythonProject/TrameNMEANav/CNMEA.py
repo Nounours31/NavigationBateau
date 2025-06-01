@@ -123,6 +123,7 @@ class CNMEA:
                        "$GPGSV,3,3,09,25,11,060,,1*4E".encode(encoding="utf-8")]
         return nmeaMessage
 
+    # ----------------------------------------------------------------------------------
     def getDepth(self, i: float) -> bytes:
         depth = abs(5 + cos(i) * 100)
         distanceSondeQuille = 1.2
@@ -131,6 +132,7 @@ class CNMEA:
             ecart=-abs(distanceSondeQuille))
         return self.add_nmeachecksum(nmeaMessage)
 
+    # ----------------------------------------------------------------------------------
     def getHDG(self, cap: float, variation: float) -> bytes:
         capM = (cap + variation)
         if capM < 0:
@@ -144,6 +146,7 @@ class CNMEA:
             variationS="E" if variation > 0 else "W")
         return self.add_nmeachecksum(nmeaMessage)
 
+    # ----------------------------------------------------------------------------------
     def getWindInfo(self, typeDeVent: str, angle: float, speedInKnot: float) -> bytes:
         reference = "R" if "Relative" == typeDeVent else "T"
         nmeaMessage = "IIMWV,{angle:04.2f},{reference:s},{speed:04.2f},K,A".format(
@@ -152,6 +155,7 @@ class CNMEA:
             speed=speedInKnot)
         return self.add_nmeachecksum(nmeaMessage)
 
+    # ----------------------------------------------------------------------------------
     def getWayPointInfoBWC(self, *, now: float,
                            positionWayPoint: CPosition,
                            bearing: float,
@@ -171,7 +175,11 @@ class CNMEA:
             id=uid)
         return self.add_nmeachecksum(nmeaMessage)
 
-    # BWR Bearing and Distance to Waypoint – Rhumb Line Latitude, N/S, Longitude, E/W,
+    # ---------------------------------------------------
+    # Loxodromie:  Rhumb Line - nav a angle constant
+    # Orthodromie: Great Circle - plus court chemin
+    # BWR Bearing and Distance to Waypoint – Rhumb Line (loxodrommie) Latitude, N/S, Longitude, E/W,
+    # ---------------------------------------------------
     def getWayPointInfoBWR(self, *, now: float,
                            positionWayPoint: CPosition,
                            bearing: float,

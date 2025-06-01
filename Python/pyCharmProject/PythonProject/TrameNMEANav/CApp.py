@@ -17,7 +17,11 @@ from TrameNMEANav.CNavigation import CNavigation
 
 class CApp:
 
-    MAX_TIME = 3000
+    intervalMesureNMEAEnSecondes = 2
+    vitesseMoyenneEnNoeud = 5.0
+    variationMagnetiqueEnDegre = -1.2
+
+    MAX_TIME_IN_SECONDES = 3600
     DEBUG_NAV = True
     DEBUG_NMEA = False
 
@@ -37,12 +41,19 @@ class CApp:
         # Port de St helier
         return CPosition(lat=CLatitude(49.17911688235086), lon=CLongitude(-2.113543749854877))
 
+
+    @staticmethod
+    def IleViergesUS() -> CPosition:
+        return CPosition(lat=CLatitude(17.726768560744713), lon=CLongitude(-64.57080286354567))
+
+    @staticmethod
+    def PuertoRico() -> CPosition:
+        return CPosition(lat=CLatitude(17.90563819856933), lon=CLongitude(-67.19948124361858))
+
+
     @staticmethod
     def navInfo() -> (float, float, float):
-        intervalMesureNMEAEnSecondes = 2
-        vitesseMoyenneEnNoeud = 5.0
-        variationMagnetiqueEnDegre = -1.2
-        return intervalMesureNMEAEnSecondes, vitesseMoyenneEnNoeud, variationMagnetiqueEnDegre
+        return CApp.intervalMesureNMEAEnSecondes, CApp.vitesseMoyenneEnNoeud, CApp.variationMagnetiqueEnDegre
 
     def __init__(self):
         self.myNMEANetwork: CSocketNetWorkForNMEA = CSocketNetWorkForNMEA()
@@ -55,8 +66,8 @@ class CApp:
         self.myNMEANetwork.openSocket()
 
         # Info de la nav
-        positionDepart : CPosition = CApp.SAINT_QUAY()
-        positionArrivee : CPosition =CApp.SAINT_HELIER()
+        positionDepart : CPosition = CApp.IleViergesUS()
+        positionArrivee : CPosition =CApp.PuertoRico()
         position = positionDepart
         intervalMesureNMEAEnSecondes, vitesseMoyenneEnNoeud, variationMagnetiqueEnDegre = CApp.navInfo()
 
@@ -149,6 +160,6 @@ class CApp:
             self.myNMEANetwork.sendto(bwr)
             self.myNMEANetwork.sendto(bwc)
 
-            if nbSecondesDeNav > CApp.MAX_TIME:
+            if nbSecondesDeNav > CApp.MAX_TIME_IN_SECONDES:
                 self.myNMEANetwork.close()
                 break
