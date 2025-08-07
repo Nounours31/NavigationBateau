@@ -1,0 +1,12 @@
+#prereq
+pip install -r requirements-dev.txt
+
+# rejouer un ODT KO
+export PYTHONPATH=/e/WorkSpaces/WS/GitHub/Navigation/NavigationBateau/Python/python_astro/tools
+python tools/tests/test_cHeure.py
+
+
+# coverage
+pytest
+"/c/Program Files/Mozilla Firefox/firefox.exe" ./htmlcov/index.html
+

@@ -1,0 +1,8 @@
+numpy
+skyfield
+
+ruff
+black
+pytest
+coverage
+pytest-cov

@@ -1,0 +1,15 @@
+[tool.ruff]
+line-length = 100
+ignore = ["D203"]
+show-source = true
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+
+[tool.pytest.ini_options]
+addopts = "-ra --cov --cov-report=html --cov-report=term"
+testpaths = ["tests", "libs/tests", "tools/tests"]
+pythonpath = ['.', './libs', './tools']
+log_format = "%(asctime)s %(levelname)s %(message)s"
+log_date_format = "%Y-%m-%d %H:%M:%S"
