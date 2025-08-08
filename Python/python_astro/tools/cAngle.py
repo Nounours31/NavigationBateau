@@ -89,7 +89,7 @@ class cAngle:
 
 
     def toString (self) -> str:
-        toParse : float = self.__secondeDecimale; 
+        toParse : float = self.__secondeDecimale
 
         iHeure : int = int(math.floor(toParse / 3600.0))
 
@@ -99,4 +99,34 @@ class cAngle:
         toParse = toParse - iMinute * 60
 
         retour : str = f"{iHeure:d}°{iMinute:2d}'{toParse:5.3f}\""
+        return retour
+
+    @staticmethod
+    def toStringDebug (fValInDegree : float) -> str:
+        if math.isnan(fValInDegree):
+            return 'NaN'
+        
+        sign : str = ''
+        if fValInDegree < 0.0 :
+            sign = '-'
+            fValInDegree = -1.0 * fValInDegree
+        # heuredec
+        sHeureDec : str = f"{sign:1s}{fValInDegree:5.2f}°"
+        
+        # minute hexa
+        toParse : float = fValInDegree 
+        iHeure : int = int(math.floor(toParse))
+        toParse = toParse - iHeure
+        fminute : float = toParse * 60.0
+        sMinHexa : str = f"{sign:1s}{iHeure:03d}°{fminute:05.2f}'"
+
+        # seconde decimale
+        toParse : float = fValInDegree 
+        iHeure : int = int(math.floor(toParse))
+        toParse = (toParse - iHeure) * 60.0
+        iminute : int = int(toParse)
+        fseconde : float = (toParse - int(toParse)) * 60.0
+        sSecDec : str = f"{sign:1s}{iHeure:03d}°{iminute:02d}'{fseconde:05.2f}'"
+
+        retour : str = f"{sHeureDec:s} [{sMinHexa:s} - {sSecDec:s}]"
         return retour

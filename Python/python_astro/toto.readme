@@ -1,4 +1,7 @@
-#prereq
+# demarer
+. .venv/Scripts/activate.sh
+
+# #prereq
 pip install -r requirements-dev.txt
 
 # rejouer un ODT KO
