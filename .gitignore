@@ -78,3 +78,8 @@ Temporaire
 ProjetXLS/Solution_Exo_Carbonel/
 ProjetXLS/Solution_Exo_Italiens/
 Thumbs.db
+**/.coverage
+.coverage
+Python/python_astro/.coverage
+**/myAppLogs*
+**/de421.bsp

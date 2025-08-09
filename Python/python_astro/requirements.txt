@@ -1,6 +1,7 @@
 numpy
 skyfield
 pandas
+colorist
 
 ruff
 black

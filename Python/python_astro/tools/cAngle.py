@@ -111,7 +111,7 @@ class cAngle:
             sign = '-'
             fValInDegree = -1.0 * fValInDegree
         # heuredec
-        sHeureDec : str = f"{sign:1s}{fValInDegree:5.2f}°"
+        sHeureDec : str = f"{sign:1s}{fValInDegree:07.4f}°"
         
         # minute hexa
         toParse : float = fValInDegree 

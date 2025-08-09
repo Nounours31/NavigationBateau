@@ -92,6 +92,22 @@ class cEphemerides:
     Scheat,113881
     Markab,113963
     """
+    @staticmethod
+    def getPlaneteStarNom () -> list[str] :
+        retour : list[str] = []
+        for planete in cEphemerides.planete_db:
+            planete_humannom = planete["nom"]
+            retour.append (planete_humannom)
+        
+        for line in cEphemerides.stars_db.strip().split('\n'):
+            x1 = line.index(',')
+            name = line[0:x1]
+            while name.startswith(' '):
+                name = name[1:]
+            retour.append (name)
+
+        return retour
+    
 
     def __init__(self):
         self.__secondeDecimale : float = 0.0
