@@ -6,14 +6,13 @@ import sys
 # print(sys.executable) # show which Python we are running
 # print(sys.path)
 import re
-from tools.cAngle import cAngle
 
 from datetime import datetime, timezone, timedelta
 from tools.cEphemerides import cEphemerides
 from colorist import green, Color
 
-from tools.cAngle import cAngle
 from tools.cAstroError import cAstroError
+from tools.cAngle import cAngle
 
 import logging
 import logging.config
@@ -21,9 +20,6 @@ logging.config.fileConfig("logging.conf")
 logger = logging.getLogger("main_txt")
 
 
-__BORD_SUP: float = -0.5
-__BORD_INF: float = 0.5
-__BORD_MILIEU: float = 0
 
 
 def getPlanete() -> str:
@@ -95,39 +91,27 @@ def getCollimation() -> float:
         print(f"{msg:20s}", end="", sep=" ")
         sCollimation = input()
 
-        regexp = r"(\d{1,3})°((\d{2}(\.\d+)?)'?)?"
-        matches = re.finditer(regexp, sCollimation, re.NOFLAG)
-        for matchNum, match in enumerate(matches, start=1):
-            for groupNum in range(0, len(match.groups())):
-                groupNum = groupNum + 1
-
-                if groupNum == 1:
-                    hauteurAstreDeg += float(match.group(groupNum))
-                    bFind = True
-
-                if groupNum == 3:
-                    decimale = float(match.group(groupNum))
-                    if decimale >= 60.0:
-                        print("Minutes invalide")
-                        bFind = False
-                    else:
-                        hauteurAstreDeg += (float(match.group(groupNum))) / 60.0
-                        bFind = True
+        try:
+            hauteurAstreDeg = cAngle.parse (hauteurAstre)
+        except cAstroError as e:
+            print (f"Unable to parse angle {repr(e)}")
 
     print(
-        f"\t{Color.MAGENTA}Hauteur soleil: {Color.GREEN}{cAngle.toStringDebug(hauteurAstreDeg)}{Color.OFF}"
+        f"\t{Color.MAGENTA}Collimation: {Color.GREEN}{cAngle.toStringDebug(sCollimation)}{Color.OFF}"
     )
     print("\t")
-    return hauteurAstreDeg
+    return sCollimation
 
 def getVisee() -> int:
     # Choix de la planete
-    allPlanet: list[str] = ["sup [Bord sup]", "milieu", "inf [Bord inf]"]
-    allPlanetAsInt: list[float] = [__BORD_SUP, __BORD_MILIEU, __BORD_INF]
+    allPlanet: list[str] = []
+    allPlanetAsInt: list[float] = []
+
+    allPlanet, allPlanetAsInt = cEphemerides.getViseeInfo()
     c = ""
     bFind = False
     astre = ""
-    visee = __BORD_SUP
+    visee = allPlanetAsInt[0]
     while not bFind:
         msg = "Visée (?: liste - ab? : liste commancant par ab)"
         print(f"{msg:20s}", end="\n", sep=" ")

@@ -22,6 +22,11 @@ class cEphemerides:
     """gestion des heures"""
 
     rayon_terre_en_km = 6378.137
+
+    __BORD_SUP: float = -0.5
+    __BORD_INF: float = 0.5
+    __BORD_MILIEU: float = 0
+
     planete_db = [
         {"nom": "moon", "nom_sky_fiel": "moon", "mean_rad_in_km": 1737.4},
         {"nom": "sun", "nom_sky_fiel": "sun", "mean_rad_in_km": 695700.0},
@@ -113,6 +118,12 @@ class cEphemerides:
 
     def __str__(self) -> str:
         return "Undef ..."
+
+    def getViseeInfo() :
+        viseeByNom = [ "sup [Bord Sup]", "milieu", "inf [Bord Inf]"]
+        viseeParValeur = [ -0.5, 0.0, 0.5]
+        return viseeByNom, viseeParValeur
+
 
     def get_val(self) -> str:
         ts = load.timescale()
