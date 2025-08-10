@@ -5,7 +5,12 @@
 pip install -r requirements-dev.txt
 
 # rejouer un ODT KO
+export PYTHONPATH=/e/data/git/bateau/Navigation/NavigationBateau/Python/python_astro/tools
+set PYTHONPATH=e:\data\git\bateau\Navigation\NavigationBateau\Python\python_astro\tools
+
 export PYTHONPATH=/e/WorkSpaces/WS/GitHub/Navigation/NavigationBateau/Python/python_astro/tools
+set PYTHONPATH=e:\WorkSpaces\WS\GitHub\Navigation\NavigationBateau\Python\python_astro\tools
+
 python tools/tests/test_cHeure.py
 
 

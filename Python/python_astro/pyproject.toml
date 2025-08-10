@@ -1,7 +1,6 @@
 [tool.ruff]
 line-length = 100
 ignore = ["D203"]
-show-source = true
 
 [tool.black]
 line-length = 100
