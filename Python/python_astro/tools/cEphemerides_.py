@@ -7,13 +7,13 @@ from skyfield.api import Angle, Star, load, wgs84, N, E
 from skyfield.units import Angle as SkyAngle
 from skyfield.data import hipparcos
 
+
 import numpy as np
 
 import os.path
 
 
-from cAngle import cAngle
-from cPosition import cPosition
+from tools.cAngle import cAngle
 
 logging.config.fileConfig("logging.conf")
 logger = logging.getLogger("cEphemerides")
@@ -31,10 +31,10 @@ class cEphemerides:
     planete_db = [
         {"nom": "moon", "nom_sky_fiel": "moon", "mean_rad_in_km": 1737.4},
         {"nom": "sun", "nom_sky_fiel": "sun", "mean_rad_in_km": 695700.0},
-        {"nom": "venus", "nom_sky_fiel": "venus", "mean_rad_in_km": 6051.8},
-        {"nom": "jupiter", "nom_sky_fiel": "jupiter barycenter", "mean_rad_in_km": 69911.0},
-        {"nom": "saturn", "nom_sky_fiel": "saturn barycenter", "mean_rad_in_km": 58232.0},
-        {"nom": "mars", "nom_sky_fiel": "mars barycenter", "mean_rad_in_km": 3389.5},
+        {"nom": "venus", "nom_sky_fiel": "venus", "mean_rad_in_km": 0.0},
+        {"nom": "jupiter", "nom_sky_fiel": "jupiter barycenter", "mean_rad_in_km": 0.0},
+        {"nom": "saturn", "nom_sky_fiel": "saturn barycenter", "mean_rad_in_km": 0.0},
+        {"nom": "mars", "nom_sky_fiel": "mars barycenter", "mean_rad_in_km": 0.0},
     ]
     stars_db = """
     Alpheratz,677
@@ -146,63 +146,6 @@ class cEphemerides:
     def getViseeDefaut() :
             return (cEphemerides.getViseeInfo())[2]["nom"]
 
-    def isPlanete (self, astre: str) -> bool:
-        for p in self.getPlaneteNom() :
-            if p == astre:
-                return True
-        return False 
-
-    def __getEpherideEtoile(self, t : datetime, astre: str) -> str:
-        pass
-
-    def __getEpheridePlanete(self, tMeusure : datetime , astre: str, dr: cPosition) -> str:
-        ts = load.timescale()
-        ut1 = ts.ut1(tMeusure.year, tMeusure.month, tMeusure.day, tMeusure.hour, tMeusure.minute, tMeusure.second)
-    
-        maposition = wgs84.latlon(dr._lat.asDeg(), dr._long.asDeg())
-
-        eph = load("de421.bsp")
-        planete_eph = eph[astre]
-        earth = eph["earth"]
-        
-        planete_rayon = 0.0
-        for planete in cEphemerides.planete_db:
-            if planete["nom"] == astre:
-                planete_rayon = planete["mean_rad_in_km"]
-
-        observateur = earth.at(ut1).observe(planete_eph)
-        ra, dec, distance = observateur.apparent().radec(epoch="date")
-
-        gha = cEphemerides.fmtgha(ut1.gast, ra.hours)
-        dec = cEphemerides.fmtdeg(dec.degrees)
-
-        dist_km = distance.km
-        semiDiametre = ((math.atan(planete_rayon / dist_km)) * 180.0 / math.pi)  
-        
-        utc = ts.from_datetime(tMeusure)
-        planete_pos = (earth + maposition).at(utc).observe(planete_eph).apparent()
-        alt, az, distance = planete_pos.altaz()
-
-        HP_rad = math.asin(cEphemerides.rayon_terre_en_km / distance.km)
-        HP = (math.asin(math.sin(HP_rad) * math.cos(alt.radians))) * 180.0 / math.pi
-
-        return {
-            "gha": gha,
-            "dec": dec,
-            "dec2": alt.degrees,
-            "sd": semiDiametre,
-            "az": az.degrees,
-            "hp": HP,
-            "dec_hp": (alt.degrees + HP)
-        }
-
-    
-    def getEpherideAstre(self, t : datetime, astre: str, dr: cPosition) :
-        if self.isPlanete (astre):
-            return self.__getEpheridePlanete (t, astre, dr)
-        else :
-            return self.__getEpherideEtoile (t, astre)
-
 
     def get_val(self) -> str:
         ts = load.timescale()
@@ -234,6 +177,7 @@ class cEphemerides:
         cEphemerides.planete_info(maintenant, eph)
         # earth = eph["earth"]
         # cEphemerides.stellar_info(maintenant, earth)
+        
 
     @staticmethod
     def planete_info(d: datetime, eph: any):  # used in starstab

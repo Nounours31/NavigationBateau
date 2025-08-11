@@ -7,15 +7,24 @@ import sys
 # print(sys.path)
 import re
 
-from datetime import datetime, timezone, timedelta
-from tools.cEphemerides import cEphemerides
 from colorist import green, Color
+from datetime import datetime, timezone, timedelta
 
+from tools.cHeure import cHeure
+from tools.cJour import cJour
+from tools.cEphemerides import cEphemerides
+from tools.cHeureJour import cHeureJour
 from tools.cAstroError import cAstroError
 from tools.cAngle import cAngle
+from tools.cLatitude import cLatitude
+from tools.cLongitude import cLongitude
+from tools.cPosition import cPosition
+
+from pprint import pprint
 
 import logging
 import logging.config
+
 logging.config.fileConfig("logging.conf")
 logger = logging.getLogger("main_txt")
 
@@ -24,21 +33,17 @@ logger = logging.getLogger("main_txt")
 
 def getPlanete() -> str:
     # Choix de la planete
-    allPlanet: list[str] = cEphemerides.getPlaneteStarNom()
+    allPlanet: list[str] = cEphemerides.getPlaneteNom()
+    allPlanet.append("------")
+    allPlanet += cEphemerides.getStarNom()
     c = ""
     bFind = False
     astre = ""
     while not bFind:
-        print(
-            f"{Color.YELLOW}Planete ou Etoile (?: liste - ab? : liste commancant par ab [default: sun]){Color.OFF}",
-            end="\n",
-            sep=" ",
-        )
-        print("          (enter pour defaut) ->", end="", sep=" ")
+        msg = f"{Color.YELLOW}Planete ou Etoile (? / al?)- {Color.CYAN}sun{Color.OFF}"
+        print(f"{msg:20s}\n->", end="", sep=" ")
         sTxt = input()
-        logger.debug (f"planete = {sTxt}")
-
-        if sTxt == '':
+        if len(sTxt) == 0:
             astre  = "sun"
             bFind = True
         else:
@@ -58,362 +63,299 @@ def getPlanete() -> str:
                     if p.lower().startswith(prefix.lower()):
                         print(f"\t\t- >{p}<")
 
-    green(f"\t{Color.GREEN}Planete: {astre}{Color.OFF}")
+    print(f"{Color.GREEN}\tPlanete:           {astre}{Color.OFF}", end="\n", sep=" ")
     return astre
 
 
-def hauteurSoleil() -> float:
-    # Hauteur du soleil
-    hauteurAstreDeg: float = 0.0
-    bFind = False
+def getHauteurAstre() -> cAngle:
+    a : cAngle = cAngle()
+    bFind: bool = False
     while not bFind:
-        msg = "Hauteur soleil (10°59.99) : "
-        print(f"{msg:20s}", end="", sep=" ")
-        hauteurAstre = input()
-
+        msg = f"{Color.YELLOW}Hauteur astre [angle]{Color.YELLOW}"
+        print(f"{msg:20s}\n->", end="", sep=" ")
+        sTxt = input()
         try:
-            hauteurAstreDeg = cAngle.parse (hauteurAstre)
-        except cAstroError as e:
-            print (f"Unable to parse angle {repr(e)}")
+            a = a.parse(sTxt)
+            bFind = True
+        except Exception as e:
+            print (f"{Color.RED}{e.args}{Color.OFF}")
 
-    print(
-        f"\t{Color.MAGENTA}Hauteur soleil: {Color.GREEN}{cAngle.toStringDebug(hauteurAstreDeg)}{Color.OFF}"
-    )
-    print("\t")
-    return hauteurAstreDeg
+    print(f"{Color.GREEN}\tHauteur astre:     {a.toString()}{Color.OFF}", end="\n", sep=" ")
+    return a
 
-def getCollimation() -> float:
-    # Hauteur du soleil
-    collimation: float = 0.0
-    bFind = False
+
+def getCollimation() -> cAngle:
+    a : cAngle = cAngle()
+    bFind: bool = False
     while not bFind:
-        msg = "collimation (0°09.99) : "
-        print(f"{msg:20s}", end="", sep=" ")
-        sCollimation = input()
-
-        try:
-            hauteurAstreDeg = cAngle.parse (hauteurAstre)
-        except cAstroError as e:
-            print (f"Unable to parse angle {repr(e)}")
-
-    print(
-        f"\t{Color.MAGENTA}Collimation: {Color.GREEN}{cAngle.toStringDebug(sCollimation)}{Color.OFF}"
-    )
-    print("\t")
-    return sCollimation
-
-def getVisee() -> int:
-    # Choix de la planete
-    allPlanet: list[str] = []
-    allPlanetAsInt: list[float] = []
-
-    allPlanet, allPlanetAsInt = cEphemerides.getViseeInfo()
-    c = ""
-    bFind = False
-    astre = ""
-    visee = allPlanetAsInt[0]
-    while not bFind:
-        msg = "Visée (?: liste - ab? : liste commancant par ab)"
-        print(f"{msg:20s}", end="\n", sep=" ")
-        c = input()
-        print(f">{c}<")
-
-        # est ce que c'est un nom connu si oui on continu
-        for i, p in enumerate(allPlanet):
-            if p.startswith(c):
-                astre = c
-                visee = allPlanetAsInt[i]
+        msg = f"{Color.YELLOW}Collimation [angle]- {Color.CYAN}0°00'{Color.OFF}"
+        print(f"{msg:20s}\n->", end="", sep=" ")
+        sTxt = input()
+        if len(sTxt) == 0:
+            collimation = 0.0
+            bFind = True
+        else:
+            try:
+                collimation = a.parse(sTxt).asDeg()
                 bFind = True
+            except Exception as e:
+                print (f"{Color.RED}{e.args}{Color.OFF}")
 
-        # management du '?'
-        LastChar = c[-1]
-        if LastChar == "?":
-            prefix = c[0:-1]
-            print(prefix)
+    print(f"{Color.GREEN}\tCollimation:       {a.toString()}{Color.OFF}", end="\n", sep=" ")
+    return a
 
-            for p in allPlanet:
-                if p.lower().startswith(prefix.lower()):
-                    print(f"\t\t- >{p}<")
+def getVisee() -> str:
+    # Choix de la planete
+    allViseeInfo: list[dict[str,float]] = cEphemerides.getViseeInfo()
+    visee: str = cEphemerides.getViseeDefaut()
+    bFind = False
+    while not bFind:
+        msg = f"{Color.YELLOW}Visée - {Color.CYAN}{visee}{Color.OFF}"
+        print(f"{msg:20s}\n->", end="", sep=" ")
+        sTxt = input()
 
-    green(f"\t{Color.MAGENTA}Visée: {Color.GREEN}{astre} - {visee}{Color.OFF}")
+        if len(sTxt) == 0:
+            visee = cEphemerides.getViseeDefaut()
+            bFind = True
+
+        else:
+            # est ce que c'est un nom connu si oui on continu
+            for i, p in enumerate(allViseeInfo):
+                if p["nom"].startswith(sTxt):
+                    visee =p["nom"]
+                    bFind = True
+
+            # management du '?'
+            LastChar = sTxt[-1]
+            if LastChar == "?":
+                prefix = sTxt[0:-1]
+                print(prefix)
+
+                for p in allViseeInfo:
+                    if p["nom"].lower().startswith(prefix.lower()):
+                        print(f"\t\t- >{p["nom"]}<")
+
+    print(f"{Color.GREEN}\tVisée:              {visee}{Color.OFF}", end="\n", sep=" ")
     return visee
 
 
-def hauteurOeil() -> float:
+def getHauteurOeil() -> float:
     # Hauteur du soleil
     hauteurOeilEnMetre: float = 0.0
 
-    msg = "Hauteur oeil en metre : "
-    print(f"{msg:20s}", end="", sep=" ")
-    x = input()
-    hauteurOeilEnMetre = float(x)
+    bFind: bool = False
+    while not bFind:
+        msg = f"{Color.YELLOW}Hauteur oeil (m) - {Color.CYAN}2m{Color.OFF}"
+        print(f"{msg:20s}\n->", end="", sep=" ")
+        sTxt = input()
+        if len(sTxt) == 0:
+            hauteurOeilEnMetre = 2.0
+            bFind = True
+        else:
+            try:
+                hauteurOeilEnMetre = float(sTxt)
+                bFind = True
+            except Exception as e:
+                print (f"{Color.RED}{e.args}{Color.OFF}")
 
-    print(f"\t{Color.MAGENTA}Hauteur oeil (en m): {Color.GREEN}hauteurOeilEnMetre{Color.OFF}")
+    print(f"{Color.GREEN}\tHauteur oeil (m):   {hauteurOeilEnMetre}{Color.OFF}", end="\n", sep=" ")
     return hauteurOeilEnMetre
 
 
-def getHoraireMeusure_getDate() -> datetime:
+def __getHoraireMeusure_jour() -> datetime:
     retour: datetime = datetime(1, 1, 1, 0, 0, 0, 0, timezone.utc)
     now: datetime = datetime.now(timezone.utc)
+
     bFind: bool = False
-    iRegExpOk: int = 0
     while not bFind:
-        bFind = True
-        iRegExpOk = 0
-        msg = f"{Color.YELLOW}Jour: [format= yyyy/mm/dd] - {Color.CYAN}defaut : {now.year:04d}/{now.month:02d}/{now.day:02d}{Color.OFF}"
-        print(f"{msg:20s}", end="\n", sep=" ")
-        print(f"{'          (enter pour defaut) ->':10s}", end="", sep=" ")
+        msg = f"{Color.YELLOW}Jour: [yyyy/mm/dd] - {Color.CYAN}{now.year:04d}/{now.month:02d}/{now.day:02d}{Color.OFF}"
+        print(f"{msg:20s}\n->", end="", sep=" ")
         jour = input()
         if len(jour) == 0:
             retour = retour.replace(year=now.year, month=now.month, day=now.day)
-        else:
-            regexp = r"(\d{4})/(\d{2})/(\d{2})"
-            matches = re.finditer(regexp, jour, re.NOFLAG)
-            for matchNum, match in enumerate(matches, start=1):
-                for groupNum in range(0, len(match.groups())):
-                    groupNum = groupNum + 1
-
-                    if groupNum == 1:
-                        year = int(match.group(groupNum))
-                        iRegExpOk += 1
-                    if groupNum == 2:
-                        month = int(match.group(groupNum))
-                        iRegExpOk += 1
-                        if month > 12 or month < 1:
-                            bFind = False
-                    if groupNum == 3:
-                        day = int(match.group(groupNum))
-                        iRegExpOk += 1
-                        if day > 31 or day < 1:
-                            bFind = False
-            if iRegExpOk != 3:
-                bFind = False
-
-            if iRegExpOk == 3 and bFind:
-                retour = retour.replace(year=year, month=month, day=day)
-            else:
-                print(f"{Color.RED} ******************************************************")
-                print(f"{Color.RED} ********* >>> Date incorrecte >>{jour:s}<< - format yyyy/mm/dd")
-                print(f"{Color.RED} ********* >>>              1 <= yyyy  <= ????")
-                print(f"{Color.RED} ********* >>>              1 <= mm    <= 12")
-                print(f"{Color.RED} ********* >>>              1 <= dd    <= 31")
-                print(f"{Color.RED} ******************************************************")
-    return retour
-
-
-def getHoraireMeusure_getHeure(retour: datetime) -> None:
-    heure, min, seconde = 0, 0, 0
-    dMinute : int = 0
-    dSeconde : int = 0
-    decaleUTC : int = 0
-
-    bFind: bool = False
-    iRegexpFoud: int = 0
-    while not bFind:
-        iRegexpFoud = 0
-        bFind = True
-        regexp = r"(\d{2}):(\d{2}):(\d{2})"
-
-        print(
-            f"{Color.YELLOW}Heure de ref: [heure de demarrage du chronos - format 'hh:mm:ss']{Color.OFF}",
-            end="\n",
-            sep=" ",
-        )
-        print(f"{'                              ->':10s}", end="", sep=" ")
-        sTxt = input()
-        logger.debug (f"heure saisir: {sTxt}")
-        matches = re.finditer(regexp, sTxt, re.NOFLAG)
-        for matchNum, match in enumerate(matches, start=1):
-            for groupNum in range(0, len(match.groups())):
-                groupNum = groupNum + 1
-
-                if groupNum == 1:
-                    heure = int(match.group(groupNum))
-                    logger.debug (f"group 1: heure = {heure}")
-                    iRegexpFoud += 1
-                    if heure > 23 or heure < 0:
-                        bFind = False
-                        heure = 0
-
-                if groupNum == 2:
-                    min = int(match.group(groupNum))
-                    logger.debug (f"group 2: minute = {min}")
-                    iRegexpFoud += 1
-                    if min > 59 or min < 0:
-                        bFind = False
-                        min = 0
-
-                if groupNum == 3:
-                    seconde = int(match.group(groupNum))
-                    logger.debug (f"group 3: seconde = {seconde}")
-                    iRegexpFoud += 1
-                    if seconde > 59 or seconde < 0:
-                        bFind = False
-                        seconde = 0
-
-        if iRegexpFoud != 3:
-            bFind = False
-
-        if not bFind:
-            print(f"{Color.RED} ******************************************************")
-            print(f"{Color.RED} ********* >>> heure incorrecte >>{sTxt:s}<< - format correct hh:mm:ss")
-            print(f"{Color.RED} ********* >>>              0 <= hh < 24")
-            print(f"{Color.RED} ********* >>>              0 <= mm < 60")
-            print(f"{Color.RED} ********* >>>              0 <= ss < 60")
-            print(f"{Color.RED} ******************************************************")
-
-    bFind = False
-    iRegexpFoud = 0
-    while not bFind:
-        iRegexpFoud = 0
-        bFind = True
-        regexp = r"(\d+):(\d{2})"
-
-        print(
-            f"{Color.YELLOW}Variation du chronos: [valeur du chronos - format 'm+:ss']{Color.OFF}",
-            end="\n",
-            sep=" ",
-        )
-        print(f"{'                              ->':10s}", end="", sep=" ")
-        sTxt = input()
-        logger.debug (f"Chronis = {sTxt}")
-
-        matches = re.finditer(regexp, sTxt, re.NOFLAG)
-        for matchNum, match in enumerate(matches, start=1):
-            for groupNum in range(0, len(match.groups())):
-                groupNum = groupNum + 1
-
-                if groupNum == 1:
-                    dMinute = int(match.group(groupNum))
-                    logger.debug (f"Chronos dMinute = {dMinute}")
-                    iRegexpFoud += 1
-                    if dMinute < 0:
-                        bFind = False
-                        dMinute = 0
-
-                if groupNum == 2:
-                    dSeconde = int(match.group(groupNum))
-                    logger.debug (f"Chronos dSeconde = {dSeconde}")
-                    iRegexpFoud += 1
-                    if dSeconde > 59 or dSeconde < 0:
-                        bFind = False
-                        dSeconde = 0
-
-        if iRegexpFoud != 2:
-            bFind = False
-
-        if not bFind:
-            print(f"{Color.RED} ******************************************************")
-            print(f"{Color.RED} ********* >>> decalage chronos KO >>{sTxt:s}<< - format m+:ss")
-            print(f"{Color.RED} ********* >>>              0 <= mm < ....")
-            print(f"{Color.RED} ********* >>>              0 <= ss < 60")
-            print(f"{Color.RED} ******************************************************")
-
-        logger.debug(f"{Color.GREEN} Chronos: {dMinute}:{dSeconde}")
-
-    bFind = False
-    iRegexpFoud = 0
-    while not bFind:
-        iRegexpFoud = 0
-        bFind = True
-        regexp = r"([\+\-])?\s*(\d{1,2})"
-
-        print(
-            f"{Color.YELLOW}Variation UTC: [decalage heure montre VS UTC (ex montre été = UTC+2: donner +2) - format '+/-:h' - defaut 0[=UTC]]{Color.OFF}",
-            end="\n",
-            sep=" ",
-        )
-        print(f"{'                              ->':10s}", end="", sep=" ")
-        sTxt = input()
-        logger.debug (f"UTC = {sTxt}")
-
-        if len(sTxt) == 0:
-            decaleUTC = 0
-            iRegexpFoud = 1
             bFind = True
         else:
-            matches = re.finditer(regexp, sTxt, re.NOFLAG)
-            for matchNum, match in enumerate(matches, start=1):
-                for groupNum in range(0, len(match.groups())):
-                    groupNum = groupNum + 1
+            try:
+                j : cJour = cJour()
+                ts = j.parse(jour).val()
+                retour = datetime.fromtimestamp(ts, timezone.utc)
+                bFind = True
+            except cAstroError as e:
+                print (f"{Color.RED}{e.args}{Color.OFF}")
 
-                    if groupNum == 1:
-                        signe = -1 if match.group(groupNum) == "-" else +1
-                        logger.debug (f"UTC txt [{match.group(groupNum)}] signe = {signe}")
-
-                    if groupNum == 2:
-                        decaleUTC = int(match.group(groupNum))
-                        logger.debug (f"UTC decaleUTC = {decaleUTC}")
-                        iRegexpFoud += 1
-                        if decaleUTC > 12:
-                            bFind = False
-                        else:
-                            decaleUTC = signe * decaleUTC
-
-        if iRegexpFoud != 1:
-            bFind = False
-
-        if not bFind:
-            print(f"{Color.RED} ******************************************************")
-            print(f"{Color.RED} ********* >>> decalage  - format +/-h")
-            print(f"{Color.RED} ********* >>>              0 <= h <= 12")
-            print(f"{Color.RED} ******************************************************")
-
-    logger.debug(f"     {Color.GREEN} Decalage: {decaleUTC}")
-
-    retour = retour.replace(hour=heure, minute=min, second=seconde)
-
-    decaleUTC = -1 * decaleUTC
-    retour = retour + timedelta(hours=decaleUTC, minutes=dMinute, seconds=dSeconde)
-    print(f"\t\t\t --- {Color.CYAN}heure:     {heure:02d}:{min:02d}:{seconde:02d}")
-    print(f"\t\t\t --- {Color.CYAN}chrono:    00:{dMinute:02d}:{dSeconde:02d}")
-    print(f"\t\t\t --- {Color.CYAN}vers UTC: {decaleUTC:03d}:00:00")
-    print(f"\t\t\t --- {Color.CYAN}retenue:   {retour.hour:02d}:{retour.minute:02d}:{retour.second:02d}")
     return retour
+
+
+def __getHoraireMeusure_heure(jour: datetime) -> None:
+    # ---------------------------------
+    # on chope le fuseau horaire
+    # ---------------------------------
+    bFind: bool = False
+    decaleUTC = 0
+    bFind = False
+    while not bFind:
+        msg = f"{Color.YELLOW}Fuseau horaire: [+2 pour UTC+2 (été)] - {Color.CYAN}0 (UTC){Color.OFF}"
+        print(f"{msg:20s}\n->", end="", sep=" ")
+        sTxt = input()
+        if len(sTxt) == 0:
+            decaleUTC = 0
+            bFind = True
+        else:
+            try:
+                decaleUTC = -1.0 * cHeure.parseFuseau(sTxt) * 3600.0
+                bFind = True
+            except cAstroError as e:
+                print (f"{Color.RED}{e.args}{Color.OFF}")
+    print(f"{Color.GREEN}\tFuseau:             {(decaleUTC/-3600.0):3.1f}{Color.OFF}", end="\n", sep=" ")
+
+    # ---------------------------------
+    # on chope l'heure de demarrage du chrono
+    # ---------------------------------
+    h : cHeure = cHeure()
+    startChronoInSecondes = 0
+    bFind = False
+    while not bFind:
+        msg = f"{Color.YELLOW}Heure start chrono: [hh:mm:ss.ss]{Color.OFF}"
+        print(f"{msg:20s}\n->", end="", sep=" ")
+        sTxt = input()
+        try:
+            startChronoInSecondes = h.parse(sTxt).val()
+            bFind = True
+        except Exception as e:
+            print (f"{Color.RED}{e.args}{Color.OFF}")
+    print(f"{Color.GREEN}\tHeure:              {h.toString()}{Color.OFF}", end="\n", sep=" ")
+
+    # ---------------------------------
+    # on chope le chrono
+    # ---------------------------------
+    chronoInSecondes = 0
+    bFind = False
+    while not bFind:
+        msg = f"{Color.YELLOW}Valeur chronos: [m+:ss.ss] - {Color.CYAN}0{Color.OFF}"
+        print(f"{msg:20s}\n->", end="", sep=" ")
+        sTxt = input()
+        if len(sTxt) == 0:
+            chronoInSecondes = 0
+            bFind = True
+        else:
+            try:
+                chronoInSecondes = cHeureJour.parseChrono2Seconde(sTxt)
+                bFind = True
+            except cAstroError as e:
+                print (f"{Color.RED}{e.args}{Color.OFF}")
+    print(f"{Color.GREEN}\tChrono (s):           {chronoInSecondes}{Color.OFF}", end="\n", sep=" ")
+
+    decalageTotalInSeconde = chronoInSecondes + startChronoInSecondes + decaleUTC
+
+    jour = jour + timedelta(milliseconds=(decalageTotalInSeconde * 1000.0))
+    return jour
 
 
 def getHoraireMeusure() -> datetime:
-    retour: datetime = getHoraireMeusure_getDate()
+    retour: datetime = __getHoraireMeusure_jour()
+    print(f"{Color.GREEN}\tJour:              {retour}{Color.OFF}", end="\n", sep=" ")
 
-    retour = getHoraireMeusure_getHeure(retour)
-    print(f"{Color.GREEN}", f"     Jour: {retour}", f"{Color.OFF}", end="\n", sep=" ")
+    retour = __getHoraireMeusure_heure(retour)
+    print(f"{Color.GREEN}\t ==>Jour + heure:      {retour}{Color.OFF}", end="\n", sep=" ")
+    return retour
+
+def __getDRPosition_latitude() -> cLatitude:
+    a : cLatitude = cLatitude()
+    bFind: bool = False
+    while not bFind:
+        msg = f"{Color.YELLOW}DR Lat. [Latitude]"
+        print(f"{msg:20s}\n->", end="", sep=" ")
+        sTxt = input()
+        try:
+            a = a.parse(sTxt)
+            bFind = True
+        except Exception as e:
+            print (f"{Color.RED}{e.args}{Color.OFF}")
+
+    print(f"{Color.GREEN}\tDR Latitude:     {a.toString()}{Color.OFF}", end="\n", sep=" ")
+    return a
+
+def __getDRPosition_longitude() -> cLongitude:
+    a : cLongitude = cLongitude()
+    bFind: bool = False
+    while not bFind:
+        msg = f"{Color.YELLOW}DR Long. [cLongitude]{Color.OFF}"
+        print(f"{msg:20s}\n->", end="", sep=" ")
+        sTxt = input()
+        try:
+            a = a.parse(sTxt)
+            bFind = True
+        except Exception as e:
+            print (f"{Color.RED}{e.args}{Color.OFF}")
+
+    print(f"{Color.GREEN}\tDR Longitude:     {a.toString()}{Color.OFF}", end="\n", sep=" ")
+    return a
+
+def getDRPosition() -> cPosition:
+    retour: cPosition = cPosition()
+    a : cLatitude = __getDRPosition_latitude() 
+    retour.lat (a)
+    b : cLongitude = __getDRPosition_longitude() 
+    retour.long (b)
+
+    print(f"{Color.GREEN}\t ==>DR:                {retour.toString()}{Color.OFF}", end="\n", sep=" ")
     return retour
 
 
 def start():
-    # Jour
+    print (f"{Color.MAGENTA}------------------------------------------------------------------------{Color.OFF}")
+    print (f"{Color.MAGENTA}-- Info --{Color.OFF}")
+    print (f"{Color.MAGENTA}------------------------------------------------------------------------{Color.OFF}")
+    print (f"{Color.MAGENTA}-- les angles sont au format (xxx.xx°) ou (xxx°yy.yyy' min base 60) ou (xxx°yy'zz.zzz\"){Color.OFF}")
+    print (f"{Color.MAGENTA}-- les latitude sont au format N <angle>{Color.OFF}")
+    print (f"{Color.MAGENTA}-- les longitude sont au format W <angle>{Color.OFF}")
+    print (f"{Color.MAGENTA}-- les heures sont au format hhh:mm:ss{Color.OFF}")
+    print (f"{Color.MAGENTA}-- ")
+    print (f"{Color.MAGENTA}-- les questions sont en {Color.YELLOW}JAUNE{Color.OFF}")
+    print (f"{Color.MAGENTA}-- les valeurs par defaut sont en {Color.CYAN}CYAN - elles sont obtenu par <Enter>{Color.OFF}")
+    print (f"{Color.MAGENTA}-- les liste de valeurs '?' : {Color.OFF}")
+    print (f"{Color.MAGENTA}--               {Color.CYAN}-  '?' : toutes {Color.OFF}")
+    print (f"{Color.MAGENTA}--               {Color.CYAN}-  'aa?' : toutes qui commencent par aa{Color.OFF}")
+    print (f"{Color.MAGENTA}-- ")
+    print (f"{Color.MAGENTA}-- la valeur prises en compte dans les calculs {Color.GREEN}VERTE{Color.OFF}")
+    print (f"{Color.MAGENTA}-- ")
+    print (f"{Color.MAGENTA}-- Erreurs ou suggestions {Color.RED}ROUGE{Color.OFF}")
+    print (f"{Color.MAGENTA}------------------------------------------------------------------------{Color.OFF}")
+    print ("\n\n")
+
+
     t: datetime = getHoraireMeusure()
-    print (t)
-
-    # Choix de la planete
+    dr: cPosition = getDRPosition()
+    hauteurOeilEnMetre: float = getHauteurOeil()
+    collimation: cAngle = getCollimation()
     astre = getPlanete()
-    print (astre)
-
-    # type de la visee
     visee: int = getVisee()
-    print (visee)
-
-    # Hauteur du soleil
-    hauteurAstreDeg: float = hauteurSoleil()
-    print (hauteurAstreDeg)
-
-    collimation: float = getCollimation()
-    print (collimation)
-    
-    # Hauteur du soleil
-    hauteurOeilEnMetre: float = hauteurOeil()
-    print (hauteurOeilEnMetre)
+    hauteurAstre: cAngle = getHauteurAstre()
 
 
     print ("------------------------------------------------------------------------")
     print ("-- Resume --")
     print ("------------------------------------------------------------------------")
     print (f"-- heure:              {t}")
+    print (f"-- collimation:        {collimation.toString()}")
+    print (f"-- hauteurOeilEnMetre: {hauteurOeilEnMetre}")
+    print (f"-- Position:           {dr.toString()}")
     print (f"-- astre:              {astre}")
     print (f"-- visee:              {visee}")
-    print (f"-- hauteurAstreDeg:    {hauteurAstreDeg}")
-    print (f"-- hauteurOeilEnMetre: {hauteurOeilEnMetre}")
-    print (f"-- collimation:        {collimation}")
+    print (f"-- hauteurAstreDeg:    {hauteurAstre.toString()}")
+
+
+    print ("\n\n\n")
+    x : cEphemerides = cEphemerides()
+    xx = x.getEpherideAstre(t, astre, dr)
+    pprint.pp(xx)
+
+    print ("------------------------------------------------------------------------")
+    print ("-- calcul --")
+    print ("------------------------------------------------------------------------")
+    print (f"-- GHA:              {t}")
+    print (f"-- LHA:              {astre}")
+
 
 def signal_handler(sig, frame):
     print(".... je sors !")
