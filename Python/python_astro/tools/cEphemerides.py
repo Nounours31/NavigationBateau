@@ -14,6 +14,8 @@ import os.path
 
 from cAngle import cAngle
 from cPosition import cPosition
+from cLatitude import cLatitude
+from cLongitude import cLongitude
 
 logging.config.fileConfig("logging.conf")
 logger = logging.getLogger("cEphemerides")
@@ -152,15 +154,113 @@ class cEphemerides:
                 return True
         return False 
 
-    def __getEpherideEtoile(self, t : datetime, astre: str) -> str:
-        pass
+    def __getEpherideEtoile(self, tMeusure : datetime , astre: str, dr: cPosition) -> str:
+        ts = load.timescale()
+        ut1 = ts.ut1(tMeusure.year, tMeusure.month, tMeusure.day, tMeusure.hour, tMeusure.minute, tMeusure.second)    
+        maposition = wgs84.latlon(dr._lat.asDeg(), dr._long.asDeg())
+
+        # recup de l'astre
+        eph = load("de421.bsp")
+        earth = eph["earth"]
+
+        # load the Hipparcos catalog as a 118,218 row Pandas dataframe.
+        with load.open(hipparcos.URL) as f:
+            df = hipparcos.load_dataframe(f)
+
+
+        bFind = False
+        HIPnum = ""
+        for line in cEphemerides.stars_db.strip().split("\n"):
+            x1 = line.index(",")
+            name = line[0:x1]
+            while name.startswith(" "):
+                name = name[1:]
+            HIPnum = line[x1 + 1 :]
+
+
+            print (f"{name}")
+            if name == astre:
+                bFind =  True
+                break
+        print (f"{bFind} - {line}")
+        if not bFind:
+            return None
+        
+        star = Star.from_dataframe(df.loc[int(HIPnum)])
+        
+        # les calculs
+        observateur = earth.at(ut1).observe(star)
+        ra, dec, dis = observateur.apparent().radec(epoch="date")
+        gha = cEphemerides.fmtgha(ut1.gast, ra.hours, False)
+
+        GHAAries = self.ariesGHA(tMeusure)
+
+        lha = gha - cEphemerides.fromDegreLongitudeToAngleHoraire(dr.getLongitude().asDeg())
+        while lha < 0:
+            lha += 360.0
+        while lha > 360.0:
+            lha -= 360.0
+
+        sha = gha - GHAAries
+        while sha < 0:
+            sha += 360.0
+        while sha > 360.0:
+            sha -= 360.0
+
+        # distanceTerreAstreenKm = (earth - star).at(ut1).distance().km
+        distanceTerreAstreenKm = dis.km
+        semiDiametre = ((math.atan(0.0 / distanceTerreAstreenKm)) * 180.0 / math.pi)  
+        
+        utc = ts.from_datetime(tMeusure)
+        planete_pos = (earth + maposition).at(utc).observe(star).apparent()
+        alt, az, _ = planete_pos.altaz()
+
+        HP_rad = math.asin(cEphemerides.rayon_terre_en_km / (distanceTerreAstreenKm ))
+        HP = (HP_rad) * 180.0 / math.pi
+
+        parallaxe = (math.asin(math.sin(HP_rad) * math.cos(alt.radians))) * 180.0 / math.pi
+
+        
+        print( "*******************************************************************")
+        print(f"   DR:  Lat   {dr.getLatitude().toString()}")
+        print(f"        Long  {dr.getLongitude().toString()}")
+        print(f"   Heure:     {tMeusure.strftime("%Y/%m/%d %H:%M:%S [%Z]")}")
+        print(f"   Astre:     {astre}")
+        print( "--------------------------------------------------")
+        print(f"   Az:        {cAngle.fromDeg(float(az.degrees)).toString()}")
+        print(f"   Hc:        {cAngle.fromDeg(float(alt.degrees)).toString()}")
+        print(f"   Hc + HP:   {cAngle.fromDeg(float((alt.degrees + HP))).toString()}")
+        print(f"   Hc + P:    {cAngle.fromDeg(float((alt.degrees + parallaxe))).toString()}")
+        print(f"   GHA Aries: {cAngle.fromDeg(float(GHAAries)).toString()}")
+        print( "--------------------------------------------------")
+        print(f"   GHA:       {cAngle.fromDeg(float(gha)).toString()}")
+        print(f"   SHA:       {cAngle.fromDeg(float(sha)).toString()}")
+        print(f"   LHA:       {cAngle.fromDeg(float(lha)).toString()}")
+        print(f"   Dec:       {cAngle.fromDeg(float(dec.degrees)).toString()}")
+        print(f"   SD:        {cAngle.fromDeg(float(semiDiametre)).toString()}")
+        print( "--------------------------------------------------")
+        print(f"   HP:        {cAngle.fromDeg(float(HP)).toString()}")
+        print(f"   P:         {cAngle.fromDeg(float(parallaxe)).toString()}")
+        print( "*******************************************************************")
+
+        return {
+            "gha_aries": GHAAries,
+            "gha": gha,
+            "lha": lha,
+            "dec": dec.degrees,
+            "sd": semiDiametre,
+            "az": az.degrees,
+            "hp": HP,
+            "hauteurObservee": alt.degrees,
+            "hauteurObserveeCorrigeeParallaxe": (alt.degrees + HP)
+        }
 
     def __getEpheridePlanete(self, tMeusure : datetime , astre: str, dr: cPosition) -> str:
         ts = load.timescale()
-        ut1 = ts.ut1(tMeusure.year, tMeusure.month, tMeusure.day, tMeusure.hour, tMeusure.minute, tMeusure.second)
-    
+        ut1 = ts.ut1(tMeusure.year, tMeusure.month, tMeusure.day, tMeusure.hour, tMeusure.minute, tMeusure.second)    
         maposition = wgs84.latlon(dr._lat.asDeg(), dr._long.asDeg())
 
+        # recup de l'astre
         eph = load("de421.bsp")
         planete_eph = eph[astre]
         earth = eph["earth"]
@@ -170,30 +270,70 @@ class cEphemerides:
             if planete["nom"] == astre:
                 planete_rayon = planete["mean_rad_in_km"]
 
+        # les calculs
         observateur = earth.at(ut1).observe(planete_eph)
-        ra, dec, distance = observateur.apparent().radec(epoch="date")
+        ra, dec, _ = observateur.apparent().radec(epoch="date")
+        gha = cEphemerides.fmtgha(ut1.gast, ra.hours, False)
 
-        gha = cEphemerides.fmtgha(ut1.gast, ra.hours)
-        dec = cEphemerides.fmtdeg(dec.degrees)
+        GHAAries = self.ariesGHA(tMeusure)
 
-        dist_km = distance.km
-        semiDiametre = ((math.atan(planete_rayon / dist_km)) * 180.0 / math.pi)  
+        lha = gha - cEphemerides.fromDegreLongitudeToAngleHoraire(dr.getLongitude().asDeg())
+        while lha < 0:
+            lha += 360.0
+        while lha > 360.0:
+            lha -= 360.0
+
+        sha = gha - GHAAries
+        while sha < 0:
+            sha += 360.0
+        while sha > 360.0:
+            sha -= 360.0
+
+        distanceTerreAstreenKm = (earth - planete_eph).at(ut1).distance().km
+        semiDiametre = ((math.atan(planete_rayon / distanceTerreAstreenKm)) * 180.0 / math.pi)  
         
         utc = ts.from_datetime(tMeusure)
         planete_pos = (earth + maposition).at(utc).observe(planete_eph).apparent()
-        alt, az, distance = planete_pos.altaz()
+        alt, az, _ = planete_pos.altaz()
 
-        HP_rad = math.asin(cEphemerides.rayon_terre_en_km / distance.km)
-        HP = (math.asin(math.sin(HP_rad) * math.cos(alt.radians))) * 180.0 / math.pi
+        HP_rad = math.asin(cEphemerides.rayon_terre_en_km / (distanceTerreAstreenKm ))
+        HP = (HP_rad) * 180.0 / math.pi
+
+        parallaxe = (math.asin(math.sin(HP_rad) * math.cos(alt.radians))) * 180.0 / math.pi
+
+        
+        print( "*******************************************************************")
+        print(f"   DR:  Lat   {dr.getLatitude().toString()}")
+        print(f"        Long  {dr.getLongitude().toString()}")
+        print(f"   Heure:     {tMeusure.strftime("%Y/%m/%d %H:%M:%S [%Z]")}")
+        print(f"   Astre:     {astre}")
+        print( "--------------------------------------------------")
+        print(f"   Az:        {cAngle.fromDeg(float(az.degrees)).toString()}")
+        print(f"   Hc:        {cAngle.fromDeg(float(alt.degrees)).toString()}")
+        print(f"   Hc + HP:   {cAngle.fromDeg(float((alt.degrees + HP))).toString()}")
+        print(f"   Hc + P:    {cAngle.fromDeg(float((alt.degrees + parallaxe))).toString()}")
+        print(f"   GHA Aries: {cAngle.fromDeg(float(GHAAries)).toString()}")
+        print( "--------------------------------------------------")
+        print(f"   GHA:       {cAngle.fromDeg(float(gha)).toString()}")
+        print(f"   SHA:       {cAngle.fromDeg(float(sha)).toString()}")
+        print(f"   LHA:       {cAngle.fromDeg(float(lha)).toString()}")
+        print(f"   Dec:       {cAngle.fromDeg(float(dec.degrees)).toString()}")
+        print(f"   SD:        {cAngle.fromDeg(float(semiDiametre)).toString()}")
+        print( "--------------------------------------------------")
+        print(f"   HP:        {cAngle.fromDeg(float(HP)).toString()}")
+        print(f"   P:         {cAngle.fromDeg(float(parallaxe)).toString()}")
+        print( "*******************************************************************")
 
         return {
+            "gha_aries": GHAAries,
             "gha": gha,
-            "dec": dec,
-            "dec2": alt.degrees,
+            "lha": lha,
+            "dec": dec.degrees,
             "sd": semiDiametre,
             "az": az.degrees,
             "hp": HP,
-            "dec_hp": (alt.degrees + HP)
+            "hauteurObservee": alt.degrees,
+            "hauteurObserveeCorrigeeParallaxe": (alt.degrees + HP)
         }
 
     
@@ -201,8 +341,24 @@ class cEphemerides:
         if self.isPlanete (astre):
             return self.__getEpheridePlanete (t, astre, dr)
         else :
-            return self.__getEpherideEtoile (t, astre)
+            return self.__getEpherideEtoile (t, astre, dr)
 
+    @staticmethod
+    def fromDegreLongitudeToAngleHoraire (longitudeEnDegre : float):
+        angleHoraire : float = 0.0
+        if longitudeEnDegre > 0.0:
+            angleHoraire = 360.0 - longitudeEnDegre
+        if longitudeEnDegre < 0.0:
+            angleHoraire = 180.0 - longitudeEnDegre
+        
+        while angleHoraire < 0:
+            angleHoraire += 360.0
+
+        while angleHoraire > 360.0:
+            angleHoraire -= 360.0
+        
+        return angleHoraire
+            
 
     def get_val(self) -> str:
         ts = load.timescale()
@@ -314,24 +470,27 @@ class cEphemerides:
         return out
 
     @staticmethod
-    def ariesGHA(d: datetime) -> str:
+    def ariesGHA(d: datetime) :
         ts = load.timescale()
         t = ts.ut1(d.year, d.month, d.day, d.hour, d.minute, d.second)
 
-        gha = cEphemerides.fmtgha(t.gast, 0)
+        gha = cEphemerides.fmtgha(t.gast, 0, False)
         return gha
 
     @staticmethod
-    def fmtgha(gst, ra):
+    def fmtgha(gst, ra, bToString : bool = True):
         # formats angle (hours) to that used in the nautical almanac. (ddd°mm.m)
         sha = (gst - ra) * 15
         if sha < 0:
             sha += 360
-        return cEphemerides.fmtdeg(sha)
+        if bToString:
+            return cEphemerides.fmtdeg(sha)
+        return sha 
 
     @staticmethod
     def fmtdeg(deg):
-        return cAngle.toStringDebug(deg)
+        a : cAngle = cAngle.fromDeg(deg)
+        return a.toString(0)
 
     @staticmethod
     def printSkyAngleAsGHA(ha: SkyAngle) -> str:

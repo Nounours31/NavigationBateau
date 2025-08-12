@@ -294,9 +294,9 @@ def __getDRPosition_longitude() -> cLongitude:
 def getDRPosition() -> cPosition:
     retour: cPosition = cPosition()
     a : cLatitude = __getDRPosition_latitude() 
-    retour.lat (a)
+    retour.setLatitude (a)
     b : cLongitude = __getDRPosition_longitude() 
-    retour.long (b)
+    retour.setLongitude (b)
 
     print(f"{Color.GREEN}\t ==>DR:                {retour.toString()}{Color.OFF}", end="\n", sep=" ")
     return retour

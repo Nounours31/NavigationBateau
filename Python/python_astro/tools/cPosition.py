@@ -16,10 +16,16 @@ class cPosition:
     def __str__(self):
         pass
 
-    def lat(self, l : cLatitude) :
+    def setLatitude(self, l : cLatitude) :
         self._lat = l
 
-    def long(self, l: cLatitude) :
+    def getLatitude(self) :
+        return self._lat
+
+    def getLongitude(self) :
+        return self._long 
+
+    def setLongitude(self, l: cLatitude) :
         self._long = l
 
     def toString(self, format : int = 1) -> str:
