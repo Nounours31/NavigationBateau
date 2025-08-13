@@ -103,8 +103,8 @@ class cEphemerides:
     @staticmethod
     def getPlaneteStarNom() -> list[str]:
         retour: list[str] = []
-        retour.append(cEphemerides.getPlaneteNom())
-        retour.append(cEphemerides.getStarNom())
+        retour += (cEphemerides.getPlaneteNom())
+        retour += (cEphemerides.getStarNom())
 
         return retour
 
@@ -247,12 +247,14 @@ class cEphemerides:
             "gha_aries": GHAAries,
             "gha": gha,
             "lha": lha,
+            "sha": sha,
             "dec": dec.degrees,
             "sd": semiDiametre,
             "az": az.degrees,
             "hp": HP,
+            "parallaxe": parallaxe,
             "hauteurObservee": alt.degrees,
-            "hauteurObserveeCorrigeeParallaxe": (alt.degrees + HP)
+            "hauteurObserveeCorrigeeParallaxe": (alt.degrees + parallaxe)
         }
 
     def __getEpheridePlanete(self, tMeusure : datetime , astre: str, dr: cPosition) -> str:
@@ -328,15 +330,16 @@ class cEphemerides:
             "gha_aries": GHAAries,
             "gha": gha,
             "lha": lha,
+            "sha": sha,
             "dec": dec.degrees,
             "sd": semiDiametre,
             "az": az.degrees,
             "hp": HP,
+            "parallaxe": parallaxe,
             "hauteurObservee": alt.degrees,
-            "hauteurObserveeCorrigeeParallaxe": (alt.degrees + HP)
+            "hauteurObserveeCorrigeeParallaxe": (alt.degrees + parallaxe)
         }
-
-    
+        
     def getEpherideAstre(self, t : datetime, astre: str, dr: cPosition) :
         if self.isPlanete (astre):
             return self.__getEpheridePlanete (t, astre, dr)
@@ -358,116 +361,6 @@ class cEphemerides:
             angleHoraire -= 360.0
         
         return angleHoraire
-            
-
-    def get_val(self) -> str:
-        ts = load.timescale()
-        time = ts.utc(2025, 8, 7, 20, 47, 59.99999)
-
-        eph = load("de421.bsp")
-        earth, sun = eph["earth"], eph["sun"]
-        radius_km = 24764.0
-
-        astrometric = earth.at(time).observe(sun)
-        ra, dec, distance = astrometric.apparent().radec()
-        apparent_diameter = Angle(radians=np.arcsin(radius_km / distance.km) * 2.0)
-        print("{:.6f} arcseconds".format(apparent_diameter.arcseconds()))
-
-        geographic = api.wgs84.latlon(latitude_degrees=0, longitude_degrees=0)
-        observer = geographic.at(time)
-        pos = observer.from_altaz(alt_degrees=90, az_degrees=0)
-
-        ra, dec, distance = pos.radec()
-        print(ra)
-        print(dec)
-
-    def test(self) -> str:
-        maintenant: datetime = datetime.now(timezone.utc)
-        print(f"maintenant {maintenant} \n")
-
-        # Load the JPL ephemeris DE421 (covers 1900-2050).
-        eph = load("de421.bsp")
-        cEphemerides.planete_info(maintenant, eph)
-        # earth = eph["earth"]
-        # cEphemerides.stellar_info(maintenant, earth)
-
-    @staticmethod
-    def planete_info(d: datetime, eph: any):  # used in starstab
-        ts = load.timescale()
-        t = ts.ut1(d.year, d.month, d.day, d.hour, d.minute, d.second)
-
-        earth = eph["earth"]
-        maposition = wgs84.latlon(0 * N, 100 * E)
-
-        for planete in cEphemerides.planete_db:
-            planete_nom = planete["nom_sky_fiel"]
-            planete_humannom = planete["nom"]
-            planete_rayon = planete["mean_rad_in_km"]
-
-            p = eph[planete_nom]
-            position = earth.at(t).observe(p)
-
-            ra, dec, distance = position.apparent().radec(epoch="date")
-
-            gha = cEphemerides.fmtgha(t.gast, ra.hours)
-            dec = cEphemerides.fmtdeg(dec.degrees)
-
-            dist_km = distance.km
-            semiDiametre = (
-                (math.atan(planete_rayon / dist_km)) * 180.0 / math.pi
-            )  # volumetric mean radius of sun = 695700 km
-            print(
-                f"{planete_humannom:s} - GHA: {gha} - Dec: {dec} - SD: {cAngle.toStringDebug(semiDiametre)}\n"
-            )
-
-            utc = ts.from_datetime(d)
-            sun_pos = (earth + maposition).at(utc).observe(p).apparent()
-            alt, az, distance = sun_pos.altaz()
-
-            HP_rad = math.asin(cEphemerides.rayon_terre_en_km / distance.km)
-            HP = (math.asin(math.sin(HP_rad) * math.cos(alt.radians))) * 180.0 / math.pi
-
-            print(
-                f"{planete_humannom:s} - azimut: {cEphemerides.fmtdeg(az.degrees)} - Dec: {cEphemerides.fmtdeg(alt.degrees)} - HP: {cEphemerides.fmtdeg(HP)} - DEC+HP: {cEphemerides.fmtdeg(alt.degrees + HP)}\n"
-            )
-
-        return
-
-    @staticmethod
-    def stellar_info(d: datetime, earth: any):  # used in starstab
-        ts = load.timescale()
-        t = ts.ut1(d.year, d.month, d.day, d.hour, d.minute, d.second)
-
-        # load the Hipparcos catalog as a 118,218 row Pandas dataframe.
-        path = "hipparcosCatalog.bin"
-        if not os.path.isfile(path):
-            with load.open(hipparcos.URL) as f:
-                with open(path, "wb") as file:
-                    file.write(f.read())
-                file.close()
-
-        with open(path) as f:
-            df = hipparcos.load_dataframe(f)
-
-        print(f"ARIES - GHA: {cEphemerides.ariesGHA(d)} \n")
-
-        out = []
-
-        for line in cEphemerides.stars_db.strip().split("\n"):
-            x1 = line.index(",")
-            name = line[0:x1]
-            HIPnum = line[x1 + 1 :]
-
-            star = Star.from_dataframe(df.loc[int(HIPnum)])
-            astrometric = earth.at(t).observe(star).apparent()
-            ra, dec, distance = astrometric.radec(epoch="date")
-
-            sha = cEphemerides.fmtgha(0, ra.hours)
-            decl = cEphemerides.fmtdeg(dec.degrees)
-
-            print(f"{name:s} - SHA: {sha} - Dec: {decl} \n")
-            # out.append([name,sha,decl])
-        return out
 
     @staticmethod
     def ariesGHA(d: datetime) :
@@ -483,30 +376,67 @@ class cEphemerides:
         sha = (gst - ra) * 15
         if sha < 0:
             sha += 360
-        if bToString:
-            return cEphemerides.fmtdeg(sha)
         return sha 
 
     @staticmethod
-    def fmtdeg(deg):
-        a : cAngle = cAngle.fromDeg(deg)
-        return a.toString(0)
+    def pointAstroCalculCorrection(hauteurOeil, Hi, collimation, hp, visee, diametre, pressionAtm = 1010, Temperature = 10):
+        dip = 0.0293 * math.sqrt(hauteurOeil)
+        Ha = Hi - collimation - dip
+        parallaxeDeg = hp * math.cos (Ha * math.pi / 180.0)
+        f = 0.28 * pressionAtm / (273 + Temperature)
+        R0 = 1 / math.tan ((Ha + (7.31 / (Ha + 4.4)))* math.pi / 180.0)
+        refractionDeg = (R0 * f) / 60.0
+        sd = visee * diametre
+        correctionTotaleSurHi = -1.0 * dip - refractionDeg + parallaxeDeg + sd
+        correctionTotaleSurHo = -1.0 * refractionDeg + parallaxeDeg + sd
+        Ho = Ha - refractionDeg + parallaxeDeg + sd
+        return {
+            "dip": dip,
+            "Ha" : Ha,
+            "parallaxeDeg" : parallaxeDeg,
+            "refractionDeg": refractionDeg,
+            "SD" : sd,
+            "correctionTotaleSurHi": correctionTotaleSurHi,
+            "correctionTotaleSurHo": correctionTotaleSurHo,
+            "Ho" : Ho
+        }
 
     @staticmethod
-    def printSkyAngleAsGHA(ha: SkyAngle) -> str:
-        x: float = ha.degrees
-        while x < 0.0:
-            x += 360
-        while x > 360.0:
-            x -= 360.0
+    def pointAstroPoint(dec, lat, lha):
+        dec_rad = dec * math.pi / 180.0
+        lat_rad = lat * math.pi / 180.0
+        lha_rad = lha * math.pi / 180.0
 
-        return cEphemerides.fmtdeg(x)
+        if (lat_rad * dec_rad) < 0:
+            dec_rad = + 1.0 * dec_rad
 
-    @staticmethod
-    def printSkyAngleAsLat(ha: SkyAngle) -> str:
-        x: float = ha.degrees
-        return cEphemerides.fmtdeg(x)
+        Hc = math.asin((math.sin(dec_rad) * math.sin(lat_rad)) + (math.cos(dec_rad) * math.cos(lat_rad) * math.cos(lha_rad))) * 180.0 / math.pi
+        
+        if lha > 180:
+            lha_rad = -1.0 * lha_rad
+        
+        Az = (math.cos(dec_rad) * math.sin(lha_rad)) / ((math.cos(lat_rad) * math.sin(dec_rad)) - (math.sin(lat_rad) * math.cos(dec_rad) * math.cos(lha_rad)))
+        Az = math.atan(Az) * 180.0 / math.pi
 
+        if Az < 0:
+            Az = Az + 180.0    
+        
+        if lha >= 0:
+            if lha >= 180:
+                Az2 = Az
+            else:
+                Az2 = 360.0 - Az
+        else:
+            if lha >= 180:
+                Az2 = 180.0 - Az
+            else:
+                Az2 =180.0 + Az
+
+        return {
+            "Hc": Hc,
+            "Az" : Az,
+            "Az2" : Az2
+        }
 
 if __name__ == "__main__":
     # Execute when the module is not initialized from an import statement.

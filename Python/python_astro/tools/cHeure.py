@@ -33,11 +33,23 @@ class cHeure:
         self.__secondeDecimale = cHeure.__parseHeure2Seconde(sVal)
         return self
 
+    def duplicate(self) :
+        x : cHeure = cHeure()
+        x.__secondeDecimale = self.__secondeDecimale
+        return x
+
+
+    def addSeconde (self, x : float): 
+        self.__secondeDecimale += x 
+
+    def moinsHeureFuseau (self, x : int): 
+        self.__secondeDecimale = self.__secondeDecimale - x * 3600.0
+
     @staticmethod
     def __parseHeure2Seconde(sVal: str) -> float:
         regex: str = r"^(\d+)(:\d{2})?(:\d{2}(\.\d+)?)?$"
 
-        e : cAstroError = cAstroError(f"Heure incorrecte. Format h+:mm:ss.sss / h+:mm.mm - {sVal}")
+        e : cAstroError = cAstroError(f"Heure incorrecte >{sVal}< - Format attendu h+:mm:ss.sss / h+:mm.mm - ")
 
         if not isinstance(sVal, str):
             raise e
@@ -78,7 +90,7 @@ class cHeure:
     def parseChrono2Seconde(sVal: str) -> float:
         regex: str = r"^(\d+):(\d{2}(\.\d+)?)$"
 
-        e : cAstroError = cAstroError(f"Chronos. Format [m+:ss / m+:ss.ss] - >{sVal}<")
+        e : cAstroError = cAstroError(f"Chrono string ko >{sVal}<. Format attendu [m+:ss / m+:ss.ss]")
 
         if not isinstance(sVal, str):
             raise e
@@ -149,5 +161,5 @@ class cHeure:
 
         toParse = toParse - iMinute * 60
 
-        retour: str = f"{iHeure:d}:{iMinute:2d}:{toParse:5.3f}"
+        retour: str = f"{iHeure:02d}:{iMinute:02d}:{toParse:06.3f}"
         return retour

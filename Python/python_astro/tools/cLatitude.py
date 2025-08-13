@@ -61,7 +61,7 @@ class cLatitude(cAngle):
                 break
 
         if not bMatch:
-            raise cAstroError(f"String is not an angle {sVal}")
+            raise cAstroError(f"String is not an latitude >{sVal}< attendu [N 10°23.12']")
 
         return self
 

@@ -59,7 +59,7 @@ class cLongitude(cAngle):
                 break
 
         if not bMatch:
-            raise cAstroError(f"String is not an angle {sVal}")
+            raise cAstroError(f"String is not une longitude >{sVal}< attendu [W 120°45'47.12\"]")
 
         return self
  

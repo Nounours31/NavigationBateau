@@ -20,7 +20,7 @@ class cJour:
         self.__timestamp: float = 0.0
 
     def __str__(self) -> str:
-        raise NotImplementedError
+        return self.toString()
 
     @staticmethod
     def usage(sVal: str) -> str:
@@ -39,7 +39,7 @@ class cJour:
         # epoch est le 1er janvier 1970 à 00:00:00 (UTC)
         regexp = r"^(\d{4})/(\d{2})/(\d{2})$"
 
-        e : cAstroError = cAstroError(f"Date incorrecte. Format yyyy/mm/dd - {sVal}")
+        e : cAstroError = cAstroError(f"Date incorrecte >{sVal}< - Format attendu yyyy/mm/dd")
         if not isinstance(sVal, str):
             raise e
 
@@ -68,8 +68,7 @@ class cJour:
         
         raise e
 
-
-
-
     def toString(self) -> str:
-        raise NotImplementedError
+        x : datetime = datetime.fromtimestamp(self.__timestamp, tz = timezone.utc)
+        return x.strftime("%Y/%m/%d %H:%M:%S [%Z]")
+    

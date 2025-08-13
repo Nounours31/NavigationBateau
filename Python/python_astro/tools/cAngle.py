@@ -3,7 +3,7 @@ import re
 import logging
 import logging.config
 import math
-from cAstroError import cAstroError
+from cAstroError  import cAstroError
 
 logging.config.fileConfig("logging.conf")
 logger = logging.getLogger("cAngle")
