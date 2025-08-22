@@ -3,6 +3,10 @@
 # TOP pour le grid : https://koor.fr/Python/Tutoriel_Tkinter/tkinter_layout_grid.wp
 
 
+    # mettre des grid dans les labelframe
+    # si pas de grid_columnconfigure de la colonm alors ell ne participe PAS au modif de taille de l afenetre
+    # Voir: https://stackoverflow.com/questions/56135922/tkinter-how-to-make-a-fixed-canvas-size-with-scroll-bars-that-resize-to-the-win
+
 import io
 import os
 import os.path
@@ -314,7 +318,7 @@ def saveToConfigFile():
     
     status = toString()
     zoneOutput.delete('1.0', END)
-    zoneOutput.insert (END, status)
+    zoneOutput.insert (END, status, "tag_content")
 
 
     keys = ["position", "horaire", "visee", "calculs"]
@@ -416,18 +420,18 @@ def onClickButtonE(e: tk.EventType):
 
     buffer = io.StringIO()
     buffer.write ("\n------------------------------------------------------------------------\n")
-    buffer.write ("-- Resume --\n")
+    buffer.write ("-- Résumé --\n")
     buffer.write ("------------------------------------------------------------------------\n")
-    buffer.write (f"-- heure:              {t}\n")
-    buffer.write (f"-- collimation:        {collimation.toString()}\n")
-    buffer.write (f"-- hauteurOeilEnMetre: {hauteurOeilEnMetre}\n")
-    buffer.write (f"-- Position:           {dr.toString()}\n")
-    buffer.write (f"-- astre:              {astre}\n")
-    buffer.write (f"-- visee:              {visee}\n")
-    buffer.write (f"-- hauteurAstreDeg:    {hauteurInstrument.toString()}\n")
+    buffer.write (f"-- Heure:               {t}\n")
+    buffer.write (f"-- Collimation:         {collimation.toString()}\n")
+    buffer.write (f"-- HauteurOeil:         {hauteurOeilEnMetre} m\n")
+    buffer.write (f"-- Position:            {dr.toString()}\n")
+    buffer.write (f"-- Astre:               {astre}\n")
+    buffer.write (f"-- Visée:               {viseeAsTxt} [coef. sur diametre = {visee}]\n")
+    buffer.write (f"-- Hauteur visée astre: {hauteurInstrument.toString()}\n")
 
     result = buffer.getvalue()
-    zoneOutput.insert (END, result)
+    zoneOutput.insert (END, result, "tag_content")
 
     x : cEphemerides = cEphemerides()
     xx = x.getEpherideAstre(t, astre, dr)
@@ -445,21 +449,24 @@ def onClickButtonE(e: tk.EventType):
             "hauteurObserveeCorrigeeParallaxe": (alt.degrees + HP) """
     buffer = io.StringIO()
     buffer.write ("------------------------------------------------------------------------\n")
-    buffer.write ("-- calcul --\n")
+    buffer.write ("-- Calculs --\n")
     buffer.write ("------------------------------------------------------------------------\n")
-    buffer.write (f"-- Az:               {xx["az"]}\n")
-    buffer.write (f"-- Hauteur:          {xx["hauteurObserveeCorrigeeParallaxe"]}\n")
-    buffer.write (f"-- Aries:            {xx["gha_aries"]}\n")
-    buffer.write (f"-- Gha:              {xx["gha"]}\n")
-    buffer.write (f"-- Sha:              {xx["sha"]}\n")
-    buffer.write (f"-- Lha:              {xx["lha"]}\n")
-    buffer.write (f"-- Dec:              {xx["dec"]}\n")
+    buffer.write (f"-- Az:               {cAngle.fromDeg(xx["az"]).toString()}\n")
+    buffer.write (f"-- Hauteur:          {cAngle.fromDeg(xx["hauteurObserveeCorrigeeParallaxe"]).toString()}\n")
+    buffer.write (f"-- Aries:            {cAngle.fromDeg(xx["gha_aries"]).toString()}\n")
+    buffer.write (f"-- GHA:              {cAngle.fromDeg(xx["gha"]).toString()}\n")
+    buffer.write (f"-- SHA:              {cAngle.fromDeg(xx["sha"]).toString()}\n")
+    buffer.write (f"-- LHA:              {cAngle.fromDeg(xx["lha"]).toString()}\n")
+    buffer.write (f"-- Dec:              {cAngle.fromDeg(xx["dec"]).toString()}\n")
+    buffer.write (f"-- Semi Diam(°):     {cAngle.fromDeg(xx["sd"]).toString()}\n")
     buffer.write (f"-- Semi Diam('):     {float(xx["sd"]) * 60.0}\n")
-    buffer.write (f"-- HP ('):           {float(xx["hp"]) * 60.0}\n")
-    buffer.write (f"-- P ('):            {float(xx["parallaxe"]) * 60.0}\n")
+    buffer.write (f"-- HP (°):           {cAngle.fromDeg(xx["hp"]).toString()}\n")
+    buffer.write (f"-- HP ('):           {float(xx["hp"]) * 60.0}'\n")
+    buffer.write (f"-- P (°):            {cAngle.fromDeg(xx["parallaxe"]).toString()}\n")
+    buffer.write (f"-- P ('):            {float(xx["parallaxe"]) * 60.0}'\n")
     buffer.write ("------------------------------------------------------------------------\n")
     result = buffer.getvalue()
-    zoneOutput.insert (END, result)
+    zoneOutput.insert (END, result, "tag_content")
 
     yy = cEphemerides.pointAstroCalculCorrection(hauteurOeil=hauteurOeilEnMetre,
                                                  Hi=hauteurInstrument.asDeg(),
@@ -479,27 +486,32 @@ def onClickButtonE(e: tk.EventType):
             "correctionTotaleSurHo": correctionTotaleSurHo,
             "Ho" : Ho """
     buffer = io.StringIO()
-    buffer.write (f"-- Dip:                    {yy["dip"]}\n")
-    buffer.write (f"-- Ha (Hi - coll - dip):   {yy["Ha"]}\n")
-    buffer.write (f"-- parallaxeDeg:           {yy["parallaxeDeg"]}\n")
-    buffer.write (f"-- refractionDeg:          {yy["refractionDeg"]}\n")
-    buffer.write (f"-- correctionTotaleSurHi:  {yy["correctionTotaleSurHi"]}\n")
-    buffer.write (f"-- correctionTotaleSurHo:  {yy["correctionTotaleSurHo"]}\n")
-    buffer.write (f"-- Ho (Ha -R + P +/-SD):   {yy["Ho"]}\n")
+    buffer.write (f"-- Dip:                     {cAngle.fromDeg(yy["dip"]).toString()}\n")
+    buffer.write (f"-- Ha = (Hi - coll - dip):  {cAngle.fromDeg(yy["Ha"]).toString()}\n")
+    buffer.write (f"-- parallaxeDeg:            {cAngle.fromDeg(yy["parallaxeDeg"]).toString()}\n")
+    buffer.write (f"-- refractionDeg:           {cAngle.fromDeg(yy["refractionDeg"]).toString()}\n")
+    buffer.write (f"-- correctionTotale sur Hi: {cAngle.fromDeg(yy["correctionTotaleSurHi"]).toString()}\n")
+    buffer.write (f"-- correctionTotale sur Ha: {cAngle.fromDeg(yy["correctionTotaleSurHo"]).toString()}\n")
+    buffer.write (f"-- Ho = (Ha -R + P +/-SD):  {cAngle.fromDeg(yy["Ho"]).toString()}\n")
     buffer.write ("------------------------------------------------------------------------\n")
     result = buffer.getvalue()
-    zoneOutput.insert (END, result)
+    zoneOutput.insert (END, result, "tag_content")
 
     zz = cEphemerides.pointAstroPoint(dec=float(xx["dec"]),
                                       lat=dr.getLatitude().asDeg(),
                                       lha=float(xx["lha"]))
     buffer = io.StringIO()
-    buffer.write (f"-- Hc:                    {zz["Hc"]}\n")
-    buffer.write (f"-- Az:                    {zz["Az"]}\n")
-    buffer.write (f"-- Az2:                   {zz["Az2"]}\n")
+    buffer.write ("------------------------------------------------------------------------\n")
+    buffer.write ("-- Check par calculs NAV ASTRO --\n")
+    buffer.write ("------------------------------------------------------------------------\n")
+    buffer.write (f"----> Hc:                    {cAngle.fromDeg(zz["Hc"]).toString()}\n")
+    buffer.write (f"----> I: (>0 vers Astre)     {60*((float(yy["Ho"])) - float(zz["Hc"]))} Mn\n")
+    buffer.write (f"----> Az:                    {cAngle.fromDeg(zz["Az"]).toString()}\n")
+    buffer.write (f"----> Az2:                   {cAngle.fromDeg(zz["Az2"]).toString()}\n")
     buffer.write ("------------------------------------------------------------------------\n")
     result = buffer.getvalue()
-    zoneOutput.insert (END, result)
+    zoneOutput.insert (END, result, "tag_content")
+
 
 
 
@@ -511,140 +523,73 @@ def onClickButtonQ(e: tk.EventType):
     sys.exit()
     print("destroy ?")
 
+default_color = "#c2f6ff"
+default_font = ("Arial", 8, "normal")
+
+default_frame_style = {
+            "bg": default_color, "highlightthickness": 0
+}
+
+default_labelframe_style = {
+            "bg": default_color, "fg": "black", "highlightthickness": 0, "font": default_font
+}
 
 default_label_style = {
-            "bg": "#bfffbc", "fg": "black", "highlightthickness": 0, "font": ("Arial", 8, "bold")
+            "bg": default_color, "fg": "black", "highlightthickness": 0, "font": default_font
 }
 
 default_Entry_style = {
-            "bg": "#bfffbc", "fg": "black", "highlightthickness": 0, "font": ("Arial", 10, "normal")
+            "bg": default_color, "fg": "black", "highlightthickness": 0, "font": default_font
 }
 
 default_txtbox_style = {
-            "bg": "#f6f877", "fg": "black", "highlightthickness": 0, "font": ("Arial", 8, "normal")
+            "bg": default_color, "fg": "black", "highlightthickness": 0, "font": default_font
 }
+
+default_button_style = {
+            "bg": "#AEFDB2", "fg": "black", "highlightthickness": 0, "font": default_font
+}
+
+def debug_grid(main):
+    for x in range(4):
+        for y in range(3):
+            frame = tk.Frame(
+                master=main,
+                relief=tk.RAISED,
+                borderwidth=1
+            )
+            frame.grid(row=x, column=y, sticky="nesw")  # line 13
+            label = tk.Label(master=frame, text=f"\n\nrow {x}\t\t column {y}\n\n")
+            label.pack()
 
 def create_position_ui(main):
     frame = tk.Frame(
         master = main,
         relief = tk.RAISED,
-        borderwidth = 1
+        borderwidth = 1,
+        **default_frame_style
     )
-    frame.grid(row=0, column=0, sticky="w", padx=2, pady=2)
-    labelframe = tk.LabelFrame(frame, text = "DR - Position", bg="#9AE8FC")  
+    frame.grid_columnconfigure((0, 1), weight=1)
+    frame.grid_rowconfigure((0, 1), weight=1)
+    frame.grid(row=0, column=0, sticky=tk.EW, padx=2, pady=2)
+    labelframe = tk.LabelFrame(frame, text = "DR - Position", **default_labelframe_style)  
 
     labelLat = tk.Label(labelframe, text = "Latitude:", **default_label_style)  
-    labelLat.grid(column=1, row=1, sticky="e")
+    labelLat.grid(column=0, row=0, sticky=tk.E)
     
     entryLat = tk.Entry(master=labelframe, textvariable=latitudeEntryVal, **default_Entry_style)
     entryLat.config(bg="#fff", fg="#000", width=9)
-    entryLat.grid(column=2, row=1, sticky="w")
+    entryLat.grid(column=1, row=0, sticky=tk.W)
 
     labelLong = tk.Label(labelframe, text = "Longitude:", **default_label_style)  
-    labelLong.grid(column=1, row=2, sticky="e")
+    labelLong.grid(column=0, row=1, sticky=tk.E)
     
     entryLong = tk.Entry(master=labelframe, textvariable=longitudeEntryVal, **default_Entry_style)
     entryLong.config(bg="#fff", fg="#000", width=9)
-    entryLong.grid(column=2, row=2, sticky="w")
+    entryLong.grid(column=1, row=1, sticky=tk.W)
 
-    labelframe.grid(column=0, row=0)
-    labelframe.pack()
-
-def create_Heure_ui(main):
-    frame = tk.Frame(
-        master = main,
-        relief = tk.RAISED,
-        borderwidth = 1
-    )
-    frame.grid(row=1, column=0, sticky="w", padx=2, pady=2)
-    labelframe = tk.LabelFrame(frame, text = "Date & heure (UTC)", bg="#A5FC9A")  
-
-    labelDate = tk.Label(labelframe, text = "Date:", **default_label_style)  
-    labelDate.grid(column=1, row=1, sticky="e")
-    
-    entryDate = tk.Entry(master=labelframe, textvariable=dateEntryVal, **default_Entry_style)
-    entryDate.config(bg="#fff", fg="#000", width=12)
-    entryDate.grid(column=2, row=1, sticky="w")
-
-    labelHeure = tk.Label(labelframe, text = "Heure (start chrono):", **default_label_style)  
-    labelHeure.grid(column=1, row=2, sticky="e")
-    
-    entryHeure = tk.Entry(master=labelframe, textvariable=heureEntryVal, **default_Entry_style)
-    entryHeure.config(bg="#fff", fg="#000", width=8)
-    entryHeure.grid(column=2, row=2, sticky="w")
-
-    labelChrono = tk.Label(labelframe, text = "Valeur chrono:", **default_label_style)  
-    labelChrono.grid(column=4, row=2, sticky="e")
-    
-    entryChronos = tk.Entry(master=labelframe, textvariable=chronosEntryVal,**default_Entry_style)
-    entryChronos.config(bg="#fff", fg="#000", width=8)
-    entryChronos.grid(column=5, row=2, sticky="w")
-
-    labelDecalageUTC = tk.Label(labelframe, text = "Decalage UTC:", **default_label_style)  
-    labelDecalageUTC.grid(column=7, row=2, sticky="e")
-    
-    options_list = []
-    defaut = ""
-    for i in range(-12,+13, 1):
-        signe = "-" if i < 0 else "+"
-        suffixe = ""
-        isdefaut = False
-        if i == 0:
-            suffixe=" [UTC]"
-            isdefaut = True
-        elif i == 1:
-            suffixe=" [Hiver]"
-        elif i == 2:
-            suffixe=" [Ete]"
-        
-        options_list.append(f"{signe:1s}{abs(i):1d}{suffixe}")
-        if isdefaut:
-            defaut = f"{signe:1s}{abs(i):1d}{suffixe}"
-
-    # rien dand la config je l'init
-    if decalageUTCEntryVal.get() == "":
-        decalageUTCEntryVal.set(defaut)
-    question_menu = tk.OptionMenu(labelframe, decalageUTCEntryVal, *options_list, command=on_option_change)
-    question_menu.config(bg="#E4E2E2", fg="#000")
-    question_menu.grid(column=8, row=2, sticky="w")
-
-    labelframe.grid(column=0, row=0)
-    labelframe.pack()
-
-def create_Astre_ui(main):
-    frame = tk.Frame(
-        master = main,
-        relief = tk.RAISED,
-        borderwidth = 1
-    )
-    frame.grid(row=2, column=0,sticky="w", padx=2, pady=2)
-    labelframe = tk.LabelFrame(frame, text = "Astre", bg="#A5FC9A")  
-
-    labelAstre = tk.Label(labelframe, text = "Astre:", **default_label_style)  
-    labelAstre.grid(column=0, row=0, sticky="e")
-    
-    options_list = []
-    defaut = ""
-    options_list_values = cEphemerides.getPlaneteStarNom()
-    max = len(options_list_values)
-    i = 1
-    for x in range (0, max-1):
-        print (f"Init astre : {i:03d}/{max:03d} - {options_list_values[x]}", end = "\r")
-        if options_list_values[x].startswith("sun"):
-            defaut = options_list_values[x]
-        options_list.append(options_list_values[x])
-        i +=1    
-    print ("\n")
-
-    # rien dand la config je l'init
-    if  astreEntryVal.get() == "" :
-        astreEntryVal.set(defaut)
-    question_menu = tk.OptionMenu(labelframe, astreEntryVal, *options_list, command=on_option_change )
-    question_menu.config(bg="#E4E2E2", fg="#000")
-    question_menu.grid(column=1, row=0, sticky="w")
-
-    labelframe.grid(column=0, row=0)
-    labelframe.pack()
+    labelframe.grid(column=0, row=0, columnspan=2, rowspan=2, sticky=tk.EW)
+    #labelframe.pack()
 
 def create_Visee_ui(main):
     frame = tk.Frame(
@@ -652,8 +597,8 @@ def create_Visee_ui(main):
         relief = tk.RAISED,
         borderwidth = 1
     )
-    frame.grid(row=3, column=0, sticky="w", padx=2, pady=2)
-    labelframe = tk.LabelFrame(frame, text = "Visée", bg="#FC9ADB")  
+    frame.grid(row=0, column=1, sticky="w", padx=2, pady=2)
+    labelframe = tk.LabelFrame(frame, text = "Visée", **default_labelframe_style)  
 
     labelCollimation = tk.Label(labelframe, text = "Collimation:", **default_label_style)  
     labelCollimation.grid(column=0, row=0, sticky="e")
@@ -700,8 +645,110 @@ def create_Visee_ui(main):
     entryHi.config(bg="#fff", fg="#000", width=8)
     entryHi.grid(column=1, row=3, sticky="w")
 
-    labelframe.grid(column=0, row=0)
-    labelframe.pack()
+    labelframe.grid(column=0, row=0, sticky=tk.EW)
+    #labelframe.pack()
+
+def create_Astre_ui(main):
+    frame = tk.Frame(
+        master = main,
+        relief = tk.RAISED,
+        borderwidth = 1
+    )
+    frame.grid_columnconfigure((0, 1), weight=1)
+    frame.grid_rowconfigure((0), weight=1)
+    frame.grid(row=0, column=2,sticky=tk.EW, padx=2, pady=2)
+    labelframe = tk.LabelFrame(frame, text = "Astre", **default_labelframe_style)  
+
+    labelAstre = tk.Label(labelframe, text = "Astre:", **default_label_style)  
+    labelAstre.grid(column=0, row=0, sticky="e")
+    
+    options_list = []
+    defaut = ""
+    options_list_values = cEphemerides.getPlaneteStarNom()
+    max = len(options_list_values)
+    i = 1
+    for x in range (0, max-1):
+        print (f"Init astre : {i:03d}/{max:03d} - {options_list_values[x]}", end = "\r")
+        if options_list_values[x].startswith("sun"):
+            defaut = options_list_values[x]
+        options_list.append(options_list_values[x])
+        i +=1    
+    print ("\n")
+
+    # rien dand la config je l'init
+    if  astreEntryVal.get() == "" :
+        astreEntryVal.set(defaut)
+    question_menu = tk.OptionMenu(labelframe, astreEntryVal, *options_list, command=on_option_change )
+    question_menu.config(bg="#E4E2E2", fg="#000")
+    question_menu.grid(column=1, row=0, sticky=tk.W)
+
+    labelframe.grid(column=0, row=0, columnspan=2, sticky=tk.EW)
+    #labelframe.pack()
+
+def create_Heure_ui(main):
+    frame = tk.Frame(
+        master = main,
+        relief = tk.RAISED,
+        borderwidth = 1
+    )
+    frame.grid_columnconfigure((0, 1, 2, 3, 4, 5), weight=1)
+    frame.grid_rowconfigure((0, 1), weight=1)
+    frame.grid(row=1, column=0, columnspan=3, sticky="we", padx=2, pady=2)
+    labelframe = tk.LabelFrame(frame, text = "Date & heure (UTC)", **default_labelframe_style)  
+
+    labelDate = tk.Label(labelframe, text = "Date:", **default_label_style)  
+    labelDate.grid(column=0, row=0, sticky="e")
+    
+    entryDate = tk.Entry(master=labelframe, textvariable=dateEntryVal, **default_Entry_style)
+    entryDate.config(bg="#fff", fg="#000", width=12)
+    entryDate.grid(column=1, row=0, sticky="w")
+
+    labelHeure = tk.Label(labelframe, text = "Heure (start chrono):", **default_label_style)  
+    labelHeure.grid(column=0, row=1, sticky="e")
+    
+    entryHeure = tk.Entry(master=labelframe, textvariable=heureEntryVal, **default_Entry_style)
+    entryHeure.config(bg="#fff", fg="#000", width=8)
+    entryHeure.grid(column=1, row=1, sticky="w")
+
+    labelChrono = tk.Label(labelframe, text = "Valeur chrono:", **default_label_style)  
+    labelChrono.grid(column=2, row=1, sticky="e")
+    
+    entryChronos = tk.Entry(master=labelframe, textvariable=chronosEntryVal,**default_Entry_style)
+    entryChronos.config(bg="#fff", fg="#000", width=8)
+    entryChronos.grid(column=3, row=1, sticky="w")
+
+    labelDecalageUTC = tk.Label(labelframe, text = "Decalage UTC:", **default_label_style)  
+    labelDecalageUTC.grid(column=4, row=1, sticky="e")
+    
+    options_list = []
+    defaut = ""
+    for i in range(-12,+13, 1):
+        signe = "-" if i < 0 else "+"
+        suffixe = ""
+        isdefaut = False
+        if i == 0:
+            suffixe=" [UTC]"
+            isdefaut = True
+        elif i == 1:
+            suffixe=" [Hiver]"
+        elif i == 2:
+            suffixe=" [Ete]"
+        
+        options_list.append(f"{signe:1s}{abs(i):1d}{suffixe}")
+        if isdefaut:
+            defaut = f"{signe:1s}{abs(i):1d}{suffixe}"
+
+    # rien dand la config je l'init
+    if decalageUTCEntryVal.get() == "":
+        decalageUTCEntryVal.set(defaut)
+    question_menu = tk.OptionMenu(labelframe, decalageUTCEntryVal, *options_list, command=on_option_change)
+    question_menu.config(bg="#E4E2E2", fg="#000")
+    question_menu.grid(column=5, row=1, sticky="w")
+
+    labelframe.grid(column=0, row=0, columnspan=6, rowspan=2, sticky=tk.EW)
+    #labelframe.pack()
+
+
 
 def create_Output(main):
     global zoneOutput
@@ -711,22 +758,25 @@ def create_Output(main):
         relief = tk.RAISED,
         borderwidth = 1
     )
-    frame.grid(row=4, column=0, sticky="we", padx=2, pady=2)
-    labelframe = tk.LabelFrame(frame, text = "Résultats", bg="#FC9ADB")  
+    frame.grid_columnconfigure((0, 1), weight=1)
+    frame.grid_rowconfigure((0), weight=1)
+    frame.grid(row=2, column=0, columnspan=3, sticky="we", padx=2, pady=2)
+    labelframe = tk.LabelFrame(frame, text = "Résultats", **default_labelframe_style)  
+    labelframe.grid_columnconfigure((0), weight=1, minsize="15")
+
 
     vertscroll = tk.Scrollbar(labelframe)
-    textbox = tk.Text(labelframe, wrap = 'word',width=100, height=40, **default_txtbox_style)
+    textbox = tk.Text(labelframe, wrap = 'word',width=150, height=50, **default_txtbox_style)
+    textbox.grid(column=0, row=0, sticky=tk.NSEW)
     zoneOutput = textbox
-    zoneOutput.insert(END, "test")
 
     textbox.config(yscrollcommand=vertscroll.set)
     vertscroll.config(command=textbox.yview)
 
-    textbox.grid(column=0, row=0, sticky="we")
-    vertscroll.grid(column=1, row=0,sticky="wens")
+    vertscroll.grid(column=1, row=0,sticky=tk.NS)
 
-    labelframe.grid(column=0, row=0)
-    labelframe.pack()
+    textbox.tag_configure("tag_content", font=("consolas", 10))
+    labelframe.grid(column=0, row=0, columnspan=2, sticky=tk.NSEW)
 
 def create_buttons(main):
     global buttonCompute
@@ -735,29 +785,32 @@ def create_buttons(main):
         relief = tk.RAISED,
         borderwidth = 1
     )
-    frame.grid(row=5, column=0)
-    labelframe = tk.LabelFrame(frame, text = "Management", bg="#FC9ADB")  
+    frame.grid_columnconfigure((0, 1, 2), weight=1)
+    frame.grid_rowconfigure((0), weight=1)
+    frame.grid(row=3, column=1, sticky=tk.EW)
 
-    button = tk.Button(master=labelframe, text="Pour test")
+    labelframe = tk.LabelFrame(frame, text = "Management", **default_labelframe_style)  
+
+    button = tk.Button(master=labelframe, text="Pour test", **default_button_style)
     button.config(bg="#E4E2E2", fg="#000")
     button.bind("<Button-1>", onClick)
-    button.grid(column=0, row=0)
+    button.grid(column=0, row=0, sticky=tk.E)
 
-    buttonQ = tk.Button(master=labelframe, text="Exit")
+    buttonQ = tk.Button(master=labelframe, text="Exit", **default_button_style)
     buttonQ.config(bg="#E4E2E2", fg="#000")
     buttonQ.bind("<Button-1>", onClickButtonQ)
     buttonQ.grid(column=1, row=0)
 
-    buttonCompute = tk.Button(master=labelframe, text="Calcul !")
+    buttonCompute = tk.Button(master=labelframe, text="Calcul !", **default_button_style)
     buttonCompute.config(bg="#E4E2E2", fg="#000")
     buttonCompute.bind("<Button-1>", onClickButtonE)
-    buttonCompute.grid(column=2, row=0)
+    buttonCompute.grid(column=2, row=0, sticky=tk.E)
     buttonCompute["state"] = "disabled"
     if isValideForCompute() :
         buttonCompute["state"] = "normal"
 
-    labelframe.grid(column=0, row=0)
-    labelframe.pack()
+    labelframe.grid(column=0, row=0, columnspan=3, sticky=tk.EW)
+    #labelframe.pack()
 
 
 
@@ -770,17 +823,13 @@ main.config(bg="#F7F8F8")
 # connaisse à l'avance le nombre de lignes et le nombre de colonnes.
 # Le paramètre weight indique que chaque colonne (et chaque ligne)
 # à le même poids. L'une ne prendra pas l'avantage sur l'autre.
-main.grid_rowconfigure(0, weight=1)
-main.grid_rowconfigure(1, weight=1)
-main.grid_columnconfigure(0, weight=1)
-main.grid_columnconfigure(1, weight=1)
-main.grid_columnconfigure(2, weight=1)
-main.grid_columnconfigure(3, weight=1)
+main.columnconfigure((0,1,2),weight = 1, uniform = "a")
+#main.columnconfigure(3,weight = 10, uniform = "a")
+#main.rowconfigure((0,1,2,3),weight = 1, uniform = "a")
+main.rowconfigure((0,1,2,3),weight = 1)
 
 
-#default_font = tkFont.nametofont("Terminal", main)
-#default_font.configure(size=12)
-#main.option_add("*Font", default_font)
+
 
 
 
@@ -803,6 +852,7 @@ buttonCompute : tk.Button = None
 
 initFromConfigFile(main)
 
+#debug_grid(main)
 create_position_ui(main)
 create_Heure_ui(main)
 create_Astre_ui(main)

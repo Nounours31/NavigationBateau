@@ -190,7 +190,7 @@ class cAngle:
             return f"{sign:s}{cAngle._toString_sec(toParse, withSign= False)}"
 
         else:
-            return f"{sign:s}{cAngle._toString_deg(toParse, withSign= False):s} [{sign:s}{cAngle._toString_min(toParse, withSign= False):s} # {sign:s}{cAngle._toString_sec(toParse, withSign= False):s}]"
+            return f"{sign:s}{cAngle._toString_deg(toParse, withSign= False):s} ({sign:s}{cAngle._toString_min(toParse, withSign= False):s}[{sign:s}{cAngle._toString_sec(toParse, withSign= False):s}])"
 
     @staticmethod
     def fromDeg(f: float):
