@@ -1,0 +1,33 @@
+# gpsd configuration for pylintrc
+
+# gpsd does not try to conform to pylint, but pylint can be useful
+# to find things like unused variables, missing docstrings, undefined
+# variables, unused imports, etc.
+#
+# The whitespace checker in pylint conflicts with that in pycodestyle.
+# pycodestyle replaces pep8 for checking PEP8 conformity.
+#
+# Use pylint as an advisory tool, not as a blunt instrument.
+#
+# This file is Copyright 2018 by the GPSD project
+# SPDX-License-Identifier: BSD-2-clause
+
+[MESSAGES CONTROL]
+
+# Disable warnings that are silly
+# bad-continuation removed from pylint May 2020
+# misplaced-comparison-constant, breaks Yoda style
+# no-self-use, removed from pylint 3.1.0
+disable = bad-option-value,
+    invalid-name,
+    misplaced-comparison-constant,
+    too-many-branches,
+    too-many-lines,
+    too-many-locals,
+    too-many-nested-blocks,
+    too-many-public-methods,
+    too-many-statements,
+    # consider-using-f-string needs Python >= 3.6
+    consider-using-f-string
+
+# vim: set expandtab shiftwidth=4

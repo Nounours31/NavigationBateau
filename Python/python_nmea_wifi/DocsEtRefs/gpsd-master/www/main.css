@@ -1,0 +1,169 @@
+/* Originally cribbed from http://bluerobot.com/web/layouts/layout1.html
+ * However, people who merge the hotlink colors are evil and should be killed,
+ * so I removed that.  Fixing font sizes in pixels is evil, too; is much as
+ * possible I have moved all dimensions to be relative to the associated font
+ * size. Finally, light grey is a great background color, but lousy for
+ * foreground text on white.
+ *
+ * The only size in here that's tied to something external is the pixel size
+ * for the menu width.  This is sized to just fit a Google "wide skyscraper"
+ * ad, which is 160x600.
+ */
+
+ body {
+	margin: 0;
+	padding: 0;
+	font-family: helvetica, sans-serif;
+	color: var(--fg);
+	background: var(--bg1);
+}
+
+p {
+	font-family: helvetica, sans-serif;
+	margin: 0 0 1em 0;
+	padding: 0;
+}
+
+#content p,
+#Content>p {
+	text-indent: 2em;
+	margin: 0;
+}
+
+#content p+p,
+#Content>p+p {
+	text-indent: 2em;
+	margin-top: 1ex;
+}
+
+h1 {
+	font-size: x-large;
+	margin-bottom: 0.25ex;
+}
+
+h2 {
+	font-size: large;
+	margin-bottom: 0.25ex;
+}
+
+a {
+	text-decoration: none;
+	font-family: verdana, arial, helvetica, sans-serif;
+}
+
+a:hover {
+	background-color: var(--bgh);
+}
+
+#header,
+#Header {
+	font-weight: 600;
+	font-size: x-large;	/* should be same as an h1 header */
+	margin: 1.25em 0.25em 0.875em 0.25em;
+	padding: 0 0 0 1.25em;
+	border-style: solid;
+	border-color: var(--fg);
+	border-width: 1px 0;
+	background-color: var(--bg2);
+	height: max-content;
+}
+
+#header h1 {
+	margin: 0.25ex 0;
+}
+
+#header br {
+	display: none;
+}
+
+#Content,
+#content {
+	/* Left margin is menu width + 40 pixels */
+	margin: 0 0 3.13em 12.5em;
+	padding: 0.63em;
+}
+
+body[class] #Menu {
+	position: absolute;
+	left: 0;
+	width: 10em;
+}
+
+body:not([class]) #Menu {
+	float: left;
+	top: 5em;
+	left: 1.25em;
+	width: 10em;
+}
+
+#Menu {
+	padding: 0.5em;
+	margin: 0.5em;
+	background-color: var(--bg2);
+	border: 1px dashed var(--trim);
+}
+
+/* For internal tables of contents on a page. E.g. hacking.html. */
+.ToC {
+	list-style: upper-roman;
+}
+
+.strike {
+	text-decoration: line-through;
+}
+
+@media print {
+	#content {
+		/* Left margin is menu width + 3em */
+		margin: 0 3.13em 3.13em 0;
+		padding: 0.63em;
+	}
+
+	#Menu {
+		display: none;
+	}
+}
+
+/* For convenience */
+.centered {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.right {
+	float: right;
+	margin: 0;
+}
+
+.notebox {
+	background-color: var(--bg2);
+	border: 1px dashed var(--trim);
+	margin: 0.94em;
+	font-size: small;
+	text-indent: 0;
+}
+
+:root {
+	--lite-bg1: #fff;
+	--lite-bg2: #eee;
+	--lite-bgh: #ccc;
+	--lite-fg: #000;
+	--lite-trim: #999;
+
+	color-scheme: light;
+	--bg1: var(--lite-bg1);
+	--bg2: var(--lite-bg2);
+	--bgh: var(--lite-bgh);
+	--fg: var(--lite-fg);
+	--trim: var(--lite-trim);
+}
+
+html[lite="lite"] {
+	color-scheme: light;
+	--bg1: var(--lite-bg1);
+	--bg2: var(--lite-bg2);
+	--bgh: var(--lite-bgh);
+	--fg: var(--lite-fg);
+	--trim: var(--lite-trim);
+}
