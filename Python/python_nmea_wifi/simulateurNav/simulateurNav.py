@@ -1,13 +1,8 @@
-import socket 
-import signal
-import sys
 import logging
 import logging.config
 
 from math import floor, pi, cos, sin, tan, sqrt, atan2
-from time import sleep
 from datetime import datetime, timezone
-import calendar
 
 from myEnv import myEnv
 
@@ -16,8 +11,8 @@ from tools.latitude import latitude as latitude
 from tools.longitude import longitude as longitude 
 from tools.position import position as position 
 from tools.angle import angle as angle 
+from tools.cap import cap
 
-import logging
 
 deg2rad = pi / 180.0
 rad2deg = 180.0 / pi
@@ -29,21 +24,21 @@ class simulateurNav:
         self.__heure : datetime = datetime.now()
         self.__vitesseMoyenne : vecteur = vecteur('Kt')
         self.__vitesseMoyenne.val = config["vitesseEnNoeudMoyenne"]
-        self.__vitesseMoyenne.dir  = config["capMoyen"]
+        self.__vitesseMoyenne.dir  = cap(valAsDeg=config["capMoyen"])
 
         self.__vitesse : vecteur = vecteur('Kt')
         self.__vitesse.val = config["vitesseEnNoeudMoyenne"]
-        self.__vitesse.dir = config["capMoyen"]
+        self.__vitesse.dir = cap(valAsDeg=config["capMoyen"])
 
         self.__variationMagnetiqueEnDeg : float  = config["variationMagnetique"]
         self.__positionDepart : position = position (
-            latitude.fromFloatEnDeg(config["positionDepart"]["LatitudeDecimale"]),
-            longitude.fromFloatEnDeg(config["positionDepart"]["LongitudeDecimale"]))
+            latitude(valAsDeg=config["positionDepart"]["LatitudeDecimale"]),
+            longitude(valAsDeg=config["positionDepart"]["LongitudeDecimale"]))
         self.__positionCourante : position = self.__positionDepart.copy()
 
         self.__ventReelDepart : vecteur = vecteur('Kt')
         self.__ventReelDepart.val = config["vent"]["vitesseEnNd"]
-        self.__ventReelDepart.dir = config["vent"]["directionEnDeg"]
+        self.__ventReelDepart.dir = cap(valAsDeg=config["vent"]["directionEnDeg"])
 
         self.__ventReel : vecteur = self.__ventReelDepart.copy()
         self.__ventApp : vecteur = self.__ventReelDepart.copy()
@@ -58,7 +53,7 @@ class simulateurNav:
 
         self.__courant : vecteur = vecteur('Kt')
         self.__courant.val = config["eau"]["courant"]["vitesseEnNd"]
-        self.__courant.dir = config["eau"]["courant"]["directionEnDeg"]
+        self.__courant.dir = cap(valAsDeg=config["eau"]["courant"]["directionEnDeg"])
 
         self.__courantDepart : vecteur = self.__courant.copy()
         
@@ -103,7 +98,7 @@ class simulateurNav:
 
     @property
     def cap(self) :
-        return self.__vitesse.dir.val
+        return self.__vitesse.dir.valAsDeg
 
     @property
     def vitesse(self) :
@@ -126,28 +121,28 @@ class simulateurNav:
         
         # deplacement
         self.__vitesse.val = self.__vitesseMoyenne.val * (1 + 0.25 * cos(facteur))
-        self.__vitesse.dir = self.__vitesseMoyenne.dir.val * (1.0 + 0.25 * cos(facteur))
+        self.__vitesse.dir = cap(self.__vitesseMoyenne.dir.valAsDeg * (1.0 + 0.25 * cos(facteur)))
 
-        capRad = self.__vitesse.dir.val * deg2rad
-        latitudeEstimeeRad = self.__positionCourante.latitude.val * deg2rad
+        capRad = self.__vitesse.dir.valAsRad
+        latitudeEstimeeRad = self.__positionCourante.latitude.valAsRad
 
         pasEnLatitude = cos (capRad) * self.__vitesse.val / 60 # noeud = mille/h - 1 mille = 1 minute d'arc
         pasEnLongitude = sin (capRad) * self.__vitesse.val / (60 * cos (latitudeEstimeeRad))
         
-        self.__positionCourante.latitude += (pasEnLatitude * iSeconde / 3600)
-        self.__positionCourante.longitude += (pasEnLongitude * iSeconde / 3600)
+        self.__positionCourante.latitude += angle(valAsDeg=(pasEnLatitude * iSeconde / 3600))
+        self.__positionCourante.longitude += angle(valAsDeg=(pasEnLongitude * iSeconde / 3600))
 
         # vent
         self.__ventReel.val = self.__ventReelDepart.val * (1 + cos(facteur))
-        self.__ventReel.dir = self.__ventReelDepart.dir.val + (180 * cos(facteur))
+        self.__ventReel.dir = cap(self.__ventReelDepart.dir.valAsDeg + (180 * cos(facteur)))
 
-        ventAppX = (self.__ventReel.val * cos(self.__ventReel.dir.val * deg2rad) - self.__vitesse.val * cos(self.__vitesse.dir.val * deg2rad))
-        ventAppY = (self.__ventReel.val * sin(self.__ventReel.dir.val * deg2rad) - self.__vitesse.val * sin(self.__vitesse.dir.val * deg2rad))
+        ventAppX = (self.__ventReel.val * cos(self.__ventReel.dir.valAsRad) - self.__vitesse.val * cos(self.__vitesse.dir.valAsRad))
+        ventAppY = (self.__ventReel.val * sin(self.__ventReel.dir.valAsRad) - self.__vitesse.val * sin(self.__vitesse.dir.valAsRad))
         ventAppForce = sqrt (ventAppX ** 2 + ventAppY **2)
-        ventAppDir = angle.fromFloatEnDeg(atan2 (ventAppY, ventAppX) * rad2deg).val
+        ventAppDir : angle = angle(valAsDeg=(atan2 (ventAppY, ventAppX) * rad2deg))
         
         self.__ventApp.val = ventAppForce
-        self.__ventApp.dir.val = ventAppDir
+        self.__ventApp.dir = cap(valAsDeg=ventAppDir.valAsDeg)
         self.__temperatureAir = self.__temperatureAirDepart + (5.0 * (cos(facteur)))
 
         # Eau (profondeur + temp)
@@ -155,7 +150,7 @@ class simulateurNav:
         self.__temperatureEau = self.__temperatureEauDepart + (2.0 * (cos(facteur)))
 
         self.__courant.val = self.__courantDepart.val * (1 + cos(facteur))
-        self.__courant.dir.val =  self.__courantDepart.dir.val + (180 * cos(facteur))
+        self.__courant.dir.valAsDeg = self.__courantDepart.dir.valAsDeg + (180 * cos(facteur))
 
         if self.__logger.isEnabledFor(level = logging.DEBUG):
             self.__logger.debug(self.toString())

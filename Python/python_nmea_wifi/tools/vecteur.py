@@ -1,12 +1,12 @@
 from __future__ import annotations
-from typing import List
 from tools.angle import angle
-
+from tools.cap import cap
+from tools.myException import MyException
 
 class vecteur:
     def __init__(self, unit: str):
         self.__norme : float = 0.0        
-        self.__sens : angle = angle(0.0)
+        self.__sens : cap = cap(0.0)
         self.__unit : str = unit
 
     @property
@@ -18,12 +18,14 @@ class vecteur:
         self.__norme = v
 
     @property
-    def dir(self) -> angle:
+    def dir(self) -> cap:
         return self.__sens
     
     @dir.setter
-    def dir(self, d: float) -> None:
-        self.__sens.val = d
+    def dir(self, c: cap) -> None:
+        if not isinstance(c, cap):
+            raise MyException("dir is not a Cap ...")
+        self.__sens = c.copy()
     
     def copy(self) -> vecteur:
         retour : vecteur = vecteur(self.__unit)
@@ -33,4 +35,4 @@ class vecteur:
         return retour
     
     def toString(self) -> str :
-        return f"[{self.__norme:06.3f} {self.__unit} | {self.__sens.toString(base=10)}]"
+        return f"[{self.__norme:06.3f} {self.__unit} | {self.__sens.toString(base=angle.STR_AsALL)}]"

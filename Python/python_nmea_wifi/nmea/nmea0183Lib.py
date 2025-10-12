@@ -9,7 +9,11 @@ from typing import List
 from myEnv import myEnv
 from nmea.nmeaLib import nmeaLib
 from simulateurNav.simulateurNav import simulateurNav as Nav
+from tools.latitude import latitude
+from tools.longitude import longitude
 from tools.myTools import tools as tools
+from tools.position import position
+from tools.vecteur import vecteur
 
 # Initialize the logger once as the application starts up.
 logging.config.fileConfig('logging.conf')
@@ -149,6 +153,9 @@ Autre talker:
 '''
 
 class nmea0183lib(nmeaLib) :
+    FORMAT_LAT : int = 0
+    FORMAT_LONGI : int = 1
+
     def __init__(self):
         super().__init__()
         self.__logger : logging.Logger = myEnv.logger
@@ -177,13 +184,30 @@ class nmea0183lib(nmeaLib) :
             retour = "0" + retour
         return retour 
 
+    @staticmethod
+    def __nmeaLatitudeFormat(l: latitude) -> str :
+        return nmea0183lib.__nmeaLatLongFormat (l.valAsDeg, nmea0183lib.FORMAT_LAT)
+
+    @staticmethod
+    def __nmeaLongitudeFormat(l: longitude) -> str :
+        return nmea0183lib.__nmeaLatLongFormat (l.valAsDeg, nmea0183lib.FORMAT_LONGI)
+
+    @staticmethod
+    def __nmeaLatLongFormat(x: float, f : int) -> str :
+        # E 7,682288°  -> 7° 40' 56.238" Est --> 00740.9373,E
+        x = abs(x)
+        deg : int = int(floor(x))
+        min : float = (x - deg) * 60.0
+
+        if f == nmea0183lib.FORMAT_LONGI:
+            return f"{deg:03d}{min:07.4f}"
+        if f == nmea0183lib.FORMAT_LAT:
+            return f"{deg:02d}{min:07.4f}"
+        return "xxxxxx"
 
     def computeTrames(self, nav: Nav) -> List[bytes]:
         retour : List[bytes] = []
-        retour.append(self.getGGA(
-            nav.heure, 
-            nav.positionCourante.latitude.val, 
-            nav.positionCourante.longitude.val))
+        retour.append(self.getGGA(nav.heure, nav.positionCourante))
         """
         retour.append(self.getRMC(
             nav.heure, 
@@ -254,13 +278,13 @@ class nmea0183lib(nmeaLib) :
         *            : séparateur de checksum
         0E           : Somme de contrôle de parité, un simple XOR sur les caractères entre $ et *
     '''
-    def getGGA(self, now : datetime, latitudeDecimale : float, longitudeDecimale : float):
-        nmeaMessage = "GPGGA,{heure:09.2f},{lat:011.6f},{latSens},{long:012.6f},{longSens},1,10,1.2,27.0,M,-34.2,M,,".format(
+    def getGGA(self, now : datetime, positionCourante : position) -> bytes:
+        nmeaMessage = "GPGGA,{heure:09.2f},{lat},{latSens},{long},{longSens},1,10,1.2,27.0,M,-34.2,M,,".format(
             heure =  tools.heure2GPSDecimale(now),
-            lat = abs(tools.angleDecimalToMinuteSexa(latitudeDecimale) * 100),
-            latSens = "N" if latitudeDecimale > 0 else "S",
-            long = abs(tools.angleDecimalToMinuteSexa(longitudeDecimale) * 100),
-            longSens = "E" if longitudeDecimale > 0 else "W")
+            lat = nmea0183lib.__nmeaLatitudeFormat(positionCourante.latitude),
+            latSens = positionCourante.latitude.sensAsString(),
+            long = nmea0183lib.__nmeaLongitudeFormat(positionCourante.longitude),
+            longSens = positionCourante.longitude.sensAsString())
         return nmea0183lib.__addNMEACheckSum(nmeaMessage)
     
     '''
@@ -283,16 +307,19 @@ class nmea0183lib(nmeaLib) :
         *            : séparateur de checksum
         53           : somme de contrôle de parité au format hexadécimal[4] 
 '''
-    def getRMC(self, now : datetime, latitudeDecimale, longitudeDecimale, vitesseEnNoeud, cap):
+    def getRMC(self, now : datetime, 
+               latitudeDecimale : latitude, 
+               longitudeDecimale : longitude, 
+               vitesse: vecteur) -> bytes :
         dateutc = tools.date2GPSDecimale(now)
         nmeaMessage = "GPRMC,{heure:09.2f},A,{lat:011.6f},{latSens},{long:012.6f},{longSens},{vitesseEnNoeud:06.2f},{cap:06.2f},{dateutc:06d},002.1,W,A,V".format(
             heure =  tools.heure2GPSDecimale(now),
             lat = abs(tools.angleDecimalToMinuteSexa(latitudeDecimale) * 100),
-            latSens = "N" if latitudeDecimale > 0 else "S",
+            latSens = latitudeDecimale.sensAsString(),
             long = abs(tools.angleDecimalToMinuteSexa(longitudeDecimale) * 100),
-            longSens = "E" if longitudeDecimale > 0 else "W",
-            vitesseEnNoeud = vitesseEnNoeud,
-            cap = cap,
+            longSens = longitudeDecimale.sensAsString(),
+            vitesseEnNoeud = vitesse.val,
+            cap = vitesse.dir.valAsDeg,
             dateutc = dateutc)        
         return nmea0183lib.__addNMEACheckSum(nmeaMessage)
 
