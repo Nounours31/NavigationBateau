@@ -24,9 +24,11 @@ class angle:
         min : float = (self._angleEnDeg - d) * 60.0
         dmin : int = math.floor(min)
         sec : float = (min - math.floor (min)) * 60.0
-        if base == 10:
+        if base == angle.STR_AsREAL:
+            return f"{self._angleEnDeg:08.4f}°"
+        elif base == angle.STR_AsMin:
             return f"{d:03d}°{min:06.3f}'"
-        elif base == 60:
+        elif base == angle.STR_AsSec:
             return f"{d:03d}°{dmin:02d}'{sec:06.3f}\""
         else:
             return f"{self._angleEnDeg:08.4f}° [{d:03d}°{min:06.3f}' # {d:03d}°{dmin:02d}'{sec:06.3f}\"]"

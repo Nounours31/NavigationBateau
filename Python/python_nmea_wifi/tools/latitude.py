@@ -35,6 +35,19 @@ class latitude (angle):
         self._angleEnDeg = val
         self._normalize()
 
+    @staticmethod
+    def fromString(valAsDegre : str = "") -> latitude:
+        retour : latitude = latitude()
+        try:
+            x : float = float(valAsDegre)
+            retour.valAsDeg = x
+            retour._normalize()
+        except Exception as e:
+            raise myException (str(e))
+        return retour
+
+
+
 
     def toString(self, base :int = 0) -> str:
         return f"{self.sensAsString()} {super().toString(base=angle.STR_AsREAL)} - {self.sensAsString()} {super().toString(base=angle.STR_AsMin)} [{self.sensAsString()} {super().toString(base=angle.STR_AsSec)}]"
@@ -77,4 +90,5 @@ class latitude (angle):
         self.__sens = latitude.NORD
         if x < 0:
             self.__sens = latitude.SUD
+            x = -1.0 * x
         self._angleEnDeg = x

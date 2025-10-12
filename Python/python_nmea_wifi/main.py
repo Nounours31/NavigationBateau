@@ -60,7 +60,7 @@ def main():
     }
     nav : Nav = Nav(navconfig)
     nmea : Nmea = Nmea()
-    myNet : mySocket = mySocket(debug=True)
+    myNet : mySocket = mySocket(debug=False)
 
     iLoop : int = 1  
     while True:

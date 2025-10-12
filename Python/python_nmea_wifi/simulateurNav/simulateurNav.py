@@ -3,6 +3,7 @@ import logging.config
 
 from math import floor, pi, cos, sin, tan, sqrt, atan2
 from datetime import datetime, timezone
+from typing import Dict
 
 from myEnv import myEnv
 
@@ -32,8 +33,8 @@ class simulateurNav:
 
         self.__variationMagnetiqueEnDeg : float  = config["variationMagnetique"]
         self.__positionDepart : position = position (
-            latitude(valAsDeg=config["positionDepart"]["LatitudeDecimale"]),
-            longitude(valAsDeg=config["positionDepart"]["LongitudeDecimale"]))
+            latitude.fromString(config["positionDepart"]["LatitudeDecimale"]),
+            longitude.fromString(config["positionDepart"]["LongitudeDecimale"]))
         self.__positionCourante : position = self.__positionDepart.copy()
 
         self.__ventReelDepart : vecteur = vecteur('Kt')
@@ -56,7 +57,14 @@ class simulateurNav:
         self.__courant.dir = cap(valAsDeg=config["eau"]["courant"]["directionEnDeg"])
 
         self.__courantDepart : vecteur = self.__courant.copy()
-        
+
+        self.__satellites : Dict[str, object] = {
+            "IDs": [80, 71, 73, 79, 10, 1, 68],
+            "PDOP": 1.83,
+            "HDOP": 1.09,
+            "VDOP": 1.47
+        }
+
         self.__logger.info("Creation simulateurNav")
         if self.__logger.isEnabledFor(level = logging.DEBUG):
             self.__logger.debug(self.toString())
@@ -81,6 +89,8 @@ class simulateurNav:
 
         retour += f"\tProfondeur:  {self.__profondeur:6.2f} m\n"
         retour += f"\tT eau:       {self.__temperatureEau:6.2f} °\n"
+        retour += f"\tSatellites:  {self.__satellites} °\n"
+
         return retour
 
     @property
@@ -88,22 +98,25 @@ class simulateurNav:
         return self.__heure
      
     @property
-    def positionCourante(self) :
+    def positionCourante(self) -> position:
         return self.__positionCourante
 
     @property
-    def variationMagnetiqueEnDeg(self) :
+    def variationMagnetiqueEnDeg(self) -> float :
         return self.__variationMagnetiqueEnDeg
 
+    @property
+    def vitesse(self) -> vecteur :
+        return self.__vitesse
 
     @property
-    def cap(self) :
-        return self.__vitesse.dir.valAsDeg
+    def satellite (self) -> Dict[str,object]:
+        return self.__satellites
 
     @property
-    def vitesse(self) :
-        return self.__vitesse.val
-                 
+    def profondeur (self) -> float:
+        return self.__profondeur
+
     # ----------------------------------------------------------------------------------
     # Navigation a :
     #   - cap       constant 
