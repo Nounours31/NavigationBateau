@@ -7,7 +7,7 @@ class myEnv:
     UDP_IP = "127.0.0.1"
     UDP_PORT = 5005
     TCP_PORT = 10110
-    sleepTimeInSec=2
+    sleepTimeInSec=2 # garder 2s
 
     # Port de la trinitee
     latTrinitee = 47.565102  # angleSexaToDecimal(degre = 2, minute = 56.23)
