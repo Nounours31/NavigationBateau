@@ -110,12 +110,28 @@ class simulateurNav:
         return self.__vitesse
 
     @property
+    def ventReel(self) -> vecteur :
+        return self.__ventReel
+
+    @property
+    def ventApparent(self) -> vecteur :
+        return self.__ventApp
+
+    @property
     def satellite (self) -> Dict[str,object]:
         return self.__satellites
 
     @property
     def profondeur (self) -> float:
         return self.__profondeur
+
+    @property
+    def eauTemp (self) -> float:
+        return self.__temperatureEau
+
+    @property
+    def airTemp (self) -> float:
+        return self.__temperatureAir
 
     # ----------------------------------------------------------------------------------
     # Navigation a :

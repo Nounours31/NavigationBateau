@@ -2,6 +2,7 @@
 import logging
 import logging.config
 import math
+from idlelib.textview import view_text
 
 from typing import List, Dict
 
@@ -161,6 +162,7 @@ class nmea0183lib(nmeaLib) :
     MILLE2KM_HEURE: float = 1.852
     PIED2METRE: float = 0.33
     FANTOM2METRE: float = 1.8288
+    InchMercure2Bar: float = 0.0334211
 
     def __init__(self):
         super().__init__()
@@ -236,14 +238,19 @@ class nmea0183lib(nmeaLib) :
         for t in self.getDPT(nav.profondeur):
             retour.append(t)
 
-        """
-        retour.append(self.getVTG(nav.vitesse, nav.cap, nav.variationMagnetiqueEnDeg))
-        retour.append(self.getGSA())
+        for t in self.getHDG(vitesse=nav.vitesse, variation=nav.variationMagnetiqueEnDeg):
+            retour.append(t)
 
-        retour.append(self.getDepth(nav.profondeur)))
-        retour.append(self.getHDG(nav.capEnDeg, nav.variationMagnetiqueEnDeg))
-        retour.append(self.getWindInfo(nav, "Relative", 150.0, 12.2))
-        retour.append(self.getWindInfo(nbSecondes, "True", 150.0, 12.2))
+        for t in self.getVHW(vitesse=nav.vitesse, variation=nav.variationMagnetiqueEnDeg):
+            retour.append(t)
+
+        for t in self.getMTW(nav.eauTemp, nav.airTemp):
+            retour.append(t)
+
+        for t in self.getWindInfo(nav.ventReel, nav.ventApparent, nav.variationMagnetiqueEnDeg, nav.vitesse):
+            retour.append(t)
+
+        """
         retour.append(self.getWayPointInfoBWR(now, positionDepartLatitudeDecimale + 2.0, positionDepartLongitudeDecimale + 2.0, 45.0, variationMagnetique, 2.98, "WP1"))
         retour.append(self.getWayPointInfoBWC(now, positionDepartLatitudeDecimale + 2.0, positionDepartLongitudeDecimale + 2.0, 45.0, variationMagnetique, 2.98, "WP1"))
         """
@@ -253,248 +260,7 @@ class nmea0183lib(nmeaLib) :
 
         return retour
 
-    # ==================================================================================
-    #     Position (GLL, GGA, RMC, VDO)
-    # ==================================================================================
-    #    GLL - Position géographique, Latitude / Longitude
-    # This is one of the sentences commonly emitted by GPS units.
-    #         1      2    3     4    5      6 7
-    #         |      |    |     |    |      | |
-    # $--GLL,ddmm.mm,a,dddmm.mm,a,hhmmss.ss,a*hh<CR><LF>
-    # NMEA 2.3:
-    # $--GLL,ddmm.mm,a,dddmm.mm,a,hhmmss.ss,a,m*hh<CR><LF>
-    # Field Number:
-    # 1. Latitude, dd is degrees, mm.mm is minutes
-    # 2. N or S (North or South)
-    # 3. Longitude, dd is degrees, mm.mm is minutes
-    # 4. E or W (East or West)
-    # 5. UTC of this position, hh is hours, mm is minutes, ss.ss is seconds
-    # 6. Status A - Data Valid, V - Data Invalid
-    # 7. FAA mode indicator (NMEA 2.3 and later)
-    # 8. Checksum
-    # The number of digits past the decimal point for Time, Latitude and Longitude is model dependent.
-    # Example: $GNGLL,4404.14012,N,12118.85993,W,001037.00,A,A*67
-    # ----------------------------------------------------------------------------------
-    def getGLL(self, utc_time : datetime, positionCourante : position) -> bytes:
-        nmeaMessage = "GPGLL,{lat},{latSens},{long},{longSens},{heure:09.2f},A,A".format(
-            heure=nmea0183lib.heure2GPSDecimale(utc_time),
-            lat=nmea0183lib.__nmeaLatitudeFormat(positionCourante.latitude),
-            latSens=positionCourante.latitude.sensAsString(),
-            long=nmea0183lib.__nmeaLongitudeFormat(positionCourante.longitude),
-            longSens=positionCourante.longitude.sensAsString())
-        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
 
-
-    def getVDO(h : datetime, latitudeDecimale : float, longitudeDecimale : float):
-        pass
-
-    '''
-        Elle est très courante car elle fait partie de celles qui sont utilisées pour connaître la position courante du récepteur GPS.
-
-        $GPGGA,064036.289,4836.5375,N,00740.9373,E,1,04,3.2,200.2,M,,,,0000*0E
-
-        $GPGGA       : Type de trame
-        064036.289   : Trame envoyée à 06 h 40 min 36 s 289 (heure UTC)
-        4836.5375,N  : Latitude 48,608958° Nord = 48° 36' 32.25" Nord
-        00740.9373,E : Longitude 7,682288° Est = 7° 40' 56.238" Est
-        1            : Type de positionnement (le 1 est un positionnement GPS)
-        04           : Nombre de satellites utilisés pour calculer les coordonnées
-        3.2          : Précision horizontale ou HDOP (Horizontal dilution of precision)
-        200.2,M      : Altitude 200,2, en mètres
-        ,,,,,0000    : D'autres informations peuvent être inscrites dans ces champs
-        *            : séparateur de checksum
-        0E           : Somme de contrôle de parité, un simple XOR sur les caractères entre $ et *
-    '''
-    def getGGA(self, utc_time : datetime, positionCourante : position) -> bytes:
-        nmeaMessage = "GPGGA,{heure:09.2f},{lat},{latSens},{long},{longSens},1,10,1.2,27.0,M,-34.2,M,,".format(
-            heure =  nmea0183lib.heure2GPSDecimale(utc_time),
-            lat = nmea0183lib.__nmeaLatitudeFormat(positionCourante.latitude),
-            latSens = positionCourante.latitude.sensAsString(),
-            long = nmea0183lib.__nmeaLongitudeFormat(positionCourante.longitude),
-            longSens = positionCourante.longitude.sensAsString())
-        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
-    
-    '''
-    Une autre trame très courante pour les bateaux est la RMC, qui donne l'heure, la latitude, la longitude, la date, ainsi que la vitesse et la route sur le fond mais pas l'altitude. 
-        $GPRMC,053740.000,A,2503.6319,N,12136.0099,E,2.69,79.65,100106,,,A*53
-
-        $GPRMC       : type de trame
-        053740.000   : heure UTC exprimée en hhmmss.sss : 5 h 37 min 40 s
-        A            : état A=données valides, V=données invalides
-        2503.6319    : Latitude exprimée en ddmm.mmmmm: 25° 03.6319' = 25° 03' 37,914"
-        N            : indicateur de latitude N=nord, S=sud
-        12136.0099   : Longitude exprimée en dddmm.mmmmm: 121° 36.0099' = 121° 36' 00,594"
-        E            : indicateur de longitude E=est, W=ouest
-        2.69         : vitesse sur le fond en nœuds (2,69 nd = 3,10 mph = 4,98 km/h)
-        79.65        : route sur le fond en degrés
-        100106       : date exprimée en format « jjmmaa » : 10 janvier 2006
-        ,            : déclinaison magnétique en degrés (souvent vide pour un GPS)
-        ,            : sens de la déclinaison E=est, W=ouest (souvent vide pour un GPS)
-        A            : mode de positionnement A=autonome, D=DGPS, E=DR
-        *            : séparateur de checksum
-        53           : somme de contrôle de parité au format hexadécimal[4] 
-'''
-    def getRMC(self, utc_time : datetime, positionCourant: position, vitesse : vecteur) -> bytes:
-        nmeaMessage = "GPRMC,{heure:09.2f},A,{lat},{latSens},{long},{longSens},{vitesseEnNoeud:06.2f},{cap:06.2f},{dateutc:06d},002.1,W,A,V".format(
-            heure =  nmea0183lib.heure2GPSDecimale(utc_time),
-            lat = nmea0183lib.__nmeaLatitudeFormat(positionCourant.latitude),
-            latSens = positionCourant.latitude.sensAsString(),
-            long = nmea0183lib.__nmeaLongitudeFormat(positionCourant.longitude),
-            longSens = positionCourant.longitude.sensAsString(),
-            vitesseEnNoeud = vitesse.val,
-            cap = vitesse.dir.valAsDeg,
-            dateutc =  nmea0183lib.date2GPSDecimale(utc_time))
-        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
-
-
-
-    # ----------------------------------------------------------------------------------
-    #     Position (GLL, GGA, RMC, VDO)
-    #     Cap fond et vitesse (RMC, VTG, VDO)
-    #     Cap surface (HDG, HDM, HDT, VHW, PFECATT, VDO)
-    #     Profondeur (DBT, DPT)
-    #     Vent (MWV, MWD)
-    #     Température de surface de la mer (MDA, MTW)
-    #     AIS (VDM) (*)
-    # ----------------------------------------------------------------------------------
-
-    '''
-    GSA - GPS DOP and active satellites
-        This is one of the sentences commonly emitted by GPS units.
-        1 2 3 14 15 16 17 18
-        | | | | | | | |
-        $--GSA,a,a,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x.x,x.x,x.x*hh<CR><LF>
-        Field Number:
-        1. Selection mode: M=Manual, forced to operate in 2D or 3D, A=Automatic, 2D/3D
-        2. Mode (1 = no fix, 2 = 2D fix, 3 = 3D fix)
-        3. ID of 1st satellite used for fix
-        4. ID of 2nd satellite used for fix
-        5. ID of 3rd satellite used for fix
-        6. ID of 4th satellite used for fix
-        7. ID of 5th satellite used for fix
-        8. ID of 6th satellite used for fix
-        9. ID of 7th satellite used for fix
-        10. ID of 8th satellite used for fix
-        11. ID of 9th satellite used for fix
-        12. ID of 10th satellite used for fix
-        13. ID of 11th satellite used for fix
-        14. ID of 12th satellite used for fix
-        15. PDOP
-        16. HDOP
-        17. VDOP
-        18. System ID (NMEA 4.11), see above
-        xx. Checksum
-        Example: $GNGSA,A,3,80,71,73,79,69,,,,,,,,1.83,1.09,1.47*17
-        Note: NMEA 4.1+ systems (u-blox 9, Quectel LCD79) may emit an extra field, System ID, just before the checksum.
-        1 = GPS L1C/A, L2CL, L2CM
-        2 = GLONASS L1 OF, L2 OF
-        3 = Galileo E1C, E1B, E5 bl, E5 bQ
-        4 = BeiDou B1I D1, B1I D2, B2I D1, B2I D12
-    '''
-
-    def getGSA(self, satellite : Dict [str, object]) -> bytes :
-        nmeaMessage : str = "GPGSA,A,3,"
-        satIds : str = ""
-        nbsat : int = 0
-        NBSATMAX : int = 14
-        for sat in satellite["IDs"]:
-            satIds += f"{sat:02d}"
-            nbsat += 1
-            if nbsat == NBSATMAX:
-                break
-            satIds += ","
-
-        for i in range(nbsat, NBSATMAX, 1):
-            satIds += ","
-
-        nmeaMessage += satIds
-        nmeaMessage += f"{satellite['PDOP']:4.2f},{satellite['HDOP']:4.2f},{satellite['VDOP']:4.2f}"
-        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
-
-
-    '''
-    GSV - Satellites in view
-        This is one of the sentences commonly emitted by GPS units.
-        These sentences describe the sky position of a UPS satellite in view. Typically they’re shipped in a group of 2 or 3.
-        1 2 3 4 5 6 7 n
-        | | | | | | | |
-        $--GSV,x,x,x,x,x,x,x,...*hh<CR><LF>
-        Field Number:
-        1. total number of GSV sentences to be transmitted in this group
-        NMEA Revealed https://gpsd.gitlab.io/gpsd/NMEA.html
-        13 sur 28 06/10/2025, 19:19
-        2. Sentence number, 1-9 of this GSV message within current group
-        3. total number of satellites in view (leading zeros sent)
-        4. satellite ID or PRN number (leading zeros sent)
-        5. elevation in degrees (-90 to 90) (leading zeros sent)
-        6. azimuth in degrees to true north (000 to 359) (leading zeros sent)
-        7. SNR in dB (00-99) (leading zeros sent) more satellite info quadruples like 4-7 n-1) Signal ID (NMEA 4.11) n) checksum
-        
-        Example: 
-            $GPGSV,3,1,11, 03,03,111,00, 04,15,270,00, 06,01,010,00, 13,06,292,00 *74 
-            $GPGSV,3,2,11, 14,25,170,00, 16,57,208,39, 18,67,296,40, 19,40,246,00 *74
-            $GPGSV,3,3,11, 22,42,067,42, 24,14,311,43, 27,05,244,00, ,,,*4D
-        Some GPS receivers may emit more than 12 quadruples (more than three GPGSV sentences), even though NMEA-0813 doesn’t allow this. (The extras might
-        be WAAS satellites, for example.) Receivers may also report quads for satellites they aren’t tracking, in which case the SNR field will be null; we don’t know whether
-        this is formally allowed or not.
-        Example: $GLGSV,3,3,09,88,07,028*51
-        Note: NMEA 4.10+ systems (u-blox 9, Quectel LCD79) may emit an extra field, Signal ID, just before the checksum. See the description of Signal ID’s above.
-        Note: $GNGSV uses PRN in field 4. Other $GxGSV use the satellite ID in field 4. Jackson Labs, Quectel, Telit, and others get this wrong, in various conflicting
-        ways
-    '''
-    def __extractGSVInfoSatellites(self, indiceSatellite : int, allSatellite: list[str]):
-        retour : str = ""
-
-        nbSat: int = len(allSatellite)
-        elevation: int = 78
-        azimut : int = 254
-        snr : int = 45
-
-        nbMaxSatelliteParTrame : int = 4
-
-        for i in range (0,nbMaxSatelliteParTrame,1):
-            if indiceSatellite + i >= nbSat:
-                retour +=  ",,,"
-            else:
-                retour += f"{allSatellite[indiceSatellite + i]:02d},{elevation:02d},{azimut:03d},{snr:02d}"
-
-            if not i == (nbMaxSatelliteParTrame - 1):
-                retour += ','
-        return retour
-
-    def getGSV(self, satellite : Dict [str, object]) -> List[bytes] :
-        retour : list[bytes] = []
-        allSatellite : list[str] = satellite["IDs"]
-        nbSat : int = len (allSatellite)
-        modulo : int =  int(nbSat % 4)
-        nbTrame : int = math.floor(nbSat / 4.0)  + (0 if modulo == 0 else 1)
-
-        indiceSatellite = 0
-        for iTrame in range (1, nbTrame +1, 1):
-            curTrame = f"GPGSV,{nbTrame:1d},{iTrame:1d},{nbSat:02d},{self.__extractGSVInfoSatellites(indiceSatellite, allSatellite)}"
-            indiceSatellite += 4
-            retour.append(nmea0183lib.__addNMEACheckSum(curTrame))
-
-        return retour
-
-    # ----------------------------------------------------------------------------------
-    #     Position (GLL, GGA, RMC, VDO)
-    #     Cap fond et vitesse (RMC, VTG, VDO)
-    #     Cap surface (HDG, HDM, HDT, VHW, PFECATT, VDO)
-    #     Profondeur (DBT, DPT)
-    #     Vent (MWV, MWD)
-    #     Température de surface de la mer (MDA, MTW)
-    #     AIS (VDM) (*)
-    # ----------------------------------------------------------------------------------
-    def getVTG(self, vitesse : vecteur, deviationEnDeg : float):
-        capMagnetique = vitesse.dir.valAsDeg + deviationEnDeg
-        vitesseEnkm = vitesse.val * nmea0183lib.MILLE2KM_HEURE
-        nmeaMessage = "GPVTG,{capEnDeg:05.1f},T,{capMagnetique:05.1f},M,{vitesseEnNoeud:05.1f},N,{vitesseEnkm:05.1f},K,A".format(
-            capEnDeg = vitesse.dir.valAsDeg,
-            capMagnetique = capMagnetique,
-            vitesseEnNoeud = vitesse.val,
-            vitesseEnkm = vitesseEnkm)
-        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
 
 
     # ----------------------------------------------------------------------------------
@@ -507,83 +273,123 @@ class nmea0183lib(nmeaLib) :
     #     AIS (VDM) (*)
     # ----------------------------------------------------------------------------------
     """
-    DPT - Depth of Water
-        1 2 3 4
-        | | | |
-        $--DPT,x.x,x.x,x.x*hh<CR><LF>
+    MTW - Mean Temperature of Water
+        1 2 3
+        | | |
+        $--MTW,x.x,C*hh<CR><LF>
         Field Number:
-        1. Water depth relative to transducer, meters
-        2. Offset from transducer, meters positive means distance from transducer to water line negative means distance from transducer to keel
-        3. Maximum range scale in use (NMEA 3.0 and above)
-        4. Checksum
-        This sentence was incorrectly titled "Heading - Deviation & Variation" in [BETKE]. It’s documented at http://www.humminbird.com/normal.asp?id=853
-        Example: $INDPT,2.3,0.0*46
+        1. Temperature, degrees
+        2. Unit of Measurement, Celsius
+        3. Checksum
+        [GLOBALSAT] lists this as "Meteorological Temperature of Water", which is probably incorrect.
+        Example: $INMTW,17.9,C*1B
+    MDA - Meteorological Composite
+        1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
+        | | | | | | | | | | | | | | | | | | | | |
+        $--MDA,n.nn,I,n.nnn,B,n.n,C,n.C,n.n,n,n.n,C,n.n,T,n.n,M,n.n,N,n.n,M*hh<CR><LF>
+        Field Number:
+        1. Barometric pressure, inches of mercury, to the nearest 0.01 inch
+        2. I = inches of mercury
+        3. Barometric pressure, bars, to the nearest .001 bar
+        4. B = bars
+        5. Air temperature, degrees C, to the nearest 0.1 degree C
+        6. C = degrees C
+        7. Water temperature, degrees C (this field left blank by WeatherStation)
+        8. C = degrees C
+        9. Relative humidity, percent, to the nearest 0.1 percent
+        10. Absolute humidity, percent
+        11. Dew point, degrees C, to the nearest 0.1 degree C
+        12. C = degrees C
+        13. Wind direction, degrees True, to the nearest 0.1 degree
+        14. T = true
+        15. Wind direction, degrees Magnetic, to the nearest 0.1 degree
+        16. M = magnetic
+        17. Wind speed, knots, to the nearest 0.1 knot
+        18. N = knots
+        19. Wind speed, meters per second, to the nearest 0.1 m/s
+        20. M = meters per second
+        21. Checksum
+        Obsolete as of 2009.
+    """
+    def getMTW(self, Teau: float,Tair: float) -> List[bytes]:
+        retour: List[bytes] = []
+        nmeaMessage = f"IIMTW,{Teau:04.2f},C"
+        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
+
+#        pAtm = 1.013
+#        nmeaMessage = f"IIMDA,{(pAtm * nmea0183lib.InchMercure2Bar):04.2f},I,{pAtm:04.2f},B,{Tair:04.2f},C,{Teau:04.2f},C,0.0,0.0,10.0,C,"
+#        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
+
+        return retour
+
+    """
+    VWR - Relative Wind Speed and Angle
+        1 2 3 4 5 6 7 8 9
+        | | | | | | | | |
+        $--VWR,x.x,a,x.x,N,x.x,M,x.x,K*hh<CR><LF>
+        Field Number:
+        1. Wind direction magnitude in degrees
+        2. Wind direction Left/Right of bow
+        3. Speed
+        4. N = Knots
+        5. Speed
+        6. M = Meters Per Second
+        7. Speed
+        8. K = Kilometers Per Hour
+        9. Checksum
+    
         
-    DBK - Depth Below Keel
-        1 2 3 4 5 6 7
-        | | | | | | |
-        $--DBK,x.x,f,x.x,M,x.x,F*hh<CR><LF>
+    MWD - Wind Direction & Speed
+        1 2 3 4 5 6 7 8 9
+        | | | | | | | | |
+        $--MWD,x.x,a,x.x,a,x.x,a,x.x,a*hh<CR><LF>
         Field Number:
-        1. Depth, feet
-        2. f = feet
-        3. Depth, meters
-        4. M = meters
-        5. Depth, Fathoms
-        6. F = Fathoms
-        7. Checksum
-    DBS - Depth Below Surface
-        1 2 3 4 5 6 7
-        | | | | | | |
-        $--DBS,x.x,f,x.x,M,x.x,F*hh<CR><LF>
+        1. Wind Direction, 0 to 359.9 degrees
+        2. Reference, T = True, M = Magnetic
+        3. Wind Direction, 0 to 359.9 degrees
+        4. Reference, T = True, M = Magnetic
+        5. Wind Speed
+        6. Wind Speed Units, K/M/N
+        7. Wind Speed
+        8. Wind Speed Units, K/M/N
+        9. Checksum
+        Example: $WIMWD,302.4,T,289.6,M,10.5,N,5.4,M*6F
+        
+    MWV - Wind Speed and Angle
+        1 2 3 4 5
+        | | | | |
+        $--MWV,x.x,a,x.x,a*hh<CR><LF>
         Field Number:
-        1. Depth, feet
-        2. f = feet
-        3. Depth, meters
-        4. M = meters
-        5. Depth, Fathoms
-        6. F = Fathoms
-        7. Checksum
-    DBT - Depth below transducer
-        1 2 3 4 5 6 7
-        | | | | | | |
-        $--DBT,x.x,f,x.x,M,x.x,F*hh<CR><LF>
-        Field Number:
-        1. Water depth, feet
-        2. f = feet
-        3. Water depth, meters
-        4. M = meters
-        5. Water depth, Fathoms
-        6. F = Fathoms
-        7. Checksum
-        In real-world sensors, sometimes not all three
-        """
-    def getDPT(self, profondeur: float) -> List[bytes]:
-        nmeaMessage = []
-        x = "IIDBS,{depthP:02.1f},f,{depth:02.1f},M,{depthF:02.1f},F".format(
-                        depthP =  profondeur / nmea0183lib.PIED2METRE,
-                        depth =  profondeur ,
-                        depthF =  profondeur / nmea0183lib.FANTOM2METRE)
-        nmeaMessage.append(nmea0183lib.__addNMEACheckSum(x))
+        1. Wind Angle, 0 to 359 degrees
+        2. Reference, R = Relative, T = True
+        3. Wind Speed
+        4. Wind Speed Units, K/M/
+        5. Status, A = Data Valid, V = Invalid
+        6. Checksum
+    """
+    def getWindInfo(self, ventReel: vecteur, ventApparent: vecteur, variation: float, vitesse: vecteur) -> list[bytes]:
+        retour : List[bytes] = []
 
-        x = "IIDPT,{depth:02.1f},{ecart:02.1f},".format(
-                        depth =  profondeur,
-                        ecart = -abs(nmea0183lib.distanceSondeQuilleEnMetre))
-        nmeaMessage.append(nmea0183lib.__addNMEACheckSum(x))
 
-        profondeur = profondeur - nmea0183lib.distanceSondeQuilleEnMetre
-        x = "IIDBK,{depthP:02.1f},f,{depth:02.1f},M,{depthF:02.1f},F".format(
-                        depthP =  profondeur / nmea0183lib.PIED2METRE,
-                        depth =  profondeur ,
-                        depthF =  profondeur / nmea0183lib.FANTOM2METRE)
-        nmeaMessage.append(nmea0183lib.__addNMEACheckSum(x))
+        # Wind direction Left / Right of bow
+        WindBowDir = "R" if (vitesse.dir.valAsDeg > ventApparent.dir.valAsDeg) else "L"
+        vitesseVentN = ventApparent.val
+        vitesseVentK = ventApparent.val * nmea0183lib.MILLE2KM_HEURE
+        vitesseVentM = vitesseVentK / 3.6
+        nmeaMessage = f"IIVWR,{ventApparent.dir.valAsDeg:04.2f},{WindBowDir},{vitesseVentN:04.2f},N,{vitesseVentM:04.2f},M,{vitesseVentM:04.2f},K"
+        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
 
-        x = "IIDBT,{depthP:02.1f},f,{depth:02.1f},M,{depthF:02.1f},F".format(
-                        depthP =  profondeur / nmea0183lib.PIED2METRE,
-                        depth =  profondeur ,
-                        depthF =  profondeur / nmea0183lib.FANTOM2METRE)
-        nmeaMessage.append(nmea0183lib.__addNMEACheckSum(x))
+        vitesseVentN = ventReel.val
+        vitesseVentK = ventReel.val * nmea0183lib.MILLE2KM_HEURE
+        vitesseVentM = vitesseVentK / 3.6
+        nmeaMessage = f"IIMWD,{ventReel.dir.valAsDeg:04.2f},T,{(ventReel.dir.valAsDeg + variation):04.2f},M,{vitesseVentN:04.2f},N,{vitesseVentM:04.2f},M"
+        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
 
-        return nmeaMessage
+        nmeaMessage = f"IIMWV,{ventReel.dir.valAsDeg:04.2f},T,{vitesseVentM:04.2f},A"
+        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
+
+        return retour
+
 
 
     # ----------------------------------------------------------------------------------
@@ -595,35 +401,6 @@ class nmea0183lib(nmeaLib) :
     #     Température de surface de la mer (MDA, MTW)
     #     AIS (VDM) (*)
     # ----------------------------------------------------------------------------------
-    def getHDG(self,i: int, cap:float, variation:float) -> bytes:
-        capM = (cap + variation)
-        if capM < 0:
-            capM += 360
-        if capM > 360:
-            capM -= 360
-
-        nmeaMessage = "IIHDG,{capM:04.2f},{variationM:04.2f},{variationS:s},,".format(
-            capM =  capM,
-            variationM =  abs(variation),
-            variationS = "E" if variation>0 else "W")        
-        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
-
-    # ----------------------------------------------------------------------------------
-    #     Position (GLL, GGA, RMC, VDO)
-    #     Cap fond et vitesse (RMC, VTG, VDO)
-    #     Cap surface (HDG, HDM, HDT, VHW, PFECATT, VDO)
-    #     Profondeur (DBT, DPT)
-    #     Vent (MWV, MWD)
-    #     Température de surface de la mer (MDA, MTW)
-    #     AIS (VDM) (*)
-    # ----------------------------------------------------------------------------------
-    def getWindInfo(self,i: int, type: str, angle:float, speedInKnot:float) -> bytes:
-        reference = "R" if "Relative" == type else "T"
-        nmeaMessage = "IIMWV,{angle:04.2f},{reference:s},{speed:04.2f},K,A".format(
-            angle =  angle,
-            reference =  reference,
-            speed =  speedInKnot)        
-        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
 
     # ----------------------------------------------------------------------------------
     #     Position (GLL, GGA, RMC, VDO)
@@ -680,3 +457,454 @@ class nmea0183lib(nmeaLib) :
     #     Température de surface de la mer (MDA, MTW)
     #     AIS (VDM) (*)
     # ----------------------------------------------------------------------------------
+
+
+    # ----------------------------------------------------------------------------------
+    #  Info AIS - ?
+    # ----------------------------------------------------------------------------------
+    def getVDO(h: datetime, latitudeDecimale: float, longitudeDecimale: float):
+        pass
+    def getVDM(h: datetime, latitudeDecimale: float, longitudeDecimale: float):
+        pass
+
+
+    # ----------------------------------------------------------------------------------
+    #  SONDEUR - SD* - Profondeur (DBT, DPT)
+    # ----------------------------------------------------------------------------------
+    """
+    DPT - Depth of Water
+        1 2 3 4
+        | | | |
+        $--DPT,x.x,x.x,x.x*hh<CR><LF>
+        Field Number:
+        1. Water depth relative to transducer, meters
+        2. Offset from transducer, meters positive means distance from transducer to water line negative means distance from transducer to keel
+        3. Maximum range scale in use (NMEA 3.0 and above)
+        4. Checksum
+        This sentence was incorrectly titled "Heading - Deviation & Variation" in [BETKE]. It’s documented at http://www.humminbird.com/normal.asp?id=853
+        Example: $INDPT,2.3,0.0*46
+
+    DBK - Depth Below Keel
+        1 2 3 4 5 6 7
+        | | | | | | |
+        $--DBK,x.x,f,x.x,M,x.x,F*hh<CR><LF>
+        Field Number:
+        1. Depth, feet
+        2. f = feet
+        3. Depth, meters
+        4. M = meters
+        5. Depth, Fathoms
+        6. F = Fathoms
+        7. Checksum
+    DBS - Depth Below Surface
+        1 2 3 4 5 6 7
+        | | | | | | |
+        $--DBS,x.x,f,x.x,M,x.x,F*hh<CR><LF>
+        Field Number:
+        1. Depth, feet
+        2. f = feet
+        3. Depth, meters
+        4. M = meters
+        5. Depth, Fathoms
+        6. F = Fathoms
+        7. Checksum
+    DBT - Depth below transducer
+        1 2 3 4 5 6 7
+        | | | | | | |
+        $--DBT,x.x,f,x.x,M,x.x,F*hh<CR><LF>
+        Field Number:
+        1. Water depth, feet
+        2. f = feet
+        3. Water depth, meters
+        4. M = meters
+        5. Water depth, Fathoms
+        6. F = Fathoms
+        7. Checksum
+        In real-world sensors, sometimes not all three
+        """
+
+    def getDPT(self, profondeur: float) -> List[bytes]:
+        nmeaMessage = []
+        x = "SDDBS,{depthP:02.1f},f,{depth:02.1f},M,{depthF:02.1f},F".format(
+            depthP=profondeur / nmea0183lib.PIED2METRE,
+            depth=profondeur,
+            depthF=profondeur / nmea0183lib.FANTOM2METRE)
+        nmeaMessage.append(nmea0183lib.__addNMEACheckSum(x))
+
+        x = "SDDPT,{depth:02.1f},{ecart:02.1f},".format(
+            depth=profondeur,
+            ecart=-abs(nmea0183lib.distanceSondeQuilleEnMetre))
+        nmeaMessage.append(nmea0183lib.__addNMEACheckSum(x))
+
+        profondeur = profondeur - nmea0183lib.distanceSondeQuilleEnMetre
+        x = "SDDBK,{depthP:02.1f},f,{depth:02.1f},M,{depthF:02.1f},F".format(
+            depthP=profondeur / nmea0183lib.PIED2METRE,
+            depth=profondeur,
+            depthF=profondeur / nmea0183lib.FANTOM2METRE)
+        nmeaMessage.append(nmea0183lib.__addNMEACheckSum(x))
+
+        x = "SDDBT,{depthP:02.1f},f,{depth:02.1f},M,{depthF:02.1f},F".format(
+            depthP=profondeur / nmea0183lib.PIED2METRE,
+            depth=profondeur,
+            depthF=profondeur / nmea0183lib.FANTOM2METRE)
+        nmeaMessage.append(nmea0183lib.__addNMEACheckSum(x))
+
+        return nmeaMessage
+
+
+
+    # ----------------------------------------------------------------------------------
+    #  Info GPS - GP*
+    # ----------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
+    #        Info vitesse
+    # ----------------------------------------------------------------------------------
+    """
+    VTG - Track made good and Ground speed
+        This is one of the sentences commonly emitted by GPS units.
+        1 2 3 4 5 6 7 8 9
+        | | | | | | | | |
+        $--VTG,x.x,T,x.x,M,x.x,N,x.x,K*hh<CR><LF>
+        NMEA 2.3:
+        $--VTG,x.x,T,x.x,M,x.x,N,x.x,K,m*hh<CR><LF>
+        Field Number:
+        1. Course over ground, degrees True
+        2. T = True
+        3. Course over ground, degrees Magnetic
+        4. M = Magnetic
+        5. Speed over ground, knots
+        6. N = Knots
+        7. Speed over ground, km/h
+        8. K = Kilometers Per Hour
+        9. FAA mode indicator (NMEA 2.3 and later)
+            Table 1. FAA Mode Indicator
+            A Autonomous mode
+            D Differential mode
+            E Estimated (dead reckoning) mode
+            M Manual input mode
+            S Simulator mode
+            N Data not valid
+
+        10. Checksum
+        Some devices, such as those described in [GLOBALSAT], leave the magnetic-bearing fields 3 and 4 empty.
+        Example: $GPVTG,220.86,T,,M,2.550,N,4.724,K,A*34
+    """
+    def getVTG(self, vitesse : vecteur, deviationEnDeg : float):
+        capMagnetique = vitesse.dir.valAsDeg + deviationEnDeg
+        vitesseEnkm = vitesse.val * nmea0183lib.MILLE2KM_HEURE
+        nmeaMessage = "GPVTG,{capEnDeg:05.1f},T,{capMagnetique:05.1f},M,{vitesseEnNoeud:05.1f},N,{vitesseEnkm:05.1f},K,A".format(
+            capEnDeg = vitesse.dir.valAsDeg,
+            capMagnetique = capMagnetique,
+            vitesseEnNoeud = vitesse.val,
+            vitesseEnkm = vitesseEnkm)
+        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
+
+    # ----------------------------------------------------------------------------------
+    #        Info Positionement
+    # ----------------------------------------------------------------------------------
+    # ==================================================================================
+    #     Position (GLL, GGA, RMC, VDO)
+    # ==================================================================================
+    #    GLL - Position géographique, Latitude / Longitude
+    # This is one of the sentences commonly emitted by GPS units.
+    #         1      2    3     4    5      6 7
+    #         |      |    |     |    |      | |
+    # $--GLL,ddmm.mm,a,dddmm.mm,a,hhmmss.ss,a*hh<CR><LF>
+    # NMEA 2.3:
+    # $--GLL,ddmm.mm,a,dddmm.mm,a,hhmmss.ss,a,m*hh<CR><LF>
+    # Field Number:
+    # 1. Latitude, dd is degrees, mm.mm is minutes
+    # 2. N or S (North or South)
+    # 3. Longitude, dd is degrees, mm.mm is minutes
+    # 4. E or W (East or West)
+    # 5. UTC of this position, hh is hours, mm is minutes, ss.ss is seconds
+    # 6. Status A - Data Valid, V - Data Invalid
+    # 7. FAA mode indicator (NMEA 2.3 and later)
+    # 8. Checksum
+    # The number of digits past the decimal point for Time, Latitude and Longitude is model dependent.
+    # Example: $GNGLL,4404.14012,N,12118.85993,W,001037.00,A,A*67
+    # ----------------------------------------------------------------------------------
+    def getGLL(self, utc_time: datetime, positionCourante: position) -> bytes:
+        nmeaMessage = "GPGLL,{lat},{latSens},{long},{longSens},{heure:09.2f},A,A".format(
+            heure=nmea0183lib.heure2GPSDecimale(utc_time),
+            lat=nmea0183lib.__nmeaLatitudeFormat(positionCourante.latitude),
+            latSens=positionCourante.latitude.sensAsString(),
+            long=nmea0183lib.__nmeaLongitudeFormat(positionCourante.longitude),
+            longSens=positionCourante.longitude.sensAsString())
+        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
+    '''
+        Elle est très courante car elle fait partie de celles qui sont utilisées pour connaître la position courante du récepteur GPS.
+
+        $GPGGA,064036.289,4836.5375,N,00740.9373,E,1,04,3.2,200.2,M,,,,0000*0E
+
+        $GPGGA       : Type de trame
+        064036.289   : Trame envoyée à 06 h 40 min 36 s 289 (heure UTC)
+        4836.5375,N  : Latitude 48,608958° Nord = 48° 36' 32.25" Nord
+        00740.9373,E : Longitude 7,682288° Est = 7° 40' 56.238" Est
+        1            : Type de positionnement (le 1 est un positionnement GPS)
+        04           : Nombre de satellites utilisés pour calculer les coordonnées
+        3.2          : Précision horizontale ou HDOP (Horizontal dilution of precision)
+        200.2,M      : Altitude 200,2, en mètres
+        ,,,,,0000    : D'autres informations peuvent être inscrites dans ces champs
+        *            : séparateur de checksum
+        0E           : Somme de contrôle de parité, un simple XOR sur les caractères entre $ et *
+    '''
+
+    def getGGA(self, utc_time: datetime, positionCourante: position) -> bytes:
+        nmeaMessage = "GPGGA,{heure:09.2f},{lat},{latSens},{long},{longSens},1,10,1.2,27.0,M,-34.2,M,,".format(
+            heure=nmea0183lib.heure2GPSDecimale(utc_time),
+            lat=nmea0183lib.__nmeaLatitudeFormat(positionCourante.latitude),
+            latSens=positionCourante.latitude.sensAsString(),
+            long=nmea0183lib.__nmeaLongitudeFormat(positionCourante.longitude),
+            longSens=positionCourante.longitude.sensAsString())
+        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
+
+    '''
+    Une autre trame très courante pour les bateaux est la RMC, qui donne l'heure, la latitude, la longitude, la date, ainsi que la vitesse et la route sur le fond mais pas l'altitude. 
+        $GPRMC,053740.000,A,2503.6319,N,12136.0099,E,2.69,79.65,100106,,,A*53
+
+        $GPRMC       : type de trame
+        053740.000   : heure UTC exprimée en hhmmss.sss : 5 h 37 min 40 s
+        A            : état A=données valides, V=données invalides
+        2503.6319    : Latitude exprimée en ddmm.mmmmm: 25° 03.6319' = 25° 03' 37,914"
+        N            : indicateur de latitude N=nord, S=sud
+        12136.0099   : Longitude exprimée en dddmm.mmmmm: 121° 36.0099' = 121° 36' 00,594"
+        E            : indicateur de longitude E=est, W=ouest
+        2.69         : vitesse sur le fond en nœuds (2,69 nd = 3,10 mph = 4,98 km/h)
+        79.65        : route sur le fond en degrés
+        100106       : date exprimée en format « jjmmaa » : 10 janvier 2006
+        ,            : déclinaison magnétique en degrés (souvent vide pour un GPS)
+        ,            : sens de la déclinaison E=est, W=ouest (souvent vide pour un GPS)
+        A            : mode de positionnement A=autonome, D=DGPS, E=DR
+        *            : séparateur de checksum
+        53           : somme de contrôle de parité au format hexadécimal[4] 
+'''
+
+    def getRMC(self, utc_time: datetime, positionCourant: position, vitesse: vecteur) -> bytes:
+        nmeaMessage = "GPRMC,{heure:09.2f},A,{lat},{latSens},{long},{longSens},{vitesseEnNoeud:06.2f},{cap:06.2f},{dateutc:06d},002.1,W,A,V".format(
+            heure=nmea0183lib.heure2GPSDecimale(utc_time),
+            lat=nmea0183lib.__nmeaLatitudeFormat(positionCourant.latitude),
+            latSens=positionCourant.latitude.sensAsString(),
+            long=nmea0183lib.__nmeaLongitudeFormat(positionCourant.longitude),
+            longSens=positionCourant.longitude.sensAsString(),
+            vitesseEnNoeud=vitesse.val,
+            cap=vitesse.dir.valAsDeg,
+            dateutc=nmea0183lib.date2GPSDecimale(utc_time))
+        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
+
+    # ----------------------------------------------------------------------------------
+    #        Info satellites
+    # ----------------------------------------------------------------------------------
+    '''
+    GSA - GPS DOP and active satellites
+        This is one of the sentences commonly emitted by GPS units.
+        1 2 3 14 15 16 17 18
+        | | | | | | | |
+        $--GSA,a,a,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x.x,x.x,x.x*hh<CR><LF>
+        Field Number:
+        1. Selection mode: M=Manual, forced to operate in 2D or 3D, A=Automatic, 2D/3D
+        2. Mode (1 = no fix, 2 = 2D fix, 3 = 3D fix)
+        3. ID of 1st satellite used for fix
+        4. ID of 2nd satellite used for fix
+        5. ID of 3rd satellite used for fix
+        6. ID of 4th satellite used for fix
+        7. ID of 5th satellite used for fix
+        8. ID of 6th satellite used for fix
+        9. ID of 7th satellite used for fix
+        10. ID of 8th satellite used for fix
+        11. ID of 9th satellite used for fix
+        12. ID of 10th satellite used for fix
+        13. ID of 11th satellite used for fix
+        14. ID of 12th satellite used for fix
+        15. PDOP
+        16. HDOP
+        17. VDOP
+        18. System ID (NMEA 4.11), see above
+        xx. Checksum
+        Example: $GNGSA,A,3,80,71,73,79,69,,,,,,,,1.83,1.09,1.47*17
+        Note: NMEA 4.1+ systems (u-blox 9, Quectel LCD79) may emit an extra field, System ID, just before the checksum.
+        1 = GPS L1C/A, L2CL, L2CM
+        2 = GLONASS L1 OF, L2 OF
+        3 = Galileo E1C, E1B, E5 bl, E5 bQ
+        4 = BeiDou B1I D1, B1I D2, B2I D1, B2I D12
+    '''
+
+    def getGSA(self, satellite: Dict[str, object]) -> bytes:
+        nmeaMessage: str = "GPGSA,A,3,"
+        satIds: str = ""
+        nbsat: int = 0
+        NBSATMAX: int = 14
+        for sat in satellite["IDs"]:
+            satIds += f"{sat:02d}"
+            nbsat += 1
+            if nbsat == NBSATMAX:
+                break
+            satIds += ","
+
+        for i in range(nbsat, NBSATMAX, 1):
+            satIds += ","
+
+        nmeaMessage += satIds
+        nmeaMessage += f"{satellite['PDOP']:4.2f},{satellite['HDOP']:4.2f},{satellite['VDOP']:4.2f}"
+        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
+
+    '''
+    GSV - Satellites in view
+        This is one of the sentences commonly emitted by GPS units.
+        These sentences describe the sky position of a UPS satellite in view. Typically they’re shipped in a group of 2 or 3.
+        1 2 3 4 5 6 7 n
+        | | | | | | | |
+        $--GSV,x,x,x,x,x,x,x,...*hh<CR><LF>
+        Field Number:
+        1. total number of GSV sentences to be transmitted in this group
+        NMEA Revealed https://gpsd.gitlab.io/gpsd/NMEA.html
+        13 sur 28 06/10/2025, 19:19
+        2. Sentence number, 1-9 of this GSV message within current group
+        3. total number of satellites in view (leading zeros sent)
+        4. satellite ID or PRN number (leading zeros sent)
+        5. elevation in degrees (-90 to 90) (leading zeros sent)
+        6. azimuth in degrees to true north (000 to 359) (leading zeros sent)
+        7. SNR in dB (00-99) (leading zeros sent) more satellite info quadruples like 4-7 n-1) Signal ID (NMEA 4.11) n) checksum
+
+        Example: 
+            $GPGSV,3,1,11, 03,03,111,00, 04,15,270,00, 06,01,010,00, 13,06,292,00 *74 
+            $GPGSV,3,2,11, 14,25,170,00, 16,57,208,39, 18,67,296,40, 19,40,246,00 *74
+            $GPGSV,3,3,11, 22,42,067,42, 24,14,311,43, 27,05,244,00, ,,,*4D
+        Some GPS receivers may emit more than 12 quadruples (more than three GPGSV sentences), even though NMEA-0813 doesn’t allow this. (The extras might
+        be WAAS satellites, for example.) Receivers may also report quads for satellites they aren’t tracking, in which case the SNR field will be null; we don’t know whether
+        this is formally allowed or not.
+        Example: $GLGSV,3,3,09,88,07,028*51
+        Note: NMEA 4.10+ systems (u-blox 9, Quectel LCD79) may emit an extra field, Signal ID, just before the checksum. See the description of Signal ID’s above.
+        Note: $GNGSV uses PRN in field 4. Other $GxGSV use the satellite ID in field 4. Jackson Labs, Quectel, Telit, and others get this wrong, in various conflicting
+        ways
+    '''
+
+    def __extractGSVInfoSatellites(self, indiceSatellite: int, allSatellite: list[str]):
+        retour: str = ""
+
+        nbSat: int = len(allSatellite)
+        elevation: int = 78
+        azimut: int = 254
+        snr: int = 45
+
+        nbMaxSatelliteParTrame: int = 4
+
+        for i in range(0, nbMaxSatelliteParTrame, 1):
+            if indiceSatellite + i >= nbSat:
+                retour += ",,,"
+            else:
+                retour += f"{allSatellite[indiceSatellite + i]:02d},{elevation:02d},{azimut:03d},{snr:02d}"
+
+            if not i == (nbMaxSatelliteParTrame - 1):
+                retour += ','
+        return retour
+
+    def getGSV(self, satellite: Dict[str, object]) -> List[bytes]:
+        retour: list[bytes] = []
+        allSatellite: list[str] = satellite["IDs"]
+        nbSat: int = len(allSatellite)
+        modulo: int = int(nbSat % 4)
+        nbTrame: int = math.floor(nbSat / 4.0) + (0 if modulo == 0 else 1)
+
+        indiceSatellite = 0
+        for iTrame in range(1, nbTrame + 1, 1):
+            curTrame = f"GPGSV,{nbTrame:1d},{iTrame:1d},{nbSat:02d},{self.__extractGSVInfoSatellites(indiceSatellite, allSatellite)}"
+            indiceSatellite += 4
+            retour.append(nmea0183lib.__addNMEACheckSum(curTrame))
+
+        return retour
+
+    # ----------------------------------------------------------------------------------
+    #     Position (GLL, GGA, RMC, VDO)
+    #     Cap fond et vitesse (RMC, VTG, VDO)
+    #     Cap surface (HDG, HDM, HDT, VHW, PFECATT, VDO)
+    #     Profondeur (DBT, DPT)
+    #     Vent (MWV, MWD)
+    #     Température de surface de la mer (MDA, MTW)
+    #     AIS (VDM) (*)
+    # ----------------------------------------------------------------------------------
+    """
+        HDG - Heading - Deviation & Variation
+            1 2 3 4 5 6
+            | | | | | |
+            $--HDG,x.x,x.x,a,x.x,a*hh<CR><LF>
+            Field Number:
+            1. Magnetic Sensor heading in degrees
+            2. Magnetic Deviation, degrees
+            3. Magnetic Deviation direction, E = Easterly, W = Westerly
+            4. Magnetic Variation degrees
+            5. Magnetic Variation direction, E = Easterly, W = Westerly
+            6. Checksum
+       HDM - Heading - Magnetic
+            Vessel heading in degrees with respect to magnetic north produced by any device or system producing magnetic heading.
+            1 2 3
+            | | |
+            $--HDM,x.x,M*hh<CR><LF>
+            Field Number:
+            1. Heading Degrees, magnetic
+            2. M = magnetic
+            3. Checksum
+       HDT - Heading - True
+            Actual vessel heading in degrees true produced by any device or system producing true heading.
+            1 2 3
+            | | |
+            $--HDT,x.x,T*hh<CR><LF>
+            Field Number:
+            1. Heading, degrees True
+            2. T = True
+            3. Checksum
+            Example: $GPHDT,274.07,T*03
+    """
+    def getHDG(self, vitesse: vecteur, variation:float) -> List[bytes] :
+        retour : List[bytes] = []
+        Cv = vitesse.dir.valAsDeg
+        Cc = Cv + variation
+        while Cc < 0:
+            Cc += 360.0
+        while Cc > 360.0:
+            Cc -= 360.0
+        SensVariation = "E" if variation>0 else "W"
+
+        nmeaMessage = f"IIHDG,{Cc:04.2f},{abs(variation):04.2f},{SensVariation},0.0,E"
+        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
+
+        nmeaMessage = f"IIHDM,{Cc:04.2f},M"
+        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
+
+        nmeaMessage = f"IIHDT,{Cv:04.2f},T"
+        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
+
+        return retour
+
+    """
+        VHW - Water speed and heading
+            1 2 3 4 5 6 7 8 9
+            | | | | | | | | |
+            $--VHW,x.x,T,x.x,M,x.x,N,x.x,K*hh<CR><LF>
+            Field Number:
+            1. Heading degrees, True
+            2. T = True
+            3. Heading degrees, Magnetic
+            4. M = Magnetic
+            5. Speed of vessel relative to the water, knots
+            6. N = Knots
+            7. Speed of vessel relative to the water, km/h
+            8. K = Kilometers
+            9. Checksum
+    """
+    def getVHW(self, vitesse: vecteur, variation:float) -> List[bytes] :
+        retour : List[bytes] = []
+        Cv = vitesse.dir.valAsDeg
+        Cc = Cv + variation
+        while Cc < 0:
+            Cc += 360.0
+        while Cc > 360.0:
+            Cc -= 360.0
+        SensVariation = "E" if variation>0 else "W"
+
+        vitesseLockNoeud : float = vitesse.val * 0.85
+        nmeaMessage = f"IIVHW,{Cv:04.2f},T,{Cc:04.2f},M,{vitesseLockNoeud:04.2f},N,{vitesseLockNoeud*nmea0183lib.MILLE2KM_HEURE},K"
+        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
+
+
+        return retour

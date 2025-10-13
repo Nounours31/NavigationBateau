@@ -46,7 +46,7 @@ def main():
         },
         "vent": {
             "vitesseEnNd" : 15,
-            "directionEnDeg": 75,
+            "directionEnDeg": 75, # sens du vent attention !!!
             "temperature" : 20
         },
         "eau": {
