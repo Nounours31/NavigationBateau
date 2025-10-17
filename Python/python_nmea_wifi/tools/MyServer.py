@@ -10,7 +10,7 @@ class MyServer(http.server.SimpleHTTPRequestHandler):
         print(self.path)
         
         if self.path == '/':
-            #self.path = '/home/furas/test/index.html'
+            #self.path = '/home/furas/tests/index.html'
             self.path = './desktop/formdailyactivities/index.html'
             
             print('original  :', self.path)
