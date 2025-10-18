@@ -1,13 +1,21 @@
 import logging
 import logging.config
 
+
 logging.config.fileConfig("logging.conf")
+
+
+
+
 
 class myEnv:
     UDP_IP = "127.0.0.1"
     UDP_PORT = 5005
-    TCP_PORT = 10110
-    sleepTimeInSec=2 # garder 2s
+    TCP_PORT = 5006
+    UDP=1
+    TCP=2
+    ModeReseau=TCP
+    sleepTimeInSec=5 # garder 2s
 
     # Port de la trinitee
     latTrinitee = 47.565102  # angleSexaToDecimal(degre = 2, minute = 56.23)
@@ -23,4 +31,4 @@ class myEnv:
 
     logger = logging.getLogger("NMEA")
 
-    
+
