@@ -1,9 +1,10 @@
 # import socketserver
 # import tools.MyServer as MyServer
+import multiprocessing
 from datetime import datetime
 import signal
 import sys
-
+import socket as socket
 
 from typing import List
 from colorist import green, Color
@@ -34,8 +35,18 @@ def exit_gracefully(signum, frame):
 
 
 
+def listenNavInfo():
+    s = getSocket()
+    if myEnv.ModeReseau == myEnv.UDP:
+        return
 
-def main():
+    while True:
+        print('Reception...')
+        donnees = s.recv(1024)
+        print('Recu :', donnees)
+
+def sendNavInfo():
+    s = getSocket()
     navconfig : dict[str, float | object] = {
         "vitesseEnNoeudMoyenne" : 15.0,
         "capMoyen" : 186.0,
@@ -60,18 +71,40 @@ def main():
     }
     nav : Nav = Nav(navconfig)
     nmea : Nmea = Nmea()
-    myNet : mySocket = mySocket(debug=False)
 
     iLoop : int = 1  
     while True:
         myEnv.logger.info (f"-- {iLoop:03d} {datetime.now()}--------------------------------------------------")
 
         nav.nav()
-        trame : List[bytes] = nmea.computeTrames(nav)
-        myNet.send(trame)
+        trames : List[bytes] = nmea.computeTrames(nav)
+        s.send(trames)
 
         sleep(myEnv.sleepTimeInSec)
         iLoop += 1
+
+
+xx : mySocket = None
+def setSocket(s: mySocket):
+    global xx
+    xx = s
+
+def getSocket() -> mySocket:
+    global xx
+    return xx
+
+def main():
+    # Creation socket TCP
+    xx : mySocket = mySocket(myEnv.ModeReseau, debug=False)
+    setSocket(xx)
+
+    process1 = multiprocessing.Process(target=listenNavInfo)
+    process1.start()
+    process2 = multiprocessing.Process(target=sendNavInfo)
+    process2.start()
+    process1.join()
+    process2.join()
+    xx.close()
 
 
 if __name__ == '__main__':
