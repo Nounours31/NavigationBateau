@@ -1,7 +1,7 @@
 from __future__ import annotations
 from tools.angle import angle
 from tools.cap import cap
-from tools.myException import MyException
+from tools.myException import myException
 
 class vecteur:
     def __init__(self, unit: str):
@@ -24,7 +24,7 @@ class vecteur:
     @dir.setter
     def dir(self, c: cap) -> None:
         if not isinstance(c, cap):
-            raise MyException("dir is not a Cap ...")
+            raise myException("dir is not a Cap ...")
         self.__sens = c.copy()
     
     def copy(self) -> vecteur:

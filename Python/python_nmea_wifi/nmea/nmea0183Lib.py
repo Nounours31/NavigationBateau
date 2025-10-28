@@ -261,6 +261,20 @@ class nmea0183lib(nmeaLib) :
         return retour
 
 
+    def __decodePMXS(self, msgs: list[str]):
+        pass
+
+    def decode(self, msg: str) -> str:
+        if msg is None or len(msg) < 1:
+            return ""
+
+        msgs : list[str] = msg.split(",")
+        if msgs[0] == "$PMXS":
+            self.__decodePMXS(msgs)
+        else:
+            print (f"*********  ERROR RECEPTION {msg:s}")
+
+        return ""
 
 
     # ----------------------------------------------------------------------------------
@@ -908,3 +922,4 @@ class nmea0183lib(nmeaLib) :
 
 
         return retour
+

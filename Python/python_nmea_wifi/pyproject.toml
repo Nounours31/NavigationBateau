@@ -8,9 +8,9 @@ line-length = 100
 target-version = ['py39']
 
 [tool.pytest.ini_options]
-addopts = "-ra --cov"
+minversion = "6.0"
+addopts = "-ra --cov -q"
 python_files = ["*_tests.py", "*_test.py"]
-testpaths = ['./nmea/tests', './tools/tests', "./tests"]
+python_classes = ["*test", "test*","*Test", "Test*", "*tests", "tests*","*Tests", "Tests*"]
+testpaths = ['test', 'tests']
 pythonpath = ["."]
-
-

@@ -23,19 +23,47 @@ class simulateurNav:
         self.__logger : logging.Logger = myEnv.logger
         self.__heuredepart : datetime = datetime.now()
         self.__heure : datetime = datetime.now()
+
+        '''
+        {
+            "vitesseEnNoeudMoyenne": 15.0,
+            "variationMagnetique": -1.2,
+            "nav": {
+                "positionDepart": myEnv.postionTrinitee.toString(),
+                "positionWayPoints": [
+                    position.fromString("2, 2").toString(base=angle.STR_AsMin, detail=angle.DISPLAY_SHORT),
+                    position.fromString("2, 2").toString(base=angle.STR_AsMin, detail=angle.DISPLAY_SHORT)
+                ],
+                "positionArrivee": myEnv.postionTrinitee.toString()
+            },
+            "vent": {
+                "vitesseEnNd": 15,
+                "directionEnDeg": 75,  # sens du vent attention !!!
+                "temperature": 20
+            },
+            "courant": {
+                "vitesseEnNd": 1.5,
+                "directionEnDeg": 2.5,
+            },
+            "eau": {
+                "profondeur": 17,
+                "temperature": 12,
+            }
+        }
+        '''
         self.__vitesseMoyenne : vecteur = vecteur('Kt')
         self.__vitesseMoyenne.val = config["vitesseEnNoeudMoyenne"]
-        self.__vitesseMoyenne.dir  = cap(valAsDeg=config["capMoyen"])
+        self.__vitesseMoyenne.dir  = cap(valAsDeg=0.0)
 
-        self.__vitesse : vecteur = vecteur('Kt')
-        self.__vitesse.val = config["vitesseEnNoeudMoyenne"]
-        self.__vitesse.dir = cap(valAsDeg=config["capMoyen"])
+        self.__vitesse : vecteur = vecteur.copy(self.__vitesseMoyenne)
 
         self.__variationMagnetiqueEnDeg : float  = config["variationMagnetique"]
-        self.__positionDepart : position = position (
-            latitude.fromString(config["positionDepart"]["LatitudeDecimale"]),
-            longitude.fromString(config["positionDepart"]["LongitudeDecimale"]))
-        self.__positionCourante : position = self.__positionDepart.copy()
+
+        self.__positionDepart : position = position.fromString(config["nav"]["positionDepart"])
+        self.__positionArrivee : position = position.fromString(config["nav"]["positionArrivee"])
+        self.__waypoints : list[position] = []
+        for p in config["nav"]["positionWayPoints"]:
+            self.__waypoints.append(position.fromString(p))
 
         self.__ventReelDepart : vecteur = vecteur('Kt')
         self.__ventReelDepart.val = config["vent"]["vitesseEnNd"]
@@ -53,8 +81,8 @@ class simulateurNav:
         self.__temperatureEauDepart : float = config["eau"]["temperature"]
 
         self.__courant : vecteur = vecteur('Kt')
-        self.__courant.val = config["eau"]["courant"]["vitesseEnNd"]
-        self.__courant.dir = cap(valAsDeg=config["eau"]["courant"]["directionEnDeg"])
+        self.__courant.val = config["courant"]["vitesseEnNd"]
+        self.__courant.dir = cap(valAsDeg=config["courant"]["directionEnDeg"])
 
         self.__courantDepart : vecteur = self.__courant.copy()
 
@@ -142,7 +170,7 @@ class simulateurNav:
     # ----------------------------------------------------------------------------------
     def nav(self) -> None :
         maintenant = datetime.now()
-        iSeconde = maintenant.timestamp() - self.__heure.timestamp()
+        intervalDeNavEnSec = maintenant.timestamp() - self.__heure.timestamp()
         self.__heure = maintenant
 
         # facteur perturbant
@@ -158,8 +186,8 @@ class simulateurNav:
         pasEnLatitude = cos (capRad) * self.__vitesse.val / 60 # noeud = mille/h - 1 mille = 1 minute d'arc
         pasEnLongitude = sin (capRad) * self.__vitesse.val / (60 * cos (latitudeEstimeeRad))
         
-        self.__positionCourante.latitude += angle(valAsDeg=(pasEnLatitude * iSeconde / 3600))
-        self.__positionCourante.longitude += angle(valAsDeg=(pasEnLongitude * iSeconde / 3600))
+        self.__positionCourante.latitude += angle(valAsDeg=(pasEnLatitude * intervalDeNavEnSec / 3600))
+        self.__positionCourante.longitude += angle(valAsDeg=(pasEnLongitude * intervalDeNavEnSec / 3600))
 
         # vent
         self.__ventReel.val = self.__ventReelDepart.val * (1 + cos(facteur))

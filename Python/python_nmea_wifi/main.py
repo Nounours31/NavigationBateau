@@ -1,6 +1,7 @@
 # import socketserver
 # import tools.MyServer as MyServer
 import multiprocessing
+import threading
 from datetime import datetime
 import signal
 import sys
@@ -12,9 +13,13 @@ from colorist import green, Color
 from time import sleep
 
 from simulateurNav.simulateurNav import simulateurNav as Nav
+from tools.angle import angle
 from tools.mySocket import mySocket as mySocket
 from nmea.nmea0183Lib import nmea0183lib as Nmea
-from myEnv import myEnv 
+from myEnv import myEnv
+from tools.position import position
+
+xx : mySocket = None
 
 
 def exit_gracefully(signum, frame):
@@ -27,7 +32,7 @@ def exit_gracefully(signum, frame):
 
     except KeyboardInterrupt:
         print("Ok ok, quitting")
-        mySocket.closeAll()
+        xx.closeAll()
         sys.exit(0)
 
     # restore the exit gracefully handler here    
@@ -35,8 +40,11 @@ def exit_gracefully(signum, frame):
 
 
 
-def listenNavInfo():
-    s = getSocket()
+def listenNavInfo(s : mySocket):
+    if s is None:
+        print('La socket est vide')
+        return
+
     if myEnv.ModeReseau == myEnv.UDP:
         return
 
@@ -45,28 +53,34 @@ def listenNavInfo():
         donnees = s.recv(1024)
         print('Recu :', donnees)
 
-def sendNavInfo():
-    s = getSocket()
+def sendNavInfo(s : mySocket):
+    if s is None:
+        print('La socket est vide')
+        return
+
     navconfig : dict[str, float | object] = {
         "vitesseEnNoeudMoyenne" : 15.0,
-        "capMoyen" : 186.0,
         "variationMagnetique" : -1.2,
-        "positionDepart" : {
-            "LatitudeDecimale" : myEnv.latTrinitee,
-            "LongitudeDecimale" : myEnv.longTrinitee
+        "nav": {
+            "positionDepart": myEnv.postionTrinitee.toString(base=angle.STR_AsMin, detail=angle.DISPLAY_SHORT),
+            "positionWayPoints" : [
+                position.fromString("2, 2").toString(base=angle.STR_AsMin, detail=angle.DISPLAY_SHORT),
+                position.fromString("2, 2").toString(base=angle.STR_AsMin, detail=angle.DISPLAY_SHORT)
+            ],
+            "positionArrivee": myEnv.postionTrinitee.toString(base=angle.STR_AsMin, detail=angle.DISPLAY_SHORT)
         },
         "vent": {
             "vitesseEnNd" : 15,
             "directionEnDeg": 75, # sens du vent attention !!!
             "temperature" : 20
         },
+        "courant": {
+            "vitesseEnNd" : 1.5,
+            "directionEnDeg": 2.5,
+        },
         "eau": {
             "profondeur" : 17,
             "temperature" : 12,
-            "courant": {
-                "vitesseEnNd" : 1.5,
-                "directionEnDeg": 2.5,
-            }
         },
     }
     nav : Nav = Nav(navconfig)
@@ -84,27 +98,20 @@ def sendNavInfo():
         iLoop += 1
 
 
-xx : mySocket = None
-def setSocket(s: mySocket):
-    global xx
-    xx = s
-
-def getSocket() -> mySocket:
-    global xx
-    return xx
 
 def main():
     # Creation socket TCP
-    xx : mySocket = mySocket(myEnv.ModeReseau, debug=False)
-    setSocket(xx)
+    global xx
+    s : mySocket = mySocket(myEnv.ModeReseau, debug=False)
+    xx = s
 
-    process1 = multiprocessing.Process(target=listenNavInfo)
+    process1 = threading.Thread(target=listenNavInfo,args=(s,))
     process1.start()
-    process2 = multiprocessing.Process(target=sendNavInfo)
+    process2 = multiprocessing.Process(target=sendNavInfo,args=(s,))
     process2.start()
     process1.join()
     process2.join()
-    xx.close()
+
 
 
 if __name__ == '__main__':

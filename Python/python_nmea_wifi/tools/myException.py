@@ -1,10 +1,8 @@
 
-import exception
-
-class MyException(Exception):
+class myException(Exception):
 
     def __init__(self, msg : str):
-        super().__init__()
+        super().__init__(msg)
         self._msg = msg
 
     def __str__(self) -> str:
