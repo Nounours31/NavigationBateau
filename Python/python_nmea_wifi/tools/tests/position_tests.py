@@ -35,6 +35,16 @@ class position_tests:
         x : float = p.gudermannInverse()
         assert x == pytest.approx(1.365, 0.001)
 
+    def test_gudermann2(self):
+        p : position = position (lat = latitude(0.0), lon= longitude(0.0))
+        x : float = p.gudermannInverse()
+        assert x == pytest.approx(0, 0.001)
+
+    def test_gudermann3(self):
+        p : position = position (lat = latitude(89.9), lon= longitude(0.0))
+        x : float = p.gudermannInverse()
+        assert x == pytest.approx(10.162, 0.001)
+
     def test_route(self):
         a : position = myEnv.postionStQuay
         d : position = myEnv.postionTrinitee
@@ -42,5 +52,17 @@ class position_tests:
         c : cap
         dist : distance
         c, dist  = position.positionementRelatif(d,a)
-        assert c == 0.01
+        assert c.valAsDeg == pytest.approx(4.8, 0.1)
+        assert dist.val == pytest.approx(60.1, 0.1)
+
+    def test_route2(self):
+        d : position = myEnv.postionStQuay
+        a : position = myEnv.postionTrinitee
+
+        c : cap
+        dist : distance
+        c, dist  = position.positionementRelatif(d,a)
+        assert c.valAsDeg == pytest.approx(184.8, 0.1)
+        assert dist.val == pytest.approx(60.1, 0.1)
+
 

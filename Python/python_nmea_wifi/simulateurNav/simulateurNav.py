@@ -20,6 +20,7 @@ rad2deg = 180.0 / pi
 
 class simulateurNav:
     def __init__(self, config: dict[str, float | object]):
+
         self.__logger : logging.Logger = myEnv.logger
         self.__heuredepart : datetime = datetime.now()
         self.__heure : datetime = datetime.now()
@@ -60,10 +61,13 @@ class simulateurNav:
         self.__variationMagnetiqueEnDeg : float  = config["variationMagnetique"]
 
         self.__positionDepart : position = position.fromString(config["nav"]["positionDepart"])
+        self.__positionCourante : position = self.__positionDepart.copy()
         self.__positionArrivee : position = position.fromString(config["nav"]["positionArrivee"])
-        self.__waypoints : list[position] = []
+        self.__positionWaypoints : list[position] = []
+        self.__positionWaypointsAtteint : int = -1
         for p in config["nav"]["positionWayPoints"]:
-            self.__waypoints.append(position.fromString(p))
+            self.__positionWaypoints.append(position.fromString(p))
+
 
         self.__ventReelDepart : vecteur = vecteur('Kt')
         self.__ventReelDepart.val = config["vent"]["vitesseEnNd"]
@@ -169,16 +173,46 @@ class simulateurNav:
     #   - a une position de depart (positionDepartLatitude / positionDepartLongitude) 
     # ----------------------------------------------------------------------------------
     def nav(self) -> None :
+        # calcul de la durre de la nav en secondes
         maintenant = datetime.now()
         intervalDeNavEnSec = maintenant.timestamp() - self.__heure.timestamp()
         self.__heure = maintenant
+
+        # ----------------------------------
+        # vers ou dois je aller waypoint ?
+        # ----------------------------------
+        # waypoint ou arrivee ?
+        positionCourante : position = self.__positionCourante
+        objectif : position = None
+        objectifSecondaire : position = None
+        if ((len(self.__positionWaypoints) > 0) and (len(self.__positionWaypoints) > 1+self.__positionWaypointsAtteint)):
+            objectif = self.__positionWaypoints[1+self.__positionWaypointsAtteint]
+            if ((len(self.__positionWaypoints) > 0) and (len(self.__positionWaypoints) > 2 + self.__positionWaypointsAtteint)):
+                objectifSecondaire = self.__positionWaypoints[2 + self.__positionWaypointsAtteint]
+            else:
+                objectifSecondaire = self.__positionArrivee
+        else:
+            objectif = self.__positionArrivee
+            objectifSecondaire = self.__positionArrivee
+
+        # ma route
+        capNextWaypoint, distanceNextWaypoint = position.positionementRelatif(positionCourante, objectif)
+
+
+        # ai je atteint le waypoint
+        if distanceNextWaypoint.val < 0.5:
+            objectif = objectifSecondaire
+            self.__positionWaypointsAtteint = self.__positionWaypointsAtteint + 1
+
+        # ma nouvelle route
+        capNextWaypoint, distanceNextWaypoint = position.positionementRelatif(positionCourante, objectif)
 
         # facteur perturbant
         facteur = (self.__heure.timestamp() - self.__heuredepart.timestamp()) * deg2rad 
         
         # deplacement
         self.__vitesse.val = self.__vitesseMoyenne.val * (1 + 0.25 * cos(facteur))
-        self.__vitesse.dir = cap(self.__vitesseMoyenne.dir.valAsDeg * (1.0 + 0.25 * cos(facteur)))
+        self.__vitesse.dir = capNextWaypoint * (1.0 + 0.25 * cos(facteur))
 
         capRad = self.__vitesse.dir.valAsRad
         latitudeEstimeeRad = self.__positionCourante.latitude.valAsRad
@@ -203,7 +237,7 @@ class simulateurNav:
         self.__temperatureAir = self.__temperatureAirDepart + (5.0 * (cos(facteur)))
 
         # Eau (profondeur + temp)
-        self.__profondeur = self.__profondeurDepart + (100 * (1+cos(facteur)))
+        self.__profondeur = self.__profondeurDepart + (10 * (1+cos(facteur)))
         self.__temperatureEau = self.__temperatureEauDepart + (2.0 * (cos(facteur)))
 
         self.__courant.val = self.__courantDepart.val * (1 + cos(facteur))

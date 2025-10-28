@@ -26,7 +26,7 @@ class cap(angle):
             self._angleEnDeg += val.valAsDeg
             self._normalize()
             return self
-        raise MyException("angle add: type error")
+        raise myException("angle add: type error")
 
     def __add__(self, val : angle) -> cap:
         retour = cap()
@@ -34,8 +34,23 @@ class cap(angle):
             retour._angleEnDeg = self._angleEnDeg + val.valAsDeg
             retour._normalize()
             return retour
-        raise MyException("angle add: type error")
+        raise myException("angle add: type error")
 
+    def __mul__(self, other):
+        retour = cap()
+        if isinstance(other, float):
+            retour._angleEnDeg = float(other) * self._angleEnDeg
+            retour._normalize()
+            return retour
+        raise myException("angle add: type error")
+
+    def __rmul__(self, other):
+        retour = cap()
+        if isinstance(other, float):
+            retour._angleEnDeg = float(other) * self._angleEnDeg
+            retour._normalize()
+            return retour
+        raise myException("angle add: type error")
 
     def copy(self) -> cap:
         retour = cap(valAsDeg=self._angleEnDeg)
