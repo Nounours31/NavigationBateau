@@ -1,0 +1,6 @@
+pytest >= 8.1.0
+pytest-cov >= 7.0.0
+coverage
+pre-commit
+ruff
+sfa_tools == 0.1.0

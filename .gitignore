@@ -84,3 +84,5 @@ Python/python_astro/.coverage
 **/myAppLogs*
 **/de421.bsp
 Python/python_astro/config.ini
+
+**/.venv/*
