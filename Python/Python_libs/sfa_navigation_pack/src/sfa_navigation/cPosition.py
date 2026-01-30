@@ -7,7 +7,7 @@ from . import cLatitude, cAngle, cLongitude, cCap, cDistance
 from sfa_tools import cMyException
 
 
-class cPosition (cAngle):
+class cPosition ():
 
     def __init__(self, lat: latitude, lon: longitude):
         self.__lat = lat
@@ -33,7 +33,7 @@ class cPosition (cAngle):
         retour : cPosition = cPosition(self.__lat.copy(), self.__long.copy())
         return retour 
 
-    def toString(self, base :int = cAngle.STR_AsMin, detail : int = cAngle.DISPLAY_LONG):
+    def toString(self, base :int = 0, detail : int = cAngle.DISPLAY_LONG):
         if detail == cAngle.DISPLAY_LONG:
             return f"Position: \t[latitude:{self.latitude.toString(base, detail)}  --- longitude:{self.longitude.toString(base, detail)}]"
         elif detail == cAngle.DISPLAY_SHORT:
@@ -41,10 +41,10 @@ class cPosition (cAngle):
 
     # format lat, long
     @staticmethod
-    def fromString(s : str = "") -> cPosition:
+    def fromString(angleAsString : str = "") -> cPosition:
         retour : cPosition | None = None
         try:
-            allInfo : list[str] = s.split(",")
+            allInfo : list[str] = angleAsString.split(",")
             lat : cLatitude = cLatitude.fromString(allInfo[0])
             longi : cLongitude = cLongitude.fromString(allInfo[1])
             retour = cPosition(lat, longi)

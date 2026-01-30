@@ -36,7 +36,7 @@ class cLatitude (cAngle):
         self._normalize()
 
     @staticmethod
-    def fromString(s : str = "") -> cLatitude:
+    def fromString(angleAsString : str = "") -> cLatitude:
         retour : cLatitude = cLatitude()
 
         regex_dd1 = r"\s*([N|S])\s*([0-9\.°'\"]+)\s*" # N 12.12°
@@ -45,7 +45,7 @@ class cLatitude (cAngle):
         try:
             a: cAngle = None
             try:
-                a : cAngle = cAngle.fromString(s)
+                a : cAngle = cAngle.fromString(angleAsString)
                 retour.valAsDeg = a.valAsDeg
                 retour._normalize()
             except Exception as e:
@@ -53,21 +53,21 @@ class cLatitude (cAngle):
 
             if a is None:
                 x : float = 0.0
-                y = re.fullmatch(regex_dd1, s)
+                y = re.fullmatch(regex_dd1, angleAsString)
                 if y:
                     sign = 1.0 if y.group(1) == "N" else -1.0
                     ang = y.group(2)
                     x = sign * cAngle.fromString(ang).valAsDeg
 
                 else :
-                    y = re.fullmatch(regex_dd2, s)
+                    y = re.fullmatch(regex_dd2, angleAsString)
                     if y:
                         ang = y.group(1)
                         sign = 1.0 if y.group(1) == "N" else -1.0
                         x = sign * cAngle.fromString(ang).valAsDeg
 
                     else:
-                        raise cMyException(f"Ce n'est pas une latitude >{s}<")
+                        raise cMyException(f"Ce n'est pas une latitude >{angleAsString}<")
 
                 retour.valAsDeg = x
                 retour._normalize()
@@ -79,7 +79,7 @@ class cLatitude (cAngle):
 
 
 
-    def toString(self, base :int = cAngle.STR_AsMin, detail : int = cAngle.DISPLAY_LONG) -> str:
+    def toString(self, base :int = 0, detail : int = cAngle.DISPLAY_LONG) -> str:
         if detail == cAngle.DISPLAY_LONG:
             return f"{self.sensAsString()} {super().toString(eAngleFormat.DD)} - {self.sensAsString()} {super().toString(eAngleFormat.DMM)} [{self.sensAsString()} {super().toString(eAngleFormat.DMS)}]"
         if detail == cAngle.DISPLAY_SHORT:

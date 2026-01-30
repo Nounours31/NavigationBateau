@@ -37,7 +37,7 @@ class cLongitude (cAngle):
         self._normalize()
 
     @staticmethod
-    def fromString(s : str = "") -> cLongitude:
+    def fromString(angleAsString : str = "") -> cLongitude:
         retour : cLongitude = cLongitude()
         regex_dd1 = r"\s*([W|E])\s*([0-9\.°'\"]+)\s*" # N 12.12°
         regex_dd2 = r"\s*([0-9\.°'\"]+)\s*([W|E])\s*" # N 12.12°
@@ -45,7 +45,7 @@ class cLongitude (cAngle):
         try:
             a: cAngle = None
             try:
-                a : cAngle = cAngle.fromString(s)
+                a : cAngle = cAngle.fromString(angleAsString)
                 retour.valAsDeg = a.valAsDeg
                 retour._normalize()
             except Exception as e:
@@ -53,21 +53,21 @@ class cLongitude (cAngle):
 
             if a is None:
                 x : float = 0.0
-                y = re.fullmatch(regex_dd1, s)
+                y = re.fullmatch(regex_dd1, angleAsString)
                 if y:
                     sign = 1.0 if y.group(1) == "E" else -1.0
                     ang = y.group(2)
                     x = sign * cAngle.fromString(ang).valAsDeg
 
                 else :
-                    y = re.fullmatch(regex_dd2, s)
+                    y = re.fullmatch(regex_dd2, angleAsString)
                     if y:
                         ang = y.group(1)
                         sign = 1.0 if y.group(1) == "E" else -1.0
                         x = sign * cAngle.fromString(ang).valAsDeg
 
                     else:
-                        raise cMyException(f"Ce n'est pas une longitude >{s}<")
+                        raise cMyException(f"Ce n'est pas une longitude >{angleAsString}<")
 
                 retour.valAsDeg = x
                 retour._normalize()
@@ -76,7 +76,7 @@ class cLongitude (cAngle):
             raise cMyException (str(e))
         return retour
 
-    def toString(self, base :int = cAngle.STR_AsMin, detail : int = cAngle.DISPLAY_LONG) -> str:
+    def toString(self, base :int = 0, detail : int = cAngle.DISPLAY_LONG) -> str:
         if detail == cAngle.DISPLAY_LONG:
             return f"{self.sensAsString()} {super().toString(eAngleFormat.DD)} - {self.sensAsString()} {super().toString(eAngleFormat.DMM)} [{self.sensAsString()} {super().toString(eAngleFormat.DMS)}]"
         if detail == cAngle.DISPLAY_SHORT:
