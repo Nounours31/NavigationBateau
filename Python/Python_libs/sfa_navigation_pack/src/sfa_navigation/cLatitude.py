@@ -1,127 +1,240 @@
 from __future__ import annotations
 
+import math
 import re
+from enum import Enum, unique
 
+from docutils.frontend import validate_encoding_and_error_handler
 from sfa_tools import cMyException
 from .cAngle import cAngle,eAngleFormat
 
+@unique
+class eLatitudeSens(Enum):
+    S = "Sud"
+    N = "Nord"
+
+    def __repr__(self) -> str:
+        return "[eLatitudeSens.N]" if self is eLatitudeSens.N else "[eLatitudeSens.S]"
+
+    def __str__ (self) -> str:
+        return "N" if self is eLatitudeSens.N else "S"
+
+    def __float__(self) -> float:
+        return +1.0 if self is eLatitudeSens.N else -1.0
+
+
 class cLatitude (cAngle):
-    SUD = -1.0
-    NORD = +1.0
 
-    def __init__(self, valAsDeg : float = 0.0):
-        super().__init__(valAsDeg)
-        self.__sens : float = cLatitude.NORD
+    def __init__(self, valAsDeg : float = 0.0, sens : eLatitudeSens | None = None):
+        if math.fabs(valAsDeg) > 90.0:
+            raise cMyException("Latitude invalide " + str(valAsDeg))
 
-    def sensAsString(self) -> str:
-        return "N" if self.__sens == cLatitude.NORD else "S"
+        super().__init__(math.fabs(valAsDeg))
 
-    def __signe(self) -> float:
-        if self.__sens == cLatitude.NORD:
-            return 1.0
-        return -1.0
+        self._sens: eLatitudeSens = eLatitudeSens.N
+        if sens is None:
+            self._sens : eLatitudeSens = eLatitudeSens.N if valAsDeg >= 0.0 else eLatitudeSens.S
+        else:
+            self._sens: eLatitudeSens = sens
 
-    @property
-    def valAsRad(self) -> float:
-        return self.__signe() * super().valAsRad
 
     @property
-    def valAsDeg(self) -> float:
-        return self.__signe() * super().valAsDeg
+    def val(self) -> float:
+        return float(self._sens) * super().valAsDeg
 
-    @valAsDeg.setter
-    def valAsDeg(self,val:float) -> None:
-        self.__sens = cLatitude.NORD
-        self._angleEnDeg = val
-        self._normalize()
+    @val.setter
+    def val(self,val:float) -> None:
+        if math.fabs(val) > 90.0:
+            raise cMyException("Invalide latitude " + str(val))
+
+        self._sens = eLatitudeSens.N if val >= 0.0 else eLatitudeSens.S
+        self.valAsDeg = math.fabs(val)
 
     @staticmethod
     def fromString(angleAsString : str = "") -> cLatitude:
-        retour : cLatitude = cLatitude()
+        retour : cLatitude | None = None
 
-        regex_dd1 = r"\s*([N|S])\s*([0-9\.°'\"]+)\s*" # N 12.12°
-        regex_dd2 = r"\s*([0-9\.°'\"]+)\s*([N|S])\s*" # N 12.12°
+        regex_dd1 = r"\s*([N|S])\s*(.*)" # N 12.12°
+        regex_dd2 = r"\s*([\+|\-])\s*(.*)" # N 12.12°
 
         try:
-            a: cAngle = None
             try:
                 a : cAngle = cAngle.fromString(angleAsString)
-                retour.valAsDeg = a.valAsDeg
-                retour._normalize()
-            except Exception as e:
-                a = None
+                sens : eLatitudeSens = eLatitudeSens.N if a.valAsDeg >= 0 else eLatitudeSens.S
+                retour = cLatitude (valAsDeg=math.fabs(a.valAsDeg), sens=sens)
 
-            if a is None:
-                x : float = 0.0
+            except Exception as e:
+                retour = None
+
+            if retour is None:
                 y = re.fullmatch(regex_dd1, angleAsString)
                 if y:
-                    sign = 1.0 if y.group(1) == "N" else -1.0
-                    ang = y.group(2)
-                    x = sign * cAngle.fromString(ang).valAsDeg
+                    sens : eLatitudeSens = eLatitudeSens.N  if y.group(1) == "N" else eLatitudeSens.S
+                    a : cAngle = cAngle.fromString(y.group(2))
+                    retour = cLatitude (valAsDeg=math.fabs(a.valAsDeg), sens=sens)
 
                 else :
                     y = re.fullmatch(regex_dd2, angleAsString)
                     if y:
-                        ang = y.group(1)
-                        sign = 1.0 if y.group(1) == "N" else -1.0
-                        x = sign * cAngle.fromString(ang).valAsDeg
+                        sens: eLatitudeSens = eLatitudeSens.N if y.group(1) == "N" else eLatitudeSens.S
+                        a: cAngle = cAngle.fromString(y.group(2))
+                        retour = cLatitude(valAsDeg=math.fabs(a.valAsDeg), sens=sens)
 
                     else:
                         raise cMyException(f"Ce n'est pas une latitude >{angleAsString}<")
-
-                retour.valAsDeg = x
-                retour._normalize()
 
         except Exception as e:
             raise cMyException (str(e))
         return retour
 
+    def normalise(self) -> None:
+        x = self.val * float(self._sens)
+        if abs(x) > 90.0:
+            raise cMyException("Latitude invalide")
+
+        self._sens = eLatitudeSens.N
+        if x < 0:
+            self._sens = eLatitudeSens.S
+        self.valAsDeg = math.fabs(x)
 
 
+    def __str__(self) -> str:
+        return self.toString()
 
-    def toString(self, base :int = 0, detail : int = cAngle.DISPLAY_LONG) -> str:
-        if detail == cAngle.DISPLAY_LONG:
-            return f"{self.sensAsString()} {super().toString(eAngleFormat.DD)} - {self.sensAsString()} {super().toString(eAngleFormat.DMM)} [{self.sensAsString()} {super().toString(eAngleFormat.DMS)}]"
-        if detail == cAngle.DISPLAY_SHORT:
-            return f"{self.sensAsString()} {super().toString(eAngleFormat.DD)}"
+    def __repr__(self) -> str:
+        return "[cLatitude: " + self.toString() + "]"
+
+    def toString(self, format: eAngleFormat = eAngleFormat.DD) -> str:
+        if format == eAngleFormat.Debug:
+            return f"{str(self._sens)} {super().toString(eAngleFormat.DD)} - {str(self._sens)} {super().toString(eAngleFormat.DMM)} [{str(self._sens)} {super().toString(eAngleFormat.DMS)}]"
+        if format == eAngleFormat.DMM:
+            return f"{str(self._sens)} {super().toString(eAngleFormat.DMM)}"
         return ""
-    
-    def __iadd__(self, val: cAngle) -> cLatitude:
-        if not isinstance(val, cAngle):
+
+
+    def __iadd__(self, val: cLatitude) -> cLatitude:
+        if not isinstance(val, cLatitude):
             raise cMyException("latitude iadd type error")
 
-        asDeg = self.valAsDeg + val.valAsDeg
-        self.__sens = cLatitude.NORD
-        self._angleEnDeg = asDeg
-        self._normalize()
+        asDeg : float = self.val + val.val
+        if math.fabs(asDeg) > 90.0 :
+            raise cMyException("latitude > 90.0")
 
+        self._sens = eLatitudeSens.N if asDeg >= 0.0 else eLatitudeSens.S
+        self._angleEnDeg = math.fabs(asDeg)
         return self
 
-    def __add__(self, val : cAngle) -> cLatitude:
-        if not isinstance(val, cAngle):
+
+    def __add__(self, val : cLatitude) -> cLatitude:
+        if not isinstance(val, cLatitude):
             raise cMyException("latitude iadd type error")
 
-        asDeg = self.valAsDeg + val.valAsDeg
-        self.__sens = cLatitude.NORD
-        self._angleEnDeg = asDeg
-        self._normalize()
+        asDeg: float = self.val + val.val
+        if math.fabs(asDeg) > 90.0:
+            raise cMyException("latitude > 90.0")
 
+        sens = eLatitudeSens.N if asDeg >= 0.0 else eLatitudeSens.S
+        angleEnDeg = math.fabs(asDeg)
+        return cLatitude (valAsDeg=angleEnDeg, sens=sens)
+
+    def __isub__(self, val: cLatitude) -> cLatitude:
+        if not isinstance(val, cLatitude):
+            raise cMyException("latitude iadd type error")
+
+        asDeg: float = self.val - val.val
+        if math.fabs(asDeg) > 90.0:
+            raise cMyException("latitude > 90.0")
+
+        self._sens = eLatitudeSens.N if asDeg >= 0.0 else eLatitudeSens.S
+        self._angleEnDeg = math.fabs(asDeg)
         return self
+
+    def __sub__(self, val: cLatitude) -> cLatitude:
+        if not isinstance(val, cLatitude):
+            raise cMyException("latitude iadd type error")
+
+        asDeg: float = self.val - val.val
+        if math.fabs(asDeg) > 90.0:
+            raise cMyException("latitude > 90.0")
+
+        sens = eLatitudeSens.N if asDeg >= 0.0 else eLatitudeSens.S
+        angleEnDeg = math.fabs(asDeg)
+        return cLatitude(valAsDeg=angleEnDeg, sens=sens)
+
+
+    def __mul__(self, val : cLatitude | float) -> cLatitude:
+        if not isinstance(val, (cLatitude, int, float)):
+            raise cMyException("latitude iadd type error")
+
+        asDeg: float = self.val
+        if isinstance(val, cLatitude):
+            asDeg *= val.valAsDeg
+        else:
+            asDeg *= val
+
+        if math.fabs(asDeg) > 90.0:
+            raise cMyException("latitude > 90.0")
+
+        sens = eLatitudeSens.N if asDeg >= 0.0 else eLatitudeSens.S
+        angleEnDeg = math.fabs(asDeg)
+        return cLatitude (valAsDeg=angleEnDeg, sens=sens)
+
+    def __imul__(self, val : cLatitude | float) -> cLatitude:
+        if not isinstance(val, (cLatitude, int, float)):
+            raise cMyException("latitude iadd type error")
+
+        asDeg: float = self.val
+        if isinstance(val, cLatitude):
+            asDeg *= val.valAsDeg
+        else:
+            asDeg *= val
+
+        if math.fabs(asDeg) > 90.0:
+            raise cMyException("latitude > 90.0")
+
+        self._sens = eLatitudeSens.N if asDeg >= 0.0 else eLatitudeSens.S
+        self.val = math.fabs(asDeg)
+        return self
+
+    def __truediv__(self, val : cLatitude | float) -> cLatitude:
+        if not isinstance(val, (cLatitude, int, float)):
+            raise cMyException("latitude iadd type error")
+
+        asDeg: float = self.val
+        if isinstance(val, cLatitude):
+            asDeg /= val.valAsDeg
+        else:
+            asDeg /= val
+
+        if math.fabs(asDeg) > 90.0:
+            raise cMyException("latitude > 90.0")
+
+        sens = eLatitudeSens.N if asDeg >= 0.0 else eLatitudeSens.S
+        angleEnDeg = math.fabs(asDeg)
+        return cLatitude (valAsDeg=angleEnDeg, sens=sens)
+
+    def __itruediv__(self, val : cLatitude | float) -> cLatitude:
+        if not isinstance(val, (cLatitude, int, float)):
+            raise cMyException("latitude iadd type error")
+
+        asDeg: float = self.val
+        if isinstance(val, cLatitude):
+            asDeg /= val.valAsDeg
+        else:
+            asDeg /= val
+
+        if math.fabs(asDeg) > 90.0:
+            raise cMyException("latitude > 90.0")
+
+        self._sens = eLatitudeSens.N if asDeg >= 0.0 else eLatitudeSens.S
+        self.val = math.fabs(asDeg)
+        return self
+
 
     def copy(self) -> cLatitude:
         retour : cLatitude = cLatitude()
-        retour.__sens = self.__sens
+        retour._sens = self._sens
         retour._angleEnDeg = self._angleEnDeg
         return retour
 
 
-    def _normalize(self) -> None:
-        x = self._angleEnDeg * self.__signe()
-        if abs(x) > 90.0:
-            raise cMyException("Latitude invalide")
-
-        self.__sens = cLatitude.NORD
-        if x < 0:
-            self.__sens = cLatitude.SUD
-            x = -1.0 * x
-        self._angleEnDeg = x

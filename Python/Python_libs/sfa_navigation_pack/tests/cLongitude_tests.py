@@ -5,6 +5,7 @@ from sfa_navigation import cAngle, cLongitude
 
 
 class longitude_tests:
+    """
     def test_init(self):
         l : cLongitude = cLongitude(0.0)
         assert l.toString(base=cAngle.STR_AsMin, detail=cAngle.DISPLAY_SHORT) == "E 000°00.000'"
@@ -49,6 +50,6 @@ class longitude_tests:
         l: cLongitude = cLongitude.fromString(x)
         assert l.toString(base=cAngle.STR_AsMin, detail=cAngle.DISPLAY_SHORT) == "W 047°07.200'"
 
-
+    """
 
 

@@ -5,75 +5,57 @@ from sfa_tools import cMyException
 from .cAngle import cAngle
 
 """
-Classe de base des angles
+Classe de base de cap
 """
 class cCap(cAngle):
     def __init__(self, valAsDeg : float = 0.0):
-        super().__init__(valAsDeg)
-        self._normalize()
+        super().__init__(valAsDeg=valAsDeg)
+        self.inner_normalise()
 
-    @property
-    def valAsDeg(self) -> float:
+    def __repr__(self) -> str:
+        return "[cCap: " + self.__str__() + "]"
+
+    def __str__(self) -> str:
         """
-        :return:
+        toString par defaut
         """
-        return self._angleEnDeg
-
-    @property
-    def valAsRad(self) -> float:
-        """
-        :return:
-        """
-        return (math.pi / 180.0) * self._angleEnDeg
-
-    @valAsDeg.setter
-    def valAsDeg(self, x:float) -> None:
-        self._angleEnDeg = x
-
-    def __iadd__(self, val : cAngle) -> cAngle:
-        if isinstance(val, cAngle):
-            self._angleEnDeg += val.valAsDeg
-            self._normalize()
-            return self
-        raise cMyException("angle add: type error")
-
-    def __add__(self, val : cAngle) -> cCap:
-        retour = cCap()
-        if isinstance(val, cAngle):
-            retour._angleEnDeg = self._angleEnDeg + val.valAsDeg
-            retour._normalize()
-            return retour
-        raise cMyException("angle add: type error")
-
-    def __mul__(self, other):
-        retour = cCap()
-        if isinstance(other, float):
-            retour._angleEnDeg = float(other) * self._angleEnDeg
-            retour._normalize()
-            return retour
-        raise cMyException("angle add: type error")
-
-    def __rmul__(self, other):
-        retour = cCap()
-        if isinstance(other, float):
-            retour._angleEnDeg = float(other) * self._angleEnDeg
-            retour._normalize()
-            return retour
-        raise cMyException("angle add: type error")
-
-    def copy(self) -> cCap:
-        retour = cCap(valAsDeg=self._angleEnDeg)
-        return retour
+        return super().__str__()
 
 
-    def _normalize(self) -> None:
-        x = self._angleEnDeg
-        while x < 0:
-            x += 360.0
+    def __add__(self, other) -> cCap:
+        a : cAngle = super().__add__(other)
+        return cCap(a.valAsDeg)
 
-        while x > 360.0:
-            x -= 360.0
-        self._angleEnDeg = x
+    def __iadd__(self, other) -> cCap:
+        super().__iadd__(other)
+        self.inner_normalise()
+        return self
 
+    def __mul__(self, other) -> cCap:
+        a = super().__mul__(other)
+        return cCap(a.valAsDeg)
+
+    def __imul__(self, other) -> cCap:
+        super().__imul__(other)
+        self.inner_normalise()
+        return self
+
+    def __sub__(self, other) -> cCap:
+        a = super().__sub__(other)
+        return cCap(a.valAsDeg)
+
+    def __isub__(self, other) -> cCap:
+        super().__isub__(other)
+        self.inner_normalise()
+        return self
+
+    def __truediv__(self, other) -> cCap:
+        a = super().__truediv__(other)
+        return cCap(a.valAsDeg)
+
+    def __itruediv__(self, other) -> cCap:
+        super().__itruediv__(other)
+        self.inner_normalise()
+        return self
     
             

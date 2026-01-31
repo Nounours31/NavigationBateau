@@ -3,28 +3,159 @@ import math
 
 
 class cDistance():
-    def __init__(self, valAsMilleNautique : float = 0.0):
-        self.__valAsMilleNautique = valAsMilleNautique
-        self._normalize()
+    MN2KM: float = 1.852
+    KM2MN: float = 1 / MN2KM
+
+    DISPLAY_SHORT : int = 0
+    DISPLAY_LONG : int = 1
+
+    EQUAL_TOLERANCE_IN_MN : float = 0.00001
+
+    def __init__(self, valAsMilleNautique : float | None = None, valAsKm : float | None = None):
+        self._toleranceEnMn = cDistance.EQUAL_TOLERANCE_IN_MN
+
+        if not valAsMilleNautique is None:
+            self._valAsMilleNautique = valAsMilleNautique
+
+        elif not valAsKm is None:
+            self._valAsMilleNautique = valAsKm * cDistance.KM2MN
+
+        else:
+            self._valAsMilleNautique = 0.0
+
 
     @property
-    def val(self) -> float:
-        return self.__valAsMilleNautique
+    def asMn(self) -> float:
+        return self._valAsMilleNautique
 
 
-    @val.setter
-    def val(self, x:float) -> None:
-        self.__valAsMilleNautique = x
+    @asMn.setter
+    def asMn(self, x:float) -> None:
+        self._valAsMilleNautique = x
 
 
+    @property
+    def asKm(self) -> float:
+        return self._valAsMilleNautique * cDistance.MN2KM
+
+    # ========================
+    # Opérateurs arithmétiques
+    # ========================
+
+    def __add__(self, other):
+        if isinstance(other, cDistance):
+            return cDistance(valAsMilleNautique=self.asMn + other.asMn)
+        if isinstance(other, (int, float)):
+            return cDistance(valAsMilleNautique=self.asMn + other)
+        return NotImplemented
+
+    def __iadd__(self, other):
+        if isinstance(other, cDistance):
+            self.asMn += other.asMn
+            return self
+        if isinstance(other, (int, float)):
+            self.asMn += other
+            return self
+        return NotImplemented
+
+    def __sub__(self, other):
+        if isinstance(other, cDistance):
+            return cDistance(valAsMilleNautique=self.asMn - other.asMn)
+        if isinstance(other, (int, float)):
+            return cDistance(valAsMilleNautique=self.asMn - other)
+        return NotImplemented
+
+    def __isub__(self, other):
+        if isinstance(other, cDistance):
+            self.asMn -= other.asMn
+            return self
+        if isinstance(other, (int, float)):
+            self.asMn -= other
+            return self
+        return NotImplemented
+
+    def __mul__(self, other):
+        if isinstance(other, cDistance):
+            return cDistance(valAsMilleNautique=self.asMn * other.asMn)
+
+        if isinstance(other, (int, float)):
+            return cDistance(valAsMilleNautique=self.asMn * other)
+        return NotImplemented
+
+    def __imul__(self, other):
+        if isinstance(other, cDistance):
+            self.asMn *= other.asMn
+            return self
+
+        if isinstance(other, (int, float)):
+            self.asMn *= other
+            return self
+        return NotImplemented
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __truediv__(self, other):
+        if isinstance(other, (int, float)):
+            return cDistance(valAsMilleNautique=self.asMn / other)
+        elif isinstance(other, cDistance):
+            return cDistance(valAsMilleNautique=self.asMn / other.asMn)
+        return NotImplemented
+
+    def __itruediv__(self, other):
+        if isinstance(other, (int, float)):
+            self.asMn /= other
+            return self
+        elif isinstance(other, cDistance):
+            self.asMn /= other.asMn
+            return self
+
+        return NotImplemented
+
+    # ========================
+    # Comparaisons
+    # ========================
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __eq__(self, other):
+        if isinstance(other, cDistance):
+            return abs(self.asMn - other.asMn) <= self._toleranceEnMn
+        if isinstance(other, (int, float)):
+            return abs(self.asMn - other) <= self._toleranceEnMn
+        return False
+
+    def __lt__(self, other):
+        if isinstance(other, cDistance):
+            return self.asMn < other.asMn
+        if isinstance(other, (int, float)):
+            return self.asMn < other
+        return NotImplemented
+
+    def __le__(self, other):
+        return self < other or self == other
+
+    def __gt__(self, other):
+        if isinstance(other, cDistance):
+            return self.asMn > other.asMn
+        if isinstance(other, (int, float)):
+            return self.asMn > other
+        return NotImplemented
+
+    def __ge__(self, other):
+        return self > other or self == other
+
+    # ========================
+    # Conversions & affichage
+    # ========================
+    def __str__(self):
+        return f"{self.asMn:.3f} MN ({self.asKm:.3f} km)"
+
+    def __repr__(self):
+        return f"cDistance({self.asMn})"
 
 
-    def _normalize(self) -> None:
-        x = self.__valAsMilleNautique
-        if x < 0:
-            x = math.fabs(x)
-
-        self.__valAsMilleNautique = x
 
     
             
