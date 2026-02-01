@@ -1,4 +1,6 @@
 import pytest
+import copy
+
 from sfa_navigation import cAngle, eAngleFormat, cCap
 
 
@@ -80,7 +82,7 @@ class cCap_tests:
         c = cCap(370)
         s = str(c)
         assert "10.0000" in s
-    
+        assert c.__repr__() == "[cCap: 010.0000°]"
     
     # ---------- COMPATIBILITÉ cAngle ----------
     
@@ -99,3 +101,19 @@ class cCap_tests:
         for _ in range(1000):
             c += 123.456
         assert 0 <= c.valAsDeg < 360
+
+    def test_copy(self):
+        c = cCap(10)
+        d = copy.copy(c)
+        d.valAsDeg = 23.3
+
+        assert c != d
+        assert d.valAsDeg == 23.3
+        assert c.valAsDeg == 10
+
+        d = copy.deepcopy(c)
+        d.valAsDeg = 23.3
+
+        assert c != d
+        assert d.valAsDeg == 23.3
+        assert c.valAsDeg == 10

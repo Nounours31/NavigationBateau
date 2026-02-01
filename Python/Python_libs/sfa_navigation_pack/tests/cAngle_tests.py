@@ -1,5 +1,6 @@
 import math
 import pytest
+import copy
 from coverage.debug import PytestTracker
 from sfa_tools import cMyException
 
@@ -7,9 +8,31 @@ from sfa_navigation import cAngle, eAngleFormat
 
 
 class cAngle_tests:
-    def test_init(self):
+    def test_infra (self):
+        x : eAngleFormat = eAngleFormat.DD
+        for e in eAngleFormat:
+            s : str = str(e)
+            s = e.__repr__()
+
+        l : list = list()
+        l.append((eAngleFormat.DD, "DD"))
+        l.append((eAngleFormat.DMS, "DMS"))
+        l.append((eAngleFormat.DMM, "DMM"))
+        l.append((eAngleFormat.DD, "DD"))
+        l.append((eAngleFormat.R8, "Reel"))
+        l.append((eAngleFormat.RAD, "Rad"))
+        l.append((eAngleFormat.Debug, "Debug"))
+
+        for y in l:
+            assert str(y[0]) == y[1]
+            assert y[0].__repr__ () == "[eAngleFormat: " + y[1] + "]"
+
+
+    def test_init_vide(self):
         a : cAngle = cAngle(0.0)
         assert a.toString(eAngleFormat.DMM) == "000°00.000'"
+        assert a.__repr__() == "[cAngle: 000.0000°]"
+
 
     def test_fromstring_dd(self):
         x = "-47.12"
@@ -257,7 +280,12 @@ class cAngle_tests:
         assert l1.valAsDeg == pytest.approx(45.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
         assert l2.valAsDeg == pytest.approx(45.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
-        l4 = l1.copy()
+        l4 = copy.copy(l1)
+        l4 /= 45.0
+        assert l4.valAsDeg == pytest.approx(1.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l1.valAsDeg == pytest.approx(45.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+
+        l4 = copy.deepcopy(l1)
         l4 /= 45.0
         assert l4.valAsDeg == pytest.approx(1.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
         assert l1.valAsDeg == pytest.approx(45.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
@@ -322,3 +350,7 @@ class cAngle_tests:
         l2 = cAngle(5000.0)
         l2.inner_normalise()
         assert l2.valAsDeg == pytest.approx(320.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+
+    def test_properties(self):
+        a : cAngle = cAngle (180.0)
+        assert a.valAsRad == pytest.approx(math.pi, cAngle.EQUAL_TOLERANCE_IN_DEG)

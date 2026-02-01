@@ -5,7 +5,6 @@ from myEnv import myEnv
 
 
 class position_tests:
-    """
     def test_init(self):
         l : cLatitude = cLatitude(0.0)
         longi : cLongitude = cLongitude(0.0)
@@ -60,4 +59,3 @@ class position_tests:
         assert c.valAsDeg == pytest.approx(184.8, 0.1)
         assert dist.val == pytest.approx(60.1, 0.1)
 
-    """

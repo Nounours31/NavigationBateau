@@ -1,8 +1,8 @@
 from __future__ import annotations
-import math
+import copy
 
 from sfa_tools import cMyException
-from .cAngle import cAngle
+from .cAngle import cAngle, eAngleFormat
 
 """
 Classe de base de cap
@@ -20,6 +20,9 @@ class cCap(cAngle):
         toString par defaut
         """
         return super().__str__()
+
+    def toString(self, format: eAngleFormat = eAngleFormat.DD) -> str:
+        return  super().toString(format=format)
 
 
     def __add__(self, other) -> cCap:
@@ -58,4 +61,28 @@ class cCap(cAngle):
         self.inner_normalise()
         return self
     
-            
+    def __copy__(self) -> cCap:
+        """
+        normalise renvoie un angle compris entre 0 et 360
+        Args:
+            aucun
+        Returns:
+            self
+        Raises:
+            aucun
+        """
+        c = super().__copy__()
+        return c
+
+    def __deepcopy__(self, memodict={}) -> cCap:
+        """
+        normalise renvoie un angle compris entre 0 et 360
+        Args:
+            aucun
+        Returns:
+            self
+        Raises:
+            aucun
+        """
+        c = super().__deepcopy__()
+        return c

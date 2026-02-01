@@ -2,69 +2,45 @@ from __future__ import annotations
 
 import math
 
-from . import cLatitude, cAngle, cLongitude, cCap, cDistance
+from . import cLatitude, cAngle, cLongitude, cCap, cDistance, cVecteur
 
 from sfa_tools import cMyException
 
 
 class cPosition ():
 
-    def __init__(self, lat: latitude, lon: longitude):
-        self.__lat = lat
-        self.__long = lon
+    def __init__(self, lat: cLatitude, lon: cLongitude):
+        self._lat = lat
+        self._long = lon
     
     @property
-    def latitude(self) -> latitude:
-        return self.__lat
+    def lat(self) -> cLatitude:
+        return self._lat
 
-    @latitude.setter
-    def latitude(self,l:latitude) -> None:
-        self.__lat = l
+    @lat.setter
+    def lat(self,l:cLatitude) -> None:
+        self._lat = l
 
     @property
-    def longitude(self) -> longitude:
-        return self.__long
+    def longi(self) -> cLongitude:
+        return self._long
 
-    @longitude.setter
-    def longitude(self,l:longitude) -> None:
-        self.__long = l
-    
-    def copy(self) -> cPosition:
-        retour : cPosition = cPosition(self.__lat.copy(), self.__long.copy())
-        return retour 
+    @longi.setter
+    def longi(self,l:cLongitude) -> None:
+        self._long = l
 
-    def toString(self, base :int = 0, detail : int = cAngle.DISPLAY_LONG):
-        if detail == cAngle.DISPLAY_LONG:
-            return f"Position: \t[latitude:{self.latitude.toString(base, detail)}  --- longitude:{self.longitude.toString(base, detail)}]"
-        elif detail == cAngle.DISPLAY_SHORT:
-            return f"{self.latitude.toString(base, detail)},{self.longitude.toString(base, detail)}"
-
-    # format lat, long
-    @staticmethod
-    def fromString(angleAsString : str = "") -> cPosition:
-        retour : cPosition | None = None
-        try:
-            allInfo : list[str] = angleAsString.split(",")
-            lat : cLatitude = cLatitude.fromString(allInfo[0])
-            longi : cLongitude = cLongitude.fromString(allInfo[1])
-            retour = cPosition(lat, longi)
-        except Exception as e:
-            raise cMyException (str(e))
-
-        return retour
-    
 
     def gudermannInverse(self):
-        latitudeEnRad : float = self.__lat.valAsRad
+        latitudeEnRad : float = self._lat.valAsRad
         return math.log2(math.tan((math.pi/4.0) + (latitudeEnRad / 2.0)))
 
     @staticmethod
-    def positionementRelatif(depart : cPosition, arrivee : cPosition) -> (cCap, cDistance) :
-        varLat : float = arrivee.latitude.valAsDeg - depart.latitude.valAsDeg
-        varLong : float = arrivee.longitude.valAsDeg - depart.longitude.valAsDeg
+    def positionementRelatif(depart : cPosition, arrivee : cPosition) -> cVecteur :
+        varLat : float = arrivee.lat.val - depart.lat.val
+        varLong : float = arrivee.longi.val - depart.longi.val
 
         if math.fabs(varLat) > 1.0:
-            tangentRouteQuartFond : float = math.fabs(arrivee.longitude.valAsRad - depart.longitude.valAsRad)
+            tangentRouteQuartFond : float = math.fabs(arrivee.longi.val - depart.longi.val)
             tangentRouteQuartFond = tangentRouteQuartFond / math.fabs(arrivee.gudermannInverse() - depart.gudermannInverse())
             RouteQuartFond = math.atan(tangentRouteQuartFond)
 
@@ -100,3 +76,17 @@ class cPosition ():
         d : cDistance = cDistance(dist)
 
         return (c, d)
+
+    # format lat, long
+    @staticmethod
+    def fromString(angleAsString : str = "") -> cPosition:
+        retour : cPosition | None = None
+        try:
+            allInfo : list[str] = angleAsString.split(",")
+            lat : cLatitude = cLatitude.fromString(allInfo[0])
+            longi : cLongitude = cLongitude.fromString(allInfo[1])
+            retour = cPosition(lat, longi)
+        except Exception as e:
+            raise cMyException (str(e))
+
+        return retour

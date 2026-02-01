@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import math
 import re
+import copy
+
 from enum import Enum, unique
 
 from docutils.frontend import validate_encoding_and_error_handler
@@ -37,25 +39,53 @@ class cLatitude (cAngle):
         else:
             self._sens: eLatitudeSens = sens
 
+    # Attention KO ne marche pas: https://stackoverflow.com/questions/10810369/python-super-and-setting-parent-class-property
+    @cAngle.valAsDeg.getter
+    def valAsDeg(self) -> float:
+        raise NotImplemented
 
-    @property
-    def val(self) -> float:
-        return float(self._sens) * super().valAsDeg
-
-    @val.setter
-    def val(self,val:float) -> None:
+    @cAngle.valAsDeg.setter
+    def valAsDeg(self, val:float) -> None:
+        """
         if math.fabs(val) > 90.0:
             raise cMyException("Invalide latitude " + str(val))
 
         self._sens = eLatitudeSens.N if val >= 0.0 else eLatitudeSens.S
-        self.valAsDeg = math.fabs(val)
+        # Attention KO ne marche pas: https://stackoverflow.com/questions/10810369/python-super-and-setting-parent-class-property
+        # super().valAsDeg = math.fabs(val)
+        self._angleEnDeg = math.fabs(val)
+        """
+        raise NotImplemented
+
+    @property
+    def val(self) -> float:
+        return float(self._sens) * self._angleEnDeg
+
+    @val.setter
+    def val(self, val:float) -> None:
+        if math.fabs(val) > 90.0:
+            raise cMyException("Invalide latitude " + str(val))
+
+        self._sens = eLatitudeSens.N if val >= 0.0 else eLatitudeSens.S
+        # Attention KO ne marche pas: https://stackoverflow.com/questions/10810369/python-super-and-setting-parent-class-property
+        # super().valAsDeg = math.fabs(val)
+        self._angleEnDeg = math.fabs(val)
+        return
+
+    @property
+    def sens(self) -> eLatitudeSens:
+        return self._sens
+
+    @sens.setter
+    def sens(self, val: eLatitudeSens) -> None:
+        self._sens = val
+
 
     @staticmethod
     def fromString(angleAsString : str = "") -> cLatitude:
         retour : cLatitude | None = None
 
         regex_dd1 = r"\s*([N|S])\s*(.*)" # N 12.12°
-        regex_dd2 = r"\s*([\+|\-])\s*(.*)" # N 12.12°
 
         try:
             try:
@@ -74,28 +104,21 @@ class cLatitude (cAngle):
                     retour = cLatitude (valAsDeg=math.fabs(a.valAsDeg), sens=sens)
 
                 else :
-                    y = re.fullmatch(regex_dd2, angleAsString)
-                    if y:
-                        sens: eLatitudeSens = eLatitudeSens.N if y.group(1) == "N" else eLatitudeSens.S
-                        a: cAngle = cAngle.fromString(y.group(2))
-                        retour = cLatitude(valAsDeg=math.fabs(a.valAsDeg), sens=sens)
-
-                    else:
-                        raise cMyException(f"Ce n'est pas une latitude >{angleAsString}<")
+                    raise cMyException(f"Ce n'est pas une latitude >{angleAsString}<")
 
         except Exception as e:
             raise cMyException (str(e))
         return retour
 
     def normalise(self) -> None:
-        x = self.val * float(self._sens)
+        x = self.val
         if abs(x) > 90.0:
             raise cMyException("Latitude invalide")
 
         self._sens = eLatitudeSens.N
         if x < 0:
             self._sens = eLatitudeSens.S
-        self.valAsDeg = math.fabs(x)
+        self._angleEnDeg = math.fabs(x)
 
 
     def __str__(self) -> str:
@@ -105,11 +128,13 @@ class cLatitude (cAngle):
         return "[cLatitude: " + self.toString() + "]"
 
     def toString(self, format: eAngleFormat = eAngleFormat.DD) -> str:
-        if format == eAngleFormat.Debug:
-            return f"{str(self._sens)} {super().toString(eAngleFormat.DD)} - {str(self._sens)} {super().toString(eAngleFormat.DMM)} [{str(self._sens)} {super().toString(eAngleFormat.DMS)}]"
-        if format == eAngleFormat.DMM:
-            return f"{str(self._sens)} {super().toString(eAngleFormat.DMM)}"
-        return ""
+         match format:
+            case eAngleFormat.Debug:
+                return f"{str(self._sens)} {super().toString(eAngleFormat.DD)} - {str(self._sens)} {super().toString(eAngleFormat.DMM)} [{str(self._sens)} {super().toString(eAngleFormat.DMS)}]"
+            case eAngleFormat.DMM | eAngleFormat.DD | eAngleFormat.DMS | eAngleFormat.RAD | eAngleFormat.R8:
+                return f"{str(self._sens)} {super().toString(format)}"
+            case _:
+                return  "Not implemented"
 
 
     def __iadd__(self, val: cLatitude) -> cLatitude:
@@ -168,7 +193,7 @@ class cLatitude (cAngle):
 
         asDeg: float = self.val
         if isinstance(val, cLatitude):
-            asDeg *= val.valAsDeg
+            asDeg *= val.val
         else:
             asDeg *= val
 
@@ -185,7 +210,7 @@ class cLatitude (cAngle):
 
         asDeg: float = self.val
         if isinstance(val, cLatitude):
-            asDeg *= val.valAsDeg
+            asDeg *= val.val
         else:
             asDeg *= val
 
@@ -193,7 +218,7 @@ class cLatitude (cAngle):
             raise cMyException("latitude > 90.0")
 
         self._sens = eLatitudeSens.N if asDeg >= 0.0 else eLatitudeSens.S
-        self.val = math.fabs(asDeg)
+        self._angleEnDeg = math.fabs(asDeg)
         return self
 
     def __truediv__(self, val : cLatitude | float) -> cLatitude:
@@ -202,7 +227,7 @@ class cLatitude (cAngle):
 
         asDeg: float = self.val
         if isinstance(val, cLatitude):
-            asDeg /= val.valAsDeg
+            asDeg /= val.val
         else:
             asDeg /= val
 
@@ -219,7 +244,7 @@ class cLatitude (cAngle):
 
         asDeg: float = self.val
         if isinstance(val, cLatitude):
-            asDeg /= val.valAsDeg
+            asDeg /= val.val
         else:
             asDeg /= val
 
@@ -227,14 +252,35 @@ class cLatitude (cAngle):
             raise cMyException("latitude > 90.0")
 
         self._sens = eLatitudeSens.N if asDeg >= 0.0 else eLatitudeSens.S
-        self.val = math.fabs(asDeg)
+        self._angleEnDeg = math.fabs(asDeg)
         return self
 
+    def __copy__(self) -> cAngle:
+        """
+        normalise renvoie un angle compris entre 0 et 360
+        Args:
+            aucun
+        Returns:
+            self
+        Raises:
+            aucun
+        """
+        result = super().__copy__()
+        result._sens = copy.copy(self._sens)
+        return result
 
-    def copy(self) -> cLatitude:
-        retour : cLatitude = cLatitude()
-        retour._sens = self._sens
-        retour._angleEnDeg = self._angleEnDeg
-        return retour
+    def __deepcopy__(self, memodict={}) -> cAngle:
+        """
+        normalise renvoie un angle compris entre 0 et 360
+        Args:
+            aucun
+        Returns:
+            self
+        Raises:
+            aucun
+        """
+        result = super().__deepcopy__(memodict)
+        result._sens = copy.deepcopy(self._sens, memodict)
+        return result
 
 

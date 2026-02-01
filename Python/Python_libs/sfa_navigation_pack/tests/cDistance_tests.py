@@ -1,4 +1,5 @@
 import pytest
+import copy
 from sfa_navigation import cAngle, eAngleFormat, cCap, cDistance
 
 
@@ -201,3 +202,20 @@ class cDistance_tests:
     def test_repr(self):
         d = cDistance(7.5)
         assert repr(d) == "cDistance(7.5)"
+
+
+    def test_copy(self):
+        c = cDistance(10)
+        d = copy.copy(c)
+        d.asMn = 5
+
+        assert c != d
+        assert d.asMn == 5
+        assert c.asMn == 10
+
+        d = copy.deepcopy(c)
+        d.asMn = 5
+
+        assert c != d
+        assert d.asMn == 5
+        assert c.asMn == 10

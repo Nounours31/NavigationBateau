@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import math
 import re
+import copy
 
 from enum import Enum, unique
 from sfa_tools import cMyException
@@ -47,9 +48,6 @@ class eAngleFormat(Enum):
                 return "Rad"
             case eAngleFormat.Debug:
                 return "Debug"
-            case _:
-                return "xxx"
-
 
 class cAngle:
     """
@@ -412,9 +410,7 @@ class cAngle:
              x -= 360.0
         self._angleEnDeg = x
 
-
-
-    def copy(self) -> cAngle:
+    def __copy__(self) -> cAngle:
         """
         normalise renvoie un angle compris entre 0 et 360
         Args:
@@ -424,5 +420,25 @@ class cAngle:
         Raises:
             aucun
         """
-        x : float = self._angleEnDeg
-        return cAngle(valAsDeg=x)
+        cls = self.__class__
+        new_obj = cls.__new__(cls)
+        new_obj._angleEnDeg = copy.copy(self._angleEnDeg)
+        return new_obj
+
+    def __deepcopy__(self, memodict={}) -> cAngle:
+        """
+        normalise renvoie un angle compris entre 0 et 360
+        Args:
+            aucun
+        Returns:
+            self
+        Raises:
+            aucun
+        """
+        cls = self.__class__
+        new_obj = cls.__new__(cls)
+
+        memodict[id(self)] = new_obj
+
+        new_obj._angleEnDeg = copy.deepcopy(self._angleEnDeg, memodict)
+        return new_obj

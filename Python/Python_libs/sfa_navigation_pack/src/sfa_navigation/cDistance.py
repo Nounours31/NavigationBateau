@@ -1,5 +1,5 @@
 from __future__ import annotations
-import math
+import copy
 
 
 class cDistance():
@@ -156,6 +156,37 @@ class cDistance():
         return f"cDistance({self.asMn})"
 
 
+    def __copy__(self) -> cDistance:
+        """
+        normalise renvoie un angle compris entre 0 et 360
+        Args:
+            aucun
+        Returns:
+            self
+        Raises:
+            aucun
+        """
+        cls = self.__class__
+        new_obj = cls.__new__(cls)
+        new_obj._valAsMilleNautique = copy.copy(self._valAsMilleNautique)
+        return new_obj
 
+    def __deepcopy__(self, memodict={}) -> cDistance:
+        """
+        normalise renvoie un angle compris entre 0 et 360
+        Args:
+            aucun
+        Returns:
+            self
+        Raises:
+            aucun
+        """
+        cls = self.__class__
+        new_obj = cls.__new__(cls)
+
+        memodict[id(self)] = new_obj
+
+        new_obj._valAsMilleNautique = copy.deepcopy(self._valAsMilleNautique, memodict)
+        return new_obj
     
             
