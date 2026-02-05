@@ -1,6 +1,11 @@
 from __future__ import annotations
 import copy
+from enum import Enum
 
+
+class eDistanceFormat(Enum):
+    FULL = "Full"
+    STD = "Std"
 
 class cDistance():
     MN2KM: float = 1.852
@@ -149,11 +154,18 @@ class cDistance():
     # ========================
     # Conversions & affichage
     # ========================
+    def toString(self, format: eDistanceFormat = eDistanceFormat.STD):
+        if format == eDistanceFormat.STD:
+            return f"{self.asMn:.3f}Mn"
+
+        elif format == eDistanceFormat.FULL:
+            return f"{self.asMn:.3f}Mn ({self.asKm:.3f} km)"
+
     def __str__(self):
-        return f"{self.asMn:.3f} MN ({self.asKm:.3f} km)"
+        return self.toString(eDistanceFormat.STD)
 
     def __repr__(self):
-        return f"cDistance({self.asMn})"
+        return f"[cDistance({self.asMn:.3f})]"
 
 
     def __copy__(self) -> cDistance:
@@ -169,6 +181,7 @@ class cDistance():
         cls = self.__class__
         new_obj = cls.__new__(cls)
         new_obj._valAsMilleNautique = copy.copy(self._valAsMilleNautique)
+        new_obj._toleranceEnMn = copy.copy(self._toleranceEnMn)
         return new_obj
 
     def __deepcopy__(self, memodict={}) -> cDistance:
@@ -187,6 +200,7 @@ class cDistance():
         memodict[id(self)] = new_obj
 
         new_obj._valAsMilleNautique = copy.deepcopy(self._valAsMilleNautique, memodict)
+        new_obj._toleranceEnMn = copy.deepcopy(self._toleranceEnMn, memodict)
         return new_obj
     
             

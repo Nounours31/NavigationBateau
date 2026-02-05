@@ -5,13 +5,28 @@ from sfa_navigation import cAngle, eAngleFormat, cCap
 
 
 class cCap_tests:
+    def test_init(self):
+        assert cCap().valAsDeg == 0
+        assert cCap(0).valAsDeg == 0
+        assert cCap(360).valAsDeg == 0
+        assert cCap(370).valAsDeg == 10
+        assert cCap(-10).valAsDeg == 350
+        assert cCap(valAsAngleTrigonometriqueEnDeg=0).valAsDeg == 90.0
+        assert cCap(valAsAngleTrigonometriqueEnDeg=90).valAsDeg == 0.0
+        assert cCap(valAsAngleTrigonometriqueEnDeg=180).valAsDeg == 270.0
+        assert cCap(valAsAngleTrigonometriqueEnDeg=270).valAsDeg == 180.0
+        assert cCap(valAsAngleTrigonometriqueEnRad=0 * cAngle.DEG2RAD).valAsDeg == 90.0
+        assert cCap(valAsAngleTrigonometriqueEnRad=90 * cAngle.DEG2RAD).valAsDeg == 0.0
+        assert cCap(valAsAngleTrigonometriqueEnRad=180 * cAngle.DEG2RAD).valAsDeg == 270.0
+        assert cCap(valAsAngleTrigonometriqueEnRad=270 * cAngle.DEG2RAD).valAsDeg == 180.0
+
     def test_init_normalisation(self):
         assert cCap(0).valAsDeg == 0
         assert cCap(360).valAsDeg == 0
         assert cCap(370).valAsDeg == 10
         assert cCap(-10).valAsDeg == 350
-    
-    
+
+
     # ---------- ADDITION ----------
     
     def test_add(self):
@@ -92,8 +107,12 @@ class cCap_tests:
     
         assert c == a
         assert a == c
-    
-    
+        assert c == 10
+        assert not c == "10"
+        assert c != "10"
+        assert c != 11
+        assert c != cAngle(11)
+
     # ---------- STABILITÉ ----------
     
     def test_many_operations(self):
@@ -117,3 +136,13 @@ class cCap_tests:
         assert c != d
         assert d.valAsDeg == 23.3
         assert c.valAsDeg == 10
+
+    def test_property(self):
+        c: cCap = cCap(valAsAngleTrigonometriqueEnRad=1.5)
+        assert c.asAngleTrigonometriqueEnRad == 1.5
+        assert c.asAngleTrigonometriqueEnDeg == pytest.approx( 1.5 * cAngle.RAD2DEG, cAngle.EQUAL_TOLERANCE_IN_DEG)
+
+        c: cCap = cCap(valAsAngleTrigonometriqueEnDeg=10)
+        assert c.asAngleTrigonometriqueEnDeg == 10
+        assert c.asAngleTrigonometriqueEnRad == pytest.approx( 10 * cAngle.DEG2RAD, cAngle.EQUAL_TOLERANCE_IN_DEG)
+

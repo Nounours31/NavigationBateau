@@ -1,6 +1,7 @@
 import pytest
 import copy
 from sfa_navigation import cAngle, eAngleFormat, cCap, cDistance
+from sfa_navigation.cDistance import eDistanceFormat
 
 
 class cDistance_tests:
@@ -196,12 +197,15 @@ class cDistance_tests:
     def test_str(self):
         d = cDistance(10)
         s = str(d)
-        assert "MN" in s
-        assert "km" in s
+        assert "Mn" in s
+        assert not "km" in s
+        s = d.toString(format=eDistanceFormat.FULL)
+        assert s == "10.000Mn (18.520 km)"
+
 
     def test_repr(self):
         d = cDistance(7.5)
-        assert repr(d) == "cDistance(7.5)"
+        assert repr(d) == "[cDistance(7.500)]"
 
 
     def test_copy(self):

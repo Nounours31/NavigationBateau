@@ -8,9 +8,32 @@ from .cAngle import cAngle, eAngleFormat
 Classe de base de cap
 """
 class cCap(cAngle):
-    def __init__(self, valAsDeg : float = 0.0):
-        super().__init__(valAsDeg=valAsDeg)
+    def __init__(self, valAsDeg : float | None = None, valAsAngleTrigonometriqueEnDeg : float | None = None, valAsAngleTrigonometriqueEnRad : float | None = None):
+        super().__init__(valAsDeg=0.0)
+        if not valAsDeg is None:
+            self.valAsDeg = valAsDeg
+        elif not valAsAngleTrigonometriqueEnDeg is None:
+            self.asAngleTrigonometriqueEnDeg = valAsAngleTrigonometriqueEnDeg
+        elif not valAsAngleTrigonometriqueEnRad is None:
+            self.asAngleTrigonometriqueEnRad = valAsAngleTrigonometriqueEnRad
         self.inner_normalise()
+
+    @property
+    def asAngleTrigonometriqueEnRad(self) -> float :
+        return self.asAngleTrigonometriqueEnDeg * cAngle.DEG2RAD
+
+    @asAngleTrigonometriqueEnRad.setter
+    def asAngleTrigonometriqueEnRad(self, rad : float) -> None :
+        self.asAngleTrigonometriqueEnDeg = rad * cAngle.RAD2DEG
+
+    @property
+    def asAngleTrigonometriqueEnDeg(self) -> float :
+        return (90.0 - self._angleEnDeg)
+
+    @asAngleTrigonometriqueEnDeg.setter
+    def asAngleTrigonometriqueEnDeg(self, deg : float) -> None :
+        self.valAsDeg = 90.0 - deg
+
 
     def __repr__(self) -> str:
         return "[cCap: " + self.__str__() + "]"
@@ -60,7 +83,19 @@ class cCap(cAngle):
         super().__itruediv__(other)
         self.inner_normalise()
         return self
-    
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __eq__(self, other):
+        if isinstance(other, cCap):
+            return abs(self.valAsDeg - other.valAsDeg) <= cAngle.EQUAL_TOLERANCE_IN_DEG
+        if isinstance(other, cAngle):
+            return abs(self.valAsDeg - other.valAsDeg) <= cAngle.EQUAL_TOLERANCE_IN_DEG
+        if isinstance(other, (int, float)):
+            return abs(self.valAsDeg - other) <= cAngle.EQUAL_TOLERANCE_IN_DEG
+        return False
+
     def __copy__(self) -> cCap:
         """
         normalise renvoie un angle compris entre 0 et 360

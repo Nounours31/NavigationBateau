@@ -1,6 +1,6 @@
 import pytest
 
-from sfa_navigation import cPosition, cLatitude, cLongitude, cAngle, cCap, cDistance
+from sfa_navigation import cPosition, cLatitude, cLongitude, cAngle, cCap, cDistance, eAngleFormat
 from myEnv import myEnv
 
 
@@ -9,19 +9,19 @@ class position_tests:
         l : cLatitude = cLatitude(0.0)
         longi : cLongitude = cLongitude(0.0)
         p : cPosition = cPosition(lat=l, lon=longi)
-        assert p.toString(base=cAngle.STR_AsMin, detail=cAngle.DISPLAY_SHORT) == "N 000°00.000',E 000°00.000'"
+        assert p.toString(format=eAngleFormat.DMM) == "N 000°00.000', E 000°00.000'"
 
     def test_fromstring_dd(self):
         p : cPosition = cPosition.fromString("-1.0, -1.0")
-        assert p.toString(base=cAngle.STR_AsMin, detail=cAngle.DISPLAY_SHORT) == "S 001°00.000',W 001°00.000'"
+        assert p.toString(format=eAngleFormat.DMM) == "S 001°00.000', W 001°00.000'"
 
     def test_fromstring_ddmm(self):
         p : cPosition = cPosition.fromString("N 1°0.0, E 1°0.0")
-        assert p.toString(base=cAngle.STR_AsMin, detail=cAngle.DISPLAY_SHORT) == "N 001°00.000',E 001°00.000'"
+        assert p.toString(format=eAngleFormat.DMM) == "N 001°00.000', E 001°00.000'"
 
     def test_fromstring_ddmm(self):
-        p : cPosition = cPosition.fromString(cPosition.fromString("2, 2").toString(base=cAngle.STR_AsMin, detail=cAngle.DISPLAY_SHORT))
-        assert p.toString(base=cAngle.STR_AsMin, detail=cAngle.DISPLAY_SHORT) == "N 002°00.000',E 002°00.000'"
+        p : cPosition = cPosition.fromString(cPosition.fromString("2, 2").toString(format=eAngleFormat.DMM))
+        assert p.toString(format=eAngleFormat.DMM) == "N 002°00.000', E 002°00.000'"
 
 
     def test_gudermann(self):
@@ -45,9 +45,9 @@ class position_tests:
 
         c : cCap
         dist : cDistance
-        c, dist  = cPosition.positionementRelatif(d,a)
-        assert c.valAsDeg == pytest.approx(4.8, 0.1)
-        assert dist.val == pytest.approx(60.1, 0.1)
+        c, dist  = d.positionementRelatif(a)
+        assert c.valAsDeg == pytest.approx(6.95, 0.01)
+        assert dist.asMn == pytest.approx(65.5779, 0.0001)
 
     def test_route2(self):
         d : cPosition = myEnv.postionStQuay
@@ -55,7 +55,7 @@ class position_tests:
 
         c : cCap
         dist : cDistance
-        c, dist  = cPosition.positionementRelatif(d,a)
+        c, dist  = d.positionementRelatif(a)
         assert c.valAsDeg == pytest.approx(184.8, 0.1)
-        assert dist.val == pytest.approx(60.1, 0.1)
+        assert dist.asMn == pytest.approx(60.1, 0.1)
 

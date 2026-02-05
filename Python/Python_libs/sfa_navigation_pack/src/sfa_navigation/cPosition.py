@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 
-from . import cLatitude, cAngle, cLongitude, cCap, cDistance, cVecteur
+from . import cLatitude, cAngle, cLongitude, cCap, cDistance, cVecteur, eAngleFormat
 
 from sfa_tools import cMyException
 
@@ -34,14 +34,13 @@ class cPosition ():
         latitudeEnRad : float = self._lat.valAsRad
         return math.log2(math.tan((math.pi/4.0) + (latitudeEnRad / 2.0)))
 
-    @staticmethod
-    def positionementRelatif(depart : cPosition, arrivee : cPosition) -> cVecteur :
-        varLat : float = arrivee.lat.val - depart.lat.val
-        varLong : float = arrivee.longi.val - depart.longi.val
+    def positionementRelatif(self, arrivee : cPosition) -> cVecteur :
+        varLat : float = arrivee.lat.val - self.lat.val
+        varLong : float = arrivee.longi.val - self.longi.val
 
         if math.fabs(varLat) > 1.0:
-            tangentRouteQuartFond : float = math.fabs(arrivee.longi.val - depart.longi.val)
-            tangentRouteQuartFond = tangentRouteQuartFond / math.fabs(arrivee.gudermannInverse() - depart.gudermannInverse())
+            tangentRouteQuartFond : float = math.fabs(arrivee.longi.val - self.longi.val)
+            tangentRouteQuartFond = tangentRouteQuartFond / math.fabs(arrivee.gudermannInverse() - self.gudermannInverse())
             RouteQuartFond = math.atan(tangentRouteQuartFond)
 
         else:
@@ -90,3 +89,13 @@ class cPosition ():
             raise cMyException (str(e))
 
         return retour
+
+    # format lat, long
+    def __str__(self) -> str:
+        return self.toString()
+
+    def __repr__(self) -> str:
+        return "[cPosition: " + self.toString() + "]"
+
+    def toString(self, format: eAngleFormat = eAngleFormat.DD) -> str:
+        return self.lat.toString(format) + ", " + self.longi.toString(format)
