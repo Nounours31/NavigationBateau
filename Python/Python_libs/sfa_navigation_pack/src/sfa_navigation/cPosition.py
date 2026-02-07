@@ -85,6 +85,23 @@ class cPosition:
         v: cVecteur = cVecteur(distance=dist, sens=c)
         return v
 
+
+    def nav(self, iSecondeDepuisDepart: float, vitesseEnNoeud: float, cap: float, positionDepart: CPosition) -> CPosition:
+        retour : CPosition = CPosition()
+
+        capRad = cap * CAngle.DEG2RAD
+        latitudeEstimeeRad = positionDepart.latitude().value() * CAngle.DEG2RAD
+
+        pasEnLatitude = cos(capRad) * vitesseEnNoeud / 60  # noeud = mille/h - 1 mille = 1 minute d'arc
+        pasEnLongitude = sin(capRad) * vitesseEnNoeud / (60 * cos(latitudeEstimeeRad))
+
+        positionLatitude : float = positionDepart.latitude().value() + pasEnLatitude * iSecondeDepuisDepart / 3600
+        positionLongitude : float = positionDepart.longitude().value() + pasEnLongitude * iSecondeDepuisDepart / 3600
+        retour.latitude(CLatitude(positionLatitude))
+        retour.longitude(CLongitude(positionLongitude))
+
+        return retour
+
     # format lat, long
     @staticmethod
     def fromString(angleAsString : str = "") -> cPosition:
