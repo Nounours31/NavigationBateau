@@ -42,7 +42,7 @@ class cVecteur_tests:
     def test_init_default(self):
         v = cVecteur()
         assert v.distance.asMn == 0.0
-        assert v.sens.valAsDeg == 0.0
+        assert v.sens.capAsDeg == 0.0
 
 
     def test_init_with_values(self):

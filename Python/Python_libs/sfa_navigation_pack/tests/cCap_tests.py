@@ -6,25 +6,25 @@ from sfa_navigation import cAngle, eAngleFormat, cCap
 
 class cCap_tests:
     def test_init(self):
-        assert cCap().valAsDeg == 0
-        assert cCap(0).valAsDeg == 0
-        assert cCap(360).valAsDeg == 0
-        assert cCap(370).valAsDeg == 10
-        assert cCap(-10).valAsDeg == 350
-        assert cCap(valAsAngleTrigonometriqueEnDeg=0).valAsDeg == 90.0
-        assert cCap(valAsAngleTrigonometriqueEnDeg=90).valAsDeg == 0.0
-        assert cCap(valAsAngleTrigonometriqueEnDeg=180).valAsDeg == 270.0
-        assert cCap(valAsAngleTrigonometriqueEnDeg=270).valAsDeg == 180.0
-        assert cCap(valAsAngleTrigonometriqueEnRad=0 * cAngle.DEG2RAD).valAsDeg == 90.0
-        assert cCap(valAsAngleTrigonometriqueEnRad=90 * cAngle.DEG2RAD).valAsDeg == 0.0
-        assert cCap(valAsAngleTrigonometriqueEnRad=180 * cAngle.DEG2RAD).valAsDeg == 270.0
-        assert cCap(valAsAngleTrigonometriqueEnRad=270 * cAngle.DEG2RAD).valAsDeg == 180.0
+        assert cCap().capAsDeg == 0
+        assert cCap(0).capAsDeg == 0
+        assert cCap(360).capAsDeg == 0
+        assert cCap(370).capAsDeg == 10
+        assert cCap(-10).capAsDeg == 350
+        assert cCap(valAsAngleTrigonometriqueEnDeg=0).capAsDeg == 90.0
+        assert cCap(valAsAngleTrigonometriqueEnDeg=90).capAsDeg == 0.0
+        assert cCap(valAsAngleTrigonometriqueEnDeg=180).capAsDeg == 270.0
+        assert cCap(valAsAngleTrigonometriqueEnDeg=270).capAsDeg == 180.0
+        assert cCap(valAsAngleTrigonometriqueEnRad=0 * cAngle.DEG2RAD).capAsDeg == 90.0
+        assert cCap(valAsAngleTrigonometriqueEnRad=90 * cAngle.DEG2RAD).capAsDeg == 0.0
+        assert cCap(valAsAngleTrigonometriqueEnRad=180 * cAngle.DEG2RAD).capAsDeg == 270.0
+        assert cCap(valAsAngleTrigonometriqueEnRad=270 * cAngle.DEG2RAD).capAsDeg == 180.0
 
     def test_init_normalisation(self):
-        assert cCap(0).valAsDeg == 0
-        assert cCap(360).valAsDeg == 0
-        assert cCap(370).valAsDeg == 10
-        assert cCap(-10).valAsDeg == 350
+        assert cCap(0).capAsDeg == 0
+        assert cCap(360).capAsDeg == 0
+        assert cCap(370).capAsDeg == 10
+        assert cCap(-10).capAsDeg == 350
 
 
     # ---------- ADDITION ----------
@@ -33,13 +33,13 @@ class cCap_tests:
         c = cCap(350)
         r = c + 20
         assert isinstance(r, cCap)
-        assert r.valAsDeg == 10
+        assert r.capAsDeg == 10
     
     
     def test_iadd(self):
         c = cCap(350)
         c += 20
-        assert c.valAsDeg == 10
+        assert c.capAsDeg == 10
     
     
     # ---------- MULTIPLICATION ----------
@@ -48,19 +48,19 @@ class cCap_tests:
         c = cCap(45)
         r = c * 3
         assert isinstance(r, cCap)
-        assert r.valAsDeg == 135
+        assert r.capAsDeg == 135
     
     
     def test_mul_overflow(self):
         c = cCap(45)
         r = c * 10
-        assert r.valAsDeg == 90
+        assert r.capAsDeg == 90
     
     
     def test_imul(self):
         c = cCap(100)
         c *= 4
-        assert c.valAsDeg == 40
+        assert c.capAsDeg == 40
     
     
     # ---------- SOUSTRACTION ----------
@@ -68,13 +68,13 @@ class cCap_tests:
     def test_sub(self):
         c = cCap(10)
         r = c - 30
-        assert r.valAsDeg == 340
+        assert r.capAsDeg == 340
     
     
     def test_isub(self):
         c = cCap(10)
         c -= 30
-        assert c.valAsDeg == 340
+        assert c.capAsDeg == 340
     
     
     # ---------- DIVISION ----------
@@ -82,13 +82,13 @@ class cCap_tests:
     def test_div(self):
         c = cCap(180)
         r = c / 2
-        assert r.valAsDeg == 90
+        assert r.capAsDeg == 90
     
     
     def test_idiv(self):
         c = cCap(180)
         c /= 2
-        assert c.valAsDeg == 90
+        assert c.capAsDeg == 90
     
     
     # ---------- CHAINE ----------
@@ -119,23 +119,23 @@ class cCap_tests:
         c = cCap(0)
         for _ in range(1000):
             c += 123.456
-        assert 0 <= c.valAsDeg < 360
+        assert 0 <= c.capAsDeg < 360
 
     def test_copy(self):
         c = cCap(10)
         d = copy.copy(c)
-        d.valAsDeg = 23.3
+        d.capAsDeg = 23.3
 
         assert c != d
-        assert d.valAsDeg == 23.3
-        assert c.valAsDeg == 10
+        assert d.capAsDeg == 23.3
+        assert c.capAsDeg == 10
 
         d = copy.deepcopy(c)
-        d.valAsDeg = 23.3
+        d.capAsDeg = 23.3
 
         assert c != d
-        assert d.valAsDeg == 23.3
-        assert c.valAsDeg == 10
+        assert d.capAsDeg == 23.3
+        assert c.capAsDeg == 10
 
     def test_property(self):
         c: cCap = cCap(valAsAngleTrigonometriqueEnRad=1.5)

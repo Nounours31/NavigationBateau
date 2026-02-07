@@ -4,9 +4,10 @@ import copy
 import math
 
 from sfa_tools import cMyException
-from enum import Enum
 
-from . import cDistance, cAngle, cCap
+from .cDistance import cDistance
+from .cAngle import cAngle
+from .cCap import cCap
 from .cAngle import eAngleFormat
 from .cDistance import eDistanceFormat
 
@@ -45,7 +46,7 @@ class cVecteur:
     def sens(self, c: cCap) -> None:
         if not isinstance(c, cCap):
             raise cMyException("sens is not a Cap ...")
-        self._sens.valAsDeg = c.valAsDeg
+        self._sens.angleAsDeg = c.capAsDeg
     
 
 

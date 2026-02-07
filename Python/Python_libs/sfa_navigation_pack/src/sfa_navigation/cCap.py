@@ -11,12 +11,19 @@ class cCap(cAngle):
     def __init__(self, valAsDeg : float | None = None, valAsAngleTrigonometriqueEnDeg : float | None = None, valAsAngleTrigonometriqueEnRad : float | None = None):
         super().__init__(valAsDeg=0.0)
         if not valAsDeg is None:
-            self.valAsDeg = valAsDeg
+            self._angleEnDeg = valAsDeg
         elif not valAsAngleTrigonometriqueEnDeg is None:
             self.asAngleTrigonometriqueEnDeg = valAsAngleTrigonometriqueEnDeg
         elif not valAsAngleTrigonometriqueEnRad is None:
             self.asAngleTrigonometriqueEnRad = valAsAngleTrigonometriqueEnRad
         self.inner_normalise()
+
+    @property
+    def capAsDeg(self) -> float :
+        return self._angleEnDeg
+    @capAsDeg.setter
+    def capAsDeg(self, cap: float) -> None :
+        self._angleEnDeg = cap
 
     @property
     def asAngleTrigonometriqueEnRad(self) -> float :
@@ -32,7 +39,7 @@ class cCap(cAngle):
 
     @asAngleTrigonometriqueEnDeg.setter
     def asAngleTrigonometriqueEnDeg(self, deg : float) -> None :
-        self.valAsDeg = 90.0 - deg
+        self._angleEnDeg = 90.0 - deg
 
 
     def __repr__(self) -> str:
@@ -50,7 +57,7 @@ class cCap(cAngle):
 
     def __add__(self, other) -> cCap:
         a : cAngle = super().__add__(other)
-        return cCap(a.valAsDeg)
+        return cCap(a.angleAsDeg)
 
     def __iadd__(self, other) -> cCap:
         super().__iadd__(other)
@@ -59,7 +66,7 @@ class cCap(cAngle):
 
     def __mul__(self, other) -> cCap:
         a = super().__mul__(other)
-        return cCap(a.valAsDeg)
+        return cCap(a.angleAsDeg)
 
     def __imul__(self, other) -> cCap:
         super().__imul__(other)
@@ -68,7 +75,7 @@ class cCap(cAngle):
 
     def __sub__(self, other) -> cCap:
         a = super().__sub__(other)
-        return cCap(a.valAsDeg)
+        return cCap(a.angleAsDeg)
 
     def __isub__(self, other) -> cCap:
         super().__isub__(other)
@@ -77,7 +84,7 @@ class cCap(cAngle):
 
     def __truediv__(self, other) -> cCap:
         a = super().__truediv__(other)
-        return cCap(a.valAsDeg)
+        return cCap(a.angleAsDeg)
 
     def __itruediv__(self, other) -> cCap:
         super().__itruediv__(other)
@@ -89,11 +96,11 @@ class cCap(cAngle):
 
     def __eq__(self, other):
         if isinstance(other, cCap):
-            return abs(self.valAsDeg - other.valAsDeg) <= cAngle.EQUAL_TOLERANCE_IN_DEG
+            return abs(self.angleAsDeg - other.angleAsDeg) <= cAngle.EQUAL_TOLERANCE_IN_DEG
         if isinstance(other, cAngle):
-            return abs(self.valAsDeg - other.valAsDeg) <= cAngle.EQUAL_TOLERANCE_IN_DEG
+            return abs(self.angleAsDeg - other.angleAsDeg) <= cAngle.EQUAL_TOLERANCE_IN_DEG
         if isinstance(other, (int, float)):
-            return abs(self.valAsDeg - other) <= cAngle.EQUAL_TOLERANCE_IN_DEG
+            return abs(self.angleAsDeg - other) <= cAngle.EQUAL_TOLERANCE_IN_DEG
         return False
 
     def __copy__(self) -> cCap:

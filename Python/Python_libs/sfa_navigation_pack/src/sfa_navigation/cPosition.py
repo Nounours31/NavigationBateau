@@ -2,13 +2,17 @@ from __future__ import annotations
 
 import math
 
-from . import cLatitude, cAngle, cLongitude, cCap, cDistance, cVecteur, eAngleFormat
-
+from .cLongitude import cLongitude
+from .cLatitude import cLatitude
+from .cDistance import cDistance
+from .cAngle import cAngle
+from .cAngle import eAngleFormat
+from .cCap import cCap
+from .cVecteur import cVecteur
 from sfa_tools import cMyException
 
 
-class cPosition ():
-
+class cPosition:
     def __init__(self, lat: cLatitude, lon: cLongitude):
         self._lat = lat
         self._long = lon
@@ -31,50 +35,55 @@ class cPosition ():
 
 
     def gudermannInverse(self):
-        latitudeEnRad : float = self._lat.valAsRad
-        return math.log2(math.tan((math.pi/4.0) + (latitudeEnRad / 2.0)))
+        latitudeEnRad : float = self.lat.latitudeEnRad
+        return math.log(math.tan((math.pi/4.0) + (latitudeEnRad / 2.0)))
 
+    # see https://fr.wikipedia.org/wiki/Loxodromie
     def positionementRelatif(self, arrivee : cPosition) -> cVecteur :
-        varLat : float = arrivee.lat.val - self.lat.val
-        varLong : float = arrivee.longi.val - self.longi.val
+        depart : cPosition = self
+        varLat : float = arrivee.lat.latitudeEnDeg - depart.lat.latitudeEnDeg
+        varLong : float = arrivee.longi.longitudeEnDeg - depart.longi.longitudeEnDeg
 
-        if math.fabs(varLat) > 1.0:
-            tangentRouteQuartFond : float = math.fabs(arrivee.longi.val - self.longi.val)
-            tangentRouteQuartFond = tangentRouteQuartFond / math.fabs(arrivee.gudermannInverse() - self.gudermannInverse())
+        if math.fabs(varLat) > (1 / 3600):
+            tangentRouteQuartFond : float = math.fabs(varLong)
+            tangentRouteQuartFond =  (math.fabs(arrivee.longi.longitudeEnRad - depart.longi.longitudeEnRad)
+                                      / math.fabs(arrivee.gudermannInverse() - depart.gudermannInverse()))
             RouteQuartFond = math.atan(tangentRouteQuartFond)
 
         else:
             RouteQuartFond = math.pi / 2.0
 
         """
-        Cette route notée R f q {displaystyle Rf_{q}} a un équivalent R f {displaystyle Rf} compris entre 0° et 360°. 
+        Cette route notée Rfq a un équivalent Rf compris entre 0° et 360°. 
         Par exemple :
             si Rfq = N60°E alors Rf = 060° (= 000°+060°)
             si Rfq = N60°W alors Rf = 300° (= 360°-060°)
             si Rfq = S60°E alors Rf = 120° (= 180°-060°)
             si Rfq = S60°W alors Rf = 240° (= 180°+060°)
         """
-        RouteQuartFond = RouteQuartFond * 180.0 / math.pi
-        route : str = ""
+        RouteQuartFond = RouteQuartFond * cAngle.RAD2DEG
+        routeFond : float = 0.0
         if varLat >= 0.0 and varLong >= 0.0:
-            route = "NE"
+            # route = "NE"
             routeFond = RouteQuartFond
         if varLat >= 0.0 and varLong < 0.0:
-            route = "NW"
+            # route = "NW"
             routeFond = 360 - RouteQuartFond
         if varLat < 0.0 and varLong >= 0.0:
-            route = "SE"
+            # route = "SE"
             routeFond = 180 - RouteQuartFond
         if varLat < 0.0 and varLong < 0.0:
-            route = "SW"
+            # route = "SW"
             routeFond = 180 + RouteQuartFond
 
-        c : cCap = cCap(valAsDeg=routeFond)
+        latitudeMoyenne : cLatitude = (arrivee.lat / 2.0 + depart.lat / 2.0)
+        c: cCap = cCap(valAsDeg=routeFond)
+        d: float = (math.fabs(arrivee.longi.longitudeEnDeg - depart.longi.longitudeEnDeg) * 60.0 * math.cos (latitudeMoyenne.latitudeEnRad) /
+                    math.sin (RouteQuartFond * cAngle.DEG2RAD))
 
-        dist = varLat * 60.0 / math.cos (c.valAsRad)
-        d : cDistance = cDistance(dist)
-
-        return (c, d)
+        dist : cDistance = cDistance(valAsMilleNautique=d)
+        v: cVecteur = cVecteur(distance=dist, sens=c)
+        return v
 
     # format lat, long
     @staticmethod

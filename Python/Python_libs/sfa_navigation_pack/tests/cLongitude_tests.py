@@ -23,14 +23,14 @@ class cLongitude_tests:
 
     def test_properties(self):
         l : cLongitude = cLongitude(0.0)
-        l.val = 10.0
-        assert l.val == pytest.approx(10, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        l.longitudeEnDeg = 10.0
+        assert l.longitudeEnDeg == pytest.approx(10, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
-        l.val = -15.0
-        assert l.val == pytest.approx(-15, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        l.longitudeEnDeg = -15.0
+        assert l.longitudeEnDeg == pytest.approx(-15, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         with pytest.raises(cMyException) as err:
-            l.val = 190.0
+            l.longitudeEnDeg = 190.0
         assert "Invalide longitude" in str(err.value)
 
         x: eLongitudeSens = eLongitudeSens.E
@@ -95,20 +95,20 @@ class cLongitude_tests:
         l: cLongitude = cLongitude.fromString(x)
         m: cLongitude = cLongitude.fromString(y)
         n : cLongitude = l + m
-        assert n.val == pytest.approx(0.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx( -47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert m.val == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(0.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx( -47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert m.longitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         n = copy.copy(l)
         n += m
-        assert n.val == pytest.approx(0.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx( -47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert m.val == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(0.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx( -47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert m.longitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
         n = copy.deepcopy(l)
         n += m
-        assert n.val == pytest.approx(0.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx( -47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert m.val == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(0.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx( -47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert m.longitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         with pytest.raises(cMyException) as err:
             m = l + 3
@@ -125,20 +125,20 @@ class cLongitude_tests:
         l: cLongitude = cLongitude.fromString(x)
         m: cLongitude = cLongitude.fromString(y)
         n : cLongitude = l - m
-        assert n.val == pytest.approx(0.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert m.val == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(0.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert m.longitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         n = copy.copy(l)
         n -= m
-        assert n.val == pytest.approx(0.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert m.val == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(0.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert m.longitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
         n = copy.deepcopy(l)
         n -= m
-        assert n.val == pytest.approx(0.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert m.val == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(0.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert m.longitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         with pytest.raises (cMyException) as err:
             m = l - 3
@@ -153,48 +153,48 @@ class cLongitude_tests:
         l: cLongitude = cLongitude.fromString(x)
         m: cLongitude = cLongitude.fromString(y)
         n : cLongitude = l * m
-        assert n.val == pytest.approx(-20.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx( -10, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert m.val == pytest.approx(2, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(-20.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx( -10, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert m.longitudeEnDeg == pytest.approx(2, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         n = copy.copy(l)
         n *= m
-        assert n.val == pytest.approx(-20.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx( -10, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert m.val == pytest.approx(2, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(-20.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx( -10, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert m.longitudeEnDeg == pytest.approx(2, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         x = "-10.0"
         y = "-2.0"
         l: cLongitude = cLongitude.fromString(x)
         m: cLongitude = cLongitude.fromString(y)
         n : cLongitude = l * m
-        assert n.val == pytest.approx(20.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx( -10, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert m.val == pytest.approx(-2, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(20.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx( -10, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert m.longitudeEnDeg == pytest.approx(-2, cAngle.EQUAL_TOLERANCE_IN_DEG)
         n = copy.copy(l)
         n *= m
-        assert n.val == pytest.approx(20.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx( -10, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert m.val == pytest.approx(-2, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(20.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx( -10, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert m.longitudeEnDeg == pytest.approx(-2, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         x = "-10.0"
         l: cLongitude = cLongitude.fromString(x)
         n : cLongitude = l * (-2.0)
-        assert n.val == pytest.approx(20.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx( -10, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(20.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx( -10, cAngle.EQUAL_TOLERANCE_IN_DEG)
         n = copy.copy(l)
         n *= (-2.0)
-        assert n.val == pytest.approx(20.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx( -10, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(20.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx( -10, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         l: cLongitude = cLongitude.fromString(x)
         n : cLongitude = l * 2
-        assert n.val == pytest.approx(-20.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx( -10, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(-20.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx( -10, cAngle.EQUAL_TOLERANCE_IN_DEG)
         n = copy.copy(l)
         n *= 2
-        assert n.val == pytest.approx(-20.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx( -10, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(-20.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx( -10, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
 
         with pytest.raises(cMyException) as err:
@@ -212,48 +212,48 @@ class cLongitude_tests:
         l: cLongitude = cLongitude.fromString(x)
         m: cLongitude = cLongitude.fromString(y)
         n : cLongitude = l / m
-        assert n.val == pytest.approx(1.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert m.val == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(1.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert m.longitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         n = copy.copy(l)
         n /= m
-        assert n.val == pytest.approx(1.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert m.val == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(1.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert m.longitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         x = "47.12"
         y = "-47.12"
         l: cLongitude = cLongitude.fromString(x)
         m: cLongitude = cLongitude.fromString(y)
         n : cLongitude = l / m
-        assert n.val == pytest.approx(-1.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert m.val == pytest.approx(-47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(-1.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert m.longitudeEnDeg == pytest.approx(-47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
         n = copy.copy(l)
         n /= m
-        assert n.val == pytest.approx(-1.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert m.val == pytest.approx(-47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(-1.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert m.longitudeEnDeg == pytest.approx(-47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         x = "4.0"
         l: cLongitude = cLongitude.fromString(x)
         n : cLongitude = l / 2
-        assert n.val == pytest.approx(2.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx(4.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(2.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx(4.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
         n = copy.copy(l)
         n /= 2
-        assert n.val == pytest.approx(2.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx(4.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(2.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx(4.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         l: cLongitude = cLongitude.fromString(x)
         n : cLongitude = l / (-2.0)
-        assert n.val == pytest.approx(-2.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx(4.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(-2.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx(4.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
         n = copy.copy(l)
         n /= (-2.0)
-        assert n.val == pytest.approx(-2.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l.val == pytest.approx(4.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert n.longitudeEnDeg == pytest.approx(-2.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert l.longitudeEnDeg == pytest.approx(4.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
 
         with pytest.raises (cMyException) as err:
@@ -266,24 +266,24 @@ class cLongitude_tests:
     def test_normalise(self):
         l: cLongitude = cLongitude(valAsDeg=10.0, sens=eLongitudeSens.E)
         l.normalise()
-        assert l.sens == eLongitudeSens.E
+        assert l.sensLongitude == eLongitudeSens.E
 
         l: cLongitude = cLongitude(valAsDeg=100.0, sens=eLongitudeSens.W)
         l.normalise()
-        assert l.sens == eLongitudeSens.W
+        assert l.sensLongitude == eLongitudeSens.W
 
         with pytest.raises(cMyException) as err:
-            l.val = 190.0
+            l.longitudeEnDeg = 190.0
             l.normalise()
 
-        l.sens = eLongitudeSens.W
-        assert l.sens == eLongitudeSens.W
+        l.sensLongitude = eLongitudeSens.W
+        assert l.sensLongitude == eLongitudeSens.W
         m: cLongitude = cLongitude(valAsDeg=1.0, sens=eLongitudeSens.W)
 
         l *= m
-        assert l.sens == eLongitudeSens.E
-        l.sens = eLongitudeSens.W
-        assert l.sens == eLongitudeSens.W
+        assert l.sensLongitude == eLongitudeSens.E
+        l.sensLongitude = eLongitudeSens.W
+        assert l.sensLongitude == eLongitudeSens.W
 
 
     def test_toString(self):

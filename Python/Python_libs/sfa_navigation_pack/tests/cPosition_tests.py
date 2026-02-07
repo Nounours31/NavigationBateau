@@ -1,6 +1,6 @@
 import pytest
 
-from sfa_navigation import cPosition, cLatitude, cLongitude, cAngle, cCap, cDistance, eAngleFormat
+from sfa_navigation import cPosition, cLatitude, cLongitude, cAngle, cCap, cDistance, eAngleFormat, cVecteur
 from myEnv import myEnv
 
 
@@ -27,7 +27,7 @@ class position_tests:
     def test_gudermann(self):
         p : cPosition = myEnv.postionTrinitee
         x : float = p.gudermannInverse()
-        assert x == pytest.approx(1.365, 0.001)
+        assert x == pytest.approx(0.9461, 0.001)
 
     def test_gudermann2(self):
         p : cPosition = cPosition (lat = cLatitude(0.0), lon= cLongitude(0.0))
@@ -37,25 +37,60 @@ class position_tests:
     def test_gudermann3(self):
         p : cPosition = cPosition (lat = cLatitude(89.9), lon= cLongitude(0.0))
         x : float = p.gudermannInverse()
-        assert x == pytest.approx(10.162, 0.001)
+        assert x == pytest.approx(7.0439, 0.001)
 
     def test_route(self):
         a : cPosition = myEnv.postionStQuay
         d : cPosition = myEnv.postionTrinitee
 
-        c : cCap
-        dist : cDistance
-        c, dist  = d.positionementRelatif(a)
-        assert c.valAsDeg == pytest.approx(6.95, 0.01)
-        assert dist.asMn == pytest.approx(65.5779, 0.0001)
+        v: cVecteur = d.positionementRelatif(a)
+        assert v.distance.asMn == pytest.approx(65.5779, 0.001)
+        assert v.sens.capAsDeg == pytest.approx(6.95, 0.01)
 
     def test_route2(self):
-        d : cPosition = myEnv.postionStQuay
-        a : cPosition = myEnv.postionTrinitee
+        d : cPosition = cPosition(lat=cLatitude(valAsDeg=49.1), lon=cLongitude(valAsDeg=2.5))
+        a : cPosition = cPosition(lat=cLatitude(valAsDeg=28.1), lon=cLongitude(valAsDeg=-20.5))
 
-        c : cCap
-        dist : cDistance
-        c, dist  = d.positionementRelatif(a)
-        assert c.valAsDeg == pytest.approx(184.8, 0.1)
-        assert dist.asMn == pytest.approx(60.1, 0.1)
+        v: cVecteur  = d.positionementRelatif(a)
+        assert v.distance.asMn == pytest.approx(1644, 1)
+        assert v.sens.capAsDeg == pytest.approx(210, 1)
 
+    def test_route3(self):
+        d : cPosition = cPosition(lat=cLatitude(valAsDeg=49.1), lon=cLongitude(valAsDeg=2.5))
+        a : cPosition = cPosition(lat=cLatitude(valAsDeg=49.5), lon=cLongitude(valAsDeg=-50.7))
+
+        v: cVecteur  = d.positionementRelatif(a)
+        assert v.distance.asMn == pytest.approx(2042, 1)
+        assert v.sens.capAsDeg == pytest.approx(270, 1)
+
+    def test_route4(self):
+        d : cPosition = cPosition(lat=cLatitude(valAsDeg=23.7), lon=cLongitude(valAsDeg=-67.1))
+        a : cPosition = cPosition(lat=cLatitude(valAsDeg=49.5), lon=cLongitude(valAsDeg=-0.8))
+
+        v: cVecteur  = d.positionementRelatif(a)
+        assert v.distance.asMn == pytest.approx(3427, 1)
+        assert v.sens.capAsDeg == pytest.approx(45, 1)
+
+    def test_route5(self):
+        d : cPosition = cPosition(lat=cLatitude(valAsDeg=23.7), lon=cLongitude(valAsDeg=-67.1))
+        a : cPosition = cPosition(lat=cLatitude(valAsDeg=-34), lon=cLongitude(valAsDeg=18.8))
+
+        v: cVecteur  = d.positionementRelatif(a)
+        assert v.distance.asMn == pytest.approx(6003, 1)
+        assert v.sens.capAsDeg == pytest.approx(125, 1)
+
+    def test_route6(self):
+        d : cPosition = cPosition(lat=cLatitude(valAsDeg=49.5), lon=cLongitude(valAsDeg=-56.5))
+        a : cPosition = cPosition(lat=cLatitude(valAsDeg=49.5), lon=cLongitude(valAsDeg=-5.7))
+
+        v: cVecteur  = d.positionementRelatif(a)
+        assert v.distance.asMn == pytest.approx(1981, 1)
+        assert v.sens.capAsDeg == pytest.approx(90, 1)
+
+    def test_route7(self):
+        d : cPosition = cPosition(lat=cLatitude(valAsDeg=80), lon=cLongitude(valAsDeg=-56.5))
+        a : cPosition = cPosition(lat=cLatitude(valAsDeg=80), lon=cLongitude(valAsDeg=-5.7))
+
+        v: cVecteur  = d.positionementRelatif(a)
+        assert v.distance.asMn == pytest.approx(604, 1)
+        assert v.sens.capAsDeg == pytest.approx(90, 1)

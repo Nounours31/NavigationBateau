@@ -7,7 +7,7 @@ class eDistanceFormat(Enum):
     FULL = "Full"
     STD = "Std"
 
-class cDistance():
+class cDistance:
     MN2KM: float = 1.852
     KM2MN: float = 1 / MN2KM
 
@@ -19,10 +19,11 @@ class cDistance():
     def __init__(self, valAsMilleNautique : float | None = None, valAsKm : float | None = None):
         self._toleranceEnMn = cDistance.EQUAL_TOLERANCE_IN_MN
 
-        if not valAsMilleNautique is None:
+        if isinstance(valAsMilleNautique, (int, float)) :
             self._valAsMilleNautique = valAsMilleNautique
 
-        elif not valAsKm is None:
+
+        elif isinstance(valAsKm, (int, float)):
             self._valAsMilleNautique = valAsKm * cDistance.KM2MN
 
         else:

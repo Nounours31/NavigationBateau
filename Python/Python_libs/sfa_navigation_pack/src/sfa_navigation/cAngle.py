@@ -80,6 +80,18 @@ class cAngle:
         else:
             self._angleEnDeg = 0.0
 
+    @property
+    def angleAsDeg(self) -> float:
+        return self._angleEnDeg
+
+    @angleAsDeg.setter
+    def angleAsDeg(self, x:float) -> None:
+        self._angleEnDeg = x
+
+    @property
+    def angleAsRad(self) -> float:
+        return cAngle.DEG2RAD * self._angleEnDeg
+
 
     def __repr__(self) -> str :
         """
@@ -104,9 +116,9 @@ class cAngle:
             Aucune
         """
 
-        sign : str = "" if self._angleEnDeg >= 0.0 else "-"
+        sign : str = "" if self.angleAsDeg >= 0.0 else "-"
 
-        angleEnValeurAbsolue : float = math.fabs(self._angleEnDeg)
+        angleEnValeurAbsolue : float = math.fabs(self.angleAsDeg)
         angleValeurEntiere : int = math.floor (angleEnValeurAbsolue)
         minute : float = (angleEnValeurAbsolue - angleValeurEntiere) * 60.0
         minuteEnValeurEntiere : int = math.floor(minute)
@@ -188,17 +200,8 @@ class cAngle:
 
         return a
 
-    @property
-    def valAsDeg(self) -> float:
-        return self._angleEnDeg
 
-    @property
-    def valAsRad(self) -> float:
-        return cAngle.DEG2RAD * self._angleEnDeg
 
-    @valAsDeg.setter
-    def valAsDeg(self, x:float) -> None:
-        self._angleEnDeg = x
 
     def __ne__(self, val : cAngle | float) -> bool:
         return not self.__eq__(val)
@@ -213,13 +216,13 @@ class cAngle:
             cMyException: si val n'est pas un type valide
         """
         if isinstance(val, cAngle):
-            return math.fabs(self._angleEnDeg - val._angleEnDeg) < self._equalToleranceInDeg
+            return math.fabs(self.angleAsDeg - val.angleAsDeg) < self._equalToleranceInDeg
 
         if isinstance(val, int):
             val = 1.0 * val
 
         if isinstance(val, float):
-            return math.fabs(self._angleEnDeg - val) < self._equalToleranceInDeg
+            return math.fabs(self.angleAsDeg - val) < self._equalToleranceInDeg
 
         raise cMyException("angle equal: type error")
 
@@ -236,14 +239,14 @@ class cAngle:
             cMyException: si val n'est pas un type valide
         """
         if isinstance(val, cAngle):
-            self._angleEnDeg += val.valAsDeg
+            self.angleAsDeg += val.angleAsDeg
             return self
 
         if isinstance(val, int):
             val = 1.0 * val
 
         if isinstance(val, float):
-            self._angleEnDeg += val
+            self.angleAsDeg += val
             return self
 
         raise cMyException("angle add: type error")
@@ -261,13 +264,13 @@ class cAngle:
             cMyException: si val n'est pas un type valide
         """
         if issubclass(val.__class__, cAngle):
-            return cAngle (valAsDeg = self._angleEnDeg + val._angleEnDeg)
+            return cAngle (valAsDeg = self.angleAsDeg + val.angleAsDeg)
 
         if isinstance(val, int):
             val = 1.0 * val
 
         if isinstance(val, float):
-            return cAngle (valAsDeg = self._angleEnDeg + val)
+            return cAngle (valAsDeg = self.angleAsDeg + val)
 
         raise cMyException("angle add: type error")
 
@@ -300,13 +303,13 @@ class cAngle:
             cMyException: si val n'est pas un type valide
         """
         if issubclass(other.__class__, cAngle):
-            return cAngle (valAsDeg = self._angleEnDeg * other.valAsDeg)
+            return cAngle (valAsDeg = self.angleAsDeg * other.angleAsDeg)
 
         if isinstance(other, int):
             other = 1.0 * other
 
         if isinstance(other, float):
-            return cAngle (valAsDeg = self._angleEnDeg * other)
+            return cAngle (valAsDeg = self.angleAsDeg * other)
 
         raise cMyException("angle add: type error")
 
@@ -321,21 +324,21 @@ class cAngle:
             cMyException: si val n'est pas un type valide
         """
         if isinstance(other, cAngle):
-            self._angleEnDeg = self._angleEnDeg * other._angleEnDeg
+            self.angleAsDeg = self.angleAsDeg * other.angleAsDeg
             return self
 
         if isinstance(other, int):
             other = 1.0 * other
 
         if isinstance(other, float):
-            self._angleEnDeg = self._angleEnDeg * other
+            self.angleAsDeg = self.angleAsDeg * other
             return self
 
         raise cMyException("angle add: type error")
 
     def __rtruediv__(self, other : cAngle | float) -> cAngle :
         if isinstance(other, float):
-            return cAngle(valAsDeg= other / self._angleEnDeg)
+            return cAngle(valAsDeg= other / self.angleAsDeg)
 
         raise cMyException("angle add: type error")
 
@@ -351,13 +354,13 @@ class cAngle:
             cMyException: si val n'est pas un type valide
         """
         if isinstance(other, cAngle):
-            return cAngle (valAsDeg = self._angleEnDeg / other.valAsDeg)
+            return cAngle (valAsDeg = self.angleAsDeg / other.angleAsDeg)
 
         if isinstance(other, int):
             other = 1.0 * other
 
         if isinstance(other, float):
-            return cAngle (valAsDeg = self._angleEnDeg / other)
+            return cAngle (valAsDeg = self.angleAsDeg / other)
 
         raise cMyException("angle add: type error")
 
@@ -372,14 +375,14 @@ class cAngle:
             cMyException: si val n'est pas un type valide
         """
         if isinstance(other, cAngle):
-            self._angleEnDeg = self._angleEnDeg / other._angleEnDeg
+            self.angleAsDeg = self.angleAsDeg / other.angleAsDeg
             return self
 
         if isinstance(other, int):
             other = 1.0 * other
 
         if isinstance(other, float):
-            self._angleEnDeg = self._angleEnDeg / other
+            self.angleAsDeg = self.angleAsDeg / other
             return self
 
         raise cMyException("angle add: type error")
@@ -394,7 +397,7 @@ class cAngle:
         Raises:
             aucun
         """
-        x : float = self._angleEnDeg
+        x : float = self.angleAsDeg
         while x < 0.0:
              x += 360.0
         while x >= 360.0:
@@ -403,12 +406,12 @@ class cAngle:
         return cAngle(valAsDeg=x)
 
     def inner_normalise(self):
-        x : float = self._angleEnDeg
+        x : float = self.angleAsDeg
         while x < 0.0:
              x += 360.0
         while x >= 360.0:
              x -= 360.0
-        self._angleEnDeg = x
+        self.angleAsDeg = x
 
     def __copy__(self) -> cAngle:
         """
@@ -422,7 +425,7 @@ class cAngle:
         """
         cls = self.__class__
         new_obj = cls.__new__(cls)
-        new_obj._angleEnDeg = copy.copy(self._angleEnDeg)
+        new_obj.angleAsDeg = copy.copy(self.angleAsDeg)
         return new_obj
 
     def __deepcopy__(self, memodict={}) -> cAngle:
@@ -440,5 +443,5 @@ class cAngle:
 
         memodict[id(self)] = new_obj
 
-        new_obj._angleEnDeg = copy.deepcopy(self._angleEnDeg, memodict)
+        new_obj.angleAsDeg = copy.deepcopy(self.angleAsDeg, memodict)
         return new_obj
