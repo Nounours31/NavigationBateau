@@ -1,6 +1,6 @@
 import pytest
 import copy
-from sfa_navigation import cAngle, eAngleFormat, cCap, cDistance
+from sfa_navigation import cDistance
 from sfa_navigation.cDistance import eDistanceFormat
 
 
@@ -45,13 +45,13 @@ class cDistance_tests:
     def test_add(self):
         d = cDistance(5)
         with pytest.raises(TypeError) as err:
-            r : cDistance = d + complex(1, 1)
+            r: cDistance = d + complex(1, 1)
+            print(str(err.value))
+            print(str(r))
 
         with pytest.raises(TypeError) as err:
-            r : cDistance = d
             d += complex(1, 1)
-
-
+            print(str(err.value))
 
     def test_iadd(self):
         d = cDistance(5)
@@ -76,8 +76,9 @@ class cDistance_tests:
         r -= 1.0
         assert r.asMn == 7
         with pytest.raises(TypeError) as err:
-            r : cDistance = d1
+            r: cDistance = d1
             r = d1 - complex(1, 1)
+            print(str(err.value))
 
     def test_isub(self):
         d = cDistance(10)
@@ -87,9 +88,9 @@ class cDistance_tests:
         d -= e
         assert d.asMn == 4
         with pytest.raises(TypeError) as err:
-            r : cDistance = d
+            r: cDistance = d
             r -= complex(1, 1)
-
+            print(str(err.value))
 
     def test_mul_scalar(self):
         d = cDistance(3)
@@ -99,8 +100,9 @@ class cDistance_tests:
         r = d * e
         assert r.asMn == 9
         with pytest.raises(TypeError) as err:
-            r : cDistance = d
+            r: cDistance = d
             r = d * complex(1, 1)
+            print(str(err.value))
 
     def test_rmul(self):
         d = cDistance(3)
@@ -115,8 +117,9 @@ class cDistance_tests:
         d *= e
         assert d.asMn == 60
         with pytest.raises(TypeError) as err:
-            r : cDistance = d
+            r: cDistance = d
             r *= complex(1, 1)
+            print(str(err.value))
 
     def test_div_scalar(self):
         d = cDistance(10)
@@ -126,13 +129,14 @@ class cDistance_tests:
         r = d / e
         assert r.asMn == 2
         with pytest.raises(TypeError) as err:
-            r : cDistance = d
+            r: cDistance = d
             r /= complex(1, 1)
+            print(str(err.value))
 
         with pytest.raises(TypeError) as err:
-            r : cDistance = d
+            r: cDistance = d
             r = d / complex(1, 1)
-
+            print(str(err.value))
 
     def test_idiv(self):
         d = cDistance(10)
@@ -173,6 +177,7 @@ class cDistance_tests:
         assert cDistance(5) < 10
         with pytest.raises(TypeError) as err:
             assert cDistance(5) < complex(10, 0)
+            print(str(err.value))
 
     def test_le(self):
         assert cDistance(5) <= cDistance(5)
@@ -184,6 +189,7 @@ class cDistance_tests:
         assert cDistance(5) > 0
         with pytest.raises(TypeError) as err:
             assert cDistance(5) > complex(0, 0)
+            print(str(err.value))
 
     def test_ge(self):
         assert cDistance(10) >= cDistance(10)
@@ -198,15 +204,13 @@ class cDistance_tests:
         d = cDistance(10)
         s = str(d)
         assert "Mn" in s
-        assert not "km" in s
+        assert "km" not in s
         s = d.toString(format=eDistanceFormat.FULL)
         assert s == "10.000Mn (18.520 km)"
-
 
     def test_repr(self):
         d = cDistance(7.5)
         assert repr(d) == "[cDistance(7.500)]"
-
 
     def test_copy(self):
         c = cDistance(10)

@@ -1,138 +1,135 @@
 import math
 import pytest
 import copy
-from coverage.debug import PytestTracker
+
 from sfa_tools import cMyException
 
 from sfa_navigation import cAngle, eAngleFormat
 
 
 class cAngle_tests:
-    def test_infra (self):
-        x : eAngleFormat = eAngleFormat.DD
+    def test_infra(self):
+        x: eAngleFormat = eAngleFormat.DD
         for e in eAngleFormat:
-            s : str = str(e)
+            s: str = str(e)
             s = e.__repr__()
+            print(s)
 
-        l : list = list()
-        l.append((eAngleFormat.DD, "DD"))
-        l.append((eAngleFormat.DMS, "DMS"))
-        l.append((eAngleFormat.DMM, "DMM"))
-        l.append((eAngleFormat.DD, "DD"))
-        l.append((eAngleFormat.R8, "Reel"))
-        l.append((eAngleFormat.RAD, "Rad"))
-        l.append((eAngleFormat.Debug, "Debug"))
+        ll: list = list()
+        ll.append((x, "DD"))
+        ll.append((eAngleFormat.DD, "DD"))
+        ll.append((eAngleFormat.DMS, "DMS"))
+        ll.append((eAngleFormat.DMM, "DMM"))
+        ll.append((eAngleFormat.DD, "DD"))
+        ll.append((eAngleFormat.R8, "Reel"))
+        ll.append((eAngleFormat.RAD, "Rad"))
+        ll.append((eAngleFormat.Debug, "Debug"))
 
-        for y in l:
+        for y in ll:
             assert str(y[0]) == y[1]
-            assert y[0].__repr__ () == "[eAngleFormat: " + y[1] + "]"
-
+            assert y[0].__repr__() == "[eAngleFormat: " + y[1] + "]"
 
     def test_init_vide(self):
-        a : cAngle = cAngle(0.0)
+        a: cAngle = cAngle(0.0)
         assert a.toString(eAngleFormat.DMM) == "000°00.000'"
         assert a.__repr__() == "[cAngle: 000.0000°]"
 
-
     def test_fromstring_dd(self):
         x = "-47.12"
-        l: cAngle = cAngle.fromString(x)
-        assert l.toString(eAngleFormat.DD) == "-047.1200°"
+        ll: cAngle = cAngle.fromString(x)
+        assert ll.toString(eAngleFormat.DD) == "-047.1200°"
 
     def test_fromstring_dd2(self):
         x = "47°12"
-        l: cAngle = cAngle.fromString(x)
-        assert l.toString(eAngleFormat.DD) == "047.2000°"
+        ll: cAngle = cAngle.fromString(x)
+        assert ll.toString(eAngleFormat.DD) == "047.2000°"
 
     def test_fromstring_dd3(self):
         x = "-47°12"
-        l: cAngle = cAngle.fromString(x)
-        assert l.toString(eAngleFormat.DD) == "-047.2000°"
-
+        ll: cAngle = cAngle.fromString(x)
+        assert ll.toString(eAngleFormat.DD) == "-047.2000°"
 
     def test_fromstring_dd4(self):
         x = "47°59'59.9999"
-        l: cAngle = cAngle.fromString(x)
-        assert l.toString(eAngleFormat.DD) == "048.0000°"
+        ll: cAngle = cAngle.fromString(x)
+        assert ll.toString(eAngleFormat.DD) == "048.0000°"
 
     def test_fromstring_dd5(self):
         x = "-47°59'59.9999"
-        l: cAngle = cAngle.fromString(x)
-        assert l.toString(eAngleFormat.DD) == "-048.0000°"
+        ll: cAngle = cAngle.fromString(x)
+        assert ll.toString(eAngleFormat.DD) == "-048.0000°"
 
     def test_fromstring_rad(self):
-        l: cAngle = None
+        ll: cAngle = None
 
         with pytest.raises(cMyException) as err:
-            l = cAngle.fromString("- 3.1415 rad")
+            ll = cAngle.fromString("- 3.1415 rad")
         assert "Ce n'est pas un angle" in str(err.value)
 
-        l = cAngle.fromString("-3.1415 rad")
-        assert l.toString(eAngleFormat.DD) == "-179.9947°"
-        l = cAngle.fromString("-3.1415rad")
-        assert l.toString(eAngleFormat.DD) == "-179.9947°"
-        l = cAngle.fromString("3.1415 rad")
-        assert l.toString(eAngleFormat.DD) == "179.9947°"
-        l = cAngle.fromString("+3.1415 rad")
-        assert l.toString(eAngleFormat.DD) == "179.9947°"
-
+        ll = cAngle.fromString("-3.1415 rad")
+        assert ll.toString(eAngleFormat.DD) == "-179.9947°"
+        ll = cAngle.fromString("-3.1415rad")
+        assert ll.toString(eAngleFormat.DD) == "-179.9947°"
+        ll = cAngle.fromString("3.1415 rad")
+        assert ll.toString(eAngleFormat.DD) == "179.9947°"
+        ll = cAngle.fromString("+3.1415 rad")
+        assert ll.toString(eAngleFormat.DD) == "179.9947°"
 
     def test_init(self):
-        l: cAngle = cAngle()
-        assert l.toString(eAngleFormat.R8) == "000.0000"
+        ll: cAngle = cAngle()
+        assert ll.toString(eAngleFormat.R8) == "000.0000"
 
-        l = cAngle(valAsDeg=180.0)
-        assert l.toString(eAngleFormat.R8) == "180.0000"
+        ll = cAngle(valAsDeg=180.0)
+        assert ll.toString(eAngleFormat.R8) == "180.0000"
 
-        l = cAngle(valAsRad=math.pi)
-        assert l.angleAsDeg == pytest.approx(180.0, abs = cAngle.EQUAL_TOLERANCE_IN_DEG)
+        ll = cAngle(valAsRad=math.pi)
+        assert ll.angleAsDeg == pytest.approx(180.0, abs=cAngle.EQUAL_TOLERANCE_IN_DEG)
 
     def test_tostring_base(self):
         x = "-47.12"
-        l: cAngle = cAngle.fromString(x)
-        assert str(l) == "-047.1200°"
+        ll: cAngle = cAngle.fromString(x)
+        assert str(ll) == "-047.1200°"
 
     def test_tostring_all(self):
         x = "-47.123"
-        l: cAngle = cAngle.fromString(x)
-        assert l.toString() == "-047.1230°"
-        assert l.toString(eAngleFormat.R8) == "-047.1230"
-        assert l.toString(eAngleFormat.DD) == "-047.1230°"
-        assert l.toString(eAngleFormat.RAD) == "-000.8225 rad"
-        assert l.toString(eAngleFormat.DMM) == "-047°07.380'"
-        assert l.toString(eAngleFormat.DMS) == "-047°07'22.800\""
+        ll: cAngle = cAngle.fromString(x)
+        assert ll.toString() == "-047.1230°"
+        assert ll.toString(eAngleFormat.R8) == "-047.1230"
+        assert ll.toString(eAngleFormat.DD) == "-047.1230°"
+        assert ll.toString(eAngleFormat.RAD) == "-000.8225 rad"
+        assert ll.toString(eAngleFormat.DMM) == "-047°07.380'"
+        assert ll.toString(eAngleFormat.DMS) == "-047°07'22.800\""
 
     def test_tostring_zarbi(self):
         x = "-0°"
-        l: cAngle = cAngle.fromString(x)
-        assert l.toString() == "000.0000°"
+        ll: cAngle = cAngle.fromString(x)
+        assert ll.toString() == "000.0000°"
 
-        l = cAngle.fromString("24°59'59.99")
-        assert l.toString() == "025.0000°"
-        assert l.toString(eAngleFormat.DMS) == "024°59'59.990\""
-        assert l.angleAsDeg == pytest.approx(24.999997222222223, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        ll = cAngle.fromString("24°59'59.99")
+        assert ll.toString() == "025.0000°"
+        assert ll.toString(eAngleFormat.DMS) == "024°59'59.990\""
+        assert ll.angleAsDeg == pytest.approx(24.999997222222223, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
-        l = cAngle.fromString("24°59'59.98")
-        assert l.toString(eAngleFormat.Debug) == "025.0000° [024°60.000' # 024°59'59.980\"]"
+        ll = cAngle.fromString("24°59'59.98")
+        assert ll.toString(eAngleFormat.Debug) == "025.0000° [024°60.000' # 024°59'59.980\"]"
 
     def test_tostring_error(self):
         x = "-0°"
-        l: cAngle = cAngle.fromString(x)
+        ll: cAngle = cAngle.fromString(x)
 
         with pytest.raises(cMyException) as err:
-            y : str = l.toString(9)
+            y: str = ll.toString(9)
+            print(y)
         assert "Format demande inconnu" in str(err.value)
 
-
     def test_setter(self):
-        l : cAngle = cAngle(valAsDeg=0.0)
-        l.angleAsDeg = 90.0
-        assert l.angleAsDeg == pytest.approx(90.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-
+        ll: cAngle = cAngle(valAsDeg=0.0)
+        ll.angleAsDeg = 90.0
+        assert ll.angleAsDeg == pytest.approx(90.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
     def test_equal(self):
-        l1 : cAngle = cAngle(valAsDeg=0.0)
-        l2 : cAngle = cAngle(valAsDeg=0.0)
+        l1: cAngle = cAngle(valAsDeg=0.0)
+        l2: cAngle = cAngle(valAsDeg=0.0)
         assert l1 == l2
 
         l1.angleAsDeg = 3.500001
@@ -153,13 +150,13 @@ class cAngle_tests:
         assert l1 != 3.6
 
         with pytest.raises(cMyException) as err:
-            b : bool = (l1 == "ggg")
+            b: bool = l1 == "ggg"
+            assert not b
         assert "angle equal: type error" in str(err.value)
 
-
     def test_addition(self):
-        l1 : cAngle = cAngle(valAsDeg=45.0)
-        l2 : cAngle = cAngle(valAsDeg=45.0)
+        l1: cAngle = cAngle(valAsDeg=45.0)
+        l2: cAngle = cAngle(valAsDeg=45.0)
         assert l1 == l2
         assert l1.angleAsDeg == pytest.approx(45.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
@@ -173,7 +170,6 @@ class cAngle_tests:
         assert l3.angleAsDeg == pytest.approx(180.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
         assert l4.angleAsDeg == pytest.approx(270.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
-
         l3 += l1
         assert l3.angleAsDeg == pytest.approx(225.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
         assert l1.angleAsDeg == pytest.approx(45.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
@@ -182,17 +178,16 @@ class cAngle_tests:
         assert l3.angleAsDeg == pytest.approx(270.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         with pytest.raises(cMyException) as err:
-            l3 += complex(2,3)
+            l3 += complex(2, 3)
         assert "angle add: type error" in str(err.value)
 
         with pytest.raises(cMyException) as err:
-            l3 = l1 + complex(2,3)
+            l3 = l1 + complex(2, 3)
         assert "angle add: type error" in str(err.value)
 
-
     def test_substarct(self):
-        l1 : cAngle = cAngle(valAsDeg=45.0)
-        l2 : cAngle = cAngle(valAsDeg=45.0)
+        l1: cAngle = cAngle(valAsDeg=45.0)
+        l2: cAngle = cAngle(valAsDeg=45.0)
         assert l1 == l2
         assert l1.angleAsDeg == pytest.approx(45.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
@@ -207,7 +202,6 @@ class cAngle_tests:
         assert l3.angleAsDeg == pytest.approx(45.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
         assert l4.angleAsDeg == pytest.approx(0.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
-
         l3 -= l1
         assert l3.angleAsDeg == pytest.approx(0.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
         assert l1.angleAsDeg == pytest.approx(45.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
@@ -216,17 +210,16 @@ class cAngle_tests:
         assert l3.angleAsDeg == pytest.approx(-45.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         with pytest.raises(cMyException) as err:
-            l3 -= ("ggg")
+            l3 -= "ggg"
         assert "angle add: type error" in str(err.value)
 
         with pytest.raises(cMyException) as err:
             l3 = l1 - ("ggg")
         assert "angle add: type error" in str(err.value)
 
-
     def test_multi(self):
-        l1 : cAngle = cAngle(valAsDeg=45.0)
-        l2 : cAngle = cAngle(valAsDeg=45.0)
+        l1: cAngle = cAngle(valAsDeg=45.0)
+        l2: cAngle = cAngle(valAsDeg=45.0)
         assert l1 == l2
         assert l1.angleAsDeg == pytest.approx(45.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
@@ -250,18 +243,18 @@ class cAngle_tests:
         assert l4.angleAsDeg == pytest.approx(-450.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         with pytest.raises(cMyException) as err:
-            l3 = l1 * complex(1,1)
+            l3 = l1 * complex(1, 1)
         assert "angle add: type error" in str(err.value)
         with pytest.raises(cMyException) as err:
-            l3 = complex(1,1) * l1
+            l3 = complex(1, 1) * l1
         assert "angle add: type error" in str(err.value)
         with pytest.raises(cMyException) as err:
-            l3 *= complex(1,1)
+            l3 *= complex(1, 1)
         assert "angle add: type error" in str(err.value)
 
     def test_divise(self):
-        l1 : cAngle = cAngle(valAsDeg=45.0)
-        l2 : cAngle = cAngle(valAsDeg=45.0)
+        l1: cAngle = cAngle(valAsDeg=45.0)
+        l2: cAngle = cAngle(valAsDeg=45.0)
         assert l1 == l2
         assert l1.angleAsDeg == pytest.approx(45.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
@@ -296,18 +289,18 @@ class cAngle_tests:
         assert l4.angleAsDeg == pytest.approx(10.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         with pytest.raises(cMyException) as err:
-            l3 = l1 / complex(1,1)
+            l3 = l1 / complex(1, 1)
         assert "angle add: type error" in str(err.value)
         with pytest.raises(cMyException) as err:
-            l3 = complex(1,1) / l1
+            l3 = complex(1, 1) / l1
         assert "angle add: type error" in str(err.value)
         with pytest.raises(cMyException) as err:
-            l3 /= complex(1,1)
+            l3 /= complex(1, 1)
         assert "angle add: type error" in str(err.value)
 
     def test_normalise(self):
-        l1 : cAngle = cAngle(valAsDeg=45.0)
-        l2 : cAngle = cAngle(valAsDeg=45.0)
+        l1: cAngle = cAngle(valAsDeg=45.0)
+        l2: cAngle = cAngle(valAsDeg=45.0)
         assert l1 == l2
         assert l1.angleAsDeg == pytest.approx(45.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
@@ -336,7 +329,6 @@ class cAngle_tests:
         l2.inner_normalise()
         assert l2.angleAsDeg == pytest.approx(359.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
-
         l2 = cAngle(-500.0)
         l2 = l2.normalise()
         assert l2.angleAsDeg == pytest.approx(220.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
@@ -352,5 +344,5 @@ class cAngle_tests:
         assert l2.angleAsDeg == pytest.approx(320.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
     def test_properties(self):
-        a : cAngle = cAngle (180.0)
+        a: cAngle = cAngle(180.0)
         assert a.angleAsRad == pytest.approx(math.pi, cAngle.EQUAL_TOLERANCE_IN_DEG)

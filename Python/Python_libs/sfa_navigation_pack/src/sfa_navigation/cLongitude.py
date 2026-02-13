@@ -6,9 +6,10 @@ import copy
 
 from enum import Enum, unique
 
-from docutils.frontend import validate_encoding_and_error_handler
+
 from sfa_tools import cMyException
-from .cAngle import cAngle,eAngleFormat
+from .cAngle import cAngle, eAngleFormat
+
 
 @unique
 class eLongitudeSens(Enum):
@@ -18,16 +19,15 @@ class eLongitudeSens(Enum):
     def __repr__(self) -> str:
         return "[eLongitudeSens.E]" if self is eLongitudeSens.E else "[eLongitudeSens.W]"
 
-    def __str__ (self) -> str:
+    def __str__(self) -> str:
         return "E" if self is eLongitudeSens.E else "W"
 
     def __float__(self) -> float:
         return +1.0 if self is eLongitudeSens.E else -1.0
 
 
-class cLongitude (cAngle):
-
-    def __init__(self, valAsDeg : float = 0.0, sens : eLongitudeSens | None = None):
+class cLongitude(cAngle):
+    def __init__(self, valAsDeg: float = 0.0, sens: eLongitudeSens | None = None):
         if math.fabs(valAsDeg) > 180.0:
             raise cMyException("Longitude invalide " + str(valAsDeg))
 
@@ -35,7 +35,7 @@ class cLongitude (cAngle):
 
         self._sens: eLongitudeSens = eLongitudeSens.E
         if sens is None:
-            self._sens : eLongitudeSens = eLongitudeSens.E if valAsDeg >= 0.0 else eLongitudeSens.W
+            self._sens: eLongitudeSens = eLongitudeSens.E if valAsDeg >= 0.0 else eLongitudeSens.W
         else:
             self._sens: eLongitudeSens = sens
 
@@ -51,7 +51,7 @@ class cLongitude (cAngle):
         return float(self.sensLongitude) * self._angleEnDeg
 
     @longitudeEnDeg.setter
-    def longitudeEnDeg(self, val:float) -> None:
+    def longitudeEnDeg(self, val: float) -> None:
         if math.fabs(val) > 180.0:
             raise cMyException("Invalide longitude " + str(val))
 
@@ -69,34 +69,35 @@ class cLongitude (cAngle):
     def sensLongitude(self, val: eLongitudeSens) -> None:
         self._sens = val
 
-
     @staticmethod
-    def fromString(angleAsString : str = "") -> cLongitude:
-        retour : cLongitude | None = None
+    def fromString(angleAsString: str = "") -> cLongitude:
+        retour: cLongitude | None = None
 
-        regex_dd1 = r"\s*([E|W])\s*(.*)" # N 12.12°
+        regex_dd1 = r"\s*([E|W])\s*(.*)"  # N 12.12°
 
         try:
             try:
-                a : cAngle = cAngle.fromString(angleAsString)
-                sens : eLongitudeSens = eLongitudeSens.E if a.angleAsDeg >= 0 else eLongitudeSens.W
-                retour = cLongitude (valAsDeg=math.fabs(a.angleAsDeg), sens=sens)
+                a: cAngle = cAngle.fromString(angleAsString)
+                sens: eLongitudeSens = eLongitudeSens.E if a.angleAsDeg >= 0 else eLongitudeSens.W
+                retour = cLongitude(valAsDeg=math.fabs(a.angleAsDeg), sens=sens)
 
-            except Exception as e:
+            except Exception:
                 retour = None
 
             if retour is None:
                 y = re.fullmatch(regex_dd1, angleAsString)
                 if y:
-                    sens : eLongitudeSens = eLongitudeSens.E  if y.group(1) == "E" else eLongitudeSens.W
-                    a : cAngle = cAngle.fromString(y.group(2))
-                    retour = cLongitude (valAsDeg=math.fabs(a.angleAsDeg), sens=sens)
+                    sens: eLongitudeSens = (
+                        eLongitudeSens.E if y.group(1) == "E" else eLongitudeSens.W
+                    )
+                    a: cAngle = cAngle.fromString(y.group(2))
+                    retour = cLongitude(valAsDeg=math.fabs(a.angleAsDeg), sens=sens)
 
-                else :
-                    raise cMyException(f"Ce n'est pas une longitude >{angleAsString}<")
+                else:
+                    raise cMyException(f"Ce n'est pas une longitude >{angleAsString}<") from None
 
         except Exception as e:
-            raise cMyException (str(e))
+            raise cMyException(str(e)) from e
         return retour
 
     def normalise(self) -> None:
@@ -109,7 +110,6 @@ class cLongitude (cAngle):
             self.sensLongitude = eLongitudeSens.W
             self.angleAsDeg = math.fabs(x)
 
-
     def __str__(self) -> str:
         return self.toString()
 
@@ -117,29 +117,37 @@ class cLongitude (cAngle):
         return "[cLongitude: " + self.toString() + "]"
 
     def toString(self, format: eAngleFormat = eAngleFormat.DD) -> str:
-         match format:
+        match format:
             case eAngleFormat.Debug:
-                return f"{str(self.sensLongitude)} {super().toString(eAngleFormat.DD)} - {str(self.sensLongitude)} {super().toString(eAngleFormat.DMM)} [{str(self.sensLongitude)} {super().toString(eAngleFormat.DMS)}]"
-            case eAngleFormat.DMM | eAngleFormat.DD | eAngleFormat.DMS | eAngleFormat.RAD | eAngleFormat.R8:
+                return (
+                    f"{str(self.sensLongitude)} {super().toString(eAngleFormat.DD)} - "
+                    f"{str(self.sensLongitude)} {super().toString(eAngleFormat.DMM)} "
+                    f"[{str(self.sensLongitude)} {super().toString(eAngleFormat.DMS)}]"
+                )
+            case (
+                eAngleFormat.DMM
+                | eAngleFormat.DD
+                | eAngleFormat.DMS
+                | eAngleFormat.RAD
+                | eAngleFormat.R8
+            ):
                 return f"{str(self.sensLongitude)} {super().toString(format)}"
             case _:
-                return  "Not implemented"
-
+                return "Not implemented"
 
     def __iadd__(self, val: cLongitude) -> cLongitude:
         if not isinstance(val, cLongitude):
             raise cMyException("longitude iadd type error")
 
-        asDeg : float = self.longitudeEnDeg + val.longitudeEnDeg
-        if math.fabs(asDeg) > 180.0 :
+        asDeg: float = self.longitudeEnDeg + val.longitudeEnDeg
+        if math.fabs(asDeg) > 180.0:
             raise cMyException("longitude > 180.0")
 
         self.sensLongitude = eLongitudeSens.E if asDeg >= 0.0 else eLongitudeSens.W
         self.angleAsDeg = math.fabs(asDeg)
         return self
 
-
-    def __add__(self, val : cLongitude) -> cLongitude:
+    def __add__(self, val: cLongitude) -> cLongitude:
         if not isinstance(val, cLongitude):
             raise cMyException("longitude iadd type error")
 
@@ -149,7 +157,7 @@ class cLongitude (cAngle):
 
         sens = eLongitudeSens.E if asDeg >= 0.0 else eLongitudeSens.W
         angleAsDeg = math.fabs(asDeg)
-        return cLongitude (valAsDeg=angleAsDeg, sens=sens)
+        return cLongitude(valAsDeg=angleAsDeg, sens=sens)
 
     def __isub__(self, val: cLongitude) -> cLongitude:
         if not isinstance(val, cLongitude):
@@ -175,8 +183,7 @@ class cLongitude (cAngle):
         angleAsDeg = math.fabs(asDeg)
         return cLongitude(valAsDeg=angleAsDeg, sens=sens)
 
-
-    def __mul__(self, val : cLongitude | float) -> cLongitude:
+    def __mul__(self, val: cLongitude | float) -> cLongitude:
         if not isinstance(val, (cLongitude, int, float)):
             raise cMyException("longitude iadd type error")
 
@@ -191,9 +198,9 @@ class cLongitude (cAngle):
 
         sens = eLongitudeSens.E if asDeg >= 0.0 else eLongitudeSens.W
         angleAsDeg = math.fabs(asDeg)
-        return cLongitude (valAsDeg=angleAsDeg, sens=sens)
+        return cLongitude(valAsDeg=angleAsDeg, sens=sens)
 
-    def __imul__(self, val : cLongitude | float) -> cLongitude:
+    def __imul__(self, val: cLongitude | float) -> cLongitude:
         if not isinstance(val, (cLongitude, int, float)):
             raise cMyException("longitude iadd type error")
 
@@ -210,7 +217,7 @@ class cLongitude (cAngle):
         self.angleAsDeg = math.fabs(asDeg)
         return self
 
-    def __truediv__(self, val : cLongitude | float) -> cLongitude:
+    def __truediv__(self, val: cLongitude | float) -> cLongitude:
         if not isinstance(val, (cLongitude, int, float)):
             raise cMyException("longitude iadd type error")
 
@@ -225,9 +232,9 @@ class cLongitude (cAngle):
 
         sens = eLongitudeSens.E if asDeg >= 0.0 else eLongitudeSens.W
         angleAsDeg = math.fabs(asDeg)
-        return cLongitude (valAsDeg=angleAsDeg, sens=sens)
+        return cLongitude(valAsDeg=angleAsDeg, sens=sens)
 
-    def __itruediv__(self, val : cLongitude | float) -> cLongitude:
+    def __itruediv__(self, val: cLongitude | float) -> cLongitude:
         if not isinstance(val, (cLongitude, int, float)):
             raise cMyException("longitude iadd type error")
 
@@ -271,5 +278,3 @@ class cLongitude (cAngle):
         result = super().__deepcopy__(memodict)
         result.sensLongitude = copy.deepcopy(self.sensLongitude, memodict)
         return result
-
-

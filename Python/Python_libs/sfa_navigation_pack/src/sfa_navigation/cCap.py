@@ -1,46 +1,54 @@
 from __future__ import annotations
-import copy
-
-from sfa_tools import cMyException
 from .cAngle import cAngle, eAngleFormat
 
 """
 Classe de base de cap
 """
+
+
 class cCap(cAngle):
-    def __init__(self, valAsDeg : float | None = None, valAsAngleTrigonometriqueEnDeg : float | None = None, valAsAngleTrigonometriqueEnRad : float | None = None):
+    def __init__(
+        self,
+        valAsDeg: float | None = None,
+        valAsAngleTrigonometriqueEnDeg: float | None = None,
+        valAsAngleTrigonometriqueEnRad: float | None = None,
+    ):
         super().__init__(valAsDeg=0.0)
-        if not valAsDeg is None:
+        if valAsDeg is not None:
             self._angleEnDeg = valAsDeg
-        elif not valAsAngleTrigonometriqueEnDeg is None:
+        elif valAsAngleTrigonometriqueEnDeg is not None:
             self.asAngleTrigonometriqueEnDeg = valAsAngleTrigonometriqueEnDeg
-        elif not valAsAngleTrigonometriqueEnRad is None:
+        elif valAsAngleTrigonometriqueEnRad is not None:
             self.asAngleTrigonometriqueEnRad = valAsAngleTrigonometriqueEnRad
         self.inner_normalise()
 
     @property
-    def capAsDeg(self) -> float :
+    def capAsRad(self) -> float:
+        return self._angleEnDeg * cAngle.DEG2RAD
+
+    @property
+    def capAsDeg(self) -> float:
         return self._angleEnDeg
+
     @capAsDeg.setter
-    def capAsDeg(self, cap: float) -> None :
+    def capAsDeg(self, cap: float) -> None:
         self._angleEnDeg = cap
 
     @property
-    def asAngleTrigonometriqueEnRad(self) -> float :
+    def asAngleTrigonometriqueEnRad(self) -> float:
         return self.asAngleTrigonometriqueEnDeg * cAngle.DEG2RAD
 
     @asAngleTrigonometriqueEnRad.setter
-    def asAngleTrigonometriqueEnRad(self, rad : float) -> None :
+    def asAngleTrigonometriqueEnRad(self, rad: float) -> None:
         self.asAngleTrigonometriqueEnDeg = rad * cAngle.RAD2DEG
 
     @property
-    def asAngleTrigonometriqueEnDeg(self) -> float :
-        return (90.0 - self._angleEnDeg)
+    def asAngleTrigonometriqueEnDeg(self) -> float:
+        return 90.0 - self._angleEnDeg
 
     @asAngleTrigonometriqueEnDeg.setter
-    def asAngleTrigonometriqueEnDeg(self, deg : float) -> None :
+    def asAngleTrigonometriqueEnDeg(self, deg: float) -> None:
         self._angleEnDeg = 90.0 - deg
-
 
     def __repr__(self) -> str:
         return "[cCap: " + self.__str__() + "]"
@@ -52,11 +60,10 @@ class cCap(cAngle):
         return super().__str__()
 
     def toString(self, format: eAngleFormat = eAngleFormat.DD) -> str:
-        return  super().toString(format=format)
-
+        return super().toString(format=format)
 
     def __add__(self, other) -> cCap:
-        a : cAngle = super().__add__(other)
+        a: cAngle = super().__add__(other)
         return cCap(a.angleAsDeg)
 
     def __iadd__(self, other) -> cCap:

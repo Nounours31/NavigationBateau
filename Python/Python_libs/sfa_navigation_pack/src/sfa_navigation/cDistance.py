@@ -7,21 +7,21 @@ class eDistanceFormat(Enum):
     FULL = "Full"
     STD = "Std"
 
+
 class cDistance:
     MN2KM: float = 1.852
     KM2MN: float = 1 / MN2KM
 
-    DISPLAY_SHORT : int = 0
-    DISPLAY_LONG : int = 1
+    DISPLAY_SHORT: int = 0
+    DISPLAY_LONG: int = 1
 
-    EQUAL_TOLERANCE_IN_MN : float = 0.00001
+    EQUAL_TOLERANCE_IN_MN: float = 0.00001
 
-    def __init__(self, valAsMilleNautique : float | None = None, valAsKm : float | None = None):
+    def __init__(self, valAsMilleNautique: float | None = None, valAsKm: float | None = None):
         self._toleranceEnMn = cDistance.EQUAL_TOLERANCE_IN_MN
 
-        if isinstance(valAsMilleNautique, (int, float)) :
+        if isinstance(valAsMilleNautique, (int, float)):
             self._valAsMilleNautique = valAsMilleNautique
-
 
         elif isinstance(valAsKm, (int, float)):
             self._valAsMilleNautique = valAsKm * cDistance.KM2MN
@@ -29,16 +29,13 @@ class cDistance:
         else:
             self._valAsMilleNautique = 0.0
 
-
     @property
     def asMn(self) -> float:
         return self._valAsMilleNautique
 
-
     @asMn.setter
-    def asMn(self, x:float) -> None:
+    def asMn(self, x: float) -> None:
         self._valAsMilleNautique = x
-
 
     @property
     def asKm(self) -> float:
@@ -168,7 +165,6 @@ class cDistance:
     def __repr__(self):
         return f"[cDistance({self.asMn:.3f})]"
 
-
     def __copy__(self) -> cDistance:
         """
         normalise renvoie un angle compris entre 0 et 360
@@ -203,5 +199,3 @@ class cDistance:
         new_obj._valAsMilleNautique = copy.deepcopy(self._valAsMilleNautique, memodict)
         new_obj._toleranceEnMn = copy.deepcopy(self._toleranceEnMn, memodict)
         return new_obj
-    
-            

@@ -3,7 +3,7 @@ Name: sfa_navigation
 Version: 0.1.0
 Summary: Mon premier package Python
 Author: Nounours31
-Requires-Python: >=3.8
+Requires-Python: >=3.12
 Description-Content-Type: text/markdown
 
 # Nom du projet

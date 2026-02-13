@@ -2,6 +2,7 @@
 Packages de la gestion des angles dans le cadre du projet de navigation bateau
 
 """
+
 from __future__ import annotations
 
 import math
@@ -10,6 +11,7 @@ import copy
 
 from enum import Enum, unique
 from sfa_tools import cMyException
+
 
 @unique
 class eAngleFormat(Enum):
@@ -21,12 +23,13 @@ class eAngleFormat(Enum):
         DD  - Decimal Degrees (DD): e.g. "+50.12257°", "-8.66570°"
         R8  - en chiffre (R8): e.g. "+50.12257", "-8.66570"
     """
+
     DMS = "DMS"
     DMM = "DMM"
-    DD  = "DD"
-    R8  = "R8"
-    RAD  = "RAD"
-    Debug  = "Debug"
+    DD = "DD"
+    R8 = "R8"
+    RAD = "RAD"
+    Debug = "Debug"
 
     def __repr__(self) -> str:
         return "[eAngleFormat: " + self.__str__() + "]"
@@ -49,23 +52,26 @@ class eAngleFormat(Enum):
             case eAngleFormat.Debug:
                 return "Debug"
 
+
 class cAngle:
     """
     Classe de gestion des angles
     """
+
     RAD2DEG: float = 180.0 / math.pi
     DEG2RAD: float = math.pi / 180.0
 
-    DISPLAY_SHORT : int = 0
-    DISPLAY_LONG : int = 1
+    DISPLAY_SHORT: int = 0
+    DISPLAY_LONG: int = 1
 
-    EQUAL_TOLERANCE_IN_DEG : float = 0.00001
+    EQUAL_TOLERANCE_IN_DEG: float = 0.00001
 
-    def __init__(self, valAsDeg : float | None = None, valAsRad : float | None = None):
+    def __init__(self, valAsDeg: float | None = None, valAsRad: float | None = None):
         """
         constructeur avec priorite au degre
         Args:
-            valAsDeg (float): valeur de l'angle en degre, si defini il est prioritaire sur la valeur en rad
+            valAsDeg (float): valeur de l'angle en degre, si defini
+                                               il est prioritaire sur la valeur en rad
             valAsRad (float): valeur de l'angle en rad, ignore si la val en deg existe
         Returns:
             cAngle: instance de cAngle
@@ -73,10 +79,10 @@ class cAngle:
             Aucune
         """
         self._equalToleranceInDeg = cAngle.EQUAL_TOLERANCE_IN_DEG
-        if valAsDeg is not None :
-            self._angleEnDeg : float = valAsDeg
-        elif valAsRad is not None :
-            self._angleEnDeg : float = valAsRad * cAngle.RAD2DEG
+        if valAsDeg is not None:
+            self._angleEnDeg: float = valAsDeg
+        elif valAsRad is not None:
+            self._angleEnDeg: float = valAsRad * cAngle.RAD2DEG
         else:
             self._angleEnDeg = 0.0
 
@@ -85,25 +91,24 @@ class cAngle:
         return self._angleEnDeg
 
     @angleAsDeg.setter
-    def angleAsDeg(self, x:float) -> None:
+    def angleAsDeg(self, x: float) -> None:
         self._angleEnDeg = x
 
     @property
     def angleAsRad(self) -> float:
         return cAngle.DEG2RAD * self._angleEnDeg
 
-
-    def __repr__(self) -> str :
+    def __repr__(self) -> str:
         """
         return self.toString(format = eAngleFormat.DD)
         """
         return "[cAngle: " + self.__str__() + "]"
 
-    def __str__(self) -> str :
+    def __str__(self) -> str:
         """
         toString par defaut
         """
-        return self.toString(format = eAngleFormat.DD)
+        return self.toString(format=eAngleFormat.DD)
 
     def toString(self, format: eAngleFormat = eAngleFormat.DD) -> str:
         """
@@ -116,13 +121,13 @@ class cAngle:
             Aucune
         """
 
-        sign : str = "" if self.angleAsDeg >= 0.0 else "-"
+        sign: str = "" if self.angleAsDeg >= 0.0 else "-"
 
-        angleEnValeurAbsolue : float = math.fabs(self.angleAsDeg)
-        angleValeurEntiere : int = math.floor (angleEnValeurAbsolue)
-        minute : float = (angleEnValeurAbsolue - angleValeurEntiere) * 60.0
-        minuteEnValeurEntiere : int = math.floor(minute)
-        seconde : float = (minute - math.floor (minute)) * 60.0
+        angleEnValeurAbsolue: float = math.fabs(self.angleAsDeg)
+        angleValeurEntiere: int = math.floor(angleEnValeurAbsolue)
+        minute: float = (angleEnValeurAbsolue - angleValeurEntiere) * 60.0
+        minuteEnValeurEntiere: int = math.floor(minute)
+        seconde: float = (minute - math.floor(minute)) * 60.0
 
         if format == eAngleFormat.R8:
             return f"{sign}{angleEnValeurAbsolue:08.4f}"
@@ -140,13 +145,17 @@ class cAngle:
             return f"{sign}{angleValeurEntiere:03d}°{minuteEnValeurEntiere:02d}'{seconde:06.3f}\""
 
         elif format == eAngleFormat.Debug:
-            return f"{sign}{angleEnValeurAbsolue:08.4f}° [{sign}{angleValeurEntiere:03d}°{minute:06.3f}' # {sign}{angleValeurEntiere:03d}°{minuteEnValeurEntiere:02d}'{seconde:06.3f}\"]"
+            return (
+                f"{sign}{angleEnValeurAbsolue:08.4f}° "
+                f"[{sign}{angleValeurEntiere:03d}°{minute:06.3f}' # "
+                f"{sign}{angleValeurEntiere:03d}°{minuteEnValeurEntiere:02d}'{seconde:06.3f}\"]"
+            )
 
         else:
-            raise cMyException('Format demande inconnu: ' + str(format))
+            raise cMyException("Format demande inconnu: " + str(format)) from None
 
     @staticmethod
-    def fromString (angleAsString : str = "") -> cAngle :
+    def fromString(angleAsString: str = "") -> cAngle:
         """
         Converti en string un angle.
         Args:
@@ -156,19 +165,21 @@ class cAngle:
         Raises:
             cMyException: si s ne represente pas un angle
         """
-        regex_rad = r"\s*([\+|\-])?([0-9]*(\.[0-9]*)?)\s*rad\s*" # 12.12 rad
-        regex_dd = r"\s*([\+|\-])?([0-9]*(\.[0-9]*)?)°?\s*" # 12.12°
-        regex_ddmm = r"\s*([\+|\-])?([0-9]+)°([0-9]{1,2}(\.[0-9]*)?)'?\s*" # 12°12.25'
-        regex_ddmmss = r"\s*([\+|\-])?([0-9]+)°([0-9]{1,2})'([0-9]{1,2}\.[0-9]*)\"?\s*" # 12°45'56.12"
+        regex_rad = r"\s*([\+|\-])?([0-9]*(\.[0-9]*)?)\s*rad\s*"  # 12.12 rad
+        regex_dd = r"\s*([\+|\-])?([0-9]*(\.[0-9]*)?)°?\s*"  # 12.12°
+        regex_ddmm = r"\s*([\+|\-])?([0-9]+)°([0-9]{1,2}(\.[0-9]*)?)'?\s*"  # 12°12.25'
+        regex_ddmmss = (
+            r"\s*([\+|\-])?([0-9]+)°([0-9]{1,2})'([0-9]{1,2}\.[0-9]*)\"?\s*"  # 12°45'56.12"
+        )
 
         try:
-            sign : float = 1.0
-            a : cAngle | None = None
-            x =  re.fullmatch(regex_dd, angleAsString)
+            sign: float = 1.0
+            a: cAngle | None = None
+            x = re.fullmatch(regex_dd, angleAsString)
             if x:
                 sign = 1.0 if ((x.group(1) is None) or (x.group(1) == "+")) else -1.0
                 deg = x.group(2)
-                a = cAngle (valAsDeg = sign * float(deg))
+                a = cAngle(valAsDeg=sign * float(deg))
 
             else:
                 x = re.fullmatch(regex_ddmm, angleAsString)
@@ -176,7 +187,7 @@ class cAngle:
                     sign = 1.0 if ((x.group(1) is None) or (x.group(1) == "+")) else -1.0
                     deg = x.group(2)
                     min = x.group(3)
-                    a = cAngle (valAsDeg = sign * (float(deg) + float(min) / 60.0))
+                    a = cAngle(valAsDeg=sign * (float(deg) + float(min) / 60.0))
 
                 else:
                     x = re.fullmatch(regex_ddmmss, angleAsString)
@@ -185,26 +196,26 @@ class cAngle:
                         deg = x.group(2)
                         min = x.group(3)
                         sec = x.group(4)
-                        a = cAngle (valAsDeg = sign * (float(deg) + float(min) / 60.0 + float(sec) / 3600.0))
+                        a = cAngle(
+                            valAsDeg=sign * (float(deg) + float(min) / 60.0 + float(sec) / 3600.0)
+                        )
                     else:
                         x = re.fullmatch(regex_rad, angleAsString)
                         if x:
                             sign = 1.0 if ((x.group(1) is None) or (x.group(1) == "+")) else -1.0
                             rad = x.group(2)
-                            a = cAngle(valAsRad = sign * float(rad))
+                            a = cAngle(valAsRad=sign * float(rad))
                         else:
-                            raise cMyException("Ce n'est pas un angle")
+                            raise cMyException("Ce n'est pas un angle") from None
 
         except Exception as e:
-            raise cMyException (str(e))
+            raise cMyException(str(e)) from e
 
         return a
 
-
-
-
-    def __ne__(self, val : cAngle | float) -> bool:
+    def __ne__(self, val: cAngle | float) -> bool:
         return not self.__eq__(val)
+
     def __eq__(self, val: cAngle | float) -> bool:
         """
         equals, a1 == a2 ?
@@ -224,11 +235,9 @@ class cAngle:
         if isinstance(val, float):
             return math.fabs(self.angleAsDeg - val) < self._equalToleranceInDeg
 
-        raise cMyException("angle equal: type error")
+        raise cMyException("angle equal: type error") from None
 
-
-
-    def __iadd__(self, val : cAngle | float) -> cAngle:
+    def __iadd__(self, val: cAngle | float) -> cAngle:
         """
         in-place add, en gros angle += 2.1°
         Args:
@@ -251,9 +260,10 @@ class cAngle:
 
         raise cMyException("angle add: type error")
 
-    def __radd__(self, val : cAngle | float) -> cAngle:
+    def __radd__(self, val: cAngle | float) -> cAngle:
         return self.__add__(val)
-    def __add__(self, val : cAngle | float) -> cAngle:
+
+    def __add__(self, val: cAngle | float) -> cAngle:
         """
         add, en gros angle = a1 + a2
         Args:
@@ -264,34 +274,34 @@ class cAngle:
             cMyException: si val n'est pas un type valide
         """
         if issubclass(val.__class__, cAngle):
-            return cAngle (valAsDeg = self.angleAsDeg + val.angleAsDeg)
+            return cAngle(valAsDeg=self.angleAsDeg + val.angleAsDeg)
 
         if isinstance(val, int):
             val = 1.0 * val
 
         if isinstance(val, float):
-            return cAngle (valAsDeg = self.angleAsDeg + val)
+            return cAngle(valAsDeg=self.angleAsDeg + val)
 
-        raise cMyException("angle add: type error")
+        raise cMyException("angle add: type error") from None
 
+    def __rsub__(self, val: cAngle | float) -> cAngle:
+        return self.__sub__(val)
 
-    def __rsub__(self, val : cAngle | float) -> cAngle:
-        return self.__sub__ (val)
-    def __sub__(self, val : cAngle | float) -> cAngle:
-        try :
-            return self.__add__ (-1.0 * val)
-        except :
-            raise cMyException("angle add: type error")
+    def __sub__(self, val: cAngle | float) -> cAngle:
+        try:
+            return self.__add__(-1.0 * val)
+        except Exception as err:
+            raise cMyException("angle add: type error") from err
 
-    def __isub__(self, val : cAngle | float) -> cAngle:
-        try :
-            return self.__iadd__ (-1.0 * val)
-        except :
-            raise cMyException("angle add: type error")
+    def __isub__(self, val: cAngle | float) -> cAngle:
+        try:
+            return self.__iadd__(-1.0 * val)
+        except Exception as err:
+            raise cMyException("angle add: type error") from err
 
-
-    def __rmul__(self, other : cAngle | float) -> cAngle :
+    def __rmul__(self, other: cAngle | float) -> cAngle:
         return self.__mul__(other)
+
     def __mul__(self, other: cAngle | float) -> cAngle:
         """
         Multiplication, en gros angle = a1 * 3.0
@@ -303,13 +313,13 @@ class cAngle:
             cMyException: si val n'est pas un type valide
         """
         if issubclass(other.__class__, cAngle):
-            return cAngle (valAsDeg = self.angleAsDeg * other.angleAsDeg)
+            return cAngle(valAsDeg=self.angleAsDeg * other.angleAsDeg)
 
         if isinstance(other, int):
             other = 1.0 * other
 
         if isinstance(other, float):
-            return cAngle (valAsDeg = self.angleAsDeg * other)
+            return cAngle(valAsDeg=self.angleAsDeg * other)
 
         raise cMyException("angle add: type error")
 
@@ -336,12 +346,11 @@ class cAngle:
 
         raise cMyException("angle add: type error")
 
-    def __rtruediv__(self, other : cAngle | float) -> cAngle :
+    def __rtruediv__(self, other: cAngle | float) -> cAngle:
         if isinstance(other, float):
-            return cAngle(valAsDeg= other / self.angleAsDeg)
+            return cAngle(valAsDeg=other / self.angleAsDeg)
 
         raise cMyException("angle add: type error")
-
 
     def __truediv__(self, other: cAngle | float) -> cAngle:
         """
@@ -354,13 +363,13 @@ class cAngle:
             cMyException: si val n'est pas un type valide
         """
         if isinstance(other, cAngle):
-            return cAngle (valAsDeg = self.angleAsDeg / other.angleAsDeg)
+            return cAngle(valAsDeg=self.angleAsDeg / other.angleAsDeg)
 
         if isinstance(other, int):
             other = 1.0 * other
 
         if isinstance(other, float):
-            return cAngle (valAsDeg = self.angleAsDeg / other)
+            return cAngle(valAsDeg=self.angleAsDeg / other)
 
         raise cMyException("angle add: type error")
 
@@ -397,20 +406,20 @@ class cAngle:
         Raises:
             aucun
         """
-        x : float = self.angleAsDeg
+        x: float = self.angleAsDeg
         while x < 0.0:
-             x += 360.0
+            x += 360.0
         while x >= 360.0:
-             x -= 360.0
+            x -= 360.0
 
         return cAngle(valAsDeg=x)
 
     def inner_normalise(self):
-        x : float = self.angleAsDeg
+        x: float = self.angleAsDeg
         while x < 0.0:
-             x += 360.0
+            x += 360.0
         while x >= 360.0:
-             x -= 360.0
+            x -= 360.0
         self.angleAsDeg = x
 
     def __copy__(self) -> cAngle:

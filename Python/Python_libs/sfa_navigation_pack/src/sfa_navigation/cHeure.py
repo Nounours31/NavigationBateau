@@ -1,7 +1,7 @@
 from datetime import datetime
 
 
-class CHeure:
+class cHeure:
     def __init__(self, uid: str) -> None:
         self.uid = uid
 

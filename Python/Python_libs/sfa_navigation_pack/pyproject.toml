@@ -8,18 +8,33 @@ version = "0.1.0"
 description = "Mon premier package Python"
 authors = [{name="Nounours31"}]
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.12"
 dependencies = []
 
 
 [tool.ruff]
 line-length = 100
-ignore = ["D203"]
-show-source = true
+indent-width = 4
 
-[tool.black]
-line-length = 100
-target-version = ['py39']
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = false
+docstring-code-line-length = "dynamic"
+
+
+[tool.ruff.lint]
+select = ["E", "F", "B"]
+unfixable = ["B"]
+ignore = ["B006"]
+
+# 4. Ignore `E402` (import violations) in all `__init__.py` files, and in selected subdirectories.
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401"]
+"**/{tests,docs,tools}/*" = ["E402"]
+
 
 [tool.setuptools.packages.find]
 where = ["src"]
