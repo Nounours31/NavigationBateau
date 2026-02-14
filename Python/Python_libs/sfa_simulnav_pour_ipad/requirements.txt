@@ -3,4 +3,6 @@ pytest-cov >= 7.0.0
 coverage
 pre-commit
 ruff
-sfa_tools == 0.1.1
+sfa_tools >= 0.1.1
+sfa_navigation >= 0.1.0
+colorist

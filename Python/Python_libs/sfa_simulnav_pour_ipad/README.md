@@ -1,11 +1,3 @@
-Metadata-Version: 2.4
-Name: sfa_tools
-Version: 0.1.1
-Summary: Mon premier package Python
-Author: Nounours31
-Requires-Python: >=3.8
-Description-Content-Type: text/markdown
-
 # Nom du projet
 
 ## Description

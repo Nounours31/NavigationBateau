@@ -8,3 +8,4 @@ from .cVecteur import cVecteur
 from .cNavigation import cNavigation
 from .cHeure import cHeure
 from .cVitesse import cVitesse
+from .cVecteurDeEtat import cVecteurDeEtat

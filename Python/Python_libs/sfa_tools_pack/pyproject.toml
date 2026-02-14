@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sfa_tools"
-version = "0.1.0"
+version = "0.1.1"
 description = "Mon premier package Python"
 authors = [{name="Nounours31"}]
 readme = "README.md"

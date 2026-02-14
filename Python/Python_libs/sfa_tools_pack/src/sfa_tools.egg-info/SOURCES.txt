@@ -1,9 +1,8 @@
 README.md
 pyproject.toml
 src/sfa_tools/__init__.py
-src/sfa_tools/cLogger.py
 src/sfa_tools/cMyException.py
-src/sfa_tools/tester.py
+src/sfa_tools/myLogger.py
 src/sfa_tools.egg-info/PKG-INFO
 src/sfa_tools.egg-info/SOURCES.txt
 src/sfa_tools.egg-info/dependency_links.txt
