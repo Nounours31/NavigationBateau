@@ -48,6 +48,15 @@ class cVecteur:
             raise cMyException("sens is not a Cap ...")
         self._sens.angleAsDeg = c.capAsDeg
 
+    @classmethod
+    def from_dict(cls, data: dict) -> cVecteur:
+        distance_data = data.get("distance")
+        sens_data = data.get("sens")
+
+        distance : cDistance = cDistance(valAsMilleNautique=distance_data)
+        sens : cCap = cCap(valAsDeg=sens_data)
+        return cls(distance=distance, sens=sens)
+
     # ========================
     # Conversions & affichage
     # ========================
