@@ -12,6 +12,7 @@ from typing import List
 # cEau
 # ==========================================================
 
+
 class cEau:
     def __init__(self, profondeur: float, temperature: float, courant: cVitesse) -> None:
         self.profondeur = profondeur
@@ -52,22 +53,23 @@ class cEau:
             raise TypeError("courant doit être un cVecteur")
         self._courant = value
 
-
     @classmethod
     def fromDict(cls, data: dict) -> cEau:
         return cls(
             profondeur=float(data["profondeur"]),
             temperature=float(data["temperature"]),
-            courant=cVitesse.fromDict(data["courant"])
+            courant=cVitesse.fromDict(data["courant"]),
         )
 
     def __str__(self) -> str:
-        s : str = f"[eau profondeur={self.profondeur} temperature={self.temperature} courant={self.courant}]"
+        s: str = f"[eau profondeur={self.profondeur} temperature={self.temperature} courant={self.courant}]"
         return s
+
 
 # ==========================================================
 # cAir
 # ==========================================================
+
 
 class cAir:
     def __init__(self, temperature: float, vent: cVitesse) -> None:
@@ -94,20 +96,17 @@ class cAir:
 
     @classmethod
     def fromDict(cls, data: dict) -> cAir:
-        return cls(
-            temperature=float(data["temperature"]),
-            vent=cVitesse.fromDict(data["vent"])
-        )
+        return cls(temperature=float(data["temperature"]), vent=cVitesse.fromDict(data["vent"]))
 
     def __str__(self) -> str:
-        s : str = f"[air temperature={self.temperature} vent={self.vent}]"
+        s: str = f"[air temperature={self.temperature} vent={self.vent}]"
         return s
-
 
 
 # ==========================================================
 # cBateau
 # ==========================================================
+
 
 class cBateau:
     def __init__(self, sog: cVitesse, position: cPosition, varMagnetique: cCap) -> None:
@@ -150,17 +149,20 @@ class cBateau:
         return cls(
             sog=cVitesse.fromDict(data["sog"]),
             position=cPosition.fromString(data["position"]),
-            varMagnetique=cCap.fromString(data["varMagnetique"])
+            varMagnetique=cCap.fromString(data["varMagnetique"]),
         )
 
     def __str__(self) -> str:
-        s : str = f"[bateau sog={self.sog} position={self.position} varMagnetique={self.varMagnetique}]"
+        s: str = (
+            f"[bateau sog={self.sog} position={self.position} varMagnetique={self.varMagnetique}]"
+        )
         return s
 
 
 # ==========================================================
 # ETAT GLOBAL
 # ==========================================================
+
 
 class cVecteurEtat:
     def __init__(self, cBateau: cBateau, cAir: cAir, cEau: cEau) -> None:
@@ -203,20 +205,23 @@ class cVecteurEtat:
         return cls(
             cBateau=cBateau.fromDict(data["bateau"]),
             cAir=cAir.fromDict(data["air"]),
-            cEau=cEau.fromDict(data["eau"])
+            cEau=cEau.fromDict(data["eau"]),
         )
 
-
     def __str__(self) -> str:
-        s : str = f"[vecteurEtat bateau={self.cBateau} air={self.cAir} eau={self.cEau}]"
+        s: str = f"[vecteurEtat bateau={self.cBateau} air={self.cAir} eau={self.cEau}]"
         return s
+
 
 # ==========================================================
 # TRAJET
 # ==========================================================
 
+
 class cTrajet:
-    def __init__(self, depart: cPosition, arrivee: cPosition, pointsDePassage: List[cPosition]) -> None:
+    def __init__(
+        self, depart: cPosition, arrivee: cPosition, pointsDePassage: List[cPosition]
+    ) -> None:
         self.depart = depart
         self.arrivee = arrivee
         self.waypoints = pointsDePassage
@@ -259,7 +264,5 @@ class cTrajet:
         return cls(
             depart=cPosition.fromDict(data["depart"]),
             arrivee=cPosition.fromDict(data["arrivee"]),
-            pointsDePassage=[
-                cPosition.fromString(p) for p in data.get("waypoints", [])
-            ]
+            pointsDePassage=[cPosition.fromString(p) for p in data.get("waypoints", [])],
         )

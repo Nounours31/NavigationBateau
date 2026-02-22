@@ -64,7 +64,7 @@ class cCap(cAngle):
 
     @classmethod
     def fromString(cls, angleAsString: str = "") -> cCap:
-        a : cAngle = cAngle.fromString(angleAsString)
+        a: cAngle = cAngle.fromString(angleAsString)
         return cls(a.angleAsDeg % 360)
 
     def __add__(self, other) -> cCap:

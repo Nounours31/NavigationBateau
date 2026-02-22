@@ -67,12 +67,10 @@ class cLatitude(cAngle):
     def sensLatitude(self, val: eLatitudeSens) -> None:
         self._sens = val
 
-
     @classmethod
     def fromDict(cls, data: dict = {}) -> cLatitude:
-        s : str = data["latitude"]
+        s: str = data["latitude"]
         return cLatitude.fromString(s)
-
 
     @classmethod
     def fromString(cls, angleAsString: str = "") -> cLatitude:

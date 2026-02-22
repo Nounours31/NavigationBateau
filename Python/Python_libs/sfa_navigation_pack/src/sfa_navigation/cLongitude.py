@@ -71,7 +71,7 @@ class cLongitude(cAngle):
 
     @classmethod
     def fromDict(cls, data: dict = {}) -> cLongitude:
-        s : str = data["longitude"]
+        s: str = data["longitude"]
         return cLongitude.fromString(s)
 
     @classmethod

@@ -38,11 +38,10 @@ class cPosition:
             allInfo: list[str] = angleAsString.split(",")
             lat: cLatitude = cLatitude.fromString(allInfo[0])
             longi: cLongitude = cLongitude.fromString(allInfo[1])
-            retour : cPosition = cls(lat, longi)
+            retour: cPosition = cls(lat, longi)
             return retour
         except Exception as e:
             raise cMyException(str(e)) from e
-
 
     @classmethod
     def fromDict(cls, data: Dict = {}) -> cPosition:
@@ -50,7 +49,7 @@ class cPosition:
         try:
             lat: cLatitude = cLatitude.fromString(data["latitude"])
             longi: cLongitude = cLongitude.fromString(data["longitude"])
-            retour : cPosition = cls(lat, longi)
+            retour: cPosition = cls(lat, longi)
             return retour
         except Exception as e:
             raise cMyException(str(e)) from e

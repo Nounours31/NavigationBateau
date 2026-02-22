@@ -26,7 +26,6 @@ class cCap_tests:
         assert cCap.fromString("370°").capAsDeg == 10
 
     def test_init_normalisation(self):
-
         assert cCap(0).capAsDeg == 0
         assert cCap(360).capAsDeg == 0
         assert cCap(370).capAsDeg == 10

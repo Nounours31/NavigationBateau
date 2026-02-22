@@ -45,11 +45,11 @@ class cDistance:
         return self._valAsMilleNautique * cDistance.MN2KM
 
     @classmethod
-    def fromString (cls, s : str) -> cDistance:
-        r : re = r"\s*([0-9]*)?[\.\,]*([0-9]*)?\s*(Mn|mn|MN|km|Km)?\s*"
+    def fromString(cls, s: str) -> cDistance:
+        r: re = r"\s*([0-9]*)?[\.\,]*([0-9]*)?\s*(Mn|mn|MN|km|Km)?\s*"
 
-        d : float = 0.0
-        m : re.Match[str] = re.match(r, s, re.ASCII)
+        d: float = 0.0
+        m: re.Match[str] = re.match(r, s, re.ASCII)
         if m is not None:
             match len(m.groups()):
                 case 3:
@@ -64,7 +64,6 @@ class cDistance:
                 case _:
                     raise cMyException("Not a distance: >" + s + "<")
         return cls(valAsMilleNautique=d)
-
 
     # ========================
     # Opérateurs arithmétiques
