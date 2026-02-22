@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from math import cos, sin
 
-from . import cVecteur, cDistance, cCap
+from . import cVitesse, cDistance, cCap
 from .cPosition import cPosition
 from .cLongitude import cLongitude
 from .cLatitude import cLatitude
@@ -34,7 +34,7 @@ class cNavigation:
         return self._position.toString(format)
 
     # see https://fr.wikipedia.org/wiki/Loxodromie
-    def positionementRelatif(self, arrivee: cPosition) -> cVecteur:
+    def positionementRelatif(self, arrivee: cPosition) -> cVitesse:
         depart: cPosition = self._position
         varLat: float = arrivee.latitude.latitudeEnDeg - depart.latitude.latitudeEnDeg
         varLong: float = arrivee.longitude.longitudeEnDeg - depart.longitude.longitudeEnDeg
@@ -82,7 +82,7 @@ class cNavigation:
         )
 
         dist: cDistance = cDistance(valAsMilleNautique=d)
-        v: cVecteur = cVecteur(distance=dist, sens=c)
+        v: cVitesse = cVitesse(distance=dist, sens=c)
         return v
 
     def navACapEtVitesseDonnes(

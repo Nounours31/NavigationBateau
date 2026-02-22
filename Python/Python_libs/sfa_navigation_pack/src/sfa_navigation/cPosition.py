@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from typing import Dict
 
 from .cLongitude import cLongitude
 from .cLatitude import cLatitude
@@ -30,18 +31,29 @@ class cPosition:
         self._long = ll
 
     # format latitude, long
-    @staticmethod
-    def fromString(angleAsString: str = "") -> cPosition:
+    @classmethod
+    def fromString(cls, angleAsString: str = "") -> cPosition:
         """ """
         try:
             allInfo: list[str] = angleAsString.split(",")
             lat: cLatitude = cLatitude.fromString(allInfo[0])
             longi: cLongitude = cLongitude.fromString(allInfo[1])
-            retour = cPosition(lat, longi)
+            retour : cPosition = cls(lat, longi)
+            return retour
         except Exception as e:
             raise cMyException(str(e)) from e
 
-        return retour
+
+    @classmethod
+    def fromDict(cls, data: Dict = {}) -> cPosition:
+        """ """
+        try:
+            lat: cLatitude = cLatitude.fromString(data["latitude"])
+            longi: cLongitude = cLongitude.fromString(data["longitude"])
+            retour : cPosition = cls(lat, longi)
+            return retour
+        except Exception as e:
+            raise cMyException(str(e)) from e
 
     # format latitude, long
     def __str__(self) -> str:

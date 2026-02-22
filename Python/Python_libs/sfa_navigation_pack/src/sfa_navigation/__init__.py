@@ -4,8 +4,9 @@ from .cDistance import cDistance
 from .cLatitude import cLatitude
 from .cLongitude import cLongitude
 from .cPosition import cPosition
-from .cVecteur import cVecteur
+from .cVitesse import cVitesse
 from .cNavigation import cNavigation
 from .cHeure import cHeure
 from .cVitesse import cVitesse
-from .cVecteurDeEtat import cVecteurDeEtat
+from .cVecteurEtat import cVecteurEtat, cAir, cEau, cBateau, cTrajet
+

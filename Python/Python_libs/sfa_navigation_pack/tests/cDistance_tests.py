@@ -1,5 +1,8 @@
 import pytest
 import copy
+
+from sfa_tools import cMyException
+
 from sfa_navigation import cDistance
 from sfa_navigation.cDistance import eDistanceFormat
 
@@ -11,6 +14,63 @@ class cDistance_tests:
 
     def test_init_default(self):
         d = cDistance()
+        assert d.asMn == 0.0
+
+    def test_fromString(self):
+        s : str = " 10.12 Mn"
+        d : cDistance = cDistance.fromString(s)
+        assert d.asMn == 10.12
+        
+        s : str = " 10.12 Mn"
+        d : cDistance = cDistance.fromString(s)
+        assert d.asMn == 10.12
+
+        s : str = "10,12 Mn"
+        d : cDistance = cDistance.fromString(s)
+        assert d.asMn == 10.12
+        
+        s : str = "10.12Mn"
+        d : cDistance = cDistance.fromString(s)
+        assert d.asMn == 10.12
+
+        s : str = "10.12mn "
+        d : cDistance = cDistance.fromString(s)
+        assert d.asMn == 10.12
+
+        s : str = "10.12 km"
+        d : cDistance = cDistance.fromString(s)
+        assert d.asKm == 10.12
+        
+        s : str = "10,12 km"
+        d : cDistance = cDistance.fromString(s)
+        assert d.asKm == 10.12
+
+        s : str = "10,12km"
+        d : cDistance = cDistance.fromString(s)
+        assert d.asKm == 10.12
+
+        s : str = "10,12Km"
+        d : cDistance = cDistance.fromString(s)
+        assert d.asKm == 10.12
+
+        s : str = "10km"
+        d : cDistance = cDistance.fromString(s)
+        assert d.asKm == 10
+
+        s : str = "10.12"
+        d : cDistance = cDistance.fromString(s)
+        assert d.asMn == 10.12
+
+        s : str = "12"
+        d : cDistance = cDistance.fromString(s)
+        assert d.asMn == 12
+
+        s : str = ".12"
+        d : cDistance = cDistance.fromString(s)
+        assert d.asMn == 0.12
+
+        s : str = "dfdf"
+        d: cDistance = cDistance.fromString(s)
         assert d.asMn == 0.0
 
     def test_init_mn(self):

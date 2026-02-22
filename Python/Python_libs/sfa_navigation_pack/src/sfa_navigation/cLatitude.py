@@ -67,8 +67,15 @@ class cLatitude(cAngle):
     def sensLatitude(self, val: eLatitudeSens) -> None:
         self._sens = val
 
-    @staticmethod
-    def fromString(angleAsString: str = "") -> cLatitude:
+
+    @classmethod
+    def fromDict(cls, data: dict = {}) -> cLatitude:
+        s : str = data["latitude"]
+        return cLatitude.fromString(s)
+
+
+    @classmethod
+    def fromString(cls, angleAsString: str = "") -> cLatitude:
         retour: cLatitude | None = None
 
         regex_dd1 = r"\s*([N|S])\s*(.*)"  # N 12.12°
@@ -77,7 +84,7 @@ class cLatitude(cAngle):
             try:
                 a: cAngle = cAngle.fromString(angleAsString)
                 sens: eLatitudeSens = eLatitudeSens.N if a.angleAsDeg >= 0 else eLatitudeSens.S
-                retour = cLatitude(valAsDeg=math.fabs(a.angleAsDeg), sens=sens)
+                retour = cls(valAsDeg=math.fabs(a.angleAsDeg), sens=sens)
 
             except Exception:
                 retour = None
@@ -87,7 +94,7 @@ class cLatitude(cAngle):
                 if y:
                     sens: eLatitudeSens = eLatitudeSens.N if y.group(1) == "N" else eLatitudeSens.S
                     a: cAngle = cAngle.fromString(y.group(2))
-                    retour = cLatitude(valAsDeg=math.fabs(a.angleAsDeg), sens=sens)
+                    retour = cls(valAsDeg=math.fabs(a.angleAsDeg), sens=sens)
 
                 else:
                     raise cMyException(f"Ce n'est pas une latitude >{angleAsString}<") from None

@@ -1,6 +1,9 @@
 from __future__ import annotations
 import copy
+import re
 from enum import Enum
+
+from sfa_tools import cMyException
 
 
 class eDistanceFormat(Enum):
@@ -40,6 +43,28 @@ class cDistance:
     @property
     def asKm(self) -> float:
         return self._valAsMilleNautique * cDistance.MN2KM
+
+    @classmethod
+    def fromString (cls, s : str) -> cDistance:
+        r : re = r"\s*([0-9]*)?[\.\,]*([0-9]*)?\s*(Mn|mn|MN|km|Km)?\s*"
+
+        d : float = 0.0
+        m : re.Match[str] = re.match(r, s, re.ASCII)
+        if m is not None:
+            match len(m.groups()):
+                case 3:
+                    d = float(m.group(1)) if len(m.group(1)) > 0 else 0.0
+                    d2: float = float(m.group(2)) if len(m.group(2)) > 0 else 0.0
+                    while d2 > 1:
+                        d2 /= 10.0
+                    d += d2
+                    if m.group(3) is not None and m.group(3).lower() == "km":
+                        d *= cDistance.KM2MN
+
+                case _:
+                    raise cMyException("Not a distance: >" + s + "<")
+        return cls(valAsMilleNautique=d)
+
 
     # ========================
     # Opérateurs arithmétiques

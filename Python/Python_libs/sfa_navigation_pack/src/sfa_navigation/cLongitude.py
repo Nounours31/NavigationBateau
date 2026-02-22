@@ -69,8 +69,13 @@ class cLongitude(cAngle):
     def sensLongitude(self, val: eLongitudeSens) -> None:
         self._sens = val
 
-    @staticmethod
-    def fromString(angleAsString: str = "") -> cLongitude:
+    @classmethod
+    def fromDict(cls, data: dict = {}) -> cLongitude:
+        s : str = data["longitude"]
+        return cLongitude.fromString(s)
+
+    @classmethod
+    def fromString(cls, angleAsString: str = "") -> cLongitude:
         retour: cLongitude | None = None
 
         regex_dd1 = r"\s*([E|W])\s*(.*)"  # N 12.12°
@@ -79,7 +84,7 @@ class cLongitude(cAngle):
             try:
                 a: cAngle = cAngle.fromString(angleAsString)
                 sens: eLongitudeSens = eLongitudeSens.E if a.angleAsDeg >= 0 else eLongitudeSens.W
-                retour = cLongitude(valAsDeg=math.fabs(a.angleAsDeg), sens=sens)
+                retour = cls(valAsDeg=math.fabs(a.angleAsDeg), sens=sens)
 
             except Exception:
                 retour = None
@@ -91,7 +96,7 @@ class cLongitude(cAngle):
                         eLongitudeSens.E if y.group(1) == "E" else eLongitudeSens.W
                     )
                     a: cAngle = cAngle.fromString(y.group(2))
-                    retour = cLongitude(valAsDeg=math.fabs(a.angleAsDeg), sens=sens)
+                    retour = cls(valAsDeg=math.fabs(a.angleAsDeg), sens=sens)
 
                 else:
                     raise cMyException(f"Ce n'est pas une longitude >{angleAsString}<") from None

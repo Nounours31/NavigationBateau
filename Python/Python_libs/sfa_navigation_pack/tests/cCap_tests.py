@@ -21,7 +21,12 @@ class cCap_tests:
         assert cCap(valAsAngleTrigonometriqueEnRad=180 * cAngle.DEG2RAD).capAsDeg == 270.0
         assert cCap(valAsAngleTrigonometriqueEnRad=270 * cAngle.DEG2RAD).capAsDeg == 180.0
 
+    def test_fromString(self):
+        assert cCap.fromString("255°").capAsDeg == 255
+        assert cCap.fromString("370°").capAsDeg == 10
+
     def test_init_normalisation(self):
+
         assert cCap(0).capAsDeg == 0
         assert cCap(360).capAsDeg == 0
         assert cCap(370).capAsDeg == 10

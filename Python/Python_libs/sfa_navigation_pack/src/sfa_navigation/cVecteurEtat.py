@@ -1,21 +1,19 @@
 from __future__ import annotations
 from typing import List
 
-from . import cVecteur, cCap
+from .cVitesse import cVitesse
+from .cCap import cCap
 from .cPosition import cPosition
-
-
 
 from typing import List
 
 
 # ==========================================================
-# EAU
+# cEau
 # ==========================================================
 
-class Eau:
-
-    def __init__(self, profondeur: float, temperature: float, courant: cVecteur) -> None:
+class cEau:
+    def __init__(self, profondeur: float, temperature: float, courant: cVitesse) -> None:
         self.profondeur = profondeur
         self.temperature = temperature
         self.courant = courant
@@ -45,32 +43,34 @@ class Eau:
     # --- courant ---
 
     @property
-    def courant(self) -> cVecteur:
+    def courant(self) -> cVitesse:
         return self._courant
 
     @courant.setter
-    def courant(self, value: cVecteur) -> None:
-        if not isinstance(value, cVecteur):
+    def courant(self, value: cVitesse) -> None:
+        if not isinstance(value, cVitesse):
             raise TypeError("courant doit être un cVecteur")
         self._courant = value
 
 
     @classmethod
-    def from_dict(cls, data: dict) -> Eau:
+    def fromDict(cls, data: dict) -> cEau:
         return cls(
             profondeur=float(data["profondeur"]),
             temperature=float(data["temperature"]),
-            courant=cVecteur.from_dict(data["courant"])
+            courant=cVitesse.fromDict(data["courant"])
         )
 
+    def __str__(self) -> str:
+        s : str = f"[eau profondeur={self.profondeur} temperature={self.temperature} courant={self.courant}]"
+        return s
 
 # ==========================================================
-# AIR
+# cAir
 # ==========================================================
 
-class Air:
-
-    def __init__(self, temperature: float, vent: cVecteur) -> None:
+class cAir:
+    def __init__(self, temperature: float, vent: cVitesse) -> None:
         self.temperature = temperature
         self.vent = vent
 
@@ -83,40 +83,45 @@ class Air:
         self._temperature = float(value)
 
     @property
-    def vent(self) -> cVecteur:
+    def vent(self) -> cVitesse:
         return self._vent
 
     @vent.setter
-    def vent(self, value: cVecteur) -> None:
-        if not isinstance(value, cVecteur):
+    def vent(self, value: cVitesse) -> None:
+        if not isinstance(value, cVitesse):
             raise TypeError("vent doit être un cVecteur")
         self._vent = value
 
     @classmethod
-    def from_dict(cls, data: dict) -> Air:
+    def fromDict(cls, data: dict) -> cAir:
         return cls(
             temperature=float(data["temperature"]),
-            vent=cVecteur.from_dict(data["vent"])
+            vent=cVitesse.fromDict(data["vent"])
         )
 
+    def __str__(self) -> str:
+        s : str = f"[air temperature={self.temperature} vent={self.vent}]"
+        return s
+
+
+
 # ==========================================================
-# BATEAU
+# cBateau
 # ==========================================================
 
-class Bateau:
-
-    def __init__(self, sog: cVecteur, position: cPosition, varMagnetique: cCap) -> None:
+class cBateau:
+    def __init__(self, sog: cVitesse, position: cPosition, varMagnetique: cCap) -> None:
         self.sog = sog
         self.position = position
         self.varMagnetique = varMagnetique
 
     @property
-    def sog(self) -> cVecteur:
+    def sog(self) -> cVitesse:
         return self._sog
 
     @sog.setter
-    def sog(self, value: cVecteur) -> None:
-        if not isinstance(value, cVecteur):
+    def sog(self, value: cVitesse) -> None:
+        if not isinstance(value, cVitesse):
             raise TypeError("sog doit être un cVecteur")
         self._sog = value
 
@@ -141,68 +146,76 @@ class Bateau:
         self._varMagnetique = value
 
     @classmethod
-    def from_dict(cls, data: dict) -> "Bateau":
+    def fromDict(cls, data: dict) -> "cBateau":
         return cls(
-            sog=cVecteur.from_dict(data["sog"]),
+            sog=cVitesse.fromDict(data["sog"]),
             position=cPosition.fromString(data["position"]),
             varMagnetique=cCap.fromString(data["varMagnetique"])
         )
+
+    def __str__(self) -> str:
+        s : str = f"[bateau sog={self.sog} position={self.position} varMagnetique={self.varMagnetique}]"
+        return s
+
 
 # ==========================================================
 # ETAT GLOBAL
 # ==========================================================
 
 class cVecteurEtat:
-
-    def __init__(self, bateau: Bateau, air: Air, eau: Eau) -> None:
-        self.bateau = bateau
-        self.air = air
-        self.eau = eau
+    def __init__(self, cBateau: cBateau, cAir: cAir, cEau: cEau) -> None:
+        self.cBateau = cBateau
+        self.cAir = cAir
+        self.cEau = cEau
 
     @property
-    def bateau(self) -> Bateau:
+    def cBateau(self) -> cBateau:
         return self._bateau
 
-    @bateau.setter
-    def bateau(self, value: Bateau) -> None:
-        if not isinstance(value, Bateau):
-            raise TypeError("bateau doit être un Bateau")
+    @cBateau.setter
+    def cBateau(self, value: cBateau) -> None:
+        if not isinstance(value, cBateau):
+            raise TypeError("cBateau doit être un cBateau")
         self._bateau = value
 
     @property
-    def air(self) -> Air:
+    def cAir(self) -> cAir:
         return self._air
 
-    @air.setter
-    def air(self, value: Air) -> None:
-        if not isinstance(value, Air):
-            raise TypeError("air doit être un Air")
+    @cAir.setter
+    def cAir(self, value: cAir) -> None:
+        if not isinstance(value, cAir):
+            raise TypeError("cAir doit être un cAir")
         self._air = value
 
     @property
-    def eau(self) -> Eau:
+    def cEau(self) -> cEau:
         return self._eau
 
-    @eau.setter
-    def eau(self, value: Eau) -> None:
-        if not isinstance(value, Eau):
-            raise TypeError("eau doit être un Eau")
+    @cEau.setter
+    def cEau(self, value: cEau) -> None:
+        if not isinstance(value, cEau):
+            raise TypeError("cEau doit être un cEau")
         self._eau = value
 
     @classmethod
-    def from_dict(cls, data: dict) -> cVecteurEtat:
+    def fromDict(cls, data: dict) -> cVecteurEtat:
         return cls(
-            bateau=Bateau.from_dict(data["bateau"]),
-            air=Air.from_dict(data["air"]),
-            eau=Eau.from_dict(data["eau"])
+            cBateau=cBateau.fromDict(data["bateau"]),
+            cAir=cAir.fromDict(data["air"]),
+            cEau=cEau.fromDict(data["eau"])
         )
+
+
+    def __str__(self) -> str:
+        s : str = f"[vecteurEtat bateau={self.cBateau} air={self.cAir} eau={self.cEau}]"
+        return s
 
 # ==========================================================
 # TRAJET
 # ==========================================================
 
 class cTrajet:
-
     def __init__(self, depart: cPosition, arrivee: cPosition, pointsDePassage: List[cPosition]) -> None:
         self.depart = depart
         self.arrivee = arrivee
@@ -242,10 +255,10 @@ class cTrajet:
         self._waypoints = value
 
     @classmethod
-    def from_dict(cls, data: dict) -> cTrajet:
+    def fromDict(cls, data: dict) -> cTrajet:
         return cls(
-            depart=cPosition.fromString(data["depart"]),
-            arrivee=cPosition.fromString(data["arrivee"]),
+            depart=cPosition.fromDict(data["depart"]),
+            arrivee=cPosition.fromDict(data["arrivee"]),
             pointsDePassage=[
                 cPosition.fromString(p) for p in data.get("waypoints", [])
             ]
