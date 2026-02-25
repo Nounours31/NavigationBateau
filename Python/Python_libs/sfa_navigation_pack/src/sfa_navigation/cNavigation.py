@@ -34,7 +34,7 @@ class cNavigation:
         return self._position.toString(format)
 
     # see https://fr.wikipedia.org/wiki/Loxodromie
-    def positionementRelatif(self, arrivee: cPosition) -> cVitesse:
+    def positionementRelatif(self, arrivee: cPosition) -> (cCap, cDistance):
         depart: cPosition = self._position
         varLat: float = arrivee.latitude.latitudeEnDeg - depart.latitude.latitudeEnDeg
         varLong: float = arrivee.longitude.longitudeEnDeg - depart.longitude.longitudeEnDeg
@@ -82,8 +82,7 @@ class cNavigation:
         )
 
         dist: cDistance = cDistance(valAsMilleNautique=d)
-        v: cVitesse = cVitesse(distance=dist, sens=c)
-        return v
+        return (c, dist)
 
     def navACapEtVitesseDonnes(
         self,

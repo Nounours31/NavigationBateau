@@ -1,6 +1,7 @@
 import pytest
 
-from sfa_navigation import cVitesse, cDistance, cCap, cVecteurEtat, cVitesse, cPosition
+from sfa_navigation import cVitesse, cDistance, cCap, cVecteurEtat, cVitesse, cPosition, cAngle
+from sfa_navigation.cVitesse import cNormeVitesse
 
 
 # =========================
@@ -12,21 +13,18 @@ class cVecteurEtat_tests:
     def test_init(self):
         data: dict[str, object] = {
             "bateau": {
-                "sog": cVitesse(valAsNoeud=15.0),
+                "SOG": cVitesse(normeVitesse=15.0, sens=75),
+                "derive": cAngle(valAsDeg=2.5),
                 "position": cPosition.fromDict({"latitude": "N 12°", "longitude": "W 10°"}),
                 "varMagnetique": cCap(valAsDeg=-1.2),
             },
             "eau": {
-                "courant": {
-                    "vitesseEnNd": cVitesse(valAsNoeud=1.50),
-                    "directionEnDeg": cCap(valAsDeg=1.5),
-                },
+                "courant": cVitesse(normeVitesse=15.0, sens=75),
                 "profondeur": 17,
                 "temperature": 12,
             },
             "air": {
-                "vitesseEnNd": cVitesse(valAsNoeud=15.0),
-                "directionEnDeg": cCap(valAsDeg=75.0),  # sens du vent attention !!!
+                "vent": cVitesse(normeVitesse=15.0, sens=75),
                 "temperature": 20,
             },
         }

@@ -62,7 +62,7 @@ class cDistance:
                         d *= cDistance.KM2MN
 
                 case _:
-                    raise cMyException("Not a distance: >" + s + "<")
+                    raise cMyException("Not a normeVitesse: >" + s + "<")
         return cls(valAsMilleNautique=d)
 
     # ========================

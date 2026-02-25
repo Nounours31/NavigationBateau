@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import List
 
-from .cVitesse import cVitesse
+from .cVitesse import cVitesse, cNormeVitesse
 from .cCap import cCap
 from .cPosition import cPosition
 
@@ -147,7 +147,7 @@ class cBateau:
     @classmethod
     def fromDict(cls, data: dict) -> "cBateau":
         return cls(
-            sog=cVitesse.fromDict(data["sog"]),
+            sog=cVitesse.fromObject(data["SOG"]),
             position=cPosition.fromString(data["position"]),
             varMagnetique=cCap.fromString(data["varMagnetique"]),
         )
