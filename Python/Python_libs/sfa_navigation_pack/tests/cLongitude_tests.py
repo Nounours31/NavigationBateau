@@ -309,4 +309,4 @@ class cLongitude_tests:
         assert ll.toString("toto") == "Not implemented"
 
         assert str(ll) == ll.toString(eAngleFormat.DD)
-        assert ll.__repr__() == "[cLongitude: W 010.2541°]"
+        assert ll.__repr__() == "[Longitude: W 010.2541°]"

@@ -27,6 +27,9 @@ class eLongitudeSens(Enum):
 
 
 class cLongitude(cAngle):
+
+    NOM : str = "Longitude"
+
     def __init__(self, valAsDeg: float = 0.0, sens: eLongitudeSens | None = None):
         if math.fabs(valAsDeg) > 180.0:
             raise cMyException("Longitude invalide " + str(valAsDeg))
@@ -71,7 +74,7 @@ class cLongitude(cAngle):
 
     @classmethod
     def fromDict(cls, data: dict = {}) -> cLongitude:
-        s: str = data["longitude"]
+        s: str = data[cLongitude.NOM]
         return cLongitude.fromString(s)
 
     @classmethod
@@ -119,7 +122,7 @@ class cLongitude(cAngle):
         return self.toString()
 
     def __repr__(self) -> str:
-        return "[cLongitude: " + self.toString() + "]"
+        return "["+cLongitude.NOM+": " + self.toString() + "]"
 
     def toString(self, format: eAngleFormat = eAngleFormat.DD) -> str:
         match format:

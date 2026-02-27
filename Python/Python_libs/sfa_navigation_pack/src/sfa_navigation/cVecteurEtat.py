@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import List
 
+from . import cAngle
 from .cVitesse import cVitesse, cNormeVitesse
 from .cCap import cCap
 from .cPosition import cPosition
@@ -56,9 +57,9 @@ class cEau:
     @classmethod
     def fromDict(cls, data: dict) -> cEau:
         return cls(
-            profondeur=float(data["profondeur"]),
-            temperature=float(data["temperature"]),
-            courant=cVitesse.fromObject(data["courant"]),
+            profondeur=float(data[cVecteurEtatKeys.PROFONDEUR]),
+            temperature=float(data[cVecteurEtatKeys.TEMPERATURE]),
+            courant=cVitesse.fromObject(data[cVecteurEtatKeys.COURANT]),
         )
 
     def __str__(self) -> str:
@@ -96,7 +97,7 @@ class cAir:
 
     @classmethod
     def fromDict(cls, data: dict) -> cAir:
-        return cls(temperature=float(data["temperature"]), vent=cVitesse.fromObject(data["vent"]))
+        return cls(temperature=float(data[cVecteurEtatKeys.TEMPERATURE]), vent=cVitesse.fromObject(data[cVecteurEtatKeys.VENT]))
 
     def __str__(self) -> str:
         s: str = f"[air temperature={self.temperature} vent={self.vent}]"
@@ -109,10 +110,11 @@ class cAir:
 
 
 class cBateau:
-    def __init__(self, sog: cVitesse, position: cPosition, varMagnetique: cCap) -> None:
+    def __init__(self, sog: cVitesse, position: cPosition, varMagnetique: cCap, derive : cAngle) -> None:
         self.sog = sog
         self.position = position
         self.varMagnetique = varMagnetique
+        self._derive = derive
 
     @property
     def sog(self) -> cVitesse:
@@ -144,17 +146,22 @@ class cBateau:
             raise TypeError("varMagnetique doit être un cCap")
         self._varMagnetique = value
 
+    @property
+    def derive(self) -> cAngle:
+        return self._derive
+
     @classmethod
     def fromDict(cls, data: dict) -> "cBateau":
         return cls(
-            sog=cVitesse.fromObject(data["SOG"]),
-            position=cPosition.fromObject(data["position"]),
-            varMagnetique=cCap.fromObject(data["varMagnetique"]),
+            sog=cVitesse.fromObject(data[cVecteurEtatKeys.SOG]),
+            position=cPosition.fromObject(data[cVecteurEtatKeys.POSITION]),
+            varMagnetique=cCap.fromObject(data[cVecteurEtatKeys.VARIATION_MAGNETIQUE]),
+            derive=cAngle.fromObject(data[cVecteurEtatKeys.DERIVE]),
         )
 
     def __str__(self) -> str:
         s: str = (
-            f"[bateau sog={self.sog} position={self.position} varMagnetique={self.varMagnetique}]"
+            f"[bateau sog={self.sog},position={self.position}, varMagnetique={self.varMagnetique}, derive={self._derive}]"
         )
         return s
 
@@ -163,6 +170,21 @@ class cBateau:
 # ETAT GLOBAL
 # ==========================================================
 
+class cVecteurEtatKeys:
+    VENT : str = "Vent"
+    TEMPERATURE : str = "Temperature"
+    PROFONDEUR : str = "Profondeur"
+    VARIATION_MAGNETIQUE : str = "VariationMagnetique"
+    COURANT : str = "Courant"
+    POSITION : str = "Position"
+    DERIVE: str = "Derive"
+    SOG: str = "SOG"
+    BATEAU : str = "Bateau"
+    AIR : str = "Air"
+    EAU : str = "Eau"
+    DEPART : str = "Depart"
+    ARRIVEE : str = "Arrivee"
+    WAYPOINTS : str = "wpt"
 
 class cVecteurEtat:
     def __init__(self, cBateau: cBateau, cAir: cAir, cEau: cEau) -> None:
@@ -203,9 +225,9 @@ class cVecteurEtat:
     @classmethod
     def fromDict(cls, data: dict) -> cVecteurEtat:
         return cls(
-            cBateau=cBateau.fromDict(data["bateau"]),
-            cAir=cAir.fromDict(data["air"]),
-            cEau=cEau.fromDict(data["eau"]),
+            cBateau=cBateau.fromDict(data[cVecteurEtatKeys.BATEAU]),
+            cAir=cAir.fromDict(data[cVecteurEtatKeys.AIR]),
+            cEau=cEau.fromDict(data[cVecteurEtatKeys.EAU]),
         )
 
     def toString(self) -> str:
@@ -265,7 +287,14 @@ class cTrajet:
     @classmethod
     def fromDict(cls, data: dict) -> cTrajet:
         return cls(
-            depart=cPosition.fromDict(data["depart"]),
-            arrivee=cPosition.fromDict(data["arrivee"]),
-            pointsDePassage=[cPosition.fromString(p) for p in data.get("waypoints", [])],
+            depart=cPosition.fromObject(data[cVecteurEtatKeys.DEPART]),
+            arrivee=cPosition.fromObject(data[cVecteurEtatKeys.ARRIVEE]),
+            pointsDePassage=[cPosition.fromObject(p) for p in data.get(cVecteurEtatKeys.WAYPOINTS, [])],
         )
+
+    def toString(self) -> str:
+        return self.__str__()
+
+    def __str__(self) -> str:
+        s: str = f"[Trajet depart={self.depart}, arrivee={self.arrivee}, wpt={self._waypoints}]"
+        return s

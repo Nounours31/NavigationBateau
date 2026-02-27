@@ -39,6 +39,21 @@ class cAngle_tests:
         ll: cAngle = cAngle.fromString(x)
         assert ll.toString(eAngleFormat.DD) == "-047.1200°"
 
+    def test_fromObject(self) :
+        x = "47°12"
+        ll: cAngle = cAngle.fromObject(x)
+        assert ll.toString(eAngleFormat.DD) == "047.2000°"
+
+        ll: cAngle = cAngle.fromObject(47.2)
+        assert ll.toString(eAngleFormat.DD) == "047.2000°"
+
+        ll: cAngle = cAngle.fromObject(47.2)
+        l2: cAngle = cAngle.fromObject(ll)
+        assert l2.toString(eAngleFormat.DD) == "047.2000°"
+
+        with pytest.raises(cMyException):
+            ll = cAngle.fromObject(complex(1,1))
+
     def test_fromstring_dd2(self):
         x = "47°12"
         ll: cAngle = cAngle.fromString(x)

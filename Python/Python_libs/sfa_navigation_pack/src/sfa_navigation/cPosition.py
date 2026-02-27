@@ -60,8 +60,8 @@ class cPosition:
     def fromDict(cls, data: Dict = {}) -> cPosition:
         """ """
         try:
-            lat: cLatitude = cLatitude.fromString(data["latitude"])
-            longi: cLongitude = cLongitude.fromString(data["longitude"])
+            lat: cLatitude = cLatitude.fromString(data[cLatitude.NOM])
+            longi: cLongitude = cLongitude.fromString(data[cLongitude.NOM])
             retour: cPosition = cls(lat, longi)
             return retour
         except Exception as e:

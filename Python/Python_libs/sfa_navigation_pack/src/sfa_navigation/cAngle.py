@@ -155,6 +155,19 @@ class cAngle:
             raise cMyException("Format demande inconnu: " + str(format)) from None
 
     @staticmethod
+    def fromObject(o: object) -> cAngle:
+        if isinstance(o, cAngle):
+            return cAngle(valAsDeg= o.angleAsDeg)
+
+        if isinstance(o, str):
+            return cAngle.fromString(o)
+
+        if isinstance(o, (int, float)):
+            return cAngle(valAsDeg=o)
+
+        raise cMyException("Ce n'est pas un angle")
+
+    @staticmethod
     def fromString(angleAsString: str = "") -> cAngle:
         """
         Converti en string un angle.

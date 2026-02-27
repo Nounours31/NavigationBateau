@@ -26,6 +26,8 @@ class eLatitudeSens(Enum):
 
 
 class cLatitude(cAngle):
+    NOM : str = "Latitude"
+
     def __init__(self, valAsDeg: float = 0.0, sens: eLatitudeSens | None = None):
         if math.fabs(valAsDeg) > 90.0:
             raise cMyException("Latitude invalide " + str(valAsDeg))
@@ -69,7 +71,7 @@ class cLatitude(cAngle):
 
     @classmethod
     def fromDict(cls, data: dict = {}) -> cLatitude:
-        s: str = data["latitude"]
+        s: str = data[cLatitude.NOM]
         return cLatitude.fromString(s)
 
     @classmethod
@@ -115,7 +117,7 @@ class cLatitude(cAngle):
         return self.toString()
 
     def __repr__(self) -> str:
-        return "[cLatitude: " + self.toString() + "]"
+        return "["+cLatitude.NOM+": " + self.toString() + "]"
 
     def toString(self, format: eAngleFormat = eAngleFormat.DD) -> str:
         match format:

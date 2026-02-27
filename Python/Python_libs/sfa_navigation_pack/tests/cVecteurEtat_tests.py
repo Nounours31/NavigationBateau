@@ -1,6 +1,7 @@
 import pytest
 
-from sfa_navigation import cCap, cVecteurEtat, cVitesse, cPosition, cAngle
+from sfa_navigation import cCap, cVecteurEtat, cVitesse, cPosition, cAngle, cLatitude, cLongitude
+from sfa_navigation.cVecteurEtat import cVecteurEtatKeys, cTrajet
 
 
 # =========================
@@ -11,24 +12,39 @@ from sfa_navigation import cCap, cVecteurEtat, cVitesse, cPosition, cAngle
 class cVecteurEtat_tests:
     def test_init(self):
         data: dict[str, object] = {
-            "bateau": {
-                "SOG": cVitesse(normeVitesse=15.0, sens=75),
-                "derive": cAngle(valAsDeg=2.5),
-                "position": cPosition.fromDict({"latitude": "N 12°", "longitude": "W 10°"}),
-                "varMagnetique": cCap(valAsDeg=-1.2),
+            cVecteurEtatKeys.BATEAU : {
+                cVecteurEtatKeys.SOG: cVitesse(normeVitesse=15.0, sens=75),
+                cVecteurEtatKeys.DERIVE: cAngle(valAsDeg=2.5),
+                cVecteurEtatKeys.POSITION: cPosition.fromDict({cLatitude.NOM: "N 12°", cLongitude.NOM: "W 10°"}),
+                cVecteurEtatKeys.VARIATION_MAGNETIQUE: cCap(valAsDeg=-1.2),
             },
-            "eau": {
-                "courant": cVitesse(normeVitesse=15.0, sens=75),
-                "profondeur": 17,
-                "temperature": 12,
+            cVecteurEtatKeys.EAU : {
+                cVecteurEtatKeys.COURANT: cVitesse(normeVitesse=15.0, sens=75),
+                cVecteurEtatKeys.PROFONDEUR: 17,
+                cVecteurEtatKeys.TEMPERATURE: 12,
             },
-            "air": {
-                "vent": cVitesse(normeVitesse=15.0, sens=75),
-                "temperature": 20,
+            cVecteurEtatKeys.AIR : {
+                cVecteurEtatKeys.VENT: cVitesse(normeVitesse=15.0, sens=75),
+                cVecteurEtatKeys.TEMPERATURE: 20,
             },
         }
 
         v: cVecteurEtat = cVecteurEtat.fromDict(data)
-        ref : str = "[vecteurEtat bateau=[bateau sog=15.000Kt 075.0000° position=N 012.0000°, W 010.0000° varMagnetique=358.8000°] air=[air temperature=20.0 vent=15.000Kt 075.0000°] eau=[eau profondeur=17.0 temperature=12.0 courant=15.000Kt 075.0000°]]"
+        ref : str = "[vecteurEtat bateau=[bateau sog=15.000Kt 075.0000°,position=N 012.0000°, W 010.0000°, varMagnetique=358.8000°, derive=002.5000°] air=[air temperature=20.0 vent=15.000Kt 075.0000°] eau=[eau profondeur=17.0 temperature=12.0 courant=15.000Kt 075.0000°]]"
+        print(v)
+        assert v.toString() == ref
+
+    def test_init2(self):
+        trajet: dict[str, object] = {
+            cVecteurEtatKeys.DEPART : cPosition.fromDict({cLatitude.NOM: "N 12°", cLongitude.NOM: "W 10°"}),
+            cVecteurEtatKeys.ARRIVEE: cPosition.fromDict({cLatitude.NOM: "N 15°", cLongitude.NOM: "W 10°"}),
+            cVecteurEtatKeys.WAYPOINTS : [
+                cPosition.fromDict({cLatitude.NOM: "N 13°", cLongitude.NOM: "W 10°"}),
+                cPosition.fromDict({cLatitude.NOM: "N 14°", cLongitude.NOM: "W 10°"})
+            ]
+        }
+
+        v: cTrajet = cTrajet.fromDict(trajet)
+        ref : str = "[Trajet depart=N 012.0000°, W 010.0000°, arrivee=N 015.0000°, W 010.0000°, wpt=[[cPosition: N 013.0000°, W 010.0000°], [cPosition: N 014.0000°, W 010.0000°]]]"
         print(v)
         assert v.toString() == ref

@@ -309,7 +309,7 @@ class cLatitude_tests:
         assert ll.toString("toto") == "Not implemented"
 
         assert str(ll) == ll.toString(eAngleFormat.DD)
-        assert ll.__repr__() == "[cLatitude: S 010.2541°]"
+        assert ll.__repr__() == "[Latitude: S 010.2541°]"
 
     def test_pourCoverage(self):
         ll: cLatitude(valAsDeg=0.0)
