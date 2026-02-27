@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import math
 from typing import Dict
 
@@ -32,6 +33,18 @@ class cPosition:
 
     # format latitude, long
     @classmethod
+    def fromObject(cls, o: object) -> cPosition:
+        if isinstance(o, cPosition):
+            return o.__deepcopy__()
+        if isinstance(o, str):
+            return cPosition.fromString(o)
+        if isinstance(o, dict):
+            return cPosition.fromDict(o)
+
+        raise cMyException("Impossible de contruire une cPosition")
+
+    # format latitude, long
+    @classmethod
     def fromString(cls, angleAsString: str = "") -> cPosition:
         """ """
         try:
@@ -54,12 +67,6 @@ class cPosition:
         except Exception as e:
             raise cMyException(str(e)) from e
 
-    # format latitude, long
-    def __str__(self) -> str:
-        return self.toString()
-
-    def __repr__(self) -> str:
-        return "[cPosition: " + self.toString() + "]"
 
     def toString(self, format: eAngleFormat = eAngleFormat.DD) -> str:
         return self.latitude.toString(format) + ", " + self.longitude.toString(format)
@@ -67,3 +74,50 @@ class cPosition:
     def gudermannInverse(self):
         latitudeEnRad: float = self.latitude.latitudeEnRad
         return math.log(math.tan((math.pi / 4.0) + (latitudeEnRad / 2.0)))
+
+
+
+    # format latitude, long
+    def __str__(self) -> str:
+        return self.toString()
+
+    def __repr__(self) -> str:
+        return "[cPosition: " + self.toString() + "]"
+
+
+    def __copy__(self) -> cPosition:
+        """
+        normalise renvoie un angle compris entre 0 et 360
+        Args:
+            aucun
+        Returns:
+            self
+        Raises:
+            aucun
+        """
+        cls = self.__class__
+        new_obj = cls.__new__(cls)
+        new_obj._lat = copy.copy(self._lat)
+        new_obj._long = copy.copy(self._long)
+        return new_obj
+
+    def __deepcopy__(self, memodict={}) -> cPosition:
+        """
+        normalise renvoie un angle compris entre 0 et 360
+        Args:
+            aucun
+        Returns:
+            self
+        Raises:
+            aucun
+        """
+        cls = self.__class__
+        new_obj = cls.__new__(cls)
+        new_obj._lat = copy.deepcopy(self._lat)
+        new_obj._long = copy.deepcopy(self._long)
+
+        memodict[id(self)] = new_obj
+
+        return new_obj
+
+

@@ -1,7 +1,6 @@
 import pytest
 
-from sfa_navigation import cVitesse, cDistance, cCap, cVecteurEtat, cVitesse, cPosition, cAngle
-from sfa_navigation.cVitesse import cNormeVitesse
+from sfa_navigation import cCap, cVecteurEtat, cVitesse, cPosition, cAngle
 
 
 # =========================
@@ -30,5 +29,6 @@ class cVecteurEtat_tests:
         }
 
         v: cVecteurEtat = cVecteurEtat.fromDict(data)
+        ref : str = "[vecteurEtat bateau=[bateau sog=15.000Kt 075.0000° position=N 012.0000°, W 010.0000° varMagnetique=358.8000°] air=[air temperature=20.0 vent=15.000Kt 075.0000°] eau=[eau profondeur=17.0 temperature=12.0 courant=15.000Kt 075.0000°]]"
         print(v)
-        print(v)
+        assert v.toString() == ref

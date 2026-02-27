@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+from sfa_tools import cMyException
+
 from .cAngle import cAngle, eAngleFormat
 
 """
@@ -63,9 +66,24 @@ class cCap(cAngle):
         return super().toString(format=format)
 
     @classmethod
+    def fromObject(cls, o: object) -> cCap:
+        if isinstance(o, cCap):
+            return o.__deepcopy__()
+        if isinstance(o, str):
+            return cCap.fromString(o)
+        if isinstance(o, dict):
+            sAngle : str = o["cap"]
+            a : cAngle = cAngle.fromString(sAngle)
+            return cCap(valAsDeg = a.angleAsDeg)
+
+        raise cMyException("Impossible de creer un Cap")
+
+
+    @classmethod
     def fromString(cls, angleAsString: str = "") -> cCap:
         a: cAngle = cAngle.fromString(angleAsString)
         return cls(a.angleAsDeg % 360)
+
 
     def __add__(self, other) -> cCap:
         a: cAngle = super().__add__(other)

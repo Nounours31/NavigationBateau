@@ -58,7 +58,7 @@ class cEau:
         return cls(
             profondeur=float(data["profondeur"]),
             temperature=float(data["temperature"]),
-            courant=cVitesse.fromDict(data["courant"]),
+            courant=cVitesse.fromObject(data["courant"]),
         )
 
     def __str__(self) -> str:
@@ -96,7 +96,7 @@ class cAir:
 
     @classmethod
     def fromDict(cls, data: dict) -> cAir:
-        return cls(temperature=float(data["temperature"]), vent=cVitesse.fromDict(data["vent"]))
+        return cls(temperature=float(data["temperature"]), vent=cVitesse.fromObject(data["vent"]))
 
     def __str__(self) -> str:
         s: str = f"[air temperature={self.temperature} vent={self.vent}]"
@@ -148,8 +148,8 @@ class cBateau:
     def fromDict(cls, data: dict) -> "cBateau":
         return cls(
             sog=cVitesse.fromObject(data["SOG"]),
-            position=cPosition.fromString(data["position"]),
-            varMagnetique=cCap.fromString(data["varMagnetique"]),
+            position=cPosition.fromObject(data["position"]),
+            varMagnetique=cCap.fromObject(data["varMagnetique"]),
         )
 
     def __str__(self) -> str:
@@ -207,6 +207,9 @@ class cVecteurEtat:
             cAir=cAir.fromDict(data["air"]),
             cEau=cEau.fromDict(data["eau"]),
         )
+
+    def toString(self) -> str:
+        return self.__str__()
 
     def __str__(self) -> str:
         s: str = f"[vecteurEtat bateau={self.cBateau} air={self.cAir} eau={self.cEau}]"

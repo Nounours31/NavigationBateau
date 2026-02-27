@@ -1,6 +1,8 @@
 import pytest
 import copy
 
+from sfa_tools import cMyException
+
 from sfa_navigation import cAngle, cCap
 
 
@@ -24,6 +26,10 @@ class cCap_tests:
     def test_fromString(self):
         assert cCap.fromString("255°").capAsDeg == 255
         assert cCap.fromString("370°").capAsDeg == 10
+        assert cCap.fromObject("370°").capAsDeg == 10
+        assert cCap.fromObject({"cap" : "370°"}).capAsDeg == 10
+        with pytest.raises(cMyException) as err:
+            assert cCap.fromObject(10).capAsDeg == 10
 
     def test_init_normalisation(self):
         assert cCap(0).capAsDeg == 0
