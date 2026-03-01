@@ -13,7 +13,7 @@ from .cAngle import eAngleFormat
 from .cDistance import eDistanceFormat
 
 
-class cNormeVitesse:
+class cVitesse:
     NOEUD2KMH: float = cDistance.MN2KM
     KMH2NOEUD: float = cDistance.KM2MN
 
@@ -64,8 +64,8 @@ class cNormeVitesse:
         return not self.__eq__(other)
 
     def __eq__(self, other):
-        if isinstance(other, cNormeVitesse):
-            return (math.fabs(self.asNoeud - other.asNoeud) < cNormeVitesse.EQUAL_TOLERANCE_IN_KT)
+        if isinstance(other, cVitesse):
+            return (math.fabs(self.asNoeud - other.asNoeud) < cVitesse.EQUAL_TOLERANCE_IN_KT)
         return False
 
     def __imul__(self, other):
@@ -76,7 +76,7 @@ class cNormeVitesse:
 
     def __mul__(self, other):
         if isinstance(other, (int, float)):
-            x : cNormeVitesse = cNormeVitesse (valAsNoeud=self.asNoeud)
+            x : cVitesse = cVitesse (valAsNoeud=self.asNoeud)
             x *= other
             return x
         return NotImplemented
@@ -86,7 +86,7 @@ class cNormeVitesse:
 
     def __truediv__(self, other):
         if isinstance(other, (int, float)):
-            v: cNormeVitesse = cNormeVitesse(valAsNoeud=self.asNoeud)
+            v: cVitesse = cVitesse(valAsNoeud=self.asNoeud)
             v /= other
             return v
         return NotImplemented
@@ -97,7 +97,7 @@ class cNormeVitesse:
             return self
         return NotImplemented
 
-    def __copy__(self) -> cVitesse:
+    def __copy__(self) -> cVelocite:
         """
         normalise renvoie un angle compris entre 0 et 360
         Args:
@@ -112,7 +112,7 @@ class cNormeVitesse:
         new_obj._valAsNoeud = copy.copy(self._valAsNoeud)
         return new_obj
 
-    def __deepcopy__(self, memodict={}) -> cVitesse:
+    def __deepcopy__(self, memodict={}) -> cVelocite:
         """
         normalise renvoie un angle compris entre 0 et 360
         Args:
@@ -152,14 +152,14 @@ class cNormeVitesse:
         return cls(valAsNoeud=d)
 
 
-class cVitesse:
-    def __init__(self, normeVitesse: cNormeVitesse | float | None = None, sens: cCap | float | None = None):
-        self._distance: cNormeVitesse = cNormeVitesse(valAsNoeud=0.0)
-        if normeVitesse is not None:
-            if isinstance(normeVitesse, (float, int)):
-                self._distance = cNormeVitesse(valAsNoeud=normeVitesse)
+class cVelocite:
+    def __init__(self, vitesse: cVitesse | float | None = None, sens: cCap | float | None = None):
+        self._distance: cVitesse = cVitesse(valAsNoeud=0.0)
+        if vitesse is not None:
+            if isinstance(vitesse, (float, int)):
+                self._distance = cVitesse(valAsNoeud=vitesse)
             else:
-                self._distance = normeVitesse
+                self._distance = vitesse
 
         self._sens: cCap = cCap(valAsDeg=0.0)
         if sens is not None:
@@ -169,12 +169,12 @@ class cVitesse:
                 self._sens = sens
 
     @property
-    def normeVitesse(self) -> cNormeVitesse:
+    def vitesse(self) -> cVitesse:
         return self._distance
 
-    @normeVitesse.setter
-    def normeVitesse(self, d: cNormeVitesse) -> None:
-        if not isinstance(d, cNormeVitesse):
+    @vitesse.setter
+    def vitesse(self, d: cVitesse) -> None:
+        if not isinstance(d, cVitesse):
             raise cMyException("normeVitesse is not a cDistance ...")
         self._distance.asNoeud = d.asNoeud
 
@@ -189,28 +189,28 @@ class cVitesse:
         self._sens.angleAsDeg = c.capAsDeg
 
     @classmethod
-    def fromDict(cls, data: dict) -> cVitesse:
+    def fromDict(cls, data: dict) -> cVelocite:
         distance_data = data.get("norme")
         sens_data = data.get("sens")
 
-        distance: cNormeVitesse = cNormeVitesse.fromString(distance_data)
+        distance: cVitesse = cVitesse.fromString(distance_data)
         sens: cCap = cCap.fromString(sens_data)
         return cls(normeVitesse=distance, sens=sens)
 
     @classmethod
-    def fromString(cls, data: str) -> cVitesse:
-        distance: cNormeVitesse = cNormeVitesse.fromString(data)
+    def fromString(cls, data: str) -> cVelocite:
+        distance: cVitesse = cVitesse.fromString(data)
         sens: cCap = cCap.fromString(data)
         return cls(normeVitesse=distance, sens=sens)
 
     @classmethod
-    def fromObject(cls, data: object) -> cVitesse:
-        if isinstance(data, cVitesse) :
+    def fromObject(cls, data: object) -> cVelocite:
+        if isinstance(data, cVelocite) :
             return data.__deepcopy__({})
         if isinstance(data, str) :
-            return cVitesse.fromString(data)
+            return cVelocite.fromString(data)
         if isinstance(data, dict) :
-            return cVitesse.fromDict(data)
+            return cVelocite.fromDict(data)
 
         return NotImplemented
 
@@ -232,71 +232,71 @@ class cVitesse:
         return f"[cVitesse({self.toString(eDistanceFormat.STD, eAngleFormat.DD)})]"
 
     def __add__(self, other):
-        if isinstance(other, cVitesse):
-            x: float = self.normeVitesse.asNoeud * math.cos(
+        if isinstance(other, cVelocite):
+            x: float = self.vitesse.asNoeud * math.cos(
                 self.sens.asAngleTrigonometriqueEnRad
-            ) + other.normeVitesse.asNoeud * math.cos(other.sens.asAngleTrigonometriqueEnRad)
-            y: float = self.normeVitesse.asNoeud * math.sin(
+            ) + other.vitesse.asNoeud * math.cos(other.sens.asAngleTrigonometriqueEnRad)
+            y: float = self.vitesse.asNoeud * math.sin(
                 self.sens.asAngleTrigonometriqueEnRad
-            ) + other.normeVitesse.asNoeud * math.sin(other.sens.asAngleTrigonometriqueEnRad)
+            ) + other.vitesse.asNoeud * math.sin(other.sens.asAngleTrigonometriqueEnRad)
             isYNull: bool = math.fabs(y) < cAngle.EQUAL_TOLERANCE_IN_DEG
             valAsAngleTrigonometriqueEnRad: float = 0.0
             if isYNull:
                 valAsAngleTrigonometriqueEnRad = math.pi / 2.0 if x >= 0.0 else math.pi / (-2.0)
             else:
                 valAsAngleTrigonometriqueEnRad = math.atan2(y, x)
-            return cVitesse(
-                normeVitesse=cNormeVitesse(valAsNoeud=math.sqrt(x * x + y * y)),
+            return cVelocite(
+                vitesse=cVitesse(valAsNoeud=math.sqrt(x * x + y * y)),
                 sens=cCap(valAsAngleTrigonometriqueEnRad=valAsAngleTrigonometriqueEnRad),
             )
         return NotImplemented
 
     def __iadd__(self, other):
-        if isinstance(other, cVitesse):
-            v: cVitesse = self.__add__(other)
-            self.normeVitesse = v.normeVitesse
+        if isinstance(other, cVelocite):
+            v: cVelocite = self.__add__(other)
+            self.vitesse = v.vitesse
             self.sens = v.sens
             return self
         return NotImplemented
 
     def __sub__(self, other):
-        if isinstance(other, cVitesse):
-            x: float = self.normeVitesse.asNoeud * math.cos(
+        if isinstance(other, cVelocite):
+            x: float = self.vitesse.asNoeud * math.cos(
                 self.sens.asAngleTrigonometriqueEnRad
-            ) - other.normeVitesse.asNoeud * math.cos(other.sens.asAngleTrigonometriqueEnRad)
-            y: float = self.normeVitesse.asNoeud * math.sin(
+            ) - other.vitesse.asNoeud * math.cos(other.sens.asAngleTrigonometriqueEnRad)
+            y: float = self.vitesse.asNoeud * math.sin(
                 self.sens.asAngleTrigonometriqueEnRad
-            ) - other.normeVitesse.asNoeud * math.sin(other.sens.asAngleTrigonometriqueEnRad)
+            ) - other.vitesse.asNoeud * math.sin(other.sens.asAngleTrigonometriqueEnRad)
             isYNull: bool = math.fabs(y) < cAngle.EQUAL_TOLERANCE_IN_DEG
             valAsAngleTrigonometriqueEnRad: float = 0.0
             if isYNull:
                 valAsAngleTrigonometriqueEnRad = math.pi / 2.0 if x >= 0.0 else math.pi / (-2.0)
             else:
                 valAsAngleTrigonometriqueEnRad = math.atan2(y, x)
-            return cVitesse(
-                normeVitesse=cNormeVitesse(valAsNoeud=math.sqrt(x * x + y * y)),
+            return cVelocite(
+                vitesse=cVitesse(valAsNoeud=math.sqrt(x * x + y * y)),
                 sens=cCap(valAsAngleTrigonometriqueEnRad=valAsAngleTrigonometriqueEnRad),
             )
         return NotImplemented
 
     def __isub__(self, other):
-        if isinstance(other, cVitesse):
-            v: cVitesse = self.__sub__(other)
-            self.normeVitesse = v.normeVitesse
+        if isinstance(other, cVelocite):
+            v: cVelocite = self.__sub__(other)
+            self.vitesse = v.vitesse
             self.sens = v.sens
             return self
         return NotImplemented
 
     def __mul__(self, other):
         if isinstance(other, (int, float)):
-            v: cVitesse = cVitesse(normeVitesse=cNormeVitesse(self.normeVitesse.asNoeud), sens=self.sens)
+            v: cVelocite = cVelocite(vitesse=cVitesse(self.vitesse.asNoeud), sens=self.sens)
             v *= other
             return v
         return NotImplemented
 
     def __imul__(self, other):
         if isinstance(other, (int, float)):
-            self.normeVitesse.asNoeud = self.normeVitesse.asNoeud * other
+            self.vitesse.asNoeud = self.vitesse.asNoeud * other
             return self
         return NotImplemented
 
@@ -305,14 +305,14 @@ class cVitesse:
 
     def __truediv__(self, other):
         if isinstance(other, (int, float)):
-            v: cVitesse = cVitesse(normeVitesse=cNormeVitesse(self.normeVitesse.asNoeud), sens=self.sens)
+            v: cVelocite = cVelocite(vitesse=cVitesse(self.vitesse.asNoeud), sens=self.sens)
             v /= other
             return v
         return NotImplemented
 
     def __itruediv__(self, other):
         if isinstance(other, (int, float)):
-            self.normeVitesse.asNoeud = self.normeVitesse.asNoeud / other
+            self.vitesse.asNoeud = self.vitesse.asNoeud / other
             return self
         return NotImplemented
 
@@ -324,11 +324,11 @@ class cVitesse:
         return not self.__eq__(other)
 
     def __eq__(self, other):
-        if isinstance(other, cVitesse):
-            return (self.normeVitesse == other.normeVitesse) and (self.sens == other.sens)
+        if isinstance(other, cVelocite):
+            return (self.vitesse == other.vitesse) and (self.sens == other.sens)
         return False
 
-    def __copy__(self) -> cVitesse:
+    def __copy__(self) -> cVelocite:
         """
         normalise renvoie un angle compris entre 0 et 360
         Args:
@@ -344,7 +344,7 @@ class cVitesse:
         new_obj._sens = copy.copy(self._sens)
         return new_obj
 
-    def __deepcopy__(self, memodict={}) -> cVitesse:
+    def __deepcopy__(self, memodict={}) -> cVelocite:
         """
         normalise renvoie un angle compris entre 0 et 360
         Args:

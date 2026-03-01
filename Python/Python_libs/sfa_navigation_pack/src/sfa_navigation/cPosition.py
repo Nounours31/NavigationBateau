@@ -72,8 +72,7 @@ class cPosition:
         return self.latitude.toString(format) + ", " + self.longitude.toString(format)
 
     def gudermannInverse(self):
-        latitudeEnRad: float = self.latitude.latitudeEnRad
-        return math.log(math.tan((math.pi / 4.0) + (latitudeEnRad / 2.0)))
+        return self.latitude.gudermannInverse()
 
 
 

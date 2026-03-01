@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import List
 
 from . import cAngle
-from .cVitesse import cVitesse, cNormeVitesse
+from .cVelocite import cVelocite, cVitesse
 from .cCap import cCap
 from .cPosition import cPosition
 
@@ -15,7 +15,7 @@ from typing import List
 
 
 class cEau:
-    def __init__(self, profondeur: float, temperature: float, courant: cVitesse) -> None:
+    def __init__(self, profondeur: float, temperature: float, courant: cVelocite) -> None:
         self.profondeur = profondeur
         self.temperature = temperature
         self.courant = courant
@@ -45,12 +45,12 @@ class cEau:
     # --- courant ---
 
     @property
-    def courant(self) -> cVitesse:
+    def courant(self) -> cVelocite:
         return self._courant
 
     @courant.setter
-    def courant(self, value: cVitesse) -> None:
-        if not isinstance(value, cVitesse):
+    def courant(self, value: cVelocite) -> None:
+        if not isinstance(value, cVelocite):
             raise TypeError("courant doit être un cVecteur")
         self._courant = value
 
@@ -59,7 +59,7 @@ class cEau:
         return cls(
             profondeur=float(data[cVecteurEtatKeys.PROFONDEUR]),
             temperature=float(data[cVecteurEtatKeys.TEMPERATURE]),
-            courant=cVitesse.fromObject(data[cVecteurEtatKeys.COURANT]),
+            courant=cVelocite.fromObject(data[cVecteurEtatKeys.COURANT]),
         )
 
     def __str__(self) -> str:
@@ -73,7 +73,7 @@ class cEau:
 
 
 class cAir:
-    def __init__(self, temperature: float, vent: cVitesse) -> None:
+    def __init__(self, temperature: float, vent: cVelocite) -> None:
         self.temperature = temperature
         self.vent = vent
 
@@ -86,18 +86,18 @@ class cAir:
         self._temperature = float(value)
 
     @property
-    def vent(self) -> cVitesse:
+    def vent(self) -> cVelocite:
         return self._vent
 
     @vent.setter
-    def vent(self, value: cVitesse) -> None:
-        if not isinstance(value, cVitesse):
+    def vent(self, value: cVelocite) -> None:
+        if not isinstance(value, cVelocite):
             raise TypeError("vent doit être un cVecteur")
         self._vent = value
 
     @classmethod
     def fromDict(cls, data: dict) -> cAir:
-        return cls(temperature=float(data[cVecteurEtatKeys.TEMPERATURE]), vent=cVitesse.fromObject(data[cVecteurEtatKeys.VENT]))
+        return cls(temperature=float(data[cVecteurEtatKeys.TEMPERATURE]), vent=cVelocite.fromObject(data[cVecteurEtatKeys.VENT]))
 
     def __str__(self) -> str:
         s: str = f"[air temperature={self.temperature} vent={self.vent}]"
@@ -110,19 +110,19 @@ class cAir:
 
 
 class cBateau:
-    def __init__(self, sog: cVitesse, position: cPosition, varMagnetique: cCap, derive : cAngle) -> None:
+    def __init__(self, sog: cVelocite, position: cPosition, varMagnetique: cCap, derive : cAngle) -> None:
         self.sog = sog
         self.position = position
         self.varMagnetique = varMagnetique
         self._derive = derive
 
     @property
-    def sog(self) -> cVitesse:
+    def sog(self) -> cVelocite:
         return self._sog
 
     @sog.setter
-    def sog(self, value: cVitesse) -> None:
-        if not isinstance(value, cVitesse):
+    def sog(self, value: cVelocite) -> None:
+        if not isinstance(value, cVelocite):
             raise TypeError("sog doit être un cVecteur")
         self._sog = value
 
@@ -153,7 +153,7 @@ class cBateau:
     @classmethod
     def fromDict(cls, data: dict) -> "cBateau":
         return cls(
-            sog=cVitesse.fromObject(data[cVecteurEtatKeys.SOG]),
+            sog=cVelocite.fromObject(data[cVecteurEtatKeys.SOG]),
             position=cPosition.fromObject(data[cVecteurEtatKeys.POSITION]),
             varMagnetique=cCap.fromObject(data[cVecteurEtatKeys.VARIATION_MAGNETIQUE]),
             derive=cAngle.fromObject(data[cVecteurEtatKeys.DERIVE]),

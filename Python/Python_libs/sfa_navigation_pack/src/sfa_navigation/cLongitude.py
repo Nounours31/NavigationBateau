@@ -82,6 +82,7 @@ class cLongitude(cAngle):
         retour: cLongitude | None = None
 
         regex_dd1 = r"\s*([E|W])\s*(.*)"  # N 12.12°
+        regex_dd2 = r"\s*(.*)\s*([E|W])\s*"  # 12.12° N
 
         try:
             try:
@@ -102,7 +103,15 @@ class cLongitude(cAngle):
                     retour = cls(valAsDeg=math.fabs(a.angleAsDeg), sens=sens)
 
                 else:
-                    raise cMyException(f"Ce n'est pas une longitude >{angleAsString}<") from None
+                    y = re.fullmatch(regex_dd2, angleAsString)
+                    if y:
+                        sens: eLongitudeSens = (
+                            eLongitudeSens.E if y.group(2) == "E" else eLongitudeSens.W
+                        )
+                        a: cAngle = cAngle.fromString(y.group(1))
+                        retour = cls(valAsDeg=math.fabs(a.angleAsDeg), sens=sens)
+                    else:
+                        raise cMyException(f"Ce n'est pas une longitude >{angleAsString}<") from None
 
         except Exception as e:
             raise cMyException(str(e)) from e

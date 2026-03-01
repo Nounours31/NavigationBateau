@@ -69,6 +69,20 @@ class cLatitude(cAngle):
     def sensLatitude(self, val: eLatitudeSens) -> None:
         self._sens = val
 
+    def gudermannInverse(self):
+        latitudeEnRad: float = self.latitudeEnRad
+        return math.log(math.tan((math.pi / 4.0) + (latitudeEnRad / 2.0)))
+    
+    def normalise(self) -> None:
+        x = self.latitudeEnDeg
+        if abs(x) > 90.0:
+            raise cMyException("Latitude invalide")
+
+        self.sensLatitude = eLatitudeSens.N
+        if x < 0:
+            self.angleAsDeg = math.fabs(x)
+            self.sensLatitude = eLatitudeSens.S
+
     @classmethod
     def fromDict(cls, data: dict = {}) -> cLatitude:
         s: str = data[cLatitude.NOM]
@@ -79,6 +93,7 @@ class cLatitude(cAngle):
         retour: cLatitude | None = None
 
         regex_dd1 = r"\s*([N|S])\s*(.*)"  # N 12.12°
+        regex_dd2 = r"\s*(.*)\s*([N|S])\s*"  # 12.12° N
 
         try:
             try:
@@ -97,27 +112,17 @@ class cLatitude(cAngle):
                     retour = cls(valAsDeg=math.fabs(a.angleAsDeg), sens=sens)
 
                 else:
-                    raise cMyException(f"Ce n'est pas une latitude >{angleAsString}<") from None
+                    y = re.fullmatch(regex_dd2, angleAsString)
+                    if y:
+                        sens: eLatitudeSens = eLatitudeSens.N if y.group(2) == "N" else eLatitudeSens.S
+                        a: cAngle = cAngle.fromString(y.group(1))
+                        retour = cls(valAsDeg=math.fabs(a.angleAsDeg), sens=sens)   
+                    else:
+                        raise cMyException(f"Ce n'est pas une latitude >{angleAsString}<") from None
 
         except Exception as e:
             raise cMyException(str(e)) from e
         return retour
-
-    def normalise(self) -> None:
-        x = self.latitudeEnDeg
-        if abs(x) > 90.0:
-            raise cMyException("Latitude invalide")
-
-        self.sensLatitude = eLatitudeSens.N
-        if x < 0:
-            self.angleAsDeg = math.fabs(x)
-            self.sensLatitude = eLatitudeSens.S
-
-    def __str__(self) -> str:
-        return self.toString()
-
-    def __repr__(self) -> str:
-        return "["+cLatitude.NOM+": " + self.toString() + "]"
 
     def toString(self, format: eAngleFormat = eAngleFormat.DD) -> str:
         match format:
@@ -137,6 +142,13 @@ class cLatitude(cAngle):
                 return f"{str(self.sensLatitude)} {super().toString(format)}"
             case _:
                 return "Not implemented"
+
+    def __str__(self) -> str:
+        return self.toString()
+
+    def __repr__(self) -> str:
+        return "["+cLatitude.NOM+": " + self.toString() + "]"
+
 
     def __iadd__(self, val: cLatitude) -> cLatitude:
         if not isinstance(val, cLatitude):

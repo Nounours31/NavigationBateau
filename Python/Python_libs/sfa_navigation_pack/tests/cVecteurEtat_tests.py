@@ -1,6 +1,6 @@
 import pytest
 
-from sfa_navigation import cCap, cVecteurEtat, cVitesse, cPosition, cAngle, cLatitude, cLongitude
+from sfa_navigation import cCap, cVecteurEtat, cVelocite, cPosition, cAngle, cLatitude, cLongitude
 from sfa_navigation.cVecteurEtat import cVecteurEtatKeys, cTrajet
 
 
@@ -13,18 +13,18 @@ class cVecteurEtat_tests:
     def test_init(self):
         data: dict[str, object] = {
             cVecteurEtatKeys.BATEAU : {
-                cVecteurEtatKeys.SOG: cVitesse(normeVitesse=15.0, sens=75),
+                cVecteurEtatKeys.SOG: cVelocite(vitesse=15.0, sens=75),
                 cVecteurEtatKeys.DERIVE: cAngle(valAsDeg=2.5),
                 cVecteurEtatKeys.POSITION: cPosition.fromDict({cLatitude.NOM: "N 12°", cLongitude.NOM: "W 10°"}),
                 cVecteurEtatKeys.VARIATION_MAGNETIQUE: cCap(valAsDeg=-1.2),
             },
             cVecteurEtatKeys.EAU : {
-                cVecteurEtatKeys.COURANT: cVitesse(normeVitesse=15.0, sens=75),
+                cVecteurEtatKeys.COURANT: cVelocite(vitesse=15.0, sens=75),
                 cVecteurEtatKeys.PROFONDEUR: 17,
                 cVecteurEtatKeys.TEMPERATURE: 12,
             },
             cVecteurEtatKeys.AIR : {
-                cVecteurEtatKeys.VENT: cVitesse(normeVitesse=15.0, sens=75),
+                cVecteurEtatKeys.VENT: cVelocite(vitesse=15.0, sens=75),
                 cVecteurEtatKeys.TEMPERATURE: 20,
             },
         }

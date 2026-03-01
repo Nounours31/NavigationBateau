@@ -9,8 +9,7 @@ src/sfa_navigation/cLatitude.py
 src/sfa_navigation/cLongitude.py
 src/sfa_navigation/cNavigation.py
 src/sfa_navigation/cPosition.py
-src/sfa_navigation/cVecteur.py
-src/sfa_navigation/cVecteurDeEtat.py
+src/sfa_navigation/cVecteurEtat.py
 src/sfa_navigation/cVitesse.py
 src/sfa_navigation.egg-info/PKG-INFO
 src/sfa_navigation.egg-info/SOURCES.txt
