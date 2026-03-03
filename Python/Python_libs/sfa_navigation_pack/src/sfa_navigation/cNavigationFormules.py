@@ -23,7 +23,7 @@ class cSensNavigation(Enum):
     versSW = 7
 
 
-class cNavigation:
+class cNavigationFormules:
     def __init__(self, position: cPosition):
         self._position = position
 
@@ -77,7 +77,7 @@ class cNavigation:
 
         RouteQuartFondEnDeg = RouteQuartFond * cAngle.RAD2DEG
 
-        routeFondEnDeg = cNavigation.RouteQuartFond2RouteFond(sensNavigation=sensNavigation, RouteQuartFond=RouteQuartFondEnDeg)
+        routeFondEnDeg = cNavigationFormules.RouteQuartFond2RouteFond(sensNavigation=sensNavigation, RouteQuartFond=RouteQuartFondEnDeg)
         
         # calcul de la distance
         distanceEnMille: float = 0.0

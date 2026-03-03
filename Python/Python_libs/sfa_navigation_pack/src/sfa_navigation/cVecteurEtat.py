@@ -1,4 +1,5 @@
 from __future__ import annotations
+from datetime import datetime, timezone
 from typing import List
 
 from . import cAngle
@@ -13,7 +14,7 @@ from . import cPosition
 # ==========================================================
 
 
-class cEau:
+class cEtatMer:
     def __init__(self, profondeur: float, temperature: float, courant: cVelocite) -> None:
         self.profondeur = profondeur
         self.temperature = temperature
@@ -54,7 +55,7 @@ class cEau:
         self._courant = value
 
     @classmethod
-    def fromDict(cls, data: dict) -> cEau:
+    def fromDict(cls, data: dict) -> cEtatMer:
         return cls(
             profondeur=float(data[cVecteurEtatKeys.PROFONDEUR]),
             temperature=float(data[cVecteurEtatKeys.TEMPERATURE]),
@@ -71,7 +72,7 @@ class cEau:
 # ==========================================================
 
 
-class cAir:
+class cEtatAir:
     def __init__(self, temperature: float, vent: cVelocite) -> None:
         self.temperature = temperature
         self.vent = vent
@@ -95,7 +96,7 @@ class cAir:
         self._vent = value
 
     @classmethod
-    def fromDict(cls, data: dict) -> cAir:
+    def fromDict(cls, data: dict) -> cEtatAir:
         return cls(temperature=float(data[cVecteurEtatKeys.TEMPERATURE]), vent=cVelocite.fromObject(data[cVecteurEtatKeys.VENT]))
 
     def __str__(self) -> str:
@@ -108,7 +109,7 @@ class cAir:
 # ==========================================================
 
 
-class cBateau:
+class cEtatBateau:
     def __init__(self, sog: cVelocite, position: cPosition, varMagnetique: cCap, derive : cAngle) -> None:
         self.sog = sog
         self.position = position
@@ -150,7 +151,7 @@ class cBateau:
         return self._derive
 
     @classmethod
-    def fromDict(cls, data: dict) -> "cBateau":
+    def fromDict(cls, data: dict) -> "cEtatBateau":
         return cls(
             sog=cVelocite.fromObject(data[cVecteurEtatKeys.SOG]),
             position=cPosition.fromObject(data[cVecteurEtatKeys.POSITION]),
@@ -170,6 +171,7 @@ class cBateau:
 # ==========================================================
 
 class cVecteurEtatKeys:
+    HEURE : str = "Heure"
     VENT : str = "Vent"
     TEMPERATURE : str = "Temperature"
     PROFONDEUR : str = "Profondeur"
@@ -186,54 +188,56 @@ class cVecteurEtatKeys:
     WAYPOINTS : str = "wpt"
 
 class cVecteurEtat:
-    def __init__(self, cBateau: cBateau, cAir: cAir, cEau: cEau) -> None:
+    def __init__(self, timestamp: float, cBateau: cEtatBateau, cAir: cEtatAir, cEau: cEtatMer) -> None:
+        self.timestamp = timestamp
         self.cBateau = cBateau
         self.cAir = cAir
         self.cEau = cEau
 
     @property
-    def cBateau(self) -> cBateau:
+    def cBateau(self) -> cEtatBateau:
         return self._bateau
 
     @cBateau.setter
-    def cBateau(self, value: cBateau) -> None:
-        if not isinstance(value, cBateau):
+    def cBateau(self, value: cEtatBateau) -> None:
+        if not isinstance(value, cEtatBateau):
             raise TypeError("cBateau doit être un cBateau")
         self._bateau = value
 
     @property
-    def cAir(self) -> cAir:
+    def cAir(self) -> cEtatAir:
         return self._air
 
     @cAir.setter
-    def cAir(self, value: cAir) -> None:
-        if not isinstance(value, cAir):
+    def cAir(self, value: cEtatAir) -> None:
+        if not isinstance(value, cEtatAir):
             raise TypeError("cAir doit être un cAir")
         self._air = value
 
     @property
-    def cEau(self) -> cEau:
+    def cEau(self) -> cEtatMer:
         return self._eau
 
     @cEau.setter
-    def cEau(self, value: cEau) -> None:
-        if not isinstance(value, cEau):
+    def cEau(self, value: cEtatMer) -> None:
+        if not isinstance(value, cEtatMer):
             raise TypeError("cEau doit être un cEau")
         self._eau = value
 
     @classmethod
     def fromDict(cls, data: dict) -> cVecteurEtat:
         return cls(
-            cBateau=cBateau.fromDict(data[cVecteurEtatKeys.BATEAU]),
-            cAir=cAir.fromDict(data[cVecteurEtatKeys.AIR]),
-            cEau=cEau.fromDict(data[cVecteurEtatKeys.EAU]),
+            timestamp=data[cVecteurEtatKeys.HEURE],
+            cBateau=cEtatBateau.fromDict(data[cVecteurEtatKeys.BATEAU]),
+            cAir=cEtatAir.fromDict(data[cVecteurEtatKeys.AIR]),
+            cEau=cEtatMer.fromDict(data[cVecteurEtatKeys.EAU]),
         )
 
     def toString(self) -> str:
         return self.__str__()
 
     def __str__(self) -> str:
-        s: str = f"[vecteurEtat bateau={self.cBateau} air={self.cAir} eau={self.cEau}]"
+        s: str = f"[vecteurEtat heure={datetime.fromtimestamp(timestamp = self.timestamp, tz=timezone.utc).strftime('%d/%m/%y %H:%M:%S.%f')} bateau={self.cBateau} air={self.cAir} eau={self.cEau}]"
         return s
 
 

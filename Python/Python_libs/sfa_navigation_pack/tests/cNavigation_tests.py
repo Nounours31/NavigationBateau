@@ -9,7 +9,7 @@ from sfa_navigation import (
     cVelocite,
     eAngleFormat,
     cVitesse,
-    cNavigation, 
+    cNavigationFormules, 
     cCap, 
     cDistance,
 )
@@ -28,7 +28,7 @@ class cNavigation_tests:
     def test_positionnementRelatif(self):
         a: cPosition = myEnv.postionStQuay
         d: cPosition = myEnv.postionTrinitee
-        n: cNavigation = cNavigation(position=d)
+        n: cNavigationFormules = cNavigationFormules(position=d)
 
         sens : cCap
         distance : cDistance
@@ -39,7 +39,7 @@ class cNavigation_tests:
     def test_positionnementRelatif2(self):
         d: cPosition = cPosition(lat=cLatitude(valAsDeg=49.1), lon=cLongitude(valAsDeg=2.5))
         a: cPosition = cPosition(lat=cLatitude(valAsDeg=28.1), lon=cLongitude(valAsDeg=-20.5))
-        n: cNavigation = cNavigation(position=d)
+        n: cNavigationFormules = cNavigationFormules(position=d)
 
         sens : cCap
         distance : cDistance
@@ -50,7 +50,7 @@ class cNavigation_tests:
     def test_positionnementRelatif3(self):
         d: cPosition = cPosition(lat=cLatitude(valAsDeg=49.1), lon=cLongitude(valAsDeg=2.5))
         a: cPosition = cPosition(lat=cLatitude(valAsDeg=49.5), lon=cLongitude(valAsDeg=-50.7))
-        n: cNavigation = cNavigation(position=d)
+        n: cNavigationFormules = cNavigationFormules(position=d)
 
         sens : cCap
         distance : cDistance
@@ -61,7 +61,7 @@ class cNavigation_tests:
     def test_positionnementRelatif4(self):
         d: cPosition = cPosition(lat=cLatitude(valAsDeg=23.7), lon=cLongitude(valAsDeg=-67.1))
         a: cPosition = cPosition(lat=cLatitude(valAsDeg=49.5), lon=cLongitude(valAsDeg=-0.8))
-        n: cNavigation = cNavigation(position=d)
+        n: cNavigationFormules = cNavigationFormules(position=d)
 
         sens : cCap
         distance : cDistance
@@ -72,7 +72,7 @@ class cNavigation_tests:
     def test_positionnementRelatif5(self):
         d: cPosition = cPosition(lat=cLatitude(valAsDeg=23.7), lon=cLongitude(valAsDeg=-67.1))
         a: cPosition = cPosition(lat=cLatitude(valAsDeg=-34), lon=cLongitude(valAsDeg=18.8))
-        n: cNavigation = cNavigation(position=d)
+        n: cNavigationFormules = cNavigationFormules(position=d)
 
         sens : cCap
         distance : cDistance
@@ -83,7 +83,7 @@ class cNavigation_tests:
     def test_positionnementRelatif6(self):
         d: cPosition = cPosition(lat=cLatitude(valAsDeg=49.5), lon=cLongitude(valAsDeg=-56.5))
         a: cPosition = cPosition(lat=cLatitude(valAsDeg=49.5), lon=cLongitude(valAsDeg=-5.7))
-        n: cNavigation = cNavigation(position=d)
+        n: cNavigationFormules = cNavigationFormules(position=d)
 
         sens : cCap
         distance : cDistance
@@ -94,7 +94,7 @@ class cNavigation_tests:
     def test_positionnementRelatif7(self):
         d: cPosition = cPosition(lat=cLatitude(valAsDeg=80), lon=cLongitude(valAsDeg=-56.5))
         a: cPosition = cPosition(lat=cLatitude(valAsDeg=80), lon=cLongitude(valAsDeg=-5.7))
-        n: cNavigation = cNavigation(position=d)
+        n: cNavigationFormules = cNavigationFormules(position=d)
 
         sens : cCap
         distance : cDistance
@@ -105,7 +105,7 @@ class cNavigation_tests:
 
     def test_Navivation(self):
         d: cPosition = cPosition(lat=cLatitude(valAsDeg=70), lon=cLongitude(valAsDeg=-56.5))
-        n: cNavigation = cNavigation(position=d)
+        n: cNavigationFormules = cNavigationFormules(position=d)
         norme : cVitesse = cVitesse(valAsNoeud=10)
         sens : cCap = cCap(valAsDeg=0)
         v: cVelocite = cVelocite(vitesse=norme, sens=sens)
@@ -122,7 +122,7 @@ class cNavigation_tests:
     # voir le pdf : AC_FP_ortho.pdf 
     def test_routeLoxodromique_TD_AC_FP_ortho(self):
         d: cPosition = cPosition(lat=cLatitude.fromString("48°23'"), lon=cLongitude.fromString("4°29'"))
-        n: cNavigation = cNavigation(position=d)
+        n: cNavigationFormules = cNavigationFormules(position=d)
         
         a: cPosition = cPosition(lat=cLatitude.fromString("20°27'"), lon=cLongitude.fromString("68°32'"))
         sens: cCap
@@ -136,7 +136,7 @@ class cNavigation_tests:
 
     def test_routeOrthodromique_TD_AC_FP_ortho(self):
         d: cPosition = cPosition(lat=cLatitude.fromString("48°23'"), lon=cLongitude.fromString("4°29'"))
-        n: cNavigation = cNavigation(position=d)
+        n: cNavigationFormules = cNavigationFormules(position=d)
         
         a: cPosition = cPosition(lat=cLatitude.fromString("20°27'"), lon=cLongitude.fromString("68°32'"))
         sens: cCap
@@ -147,7 +147,7 @@ class cNavigation_tests:
         assert distance.asMn == pytest.approx(3465.4, 0.001) 
         assert sens.capAsDeg == pytest.approx(95.1, 0.01) 
         vertexRef = cPosition(lat=cLatitude.fromString("52°20' N"), lon=cLongitude.fromString("25°35' W"))
-        (_, distance2) = cNavigation(vertexRef).routeLoxodromique(arrivee=vertex)
+        (_, distance2) = cNavigationFormules(vertexRef).routeLoxodromique(arrivee=vertex)
         # pas clair et peu utile je zap
         # assert distance2.asMn == pytest.approx(1.5 , 1) 
 
@@ -167,7 +167,7 @@ class cNavigation_tests:
 
     def test_routeLoxodromique_ParisNewYork(self):
         d: cPosition = cNavigation_tests.positionParis
-        n: cNavigation = cNavigation(position=d)
+        n: cNavigationFormules = cNavigationFormules(position=d)
         
         a: cPosition =  cNavigation_tests.positionNewYork
         sens: cCap
@@ -181,7 +181,7 @@ class cNavigation_tests:
 
     def test_routeOrthodromique_ParisNewYork(self):
         d: cPosition = cNavigation_tests.positionParis
-        n: cNavigation = cNavigation(position=d)
+        n: cNavigationFormules = cNavigationFormules(position=d)
         
         a: cPosition = cNavigation_tests.positionNewYork
         sens: cCap
@@ -192,13 +192,13 @@ class cNavigation_tests:
         assert distance.asMn == pytest.approx(3149.4, 0.001) 
         assert sens.capAsDeg == pytest.approx(291.79, 0.01) 
         vertexRef = cPosition(lat=cLatitude.fromString("52°20' N"), lon=cLongitude.fromString("25°35' W"))
-        (_, distance2) = cNavigation(vertexRef).routeLoxodromique(arrivee=vertex)
+        (_, distance2) = cNavigationFormules(vertexRef).routeLoxodromique(arrivee=vertex)
         assert distance2.asMn == pytest.approx(1.5 , 1) 
                 
 
     def test_routeOrthodromique_ParisTokyo(self):
         d: cPosition = cNavigation_tests.positionParis
-        n: cNavigation = cNavigation(position=d)
+        n: cNavigationFormules = cNavigationFormules(position=d)
         
         a: cPosition = cNavigation_tests.positionTokyo
         sens: cCap
@@ -209,12 +209,12 @@ class cNavigation_tests:
         assert distance.asMn == pytest.approx(5242.5, 0.001) # 12140 en loxodromie 
         assert sens.capAsDeg == pytest.approx(33.40, 0.01) 
         vertexRef = cPosition(lat=cLatitude.fromString("68°45' N"), lon=cLongitude.fromString("65°55' E"))
-        (_, distance2) = cNavigation(vertexRef).routeLoxodromique(arrivee=vertex)
+        (_, distance2) = cNavigationFormules(vertexRef).routeLoxodromique(arrivee=vertex)
         assert distance2.asMn == pytest.approx(1.5 , 1) 
 
     def test_routeLoxodromique_ParisTokyo(self):
         d: cPosition = cNavigation_tests.positionParis
-        n: cNavigation = cNavigation(position=d)
+        n: cNavigationFormules = cNavigationFormules(position=d)
         
         a: cPosition = cNavigation_tests.positionTokyo
         sens: cCap
@@ -227,7 +227,7 @@ class cNavigation_tests:
 
     def test_routeOrthodromique_ParisSaoPaulo(self):
         d: cPosition = cNavigation_tests.positionParis
-        n: cNavigation = cNavigation(position=d)
+        n: cNavigationFormules = cNavigationFormules(position=d)
         
         a: cPosition = cNavigation_tests.positionSaoPaulo 
         sens: cCap
@@ -238,12 +238,12 @@ class cNavigation_tests:
         assert distance.asMn == pytest.approx(5072.8, 0.001) # 6130 en loxodromie 
         assert sens.capAsDeg == pytest.approx(224.0, 0.01) 
         vertexRef = cPosition(lat=cLatitude.fromString("62°46' S"), lon=cLongitude.fromString("123°44' W"))
-        (_, distance2) = cNavigation(vertexRef).routeLoxodromique(arrivee=vertex)
+        (_, distance2) = cNavigationFormules(vertexRef).routeLoxodromique(arrivee=vertex)
         assert distance2.asMn == pytest.approx(1.5 , 1) 
 
     def test_routeLoxodromique_ParisSaoPaulo(self):
         d: cPosition = cNavigation_tests.positionParis
-        n: cNavigation = cNavigation(position=d)
+        n: cNavigationFormules = cNavigationFormules(position=d)
         
         a: cPosition = cNavigation_tests.positionSaoPaulo 
         sens: cCap
@@ -344,7 +344,7 @@ class cNavigation_tests:
 
             d : cPosition = cPosition.fromObject(t["depart"])
             a : cPosition = cPosition.fromObject(t["arrivee"])
-            n: cNavigation = cNavigation(position=d)
+            n: cNavigationFormules = cNavigationFormules(position=d)
 
             (sensOrtho, distanceOrtho, vertex) = n.routeOrthodromique(arrivee=a, methode=cMethodeCalcul.FromENMM)
             assert distanceOrtho.asMn == pytest.approx(t["ortho"]["distance"], 0.001) 
