@@ -1,6 +1,3 @@
-import pytest
-from sfa_tools import cMyException
-
 from sfa_navigation import cHeure
 
 

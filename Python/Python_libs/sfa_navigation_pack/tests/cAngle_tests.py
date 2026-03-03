@@ -75,7 +75,7 @@ class cAngle_tests:
         assert ll.toString(eAngleFormat.DD) == "-048.0000°"
 
     def test_fromstring_rad(self):
-        ll: cAngle = None
+        ll: cAngle 
 
         with pytest.raises(cMyException) as err:
             ll = cAngle.fromString("- 3.1415 rad")
@@ -322,40 +322,24 @@ class cAngle_tests:
         l3: cAngle = l1 * 100.0
         assert l3.angleAsDeg == pytest.approx(4500.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
-        l2 = l3.normalise()
-        assert l3.angleAsDeg == pytest.approx(4500.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        assert l2.angleAsDeg == pytest.approx(180.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-
-        l2 = l3.inner_normalise()
+        l3.normalise()
         assert l3.angleAsDeg == pytest.approx(180.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         l2 = cAngle(361.0)
-        l2 = l2.normalise()
+        l2.normalise()
         assert l2.angleAsDeg == pytest.approx(1.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
-        l2 = cAngle(361.0)
-        l2.inner_normalise()
-        assert l2.angleAsDeg == pytest.approx(1.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         l2 = cAngle(-1.0)
-        l2 = l2.normalise()
-        assert l2.angleAsDeg == pytest.approx(359.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        l2 = cAngle(-1.0)
-        l2.inner_normalise()
+        l2.normalise()
         assert l2.angleAsDeg == pytest.approx(359.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         l2 = cAngle(-500.0)
-        l2 = l2.normalise()
-        assert l2.angleAsDeg == pytest.approx(220.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        l2 = cAngle(-500.0)
-        l2.inner_normalise()
+        l2.normalise()
         assert l2.angleAsDeg == pytest.approx(220.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
         l2 = cAngle(5000.0)
-        l2 = l2.normalise()
-        assert l2.angleAsDeg == pytest.approx(320.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
-        l2 = cAngle(5000.0)
-        l2.inner_normalise()
+        l2.normalise()
         assert l2.angleAsDeg == pytest.approx(320.0, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
     def test_properties(self):

@@ -150,11 +150,13 @@ class cLatitude(cAngle):
         return "["+cLatitude.NOM+": " + self.toString() + "]"
 
 
-    def __iadd__(self, val: cLatitude) -> cLatitude:
-        if not isinstance(val, cLatitude):
+    def __iadd__(self, other: object) -> cLatitude:
+        if not isinstance(other, (cLatitude, int, float)):
             raise cMyException("latitude iadd type error")
 
-        asDeg: float = self.latitudeEnDeg + val.latitudeEnDeg
+        y : float = other.latitudeEnDeg if isinstance(other, cLatitude) else other
+
+        asDeg: float = self.latitudeEnDeg + y 
         if math.fabs(asDeg) > 90.0:
             raise cMyException("latitude > 90.0")
 
@@ -162,69 +164,23 @@ class cLatitude(cAngle):
         self.angleAsDeg = math.fabs(asDeg)
         return self
 
-    def __add__(self, val: cLatitude) -> cLatitude:
-        if not isinstance(val, cLatitude):
+    def __add__(self, other: object) -> cLatitude:
+        if not isinstance(other, (cLatitude, int, float)):
             raise cMyException("latitude iadd type error")
 
-        asDeg: float = self.latitudeEnDeg + val.latitudeEnDeg
-        if math.fabs(asDeg) > 90.0:
-            raise cMyException("latitude > 90.0")
+        y : float = other.latitudeEnDeg if isinstance(other, cLatitude) else other
 
-        sens = eLatitudeSens.N if asDeg >= 0.0 else eLatitudeSens.S
-        angleAsDeg = math.fabs(asDeg)
-        return cLatitude(valAsDeg=angleAsDeg, sens=sens)
+        x : cLatitude = copy.deepcopy(self)
+        x += y
+        return x
 
-    def __isub__(self, val: cLatitude) -> cLatitude:
-        if not isinstance(val, cLatitude):
+    def __isub__(self, other: object) -> cLatitude:
+        if not isinstance(other, (cLatitude, int, float)):
             raise cMyException("latitude iadd type error")
 
-        asDeg: float = self.latitudeEnDeg - val.latitudeEnDeg
-        if math.fabs(asDeg) > 90.0:
-            raise cMyException("latitude > 90.0")
+        y : float = other.latitudeEnDeg if isinstance(other, cLatitude) else other
 
-        self.sensLatitude = eLatitudeSens.N if asDeg >= 0.0 else eLatitudeSens.S
-        self.angleAsDeg = math.fabs(asDeg)
-        return self
-
-    def __sub__(self, val: cLatitude) -> cLatitude:
-        if not isinstance(val, cLatitude):
-            raise cMyException("latitude iadd type error")
-
-        asDeg: float = self.latitudeEnDeg - val.latitudeEnDeg
-        if math.fabs(asDeg) > 90.0:
-            raise cMyException("latitude > 90.0")
-
-        sens = eLatitudeSens.N if asDeg >= 0.0 else eLatitudeSens.S
-        angleAsDeg = math.fabs(asDeg)
-        return cLatitude(valAsDeg=angleAsDeg, sens=sens)
-
-    def __mul__(self, val: cLatitude | float) -> cLatitude:
-        if not isinstance(val, (cLatitude, int, float)):
-            raise cMyException("latitude iadd type error")
-
-        asDeg: float = self.latitudeEnDeg
-        if isinstance(val, cLatitude):
-            asDeg *= val.latitudeEnDeg
-        else:
-            asDeg *= val
-
-        if math.fabs(asDeg) > 90.0:
-            raise cMyException("latitude > 90.0")
-
-        sens = eLatitudeSens.N if asDeg >= 0.0 else eLatitudeSens.S
-        angleAsDeg = math.fabs(asDeg)
-        return cLatitude(valAsDeg=angleAsDeg, sens=sens)
-
-    def __imul__(self, val: cLatitude | float) -> cLatitude:
-        if not isinstance(val, (cLatitude, int, float)):
-            raise cMyException("latitude iadd type error")
-
-        asDeg: float = self.latitudeEnDeg
-        if isinstance(val, cLatitude):
-            asDeg *= val.latitudeEnDeg
-        else:
-            asDeg *= val
-
+        asDeg: float = self.latitudeEnDeg  - y 
         if math.fabs(asDeg) > 90.0:
             raise cMyException("latitude > 90.0")
 
@@ -232,33 +188,24 @@ class cLatitude(cAngle):
         self.angleAsDeg = math.fabs(asDeg)
         return self
 
-    def __truediv__(self, val: cLatitude | float) -> cLatitude:
-        if not isinstance(val, (cLatitude, int, float)):
+    def __sub__(self, other: object) -> cLatitude:
+        if not isinstance(other, (cLatitude, int, float)):
             raise cMyException("latitude iadd type error")
 
-        asDeg: float = self.latitudeEnDeg
-        if isinstance(val, cLatitude):
-            asDeg /= val.latitudeEnDeg
-        else:
-            asDeg /= val
+        y : float = other.latitudeEnDeg if isinstance(other, cLatitude) else other
 
-        if math.fabs(asDeg) > 90.0:
-            raise cMyException("latitude > 90.0")
+        x : cLatitude = copy.deepcopy(self)
+        x -= y
+        return x
 
-        sens = eLatitudeSens.N if asDeg >= 0.0 else eLatitudeSens.S
-        angleAsDeg = math.fabs(asDeg)
-        return cLatitude(valAsDeg=angleAsDeg, sens=sens)
 
-    def __itruediv__(self, val: cLatitude | float) -> cLatitude:
-        if not isinstance(val, (cLatitude, int, float)):
+    def __imul__(self, other: object) -> cLatitude:
+        if not isinstance(other, (cLatitude, int, float)):
             raise cMyException("latitude iadd type error")
 
-        asDeg: float = self.latitudeEnDeg
-        if isinstance(val, cLatitude):
-            asDeg /= val.latitudeEnDeg
-        else:
-            asDeg /= val
+        y : float = other.latitudeEnDeg if isinstance(other, cLatitude) else other
 
+        asDeg: float = self.latitudeEnDeg  * y 
         if math.fabs(asDeg) > 90.0:
             raise cMyException("latitude > 90.0")
 
@@ -266,30 +213,36 @@ class cLatitude(cAngle):
         self.angleAsDeg = math.fabs(asDeg)
         return self
 
-    def __copy__(self) -> cAngle:
-        """
-        normalise renvoie un angle compris entre 0 et 360
-        Args:
-            aucun
-        Returns:
-            self
-        Raises:
-            aucun
-        """
-        result = super().__copy__()
-        result.sensLatitude = copy.copy(self.sensLatitude)
-        return result
+    def __mul__(self, other: object) -> cLatitude:
+        if not isinstance(other, (cLatitude, int, float)):
+            raise cMyException("latitude iadd type error")
 
-    def __deepcopy__(self, memodict={}) -> cAngle:
-        """
-        normalise renvoie un angle compris entre 0 et 360
-        Args:
-            aucun
-        Returns:
-            self
-        Raises:
-            aucun
-        """
-        result = super().__deepcopy__(memodict)
-        result.sensLatitude = copy.deepcopy(self.sensLatitude, memodict)
-        return result
+        y : float = other.latitudeEnDeg if isinstance(other, cLatitude) else other
+
+        x : cLatitude = copy.deepcopy(self)
+        x *= y
+        return x
+
+
+    def __itruediv__(self, other: object) -> cLatitude:
+        if not isinstance(other, (cLatitude, int, float)):
+            raise cMyException("latitude iadd type error")
+
+        y : float = other.latitudeEnDeg if isinstance(other, cLatitude) else other
+        asDeg: float = self.latitudeEnDeg / y
+        if math.fabs(asDeg) > 90.0:
+            raise cMyException("latitude > 90.0")
+
+        self.sensLatitude = eLatitudeSens.N if asDeg >= 0.0 else eLatitudeSens.S
+        self.angleAsDeg = math.fabs(asDeg)
+        return self
+
+    def __truediv__(self, other: object) -> cLatitude:
+        if not isinstance(other, (cLatitude, int, float)):
+            raise cMyException("latitude iadd type error")
+
+        y : float = other.latitudeEnDeg if isinstance(other, cLatitude) else other
+        x : cLatitude = copy.deepcopy(self)
+        x /= y
+        return x
+

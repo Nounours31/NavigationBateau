@@ -4,7 +4,7 @@ import math
 import pytest
 from sfa_tools import cMyException
 
-from sfa_navigation import cVelocite, cDistance, cCap
+from sfa_navigation import cVelocite, cCap
 from sfa_navigation.cVelocite import cVitesse
 
 

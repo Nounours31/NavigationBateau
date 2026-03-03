@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-import math
 from typing import Dict
 
 from .cLongitude import cLongitude

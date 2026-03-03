@@ -27,7 +27,6 @@ class eLongitudeSens(Enum):
 
 
 class cLongitude(cAngle):
-
     NOM : str = "Longitude"
 
     def __init__(self, valAsDeg: float = 0.0, sens: eLongitudeSens | None = None):
@@ -81,8 +80,8 @@ class cLongitude(cAngle):
     def fromString(cls, angleAsString: str = "") -> cLongitude:
         retour: cLongitude | None = None
 
-        regex_dd1 = r"\s*([E|W])\s*(.*)"  # N 12.12°
-        regex_dd2 = r"\s*(.*)\s*([E|W])\s*"  # 12.12° N
+        regex_dd1 : re.Pattern[str] = re.compile(pattern=r"\s*([E|W|O])\s*(.*)", flags=re.IGNORECASE)  # N 12.12°
+        regex_dd2 : re.Pattern[str] = re.compile(pattern=r"\s*(.*)\s*([E|W|O])\s*", flags=re.IGNORECASE)  # 12.12° N
 
         try:
             try:
@@ -152,146 +151,93 @@ class cLongitude(cAngle):
             case _:
                 return "Not implemented"
 
-    def __iadd__(self, val: cLongitude) -> cLongitude:
-        if not isinstance(val, cLongitude):
-            raise cMyException("longitude iadd type error")
-
-        asDeg: float = self.longitudeEnDeg + val.longitudeEnDeg
+    def __iadd__(self, other: object) -> cLongitude:
+        if not isinstance(other, (cLongitude, int, float)):
+            raise cMyException("cLongitude iadd type error")
+        
+        y : float = other.longitudeEnDeg if isinstance(other, cLongitude) else other
+        asDeg: float = self.longitudeEnDeg + y
         if math.fabs(asDeg) > 180.0:
-            raise cMyException("longitude > 180.0")
+            raise cMyException("| Longitude | > 180.0")
 
         self.sensLongitude = eLongitudeSens.E if asDeg >= 0.0 else eLongitudeSens.W
         self.angleAsDeg = math.fabs(asDeg)
         return self
 
-    def __add__(self, val: cLongitude) -> cLongitude:
-        if not isinstance(val, cLongitude):
-            raise cMyException("longitude iadd type error")
+    def __add__(self, other: object) -> cLongitude:
+        if not isinstance(other, (cLongitude, int, float)):
+            raise cMyException("cLongitude iadd type error")
 
-        asDeg: float = self.longitudeEnDeg + val.longitudeEnDeg
+        y : float = other.longitudeEnDeg if isinstance(other, cLongitude) else other
+        x : cLongitude = copy.deepcopy(self)
+        x += y
+        return x
+
+    def __isub__(self, other: object) -> cLongitude:
+        if not isinstance(other, (cLongitude, int, float)):
+            raise cMyException("cLongitude iadd type error")
+
+        y : float = other.longitudeEnDeg if isinstance(other, cLongitude) else other
+        asDeg: float = self.longitudeEnDeg - y
         if math.fabs(asDeg) > 180.0:
-            raise cMyException("longitude > 180.0")
-
-        sens = eLongitudeSens.E if asDeg >= 0.0 else eLongitudeSens.W
-        angleAsDeg = math.fabs(asDeg)
-        return cLongitude(valAsDeg=angleAsDeg, sens=sens)
-
-    def __isub__(self, val: cLongitude) -> cLongitude:
-        if not isinstance(val, cLongitude):
-            raise cMyException("longitude iadd type error")
-
-        asDeg: float = self.longitudeEnDeg - val.longitudeEnDeg
-        if math.fabs(asDeg) > 180.0:
-            raise cMyException("longitude > 180.0")
+            raise cMyException("| Longitude | > 180.0")
 
         self.sensLongitude = eLongitudeSens.E if asDeg >= 0.0 else eLongitudeSens.W
         self.angleAsDeg = math.fabs(asDeg)
         return self
 
-    def __sub__(self, val: cLongitude) -> cLongitude:
-        if not isinstance(val, cLongitude):
-            raise cMyException("longitude iadd type error")
+    def __sub__(self, other: object) -> cLongitude:
+        if not isinstance(other, (cLongitude, int, float)):
+            raise cMyException("cLongitude iadd type error")
 
-        asDeg: float = self.longitudeEnDeg - val.longitudeEnDeg
+        y : float = other.longitudeEnDeg if isinstance(other, cLongitude) else other
+        x : cLongitude = copy.deepcopy(self)
+        x -= y
+        return x
+
+    def __imul__(self, other: object) -> cLongitude:
+        if not isinstance(other, (cLongitude, int, float)):
+            raise cMyException("cLongitude iadd type error")
+
+        y : float = other.longitudeEnDeg if isinstance(other, cLongitude) else other
+        asDeg: float = self.longitudeEnDeg * y
         if math.fabs(asDeg) > 180.0:
-            raise cMyException("longitude > 180.0")
-
-        sens = eLongitudeSens.E if asDeg >= 0.0 else eLongitudeSens.W
-        angleAsDeg = math.fabs(asDeg)
-        return cLongitude(valAsDeg=angleAsDeg, sens=sens)
-
-    def __mul__(self, val: cLongitude | float) -> cLongitude:
-        if not isinstance(val, (cLongitude, int, float)):
-            raise cMyException("longitude iadd type error")
-
-        asDeg: float = self.longitudeEnDeg
-        if isinstance(val, cLongitude):
-            asDeg *= val.longitudeEnDeg
-        else:
-            asDeg *= val
-
-        if math.fabs(asDeg) > 180.0:
-            raise cMyException("longitude > 180.0")
-
-        sens = eLongitudeSens.E if asDeg >= 0.0 else eLongitudeSens.W
-        angleAsDeg = math.fabs(asDeg)
-        return cLongitude(valAsDeg=angleAsDeg, sens=sens)
-
-    def __imul__(self, val: cLongitude | float) -> cLongitude:
-        if not isinstance(val, (cLongitude, int, float)):
-            raise cMyException("longitude iadd type error")
-
-        asDeg: float = self.longitudeEnDeg
-        if isinstance(val, cLongitude):
-            asDeg *= val.longitudeEnDeg
-        else:
-            asDeg *= val
-
-        if math.fabs(asDeg) > 180.0:
-            raise cMyException("longitude > 180.0")
+            raise cMyException("| Longitude | > 180.0")
 
         self.sensLongitude = eLongitudeSens.E if asDeg >= 0.0 else eLongitudeSens.W
         self.angleAsDeg = math.fabs(asDeg)
         return self
 
-    def __truediv__(self, val: cLongitude | float) -> cLongitude:
-        if not isinstance(val, (cLongitude, int, float)):
-            raise cMyException("longitude iadd type error")
+    def __mul__(self, other: object) -> cLongitude:
+        if not isinstance(other, (cLongitude, int, float)):
+            raise cMyException("cLongitude iadd type error")
 
-        asDeg: float = self.longitudeEnDeg
-        if isinstance(val, cLongitude):
-            asDeg /= val.longitudeEnDeg
-        else:
-            asDeg /= val
+        y : float = other.longitudeEnDeg if isinstance(other, cLongitude) else other
+        x : cLongitude = copy.deepcopy(self)
+        x *= y
+        return x
 
+    def __itruediv__(self, other: object) -> cLongitude:
+        if not isinstance(other, (cLongitude, int, float)):
+            raise cMyException("cLongitude iadd type error")
+
+        y : float = other.longitudeEnDeg if isinstance(other, cLongitude) else other
+        asDeg: float = self.longitudeEnDeg  / y 
         if math.fabs(asDeg) > 180.0:
-            raise cMyException("longitude > 180.0")
-
-        sens = eLongitudeSens.E if asDeg >= 0.0 else eLongitudeSens.W
-        angleAsDeg = math.fabs(asDeg)
-        return cLongitude(valAsDeg=angleAsDeg, sens=sens)
-
-    def __itruediv__(self, val: cLongitude | float) -> cLongitude:
-        if not isinstance(val, (cLongitude, int, float)):
-            raise cMyException("longitude iadd type error")
-
-        asDeg: float = self.longitudeEnDeg
-        if isinstance(val, cLongitude):
-            asDeg /= val.longitudeEnDeg
-        else:
-            asDeg /= val
-
-        if math.fabs(asDeg) > 180.0:
-            raise cMyException("longitude > 180.0")
+            raise cMyException("| Longitude | > 180.0")
 
         self.sensLongitude = eLongitudeSens.E if asDeg >= 0.0 else eLongitudeSens.W
         self.angleAsDeg = math.fabs(asDeg)
         return self
 
-    def __copy__(self) -> cAngle:
-        """
-        normalise renvoie un angle compris entre 0 et 360
-        Args:
-            aucun
-        Returns:
-            self
-        Raises:
-            aucun
-        """
-        result = super().__copy__()
-        result.sensLongitude = copy.copy(self.sensLongitude)
-        return result
 
-    def __deepcopy__(self, memodict={}) -> cAngle:
-        """
-        normalise renvoie un angle compris entre 0 et 360
-        Args:
-            aucun
-        Returns:
-            self
-        Raises:
-            aucun
-        """
-        result = super().__deepcopy__(memodict)
-        result.sensLongitude = copy.deepcopy(self.sensLongitude, memodict)
-        return result
+
+    def __truediv__(self, other: object) -> cLongitude:
+        if not isinstance(other, (cLongitude, int, float)):
+            raise cMyException("cLongitude iadd type error")
+
+        y : float = other.longitudeEnDeg if isinstance(other, cLongitude) else other
+        x : cLongitude = copy.deepcopy(self)
+        x /= y
+        return x
+

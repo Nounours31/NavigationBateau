@@ -2,11 +2,10 @@ from __future__ import annotations
 from typing import List
 
 from . import cAngle
-from .cVelocite import cVelocite, cVitesse
-from .cCap import cCap
-from .cPosition import cPosition
+from . import cVelocite
+from . import cCap
+from . import cPosition
 
-from typing import List
 
 
 # ==========================================================

@@ -1,6 +1,9 @@
 pytest >= 8.1.0
 pytest-cov >= 7.0.0
+# for python refactoring
+pylance 
 coverage
 pre-commit
 ruff
-sfa_tools == 0.1.1
+pyright
+sfa_tools >= 0.1.1

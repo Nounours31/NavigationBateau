@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Pattern
 
 import copy
 import math
@@ -97,7 +98,7 @@ class cVitesse:
             return self
         return NotImplemented
 
-    def __copy__(self) -> cVelocite:
+    def __copy__(self) -> cVitesse:
         """
         normalise renvoie un angle compris entre 0 et 360
         Args:
@@ -112,7 +113,7 @@ class cVitesse:
         new_obj._valAsNoeud = copy.copy(self._valAsNoeud)
         return new_obj
 
-    def __deepcopy__(self, memodict={}) -> cVelocite:
+    def __deepcopy__(self, memodict={}) -> cVitesse:
         """
         normalise renvoie un angle compris entre 0 et 360
         Args:
@@ -132,10 +133,10 @@ class cVitesse:
 
     @classmethod
     def fromString(cls, s : str):
-        r: re = r"\s*([0-9]*)?[\.\,]*([0-9]*)?\s*(Kt|kt|KT|kmh|Kmh)?\s*"
+        r: Pattern[str] = re.compile(pattern=r"\s*([0-9]*)?[\.\,]*([0-9]*)?\s*(kt|kmh)?\s*", flags=re.IGNORECASE)
 
         d: float = 0.0
-        m: re.Match[str] = re.match(r, s, re.ASCII)
+        m: re.Match[str] | None = re.match(r, s, re.ASCII)
         if m is not None:
             match len(m.groups()):
                 case 3:
@@ -190,18 +191,24 @@ class cVelocite:
 
     @classmethod
     def fromDict(cls, data: dict) -> cVelocite:
-        distance_data = data.get("norme")
-        sens_data = data.get("sens")
+        distance_data : object | None = data.get("norme")
+        sens_data : object | None = data.get("sens")
 
-        distance: cVitesse = cVitesse.fromString(distance_data)
-        sens: cCap = cCap.fromString(sens_data)
-        return cls(normeVitesse=distance, sens=sens)
+        distance: cVitesse = cVitesse(valAsNoeud=0.0)
+        sens: cCap = cCap(valAsDeg=0.0)
+        if distance_data is not None and isinstance(distance_data, str):
+            distance = cVitesse.fromString(distance_data)
+
+        if sens_data is not None and isinstance(sens_data, str):
+            sens = cCap.fromString(sens_data)
+    
+        return cls(vitesse=distance, sens=sens)
 
     @classmethod
     def fromString(cls, data: str) -> cVelocite:
         distance: cVitesse = cVitesse.fromString(data)
         sens: cCap = cCap.fromString(data)
-        return cls(normeVitesse=distance, sens=sens)
+        return cls(vitesse=distance, sens=sens)
 
     @classmethod
     def fromObject(cls, data: object) -> cVelocite:

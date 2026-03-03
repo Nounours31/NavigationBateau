@@ -111,11 +111,20 @@ class cLatitude_tests:
         assert ll.latitudeEnDeg == pytest.approx(-47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
         assert m.latitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
+        n = copy.deepcopy(ll)
+        n += 7
+        assert n.latitudeEnDeg == pytest.approx(-40.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert ll.latitudeEnDeg == pytest.approx(-47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+
+        n = ll + 7
+        assert n.latitudeEnDeg == pytest.approx(-40.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert ll.latitudeEnDeg == pytest.approx(-47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+
         with pytest.raises(cMyException) as err:
-            m = ll + 3
+            m = ll + complex(1,1)
         assert "type error" in str(err.value)
         with pytest.raises(cMyException) as err:
-            m += 3
+            m += complex(1,1)
         assert "type error" in str(err.value)
 
     def test_sub(self):
@@ -139,11 +148,20 @@ class cLatitude_tests:
         assert ll.latitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
         assert m.latitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
 
+        n = copy.deepcopy(ll)
+        n -= 7
+        assert n.latitudeEnDeg == pytest.approx(40.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert ll.latitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+
+        n = ll - 7
+        assert n.latitudeEnDeg == pytest.approx(40.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+        assert ll.latitudeEnDeg == pytest.approx(47.12, cAngle.EQUAL_TOLERANCE_IN_DEG)
+
         with pytest.raises(cMyException) as err:
-            m = ll - 3
+            m = ll - complex(1,1)
         assert "type error" in str(err.value)
         with pytest.raises(cMyException) as err:
-            m -= 3
+            m -= complex(1,1)
         assert "type error" in str(err.value)
 
     def test_mult(self):

@@ -4,8 +4,8 @@ from uuid import uuid4
 
 
 class cHeure:
-    def __init__(self, uid: str = None, timestampUTC : int = 0) -> None:
-        if uid is not None:
+    def __init__(self, uid: str = "", timestampUTC : int = 0) -> None:
+        if uid :
             self._uid = uid
         else:
             self._uid = uuid4().__str__()
@@ -34,7 +34,6 @@ class cHeure:
 
     @classmethod
     def fromTimeStamp(cls, timestampUTC: int) -> cHeure:
-        now : datetime = datetime.fromtimestamp(timestampUTC,tz=timezone.utc)
         x : cHeure = cHeure(timestampUTC=timestampUTC)
         return x
 

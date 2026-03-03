@@ -1,5 +1,3 @@
-import pytest
-
 from sfa_navigation import cCap, cVecteurEtat, cVelocite, cPosition, cAngle, cLatitude, cLongitude
 from sfa_navigation.cVecteurEtat import cVecteurEtatKeys, cTrajet
 

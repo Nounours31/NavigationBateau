@@ -30,6 +30,7 @@ class cCap_tests:
         assert cCap.fromObject({"cap" : "370°"}).capAsDeg == 10
         with pytest.raises(cMyException) as err:
             assert cCap.fromObject(10).capAsDeg == 10
+            print (str(err.value))
 
     def test_init_normalisation(self):
         assert cCap(0).capAsDeg == 0

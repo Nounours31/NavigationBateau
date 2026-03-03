@@ -46,10 +46,15 @@ class cDistance:
 
     @classmethod
     def fromString(cls, s: str) -> cDistance:
-        r: re = r"\s*([0-9]*)?[\.\,]*([0-9]*)?\s*(Mn|mn|MN|km|Km)?\s*"
+        r: re.Pattern[str] = re.compile(pattern=r"\s*([0-9]*)?[\.\,]?([0-9]*)?\s*(mn|km)?\s*",flags=re.IGNORECASE)
 
         d: float = 0.0
-        m: re.Match[str] = re.match(r, s, re.ASCII)
+        try:
+            m: re.Match[str] | None = re.match(pattern=r, string=s)
+        except Exception as err:
+            print("Error while parsing")
+            raise cMyException(str(err))
+        
         if m is not None:
             match len(m.groups()):
                 case 3:

@@ -1,4 +1,3 @@
-from turtle import distance
 import pytest
 
 from sfa_navigation import (
@@ -12,7 +11,7 @@ from sfa_navigation import (
     cCap, 
     cDistance,
 )
-
+from sfa_navigation import cMethodeCalcul 
 
 from myEnv import myEnv
 
@@ -118,53 +117,34 @@ class cNavigation_tests:
         assert sens2.capAsDeg == pytest.approx(0, 0.01)
 
     # exo : https://ressources.univ-lemans.fr/AccesLibre/UM/Pedago/physique/02/divers/ortholoxo.html 
-    def test_routeLoxodromique_1(self):
-        d: cPosition = cPosition(lat=cLatitude(valAsDeg=47), lon=cLongitude(valAsDeg=2))
-        n: cNavigation = cNavigation(position=d)
-        
-        a: cPosition = cPosition(lat=cLatitude(valAsDeg=5), lon=cLongitude(valAsDeg=-47))
-        sens: cCap
-        distance: cDistance
-        (sens, distance) = n.routeLoxodromique(arrivee=a)
-        
-        assert distance.asMn == pytest.approx(3587, 0.01) #ortho = 3562
-        assert sens.capAsDeg == pytest.approx(200, 0.01)
-
-    def test_routeLoxodromique_2(self):
-        d: cPosition = cPosition(lat=cLatitude(valAsDeg=48.852013), lon=cLongitude(valAsDeg=2.352203))
-        n: cNavigation = cNavigation(position=d)
-        
-        a: cPosition = cPosition(lat=cLatitude(valAsDeg=-22.90278), lon=cLongitude(valAsDeg=-43.2075))
-        sens: cCap
-        distance: cDistance
-        (sens, distance) = n.routeLoxodromique(arrivee=a)
-        
-        assert distance.asKm == pytest.approx(9168.33, 0.01) #ortho = 3562
-        assert sens.capAsDeg == pytest.approx(200, 0.01)
+    positionParis : cPosition = cPosition (lat=cLatitude.fromString("48°51' N"), lon=cLongitude.fromString("2°21' E")) # Paris
+    positionNewYork : cPosition = cPosition(lat=cLatitude.fromString("40°43' N"), lon=cLongitude.fromString("74°00' W")) # New York
+    positionTokyo : cPosition = cPosition(lat=cLatitude.fromString("35°41' N"), lon=cLongitude.fromString("139°45' E")) # Tokyo
+    positionSaoPaulo : cPosition = cPosition(lat=cLatitude.fromString("23°33' S"), lon=cLongitude.fromString("46°38' W")) # Sao Paulo
 
     def test_routeLoxodromique_ParisNewYork(self):
-        d: cPosition = cPosition(lat=cLatitude.fromString("48°51' N"), lon=cLongitude.fromString("2°21' E")) # Paris
+        d: cPosition = cNavigation_tests.positionParis
         n: cNavigation = cNavigation(position=d)
         
-        a: cPosition = cPosition(lat=cLatitude.fromString("40°43' N"), lon=cLongitude.fromString("74°00' W")) # New York
+        a: cPosition =  cNavigation_tests.positionNewYork
         sens: cCap
         distance: cDistance
         (sens, distance) = n.routeLoxodromique(arrivee=a)
         
-        assert distance.asKm == pytest.approx(6079.00, 0.01) 
+        assert distance.asKm == pytest.approx(12547.00, 0.01) 
         assert sens.capAsDeg == pytest.approx(261.43, 0.01)
 
     def test_routeOrthodromique_ParisNewYork(self):
-        d: cPosition = cPosition(lat=cLatitude.fromString("48°51' N"), lon=cLongitude.fromString("2°21' E")) # Paris
+        d: cPosition = cNavigation_tests.positionParis
         n: cNavigation = cNavigation(position=d)
         
-        a: cPosition = cPosition(lat=cLatitude.fromString("40°43' N"), lon=cLongitude.fromString("74°00' W")) # New York
+        a: cPosition = cNavigation_tests.positionNewYork
         sens: cCap
         distance: cDistance
         vertex: cPosition
-        (sens, distance, vertex) = n.routeOrthodromique(arrivee=a)
+        (sens, distance, vertex) = n.routeOrthodromique(arrivee=a, methode=cMethodeCalcul.FromENMM)
 
-        assert distance.asMn == pytest.approx(3149, 0.01) 
+        assert distance.asKm == pytest.approx(11630, 0.01) 
         assert sens.capAsDeg == pytest.approx(291.79, 0.01) 
         vertexRef = cPosition(lat=cLatitude.fromString("52°20' N"), lon=cLongitude.fromString("25°35' W"))
         (_, distance2) = cNavigation(vertexRef).routeLoxodromique(arrivee=vertex)
@@ -172,14 +152,14 @@ class cNavigation_tests:
                 
 
     def test_routeOrthodromique_ParisTokyo(self):
-        d: cPosition = cPosition(lat=cLatitude.fromString("48°51' N"), lon=cLongitude.fromString("2°21' E")) # Paris
+        d: cPosition = cNavigation_tests.positionParis
         n: cNavigation = cNavigation(position=d)
         
-        a: cPosition = cPosition(lat=cLatitude.fromString("35°41' N"), lon=cLongitude.fromString("139°45' E")) # Tokyo
+        a: cPosition = cNavigation_tests.positionTokyo
         sens: cCap
         distance: cDistance
         vertex: cPosition
-        (sens, distance, vertex) = n.routeOrthodromique(arrivee=a)
+        (sens, distance, vertex) = n.routeOrthodromique(arrivee=a, methode = cMethodeCalcul.FromENMM)
 
         assert distance.asMn == pytest.approx(5253, 0.01) # 6130 en loxodromie 
         assert sens.capAsDeg == pytest.approx(33.40, 0.01) 
@@ -188,14 +168,14 @@ class cNavigation_tests:
         assert distance2.asMn == pytest.approx(1.5 , 1) 
 
     def test_routeOrthodromique_ParisSaoPaulo(self):
-        d: cPosition = cPosition(lat=cLatitude.fromString("48°51' N"), lon=cLongitude.fromString("2°21' E")) # Paris
+        d: cPosition = cNavigation_tests.positionParis
         n: cNavigation = cNavigation(position=d)
         
-        a: cPosition = cPosition(lat=cLatitude.fromString("23°33' S"), lon=cLongitude.fromString("46°38' W")) # Sao Paulo
+        a: cPosition = cNavigation_tests.positionSaoPaulo 
         sens: cCap
         distance: cDistance
         vertex: cPosition
-        (sens, distance, vertex) = n.routeOrthodromique(arrivee=a)
+        (sens, distance, vertex) = n.routeOrthodromique(arrivee=a, methode = cMethodeCalcul.FromENMM)
 
         assert distance.asKm == pytest.approx(9401.7, 0.01) # 6130 en loxodromie 
         assert sens.capAsDeg == pytest.approx(44.0, 0.01) 

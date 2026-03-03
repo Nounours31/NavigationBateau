@@ -1,8 +1,7 @@
 from __future__ import annotations
-
+import copy
 from sfa_tools import cMyException
-
-from .cAngle import cAngle, eAngleFormat
+from . import cAngle, eAngleFormat
 
 """
 Classe de base de cap
@@ -23,7 +22,7 @@ class cCap(cAngle):
             self.asAngleTrigonometriqueEnDeg = valAsAngleTrigonometriqueEnDeg
         elif valAsAngleTrigonometriqueEnRad is not None:
             self.asAngleTrigonometriqueEnRad = valAsAngleTrigonometriqueEnRad
-        self.inner_normalise()
+        self.normalise()
 
     @property
     def capAsRad(self) -> float:
@@ -68,7 +67,7 @@ class cCap(cAngle):
     @classmethod
     def fromObject(cls, o: object) -> cCap:
         if isinstance(o, cCap):
-            return o.__deepcopy__()
+            return copy.deepcopy(o)
         if isinstance(o, str):
             return cCap.fromString(o)
         if isinstance(o, dict):
@@ -91,7 +90,7 @@ class cCap(cAngle):
 
     def __iadd__(self, other) -> cCap:
         super().__iadd__(other)
-        self.inner_normalise()
+        self.normalise()
         return self
 
     def __mul__(self, other) -> cCap:
@@ -100,7 +99,7 @@ class cCap(cAngle):
 
     def __imul__(self, other) -> cCap:
         super().__imul__(other)
-        self.inner_normalise()
+        self.normalise()
         return self
 
     def __sub__(self, other) -> cCap:
@@ -109,7 +108,7 @@ class cCap(cAngle):
 
     def __isub__(self, other) -> cCap:
         super().__isub__(other)
-        self.inner_normalise()
+        self.normalise()
         return self
 
     def __truediv__(self, other) -> cCap:
@@ -118,7 +117,7 @@ class cCap(cAngle):
 
     def __itruediv__(self, other) -> cCap:
         super().__itruediv__(other)
-        self.inner_normalise()
+        self.normalise()
         return self
 
     def __ne__(self, other):
@@ -133,28 +132,3 @@ class cCap(cAngle):
             return abs(self.angleAsDeg - other) <= cAngle.EQUAL_TOLERANCE_IN_DEG
         return False
 
-    def __copy__(self) -> cCap:
-        """
-        normalise renvoie un angle compris entre 0 et 360
-        Args:
-            aucun
-        Returns:
-            self
-        Raises:
-            aucun
-        """
-        c = super().__copy__()
-        return c
-
-    def __deepcopy__(self, memodict={}) -> cCap:
-        """
-        normalise renvoie un angle compris entre 0 et 360
-        Args:
-            aucun
-        Returns:
-            self
-        Raises:
-            aucun
-        """
-        c = super().__deepcopy__()
-        return c

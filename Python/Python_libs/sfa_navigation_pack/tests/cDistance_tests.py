@@ -1,7 +1,7 @@
 import pytest
 import copy
 
-from sfa_tools import cMyException
+
 
 from sfa_navigation import cDistance
 from sfa_navigation.cDistance import eDistanceFormat
