@@ -19,25 +19,45 @@ class cNavigationBateau:
     
     @property
     def positionCourante(self) -> cPosition:
-        return self._etat.cBateau.position
+        return self._etat.bateau.position
+
+    @positionCourante.setter
+    def positionCourante(self, p : cPosition) -> None:
+         self._etat.bateau.position = p
+
 
     @property
-    def allWPT(self) -> List[cPosition]:
+    def vitesse(self) -> cVelocite:
+        return self._etat.bateau.sog
+
+    @property
+    def arrivee(self) -> cPosition:
+        return self._trajet.arrivee
+
+    @property
+    def WptWithDepartArrivee(self) -> List[cPosition]:
         retour : List[cPosition] = []
         retour.append(self._trajet.depart)
         for x in self._trajet.waypoints:
             retour.append(x)
         retour.append(self._trajet.arrivee)
         return retour
+
+    @property
+    def Wpt(self) -> List[cPosition]:
+        retour : List[cPosition] = []
+        for x in self._trajet.waypoints:
+            retour.append(x)
+        return retour
     
     def navigate (self, dT : float) -> None :
         # recherche du waypoint le plus proche
         p : cPosition = self.positionCourante
-        wpt : List[cPosition] = self.allWPT
+        wpt : List[cPosition] = self.Wpt
 
         lePlusProche : cPosition
         cap : cCap
-        minDist : cDistance = cDistance(valAsMilleNautique=0.0)
+        minDist : cDistance = cDistance(valAsMilleNautique=60000.0)
         dist : cDistance = cDistance(valAsMilleNautique=0.0)
         newWPT : cPosition
         trouve : bool = False
@@ -49,16 +69,19 @@ class cNavigationBateau:
                 trouve = True
         
         if not trouve:
+            newWPT = self.arrivee
             print ("Navigation finie")
             return
         
         # navigate de position courante vers new position
         v : cVelocite = self.vitesse
-        dP: cPosition = v * dT
-        NewPosition : cPosition = p + dP
-        
+        nav: cNavigationFormules = cNavigationFormules(position=p)
+        NewPosition : cPosition = nav.navACapVitesseCourantVentDonnes(tempsDeNavEnSeconde=dT, 
+                                                                      v = v, 
+                                                                      courant = self._etat.eau.courant,
+                                                                      vent = self._etat.air.vent,
+                                                                      derive = self._etat.air.derive)
         self.positionCourante = NewPosition
-
 
 
     def toString (self) -> str :

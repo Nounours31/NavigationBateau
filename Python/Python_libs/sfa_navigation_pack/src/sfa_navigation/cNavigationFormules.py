@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import math
+import numpy as np
+
 from enum import Enum
-from typing import Tuple
+from typing import List, Tuple
+
+from sfa_tools import cMyException
 
 from . import cVelocite, cDistance, cCap
 from . import cPosition
@@ -21,6 +25,26 @@ class cSensNavigation(Enum):
     versNW = 5
     versSE = 6
     versSW = 7
+
+    @staticmethod
+    def versEst(x : cSensNavigation) -> bool :
+        if (x == cSensNavigation.versNE or x == cSensNavigation.versSE):
+            return True
+        return False
+
+    @staticmethod
+    def versOuest(x : cSensNavigation) -> bool :
+        return not cSensNavigation.versEst(x)
+
+    @staticmethod
+    def versNord(x : cSensNavigation) -> bool :
+        if (x == cSensNavigation.versNE or x == cSensNavigation.versNW):
+            return True
+        return False
+
+    @staticmethod
+    def versSud(x : cSensNavigation) -> bool :
+        return not cSensNavigation.versNord(x)
 
 
 class cNavigationFormules:
@@ -77,7 +101,7 @@ class cNavigationFormules:
 
         RouteQuartFondEnDeg = RouteQuartFond * cAngle.RAD2DEG
 
-        routeFondEnDeg = cNavigationFormules.RouteQuartFond2RouteFond(sensNavigation=sensNavigation, RouteQuartFond=RouteQuartFondEnDeg)
+        routeFondEnDeg = cNavigationFormules._RouteQuartFond2RouteFond(sensNavigation=sensNavigation, RouteQuartFond=RouteQuartFondEnDeg)
         
         # calcul de la distance
         distanceEnMille: float = 0.0
@@ -95,7 +119,7 @@ class cNavigationFormules:
 
 
     @staticmethod
-    def RouteQuartFond2RouteFond(sensNavigation: cSensNavigation, RouteQuartFond: float) -> float:
+    def _RouteQuartFond2RouteFond(sensNavigation: cSensNavigation, RouteQuartFond: float) -> float:
         """
         Cette route notée Rfq a un équivalent Rf compris entre 0° et 360°. 
         Par exemple :
@@ -117,7 +141,7 @@ class cNavigationFormules:
     
 
     # https://fr.wikipedia.org/wiki/Orthodromie#Distance_orthodromique
-    def routeOrthodromique(self, arrivee: cPosition, methode: cMethodeCalcul) -> tuple[cCap, cDistance, cPosition]:
+    def routeOrthodromique(self, arrivee: cPosition, methode: cMethodeCalcul = cMethodeCalcul.FromENMM) -> tuple[cCap, cDistance, cPosition]:
         """
         Quelques notes sur l'orthodromie:
             1. la dichotomie
@@ -199,6 +223,8 @@ class cNavigationFormules:
         # angle de route initial orthodromique
         Ad_enRad : float = math.sin(A.latitude.latitudeEnRad) - math.sin(D.latitude.latitudeEnRad) * math.cos(distanceEnRad)
         Ad_enRad = Ad_enRad / (math.sin(distanceEnRad) * math.cos(D.latitude.latitudeEnRad))
+        if math.fabs(Ad_enRad) > 1.0:
+            Ad_enRad = Ad_enRad / math.fabs(Ad_enRad)
         Ad_enRad = math.acos(Ad_enRad)
         Ad : float = Ad_enRad * cAngle.RAD2DEG
 
@@ -227,8 +253,14 @@ class cNavigationFormules:
         correctionDeGivryEnDeg : float = self._routeOrthodromiqueCorrectionDeGivryEnDeg(arrivee=A)
         correctionDeGivryEnDeg = 0.0
         
-        Rfi : float = Ad if (sensNavigation == cSensNavigation.versNE or sensNavigation == cSensNavigation.versSE)  else 360 -Ad
+        Rfi : float = Ad if cSensNavigation.versEst(sensNavigation)  else 360 -Ad
         Rfi = Rfi + correctionDeGivryEnDeg
+
+        # normalisation (cas particulier des cap au nord pur)
+        if Rfi >= 360.0:
+            Rfi -= 360.0
+        if Rfi <= -360.0:
+            Rfi += 360.0
         
         return (cCap(valAsDeg=Rfi), cDistance(valAsMilleNautique=distanceEnMn), cPosition(lat=cLatitude(valAsDeg=latitudeVertex), lon=cLongitude(valAsDeg=longitudeVertex)))
 
@@ -258,23 +290,35 @@ class cNavigationFormules:
         givryEnDeg: float = 0.5 * (dG) - math.sin(latitudeMoyenneEnRad)
         return givryEnDeg
 
-    def _routeSensNavigationLePlusCourtGradientEnDeg(self, a : cPosition) -> Tuple[cSensNavigation, float]:
+    def _routeSensNavigationLePlusCourtGradientEnDeg(self, a : cPosition | None = None, v: cVelocite | None = None) -> Tuple[cSensNavigation, float]:
         d : cPosition = self.position 
-        dLat = a.latitude.latitudeEnDeg - d.latitude.latitudeEnDeg
-
-        dG : float = a.longitude.longitudeEnDeg - d.longitude.longitudeEnDeg
-
-        """
-        Si |Δλ| > 180°, on prend la différence la plus courte :
-
-        Δλcorrige={Δλ - 360°	si Δλ>180°
-                    Δλ+360°	si Δλ<-180°
-
-        Cela donne le sens le plus court.
-        """
-        if math.fabs(dG) > 180.0:
-            dG = dG - 360 if dG > 180 else dG + 360
         
+        dLat : float = 0.0
+        dG : float = 0.0
+        
+        if a is not None:
+            dLat = a.latitude.latitudeEnDeg - d.latitude.latitudeEnDeg
+            dG = a.longitude.longitudeEnDeg - d.longitude.longitudeEnDeg
+
+            """
+            Si |Δλ| > 180°, on prend la différence la plus courte :
+
+            Δλcorrige={Δλ - 360°	si Δλ>180°
+                        Δλ+360°	si Δλ<-180°
+
+            Cela donne le sens le plus court.
+            """
+            if math.fabs(dG) > 180.0:
+                dG = dG - 360 if dG > 180 else dG + 360
+
+        elif v is not None:
+            c : cCap = v.sens
+            dLat = math.cos(c.angleAsRad)
+            dG = math.cos(c.angleAsRad)
+
+        else:
+            raise cMyException ("a ou v doivent etre valuee")
+
         sensNavigation : cSensNavigation = cSensNavigation.undef
         if dG >= 0 and dLat >= 0:
             sensNavigation = cSensNavigation.versNE
@@ -287,18 +331,75 @@ class cNavigationFormules:
         return (sensNavigation, dG)
     
 
-    def navLoxodromiqueCapEtVitesseDonnes(self, tempsDeNavEnSeconde: float, v: cVelocite) -> cPosition:
-
+    def navACapEtVitesseDonnes(self, tempsDeNavEnSeconde: float, v: cVelocite) -> cPosition:
         vitesseEnNoeud : float = v.vitesse.asNoeud
-        distanceEnMille : float = vitesseEnNoeud * (tempsDeNavEnSeconde / 3600.0)
+        tempsDeNavEnHeure : float = tempsDeNavEnSeconde / 3600.0
+        distanceEnMille : float = vitesseEnNoeud * tempsDeNavEnHeure
 
-        capRad: float = v.sens.asAngleTrigonometriqueEnRad
+        capRad: float = v.sens.angleAsRad
         latitudeEstimeeRad: float = self.position.latitude.latitudeEnRad
         
-        pasEnLatitudeEnDeg: float =  ( math.sin(capRad) * distanceEnMille / 60.0 )  # noeud = mille/h - 1 mille = 1 minute d'arc
-        pasEnLongitudeEnDeg: float = ( math.cos(capRad) * distanceEnMille / 60.0) * math.cos(latitudeEstimeeRad)
+        pasEnLatitudeEnDeg: float =  ( math.cos(capRad) * distanceEnMille / 60.0 )  # noeud = mille/h - 1 mille = 1 minute d'arc
+        latitudeMoyenneEnRad : float = latitudeEstimeeRad + (pasEnLatitudeEnDeg * cAngle.DEG2RAD) / 2.0
+        pasEnLongitudeEnDeg: float = ( math.sin(capRad) * distanceEnMille / 60.0) / math.cos(latitudeMoyenneEnRad)
 
         positionLatitudeDeg: float = self.position.latitude.latitudeEnDeg + pasEnLatitudeEnDeg
         positionLongitudeDeg: float = self.position.longitude.longitudeEnDeg + pasEnLongitudeEnDeg
-        
+
+        # attention au passage du pole et de l'antemeridien
+        sensNavigation : cSensNavigation
+        (sensNavigation, _) = self._routeSensNavigationLePlusCourtGradientEnDeg (v=v)
+
+        # les poles
+        if math.fabs(positionLatitudeDeg) > 90.0:
+            if cSensNavigation.versNord (sensNavigation):
+                positionLatitudeDeg = 90.0 - (positionLatitudeDeg - 90.0)
+                positionLongitudeDeg = positionLongitudeDeg + 180.0
+            else:
+                positionLatitudeDeg = -90 - (positionLatitudeDeg + 90.0)
+                positionLongitudeDeg = positionLongitudeDeg + 180.0
+
+        # l'ante meridien
+        if math.fabs(positionLongitudeDeg) > 180.0:
+            if positionLongitudeDeg >= 180:
+                positionLongitudeDeg = -180.0 + (positionLongitudeDeg - 180.0)
+            else:
+                positionLongitudeDeg = 180.0 + (positionLongitudeDeg + 180.0)
+
         return cPosition(lat=cLatitude(valAsDeg=positionLatitudeDeg), lon=cLongitude(valAsDeg=positionLongitudeDeg))
+
+    def navACapVitesseCourantVentDonnes(self, tempsDeNavEnSeconde: float, v: cVelocite, courant : cVelocite, vent: cVelocite, derive : cAngle ) -> cPosition:
+        # calcul de la derive du au vent
+        vecteurVent  = np.array([math.sin(vent.sens.capAsRad), math.cos(vent.sens.capAsRad), 0.0])
+        vecteurVitesse  = np.array([math.sin(v.sens.capAsRad), math.cos(v.sens.capAsRad), 0.0])
+        sensDeriveAsProdVect = np.cross(vecteurVitesse, vecteurVent)
+        sensDeriveAsSign : float = 1.0
+        if sensDeriveAsProdVect[2] > 0:
+            sensDeriveAsSign = -1.0
+        
+        # calcul de la nav affectee de la derive
+        v.sens = cCap(valAsDeg=(v.sens.angleAsDeg + sensDeriveAsSign * derive.angleAsDeg))
+        navigationAvecVent : cPosition = self.navACapEtVitesseDonnes(tempsDeNavEnSeconde=tempsDeNavEnSeconde, v=v)
+
+
+        # calcul du courant
+        n : cNavigationFormules = cNavigationFormules(position=navigationAvecVent)
+        navigationAvecVentEtCourant : cPosition
+        navigationAvecVentEtCourant = n.navACapEtVitesseDonnes(tempsDeNavEnSeconde=tempsDeNavEnSeconde, v=courant)
+
+        debug : bool = True
+        if debug:
+            xx : cNavigationFormules = cNavigationFormules(position = self.position)
+            (a, b) = xx.routeLoxodromique(navigationAvecVent)
+            print ((a, b))
+
+            xx : cNavigationFormules = cNavigationFormules(position = navigationAvecVent)
+            (a, b) = xx.routeLoxodromique(navigationAvecVentEtCourant)
+            print ((a, b))
+
+            xx : cNavigationFormules = cNavigationFormules(position = self.position)
+            (a, b) = xx.routeLoxodromique(navigationAvecVentEtCourant)
+            print ((a, b))
+
+        # nouvelle position
+        return navigationAvecVentEtCourant

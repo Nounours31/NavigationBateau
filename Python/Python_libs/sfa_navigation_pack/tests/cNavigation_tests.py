@@ -3,6 +3,7 @@ from typing import Dict, List
 import pytest
 
 from sfa_navigation import (
+    cAngle,
     cPosition,
     cLatitude,
     cLongitude,
@@ -103,20 +104,7 @@ class cNavigation_tests:
         assert sens.capAsDeg == pytest.approx(90, 1)
 
 
-    def test_Navivation(self):
-        d: cPosition = cPosition(lat=cLatitude(valAsDeg=70), lon=cLongitude(valAsDeg=-56.5))
-        n: cNavigationFormules = cNavigationFormules(position=d)
-        norme : cVitesse = cVitesse(valAsNoeud=10)
-        sens : cCap = cCap(valAsDeg=0)
-        v: cVelocite = cVelocite(vitesse=norme, sens=sens)
 
-        a : cPosition = n.navLoxodromiqueCapEtVitesseDonnes(tempsDeNavEnSeconde=60*60, v=v)
-        sens2: cCap
-        distance: cDistance
-        (sens2, distance) = n.routeLoxodromique(arrivee=a)
-        
-        assert distance.asMn == pytest.approx(10, 0.01)
-        assert sens2.capAsDeg == pytest.approx(0, 0.01)
 
 
     # voir le pdf : AC_FP_ortho.pdf 
@@ -353,3 +341,187 @@ class cNavigation_tests:
             (sensLoxo, distanceLoxo) = n.routeLoxodromique(arrivee=a)
             assert distanceLoxo.asMn == pytest.approx(t["loxo"]["distance"], 0.001) 
             assert sensLoxo.capAsDeg == pytest.approx(t["loxo"]["cap"], 0.01) 
+
+
+
+
+
+    def test_Navivation(self):
+        d: cPosition = cPosition(lat=cLatitude(valAsDeg=70), lon=cLongitude(valAsDeg=-56.5))
+        n: cNavigationFormules = cNavigationFormules(position=d)
+        norme : cVitesse = cVitesse(valAsNoeud=10)
+        sens : cCap = cCap(valAsDeg=0)
+        v: cVelocite = cVelocite(vitesse=norme, sens=sens)
+
+        a : cPosition = n.navACapEtVitesseDonnes(tempsDeNavEnSeconde=60*60, v=v)
+        sens2: cCap
+        distance: cDistance
+        (sens2, distance) = n.routeLoxodromique(arrivee=a)
+        
+        assert distance.asMn == pytest.approx(10, 0.01)
+        assert sens2.capAsDeg == pytest.approx(0, 0.01)
+
+
+    def test_Navivation_poleNord(self):
+        d: cPosition = cPosition(lat=cLatitude(valAsDeg=89), lon=cLongitude(valAsDeg=2))
+        n: cNavigationFormules = cNavigationFormules(position=d)
+        norme : cVitesse = cVitesse(valAsNoeud=120)
+        sens : cCap = cCap(valAsDeg=0)
+        v: cVelocite = cVelocite(vitesse=norme, sens=sens)
+
+        a : cPosition = n.navACapEtVitesseDonnes(tempsDeNavEnSeconde=60*60, v=v)
+        sens2: cCap
+        distance: cDistance
+        (sens2, distance, _) = n.routeOrthodromique(arrivee=a)
+        
+        assert distance.asMn == pytest.approx(120, 0.001)
+        assert sens2.capAsDeg == pytest.approx(360, 0.01)
+
+    def test_Navivation_poleSud(self):
+        d: cPosition = cPosition(lat=cLatitude(valAsDeg=-89), lon=cLongitude(valAsDeg=2))
+        n: cNavigationFormules = cNavigationFormules(position=d)
+        norme : cVitesse = cVitesse(valAsNoeud=120)
+        sens : cCap = cCap(valAsDeg=180)
+        v: cVelocite = cVelocite(vitesse=norme, sens=sens)
+
+        a : cPosition = n.navACapEtVitesseDonnes(tempsDeNavEnSeconde=60*60, v=v)
+        sens2: cCap
+        distance: cDistance
+        (sens2, distance, _) = n.routeOrthodromique(arrivee=a)
+        
+        assert distance.asMn == pytest.approx(120, 0.001)
+        assert sens2.capAsDeg == pytest.approx(181, 0.01)
+
+    def test_Navivation_antemeridienVersEst(self):
+        d: cPosition = cPosition(lat=cLatitude(valAsDeg=10), lon=cLongitude(valAsDeg=179))
+        n: cNavigationFormules = cNavigationFormules(position=d)
+        norme : cVitesse = cVitesse(valAsNoeud=120)
+        sens : cCap = cCap(valAsDeg=90)
+        v: cVelocite = cVelocite(vitesse=norme, sens=sens)
+
+        a : cPosition = n.navACapEtVitesseDonnes(tempsDeNavEnSeconde=60*60, v=v)
+        sens2: cCap
+        distance: cDistance
+        (sens2, distance, _) = n.routeOrthodromique(arrivee=a)
+        
+        assert distance.asMn == pytest.approx(120, 0.001)
+        assert sens2.capAsDeg == pytest.approx(90, 0.01)
+
+    def test_Navivation_antemeridienVersOuest(self):
+        d: cPosition = cPosition(lat=cLatitude(valAsDeg=10), lon=cLongitude(valAsDeg=-179))
+        n: cNavigationFormules = cNavigationFormules(position=d)
+        norme : cVitesse = cVitesse(valAsNoeud=120)
+        sens : cCap = cCap(valAsDeg=270)
+        v: cVelocite = cVelocite(vitesse=norme, sens=sens)
+
+        a : cPosition = n.navACapEtVitesseDonnes(tempsDeNavEnSeconde=60*60, v=v)
+        sens2: cCap
+        distance: cDistance
+        (sens2, distance, _) = n.routeOrthodromique(arrivee=a)
+        
+        assert distance.asMn == pytest.approx(120, 0.001)
+        assert sens2.capAsDeg == pytest.approx(270, 0.01)
+
+
+    def test_Navivation_navACapVitesseCourantVentDonnes_1(self):
+        d: cPosition = cPosition(lat=cLatitude(valAsDeg=40), lon=cLongitude(valAsDeg=1))
+        n: cNavigationFormules = cNavigationFormules(position=d)
+
+        norme : cVitesse = cVitesse(valAsNoeud=120)
+        sens : cCap = cCap(valAsDeg=90)
+        vitesse: cVelocite = cVelocite(vitesse=norme, sens=sens)
+
+        courant : cVelocite = cVelocite(vitesse=cVitesse(valAsNoeud=1.0), sens=cCap(valAsDeg=180))
+        vent : cVelocite = cVelocite(vitesse=cVitesse(valAsNoeud=20.0), sens=cCap(valAsDeg=180))
+        derive : cAngle = cAngle(valAsDeg=5.0)
+        a : cPosition = n.navACapVitesseCourantVentDonnes(tempsDeNavEnSeconde=60*60, v=vitesse, courant=courant, vent = vent, derive = derive)
+        sens2: cCap
+        distance: cDistance
+        (sens2, distance) = n.routeLoxodromique(arrivee=a)
+        
+        assert distance.asMn == pytest.approx(120.106, 0.0001)
+        assert sens2.capAsDeg == pytest.approx(95.4746, 0.01)
+
+    def test_Navivation_navACapVitesseCourantVentDonnes_2(self):
+        d: cPosition = cPosition(lat=cLatitude(valAsDeg=40), lon=cLongitude(valAsDeg=1))
+        n: cNavigationFormules = cNavigationFormules(position=d)
+
+        norme : cVitesse = cVitesse(valAsNoeud=120)
+        sens : cCap = cCap(valAsDeg=90)
+        vitesse: cVelocite = cVelocite(vitesse=norme, sens=sens)
+
+        courant : cVelocite = cVelocite(vitesse=cVitesse(valAsNoeud=1.0), sens=cCap(valAsDeg=180))
+        vent : cVelocite = cVelocite(vitesse=cVitesse(valAsNoeud=20.0), sens=cCap(valAsDeg=0))
+        derive : cAngle = cAngle(valAsDeg=5.0)
+        a : cPosition = n.navACapVitesseCourantVentDonnes(tempsDeNavEnSeconde=60*60, v=vitesse, courant=courant, vent = vent, derive = derive)
+
+        sens3: cCap
+        distance3: cDistance
+        (sens3, distance3) = n.routeLoxodromique(arrivee=a)
+
+
+        assert distance3.asMn == pytest.approx(119.93, 0.0001)
+        assert sens3.capAsDeg == pytest.approx(85.47, 0.01)
+
+    def test_Navivation_navACapVitesseCourantVentDonnes_3(self):
+        d: cPosition = cPosition(lat=cLatitude(valAsDeg=40), lon=cLongitude(valAsDeg=1))
+        n: cNavigationFormules = cNavigationFormules(position=d)
+
+        norme : cVitesse = cVitesse(valAsNoeud=120)
+        sens : cCap = cCap(valAsDeg=270)
+        vitesse: cVelocite = cVelocite(vitesse=norme, sens=sens)
+
+        courant : cVelocite = cVelocite(vitesse=cVitesse(valAsNoeud=1.0), sens=cCap(valAsDeg=180))
+        vent : cVelocite = cVelocite(vitesse=cVitesse(valAsNoeud=20.0), sens=cCap(valAsDeg=180))
+        derive : cAngle = cAngle(valAsDeg=5.0)
+        a : cPosition = n.navACapVitesseCourantVentDonnes(tempsDeNavEnSeconde=60*60, v=vitesse, courant=courant, vent = vent, derive = derive)
+
+        sens3: cCap
+        distance3: cDistance
+        (sens3, distance3) = n.routeLoxodromique(arrivee=a)
+
+
+        assert distance3.asMn == pytest.approx(120.106, 0.0001)
+        assert sens3.capAsDeg == pytest.approx(264.52, 0.01)
+
+    def test_Navivation_navACapVitesseCourantVentDonnes_4(self):
+        d: cPosition = cPosition(lat=cLatitude(valAsDeg=40), lon=cLongitude(valAsDeg=1))
+        n: cNavigationFormules = cNavigationFormules(position=d)
+
+        norme : cVitesse = cVitesse(valAsNoeud=120)
+        sens : cCap = cCap(valAsDeg=270)
+        vitesse: cVelocite = cVelocite(vitesse=norme, sens=sens)
+
+        courant : cVelocite = cVelocite(vitesse=cVitesse(valAsNoeud=1.0), sens=cCap(valAsDeg=180))
+        vent : cVelocite = cVelocite(vitesse=cVitesse(valAsNoeud=20.0), sens=cCap(valAsDeg=0))
+        derive : cAngle = cAngle(valAsDeg=5.0)
+        a : cPosition = n.navACapVitesseCourantVentDonnes(tempsDeNavEnSeconde=60*60, v=vitesse, courant=courant, vent = vent, derive = derive)
+
+        sens3: cCap
+        distance3: cDistance
+        (sens3, distance3) = n.routeLoxodromique(arrivee=a)
+
+
+        assert distance3.asMn == pytest.approx(119.93, 0.0001)
+        assert sens3.capAsDeg == pytest.approx(274.52, 0.01)
+
+    def test_Navivation_navACapVitesseCourantVentDonnes_5(self):
+        d: cPosition = cPosition(lat=cLatitude(valAsDeg=40), lon=cLongitude(valAsDeg=1))
+        n: cNavigationFormules = cNavigationFormules(position=d)
+
+        norme : cVitesse = cVitesse(valAsNoeud=120)
+        sens : cCap = cCap(valAsDeg=270)
+        vitesse: cVelocite = cVelocite(vitesse=norme, sens=sens)
+
+        courant : cVelocite = cVelocite(vitesse=cVitesse(valAsNoeud=1.0), sens=cCap(valAsDeg=0))
+        vent : cVelocite = cVelocite(vitesse=cVitesse(valAsNoeud=20.0), sens=cCap(valAsDeg=0))
+        derive : cAngle = cAngle(valAsDeg=5.0)
+        a : cPosition = n.navACapVitesseCourantVentDonnes(tempsDeNavEnSeconde=60*60, v=vitesse, courant=courant, vent = vent, derive = derive)
+
+        sens3: cCap
+        distance3: cDistance
+        (sens3, distance3) = n.routeLoxodromique(arrivee=a)
+
+
+        assert distance3.asMn == pytest.approx(120.076, 0.0001)
+        assert sens3.capAsDeg == pytest.approx(275.47, 0.01)

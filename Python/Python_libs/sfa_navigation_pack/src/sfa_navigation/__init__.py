@@ -9,3 +9,4 @@ from .cHeure import cHeure
 from .cVelocite import cVelocite, cVitesse
 from .cVecteurEtat import cVecteurEtat, cEtatAir, cEtatMer, cEtatBateau, cTrajet
 from .cNavigationBateau import cNavigationBateau
+from .cSatellite import cSatellite

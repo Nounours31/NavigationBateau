@@ -1,5 +1,6 @@
 
 import datetime
+import time
 
 from sfa_navigation import cCap, cNavigationBateau, cVecteurEtat, cVelocite, cPosition, cAngle, cLatitude, cLongitude
 from sfa_navigation.cVecteurEtat import cVecteurEtatKeys, cTrajet
@@ -17,7 +18,6 @@ class cVecteurEtat_tests:
             cVecteurEtatKeys.HEURE : 1772564924,
             cVecteurEtatKeys.BATEAU : {
                 cVecteurEtatKeys.SOG: cVelocite(vitesse=15.0, sens=75),
-                cVecteurEtatKeys.DERIVE: cAngle(valAsDeg=2.5),
                 cVecteurEtatKeys.POSITION: cPosition.fromDict({cLatitude.NOM: "N 12°", cLongitude.NOM: "W 10°"}),
                 cVecteurEtatKeys.VARIATION_MAGNETIQUE: cCap(valAsDeg=-1.2),
             },
@@ -29,11 +29,14 @@ class cVecteurEtat_tests:
             cVecteurEtatKeys.AIR : {
                 cVecteurEtatKeys.VENT: cVelocite(vitesse=15.0, sens=75),
                 cVecteurEtatKeys.TEMPERATURE: 20,
+                cVecteurEtatKeys.DERIVE: cAngle(valAsDeg=2.5),
             },
         }
 
         v: cVecteurEtat = cVecteurEtat.fromDict(data)
-        ref : str = "[vecteurEtat heure=03/03/26 19:08:44.000000 bateau=[bateau sog=15.000Kt 075.0000°,position=N 012.0000°, W 010.0000°, varMagnetique=358.8000°, derive=002.5000°] air=[air temperature=20.0 vent=15.000Kt 075.0000°] eau=[eau profondeur=17.0 temperature=12.0 courant=15.000Kt 075.0000°]]"
+        ref : str = "[vecteurEtat heure=03/03/26 19:08:44.000000 bateau=[bateau sog=15.000Kt 075.0000°,position=N 012.0000°, W 010.0000°, varMagnetique=358.8000°]" + \
+            " air=[air temperature=20.0 vent=15.000Kt 075.0000° derive=002.5000°] eau=[eau profondeur=17.0 temperature=12.0 courant=15.000Kt 075.0000°]]"
+
         print(v)
         assert v.toString() == ref
 
@@ -69,7 +72,6 @@ class cVecteurEtat_tests:
             cVecteurEtatKeys.HEURE : 1772564924,
             cVecteurEtatKeys.BATEAU : {
                 cVecteurEtatKeys.SOG: cVelocite(vitesse=15.0, sens=75),
-                cVecteurEtatKeys.DERIVE: cAngle(valAsDeg=2.5),
                 cVecteurEtatKeys.POSITION: depart,
                 cVecteurEtatKeys.VARIATION_MAGNETIQUE: cCap(valAsDeg=-1.2),
             },
@@ -81,6 +83,7 @@ class cVecteurEtat_tests:
             cVecteurEtatKeys.AIR : {
                 cVecteurEtatKeys.VENT: cVelocite(vitesse=15.0, sens=75),
                 cVecteurEtatKeys.TEMPERATURE: 20,
+                cVecteurEtatKeys.DERIVE: cAngle(valAsDeg=2.5),
             },
         }
         
@@ -88,8 +91,16 @@ class cVecteurEtat_tests:
         t: cTrajet = cTrajet.fromDict(trajet)
 
         b : cNavigationBateau = cNavigationBateau (etat = v, trajet= t)
-        startTimeStamp : float = datetime.datetime.now(tz=datetime.timezone.utc).timestamp()
-        while ()
+        now : float = datetime.datetime.now(tz=datetime.timezone.utc).timestamp()
+        theEnd : float = now + 100
+        dixSecondes  : float = 10  
+        
+        # time.sleep(dixSecondes)
+        currentTime : float = datetime.datetime.now(tz=datetime.timezone.utc).timestamp()
+        dT = currentTime - now
+        b.navigate (dT)
+        print(b.toString())
+        now = currentTime
 
 
 

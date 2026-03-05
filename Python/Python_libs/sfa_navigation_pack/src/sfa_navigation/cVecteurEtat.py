@@ -1,6 +1,9 @@
 from __future__ import annotations
 from datetime import datetime, timezone
+from enum import Enum, IntEnum
 from typing import List
+
+from sfa_navigation import cSatellite
 
 from . import cAngle
 from . import cVelocite
@@ -73,9 +76,10 @@ class cEtatMer:
 
 
 class cEtatAir:
-    def __init__(self, temperature: float, vent: cVelocite) -> None:
+    def __init__(self, temperature: float, vent: cVelocite, derive : cAngle) -> None:
         self.temperature = temperature
         self.vent = vent
+        self._derive = derive
 
     @property
     def temperature(self) -> float:
@@ -95,12 +99,21 @@ class cEtatAir:
             raise TypeError("vent doit être un cVecteur")
         self._vent = value
 
+    @property
+    def derive(self) -> cAngle:
+        return self._derive
+    @derive.setter
+    def derive(self, value: cAngle) -> None:
+        self._derive = value
+
     @classmethod
     def fromDict(cls, data: dict) -> cEtatAir:
-        return cls(temperature=float(data[cVecteurEtatKeys.TEMPERATURE]), vent=cVelocite.fromObject(data[cVecteurEtatKeys.VENT]))
+        return cls(temperature=float(data[cVecteurEtatKeys.TEMPERATURE]), 
+                   vent=cVelocite.fromObject(data[cVecteurEtatKeys.VENT]), 
+                   derive=cAngle.fromObject(data[cVecteurEtatKeys.DERIVE]))
 
     def __str__(self) -> str:
-        s: str = f"[air temperature={self.temperature} vent={self.vent}]"
+        s: str = f"[air temperature={self.temperature} vent={self.vent} derive={self._derive}]"
         return s
 
 
@@ -110,11 +123,10 @@ class cEtatAir:
 
 
 class cEtatBateau:
-    def __init__(self, sog: cVelocite, position: cPosition, varMagnetique: cCap, derive : cAngle) -> None:
+    def __init__(self, sog: cVelocite, position: cPosition, varMagnetique: cCap) -> None:
         self.sog = sog
         self.position = position
         self.varMagnetique = varMagnetique
-        self._derive = derive
 
     @property
     def sog(self) -> cVelocite:
@@ -146,22 +158,17 @@ class cEtatBateau:
             raise TypeError("varMagnetique doit être un cCap")
         self._varMagnetique = value
 
-    @property
-    def derive(self) -> cAngle:
-        return self._derive
-
     @classmethod
     def fromDict(cls, data: dict) -> "cEtatBateau":
         return cls(
             sog=cVelocite.fromObject(data[cVecteurEtatKeys.SOG]),
             position=cPosition.fromObject(data[cVecteurEtatKeys.POSITION]),
-            varMagnetique=cCap.fromObject(data[cVecteurEtatKeys.VARIATION_MAGNETIQUE]),
-            derive=cAngle.fromObject(data[cVecteurEtatKeys.DERIVE]),
+            varMagnetique=cCap.fromObject(data[cVecteurEtatKeys.VARIATION_MAGNETIQUE])
         )
 
     def __str__(self) -> str:
         s: str = (
-            f"[bateau sog={self.sog},position={self.position}, varMagnetique={self.varMagnetique}, derive={self._derive}]"
+            f"[bateau sog={self.sog},position={self.position}, varMagnetique={self.varMagnetique}]"
         )
         return s
 
@@ -186,40 +193,46 @@ class cVecteurEtatKeys:
     DEPART : str = "Depart"
     ARRIVEE : str = "Arrivee"
     WAYPOINTS : str = "wpt"
+    SATELLITE: str = "Satellite"
 
 class cVecteurEtat:
-    def __init__(self, timestamp: float, cBateau: cEtatBateau, cAir: cEtatAir, cEau: cEtatMer) -> None:
-        self.timestamp = timestamp
-        self.cBateau = cBateau
-        self.cAir = cAir
-        self.cEau = cEau
+    def __init__(self, timestamp: float, bateau: cEtatBateau, air: cEtatAir, eau: cEtatMer, satellite: cSatellite) -> None:
+        self._timestamp = timestamp
+        self._bateau = bateau
+        self._air = air
+        self._eau = eau
+        self._satellite = satellite
 
     @property
-    def cBateau(self) -> cEtatBateau:
+    def satellite(self) -> cSatellite:
+        return self._satellite
+
+    @property
+    def bateau(self) -> cEtatBateau:
         return self._bateau
 
-    @cBateau.setter
-    def cBateau(self, value: cEtatBateau) -> None:
+    @bateau.setter
+    def bateau(self, value: cEtatBateau) -> None:
         if not isinstance(value, cEtatBateau):
             raise TypeError("cBateau doit être un cBateau")
         self._bateau = value
 
     @property
-    def cAir(self) -> cEtatAir:
+    def air(self) -> cEtatAir:
         return self._air
 
-    @cAir.setter
-    def cAir(self, value: cEtatAir) -> None:
+    @air.setter
+    def air(self, value: cEtatAir) -> None:
         if not isinstance(value, cEtatAir):
             raise TypeError("cAir doit être un cAir")
         self._air = value
 
     @property
-    def cEau(self) -> cEtatMer:
+    def eau(self) -> cEtatMer:
         return self._eau
 
-    @cEau.setter
-    def cEau(self, value: cEtatMer) -> None:
+    @eau.setter
+    def eau(self, value: cEtatMer) -> None:
         if not isinstance(value, cEtatMer):
             raise TypeError("cEau doit être un cEau")
         self._eau = value
@@ -228,31 +241,44 @@ class cVecteurEtat:
     def fromDict(cls, data: dict) -> cVecteurEtat:
         return cls(
             timestamp=data[cVecteurEtatKeys.HEURE],
-            cBateau=cEtatBateau.fromDict(data[cVecteurEtatKeys.BATEAU]),
-            cAir=cEtatAir.fromDict(data[cVecteurEtatKeys.AIR]),
-            cEau=cEtatMer.fromDict(data[cVecteurEtatKeys.EAU]),
+            bateau=cEtatBateau.fromDict(data[cVecteurEtatKeys.BATEAU]),
+            air=cEtatAir.fromDict(data[cVecteurEtatKeys.AIR]),
+            eau=cEtatMer.fromDict(data[cVecteurEtatKeys.EAU]),
+            satellite=cSatellite.fromDict(data[cVecteurEtatKeys.SATELLITE]),
         )
 
     def toString(self) -> str:
         return self.__str__()
 
     def __str__(self) -> str:
-        s: str = f"[vecteurEtat heure={datetime.fromtimestamp(timestamp = self.timestamp, tz=timezone.utc).strftime('%d/%m/%y %H:%M:%S.%f')} bateau={self.cBateau} air={self.cAir} eau={self.cEau}]"
+        s: str = f"[vecteurEtat heure={datetime.fromtimestamp(timestamp = self._timestamp, tz=timezone.utc).strftime('%d/%m/%y %H:%M:%S.%f')} bateau={self.bateau} air={self.air} eau={self.eau}]"
         return s
 
 
 # ==========================================================
 # TRAJET
 # ==========================================================
-
+class cToleranceTrajet(IntEnum):
+    PassageParWPT = 1 << 0
+    PassageParWPTLePlusProche = 1 << 1
+    PassageParWPTLePlusProcheDansLAXE = 1 << 2
+    ZappeDepart = 1 << 3
 
 class cTrajet:
-    def __init__(
-        self, depart: cPosition, arrivee: cPosition, pointsDePassage: List[cPosition]
+    def __init__(self,  depart: cPosition, arrivee: cPosition, pointsDePassage: List[cPosition],
+        tolerance: int = (cToleranceTrajet.ZappeDepart | cToleranceTrajet.PassageParWPTLePlusProcheDansLAXE)
     ) -> None:
-        self.depart = depart
-        self.arrivee = arrivee
-        self.waypoints = pointsDePassage
+        self._tolerance = tolerance
+        self._depart = depart
+        self._arrivee = arrivee
+        self._waypoints = pointsDePassage
+
+    @property
+    def tolerance(self) -> int:
+        return self._tolerance
+    @tolerance.setter
+    def tolerance(self, tolerance: int) -> None:
+        self._tolerance = tolerance
 
     @property
     def depart(self) -> cPosition:

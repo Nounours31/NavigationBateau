@@ -57,3 +57,22 @@ class cNmeaTools:
     def heure2GPSDecimale(h : datetime) -> float :
         #  064036.289   : Trame envoyée à 06 h 40 min 36 s 289 (heure UTC)
         return ((h.hour * 100 + h.minute) * 100) + h.second + (h.microsecond / 1000000)
+
+    # ----------------------------------------------------------------------------------
+    # doit retourner un angle en degre decimal
+    # ----------------------------------------------------------------------------------
+    @staticmethod
+    def angleSexaToDecimal(degre : int, minute: float) -> float :
+        x = 1 if degre >= 0 else -1
+        return x * (abs(degre) + abs(minute) / 60)
+
+    # ----------------------------------------------------------------------------------
+    # doit retourner un angle en degre decimal / minute sagedecimal
+    # ----------------------------------------------------------------------------------
+    @staticmethod
+    def angleDecimalToMinuteSexa(degreDecimal : float) -> float :
+        x = 1 if degreDecimal >= 0 else -1
+        y = abs(degreDecimal)
+        degre = math.floor(y)
+        minute = (y - degre) * 60 / 100 
+        return x * (degre + minute)

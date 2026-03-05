@@ -7,8 +7,10 @@ src/sfa_navigation/cDistance.py
 src/sfa_navigation/cHeure.py
 src/sfa_navigation/cLatitude.py
 src/sfa_navigation/cLongitude.py
-src/sfa_navigation/cNavigation.py
+src/sfa_navigation/cNavigationBateau.py
+src/sfa_navigation/cNavigationFormules.py
 src/sfa_navigation/cPosition.py
+src/sfa_navigation/cSatellite.py
 src/sfa_navigation/cVecteurEtat.py
 src/sfa_navigation/cVelocite.py
 src/sfa_navigation.egg-info/PKG-INFO

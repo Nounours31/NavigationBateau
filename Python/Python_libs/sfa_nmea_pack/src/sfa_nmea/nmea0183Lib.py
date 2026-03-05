@@ -7,8 +7,11 @@ from typing import List, Dict
 
 from math import floor, cos, sin, tan
 from datetime import datetime, timezone, tzinfo
-from .nmea_tools import cNmeaTools,cConstanteForNMEA
-from sfa_navigation import cLatitude, cLongitude, cPosition
+
+from sfa_tools import myLogger
+from sfa_navigation import cCap, cDistance, cLatitude, cLongitude, cPosition, cSatellite, cVecteurEtat, cVelocite
+
+from . import cNmeaTools,cConstanteForNMEA
 
 
 
@@ -150,6 +153,7 @@ class nmea0183lib :
 
     def __init__(self):
         super().__init__()
+        self.__logger = myLogger.getLogger(name = "nmea0183lib")
 
     # ----------------------------------------------------------------------------------
     # concatene devant le message le "$" et ajoute en fin le "*" + checksum nmea
@@ -160,32 +164,31 @@ class nmea0183lib :
         bytes_representation = nmeaMessage.encode(encoding="utf-8")
         return bytes_representation
     
-
-    def computeTrames(self, nav: Nav) -> List[bytes]:
+    def computeTrames(self, nav: cVecteurEtat, heure: datetime) -> List[bytes]:
         retour : List[bytes] = []
 
         tzinfo = timezone.utc
-        utc_time = nav.heure.astimezone(tzinfo)
-        retour.append(self.getGGA(utc_time, nav.positionCourante))
-        retour.append(self.getGLL(utc_time, nav.positionCourante))
+        utc_time = heure.astimezone(tzinfo) 
+        retour.append(self.getGGA(utc_time, nav.bateau.position))
+        retour.append(self.getGLL(utc_time, nav.bateau.position))
         retour.append(self.getGSA(nav.satellite))
         for t in self.getGSV(nav.satellite):
             retour.append(t)
-        retour.append(self.getVTG(nav.vitesse, nav.variationMagnetiqueEnDeg))
-        retour.append(self.getRMC(utc_time, nav.positionCourante, nav.vitesse))
-        for t in self.getDPT(nav.profondeur):
+        retour.append(self.getVTG(nav.bateau.sog, nav.bateau.varMagnetique))
+        retour.append(self.getRMC(utc_time, nav.bateau.position, nav.bateau.sog))
+        for t in self.getDPT(nav.eau.profondeur):
             retour.append(t)
 
-        for t in self.getHDG(vitesse=nav.vitesse, variation=nav.variationMagnetiqueEnDeg):
+        for t in self.getHDG(vitesse=nav.bateau.sog, variation=nav.bateau.varMagnetique):
             retour.append(t)
 
-        for t in self.getVHW(vitesse=nav.vitesse, variation=nav.variationMagnetiqueEnDeg):
+        for t in self.getVHW(vitesse=nav.bateau.sog, variation=nav.bateau.varMagnetique):
             retour.append(t)
 
-        for t in self.getMTW(nav.eauTemp, nav.airTemp):
+        for t in self.getMTW(nav.eau.temperature, nav.air.temperature):
             retour.append(t)
 
-        for t in self.getWindInfo(nav.ventReel, nav.ventApparent, nav.variationMagnetiqueEnDeg, nav.vitesse):
+        for t in self.getWindInfo(nav.air.vent, nav.air.vent - nav.bateau.sog, nav.bateau.varMagnetique, nav.bateau.sog):
             retour.append(t)
 
         """
@@ -266,11 +269,11 @@ class nmea0183lib :
     def getMTW(self, Teau: float,Tair: float) -> List[bytes]:
         retour: List[bytes] = []
         nmeaMessage = f"IIMTW,{Teau:04.2f},C"
-        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
+        retour.append(nmea0183lib._addNMEACheckSum(nmeaMessage))
 
 #        pAtm = 1.013
 #        nmeaMessage = f"IIMDA,{(pAtm * nmea0183lib.InchMercure2Bar):04.2f},I,{pAtm:04.2f},B,{Tair:04.2f},C,{Teau:04.2f},C,0.0,0.0,10.0,C,"
-#        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
+#        retour.append(nmea0183lib._addNMEACheckSum(nmeaMessage))
 
         return retour
 
@@ -319,26 +322,26 @@ class nmea0183lib :
         5. Status, A = Data Valid, V = Invalid
         6. Checksum
     """
-    def getWindInfo(self, ventReel: vecteur, ventApparent: vecteur, variation: float, vitesse: vecteur) -> list[bytes]:
+    def getWindInfo(self, ventReel: cVelocite, ventApparent: cVelocite, variation: cCap, vitesse: cVelocite) -> list[bytes]:
         retour : List[bytes] = []
 
 
         # Wind direction Left / Right of bow
-        WindBowDir = "R" if (vitesse.dir.valAsDeg > ventApparent.dir.valAsDeg) else "L"
-        vitesseVentN = ventApparent.val
-        vitesseVentK = ventApparent.val * nmea0183lib.MILLE2KM_HEURE
+        WindBowDir = "R" if (vitesse.sens.angleAsDeg > ventApparent.sens.angleAsDeg) else "L"
+        vitesseVentN = ventApparent.vitesse.asNoeud
+        vitesseVentK = ventApparent.vitesse.asKmH
         vitesseVentM = vitesseVentK / 3.6
-        nmeaMessage = f"IIVWR,{ventApparent.dir.valAsDeg:04.2f},{WindBowDir},{vitesseVentN:04.2f},N,{vitesseVentM:04.2f},M,{vitesseVentM:04.2f},K"
-        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
+        nmeaMessage = f"IIVWR,{ventApparent.sens.angleAsDeg:04.2f},{WindBowDir},{vitesseVentN:04.2f},N,{vitesseVentM:04.2f},M,{vitesseVentM:04.2f},K"
+        retour.append(nmea0183lib._addNMEACheckSum(nmeaMessage))
 
-        vitesseVentN = ventReel.val
-        vitesseVentK = ventReel.val * nmea0183lib.MILLE2KM_HEURE
+        vitesseVentN = ventReel.vitesse.asNoeud
+        vitesseVentK = ventReel.vitesse.asKmH
         vitesseVentM = vitesseVentK / 3.6
-        nmeaMessage = f"IIMWD,{ventReel.dir.valAsDeg:04.2f},T,{(ventReel.dir.valAsDeg + variation):04.2f},M,{vitesseVentN:04.2f},N,{vitesseVentM:04.2f},M"
-        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
+        nmeaMessage = f"IIMWD,{ventReel.sens.angleAsDeg:04.2f},T,{(ventReel.sens.angleAsDeg + variation.angleAsDeg):04.2f},M,{vitesseVentN:04.2f},N,{vitesseVentM:04.2f},M"
+        retour.append(nmea0183lib._addNMEACheckSum(nmeaMessage))
 
-        nmeaMessage = f"IIMWV,{ventReel.dir.valAsDeg:04.2f},T,{vitesseVentM:04.2f},A"
-        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
+        nmeaMessage = f"IIMWV,{ventReel.sens.angleAsDeg:04.2f},T,{vitesseVentM:04.2f},A"
+        retour.append(nmea0183lib._addNMEACheckSum(nmeaMessage))
 
         return retour
 
@@ -363,19 +366,19 @@ class nmea0183lib :
     #     Température de surface de la mer (MDA, MTW)
     #     AIS (VDM) (*)
     # ----------------------------------------------------------------------------------
-    def getWayPointInfoBWC(self,now: datetime, latDecimale: float, longDecimale: float, bearing:float,  variation:float, distance:float, id:str) -> bytes:
-        bearingM = bearing + variation
+    def getWayPointInfoBWC(self,now: datetime, latDecimale: cLatitude, longDecimale: cLongitude, bearing:cCap,  variation:cCap, distance:cDistance, id:str) -> bytes:
+        bearingM : float = bearing.angleAsDeg + variation.angleAsDeg
         nmeaMessage = "IIBWC,{heure:09.2f},{lat:011.6f},{latSens},{long:012.6f},{longSens},{bearing:05.2f},T,{bearingM:05.2f},M,{distance:05.2f},N,{id:s}".format(
-            heure =  nmea0183lib.heure2GPSDecimale(now),
-            lat = abs(tools.angleDecimalToMinuteSexa(latDecimale) * 100),
-            latSens = "N" if latDecimale > 0 else "S",
-            long = abs(tools.angleDecimalToMinuteSexa(longDecimale) * 100),
-            longSens = "E" if longDecimale > 0 else "W",
-            bearing = bearing,
+            heure =  cNmeaTools.heure2GPSDecimale(now),
+            lat = abs(cNmeaTools.angleDecimalToMinuteSexa(latDecimale.angleAsDeg) * 100),
+            latSens = str(latDecimale.sensLatitude),
+            long = abs(cNmeaTools.angleDecimalToMinuteSexa(longDecimale.angleAsDeg) * 100),
+            longSens = str(longDecimale.sensLongitude),
+            bearing = bearing.angleAsDeg,
             bearingM = bearingM,
-            distance = distance,
+            distance = distance.asMn,
             id = id)      
-        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
+        return nmea0183lib._addNMEACheckSum(nmeaMessage)
 
     # ----------------------------------------------------------------------------------
     #     Position (GLL, GGA, RMC, VDO)
@@ -386,19 +389,19 @@ class nmea0183lib :
     #     Température de surface de la mer (MDA, MTW)
     #     AIS (VDM) (*)
     # ----------------------------------------------------------------------------------
-    def getWayPointInfoBWR(self,now: datetime, latDecimale: float, longDecimale: float, bearing:float,  variation:float, distance:float, id:str) -> bytes:
-        bearingM = bearing + variation
+    def getWayPointInfoBWR(self,now: datetime, latDecimale: cLatitude, longDecimale: cLongitude, bearing:cCap,  variation:cCap, distance:cDistance, id:str) -> bytes:
+        bearingM : float = bearing.angleAsDeg + variation.angleAsDeg
         nmeaMessage = "IIBWR,{heure:09.2f},{lat:011.6f},{latSens},{long:012.6f},{longSens},{bearing:05.2f},T,{bearingM:05.2f},M,{distance:05.2f},N,{id:s}".format(
-            heure =  nmea0183lib.heure2GPSDecimale(now),
-            lat = abs(tools.angleDecimalToMinuteSexa(latDecimale) * 100),
-            latSens = "N" if latDecimale > 0 else "S",
-            long = abs(tools.angleDecimalToMinuteSexa(longDecimale) * 100),
-            longSens = "E" if longDecimale > 0 else "W",
+            heure =  cNmeaTools.heure2GPSDecimale(now),
+            lat = abs(cNmeaTools.angleDecimalToMinuteSexa(latDecimale.angleAsDeg) * 100),
+            latSens = str(latDecimale.sensLatitude),
+            long = abs(cNmeaTools.angleDecimalToMinuteSexa(longDecimale.angleAsDeg) * 100),
+            longSens = str(longDecimale.sensLongitude),
             bearing = bearing,
             bearingM = bearingM,
             distance = distance,
             id = id)      
-        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
+        return nmea0183lib._addNMEACheckSum(nmeaMessage)
 
     # ----------------------------------------------------------------------------------
     #     Position (GLL, GGA, RMC, VDO)
@@ -414,9 +417,9 @@ class nmea0183lib :
     # ----------------------------------------------------------------------------------
     #  Info AIS - ?
     # ----------------------------------------------------------------------------------
-    def getVDO(h: datetime, latitudeDecimale: float, longitudeDecimale: float):
+    def getVDO(self, h: datetime, latitudeDecimale: cLatitude, longitudeDecimale: cLongitude):
         pass
-    def getVDM(h: datetime, latitudeDecimale: float, longitudeDecimale: float):
+    def getVDM(self, h: datetime, latitudeDecimale: cLatitude, longitudeDecimale: cLongitude):
         pass
 
 
@@ -481,25 +484,25 @@ class nmea0183lib :
             depthP=profondeur / nmea0183lib.PIED2METRE,
             depth=profondeur,
             depthF=profondeur / nmea0183lib.FANTOM2METRE)
-        nmeaMessage.append(nmea0183lib.__addNMEACheckSum(x))
+        nmeaMessage.append(nmea0183lib._addNMEACheckSum(x))
 
         x = "SDDPT,{depth:02.1f},{ecart:02.1f},".format(
             depth=profondeur,
             ecart=-abs(nmea0183lib.distanceSondeQuilleEnMetre))
-        nmeaMessage.append(nmea0183lib.__addNMEACheckSum(x))
+        nmeaMessage.append(nmea0183lib._addNMEACheckSum(x))
 
         profondeur = profondeur - nmea0183lib.distanceSondeQuilleEnMetre
         x = "SDDBK,{depthP:02.1f},f,{depth:02.1f},M,{depthF:02.1f},F".format(
             depthP=profondeur / nmea0183lib.PIED2METRE,
             depth=profondeur,
             depthF=profondeur / nmea0183lib.FANTOM2METRE)
-        nmeaMessage.append(nmea0183lib.__addNMEACheckSum(x))
+        nmeaMessage.append(nmea0183lib._addNMEACheckSum(x))
 
         x = "SDDBT,{depthP:02.1f},f,{depth:02.1f},M,{depthF:02.1f},F".format(
             depthP=profondeur / nmea0183lib.PIED2METRE,
             depth=profondeur,
             depthF=profondeur / nmea0183lib.FANTOM2METRE)
-        nmeaMessage.append(nmea0183lib.__addNMEACheckSum(x))
+        nmeaMessage.append(nmea0183lib._addNMEACheckSum(x))
 
         return nmeaMessage
 
@@ -541,15 +544,14 @@ class nmea0183lib :
         Some devices, such as those described in [GLOBALSAT], leave the magnetic-bearing fields 3 and 4 empty.
         Example: $GPVTG,220.86,T,,M,2.550,N,4.724,K,A*34
     """
-    def getVTG(self, vitesse : vecteur, deviationEnDeg : float):
-        capMagnetique = vitesse.dir.valAsDeg + deviationEnDeg
-        vitesseEnkm = vitesse.val * nmea0183lib.MILLE2KM_HEURE
+    def getVTG(self, vitesse : cVelocite, deviationMagnetique : cCap):
+        capMagnetique = vitesse.sens.capAsDeg + deviationMagnetique.capAsDeg
         nmeaMessage = "GPVTG,{capEnDeg:05.1f},T,{capMagnetique:05.1f},M,{vitesseEnNoeud:05.1f},N,{vitesseEnkm:05.1f},K,A".format(
-            capEnDeg = vitesse.dir.valAsDeg,
+            capEnDeg = vitesse.sens.angleAsDeg,
             capMagnetique = capMagnetique,
-            vitesseEnNoeud = vitesse.val,
-            vitesseEnkm = vitesseEnkm)
-        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
+            vitesseEnNoeud = vitesse.vitesse.asNoeud,
+            vitesseEnkm = vitesse.vitesse.asKmH)
+        return nmea0183lib._addNMEACheckSum(nmeaMessage)
 
     # ----------------------------------------------------------------------------------
     #        Info Positionement
@@ -576,14 +578,14 @@ class nmea0183lib :
     # The number of digits past the decimal point for Time, Latitude and Longitude is model dependent.
     # Example: $GNGLL,4404.14012,N,12118.85993,W,001037.00,A,A*67
     # ----------------------------------------------------------------------------------
-    def getGLL(self, utc_time: datetime, positionCourante: position) -> bytes:
+    def getGLL(self, utc_time: datetime, positionCourante: cPosition) -> bytes:
         nmeaMessage = "GPGLL,{lat},{latSens},{long},{longSens},{heure:09.2f},A,A".format(
-            heure=nmea0183lib.heure2GPSDecimale(utc_time),
-            lat=nmea0183lib.__nmeaLatitudeFormat(positionCourante.latitude),
-            latSens=positionCourante.latitude.sensAsString(),
-            long=nmea0183lib.__nmeaLongitudeFormat(positionCourante.longitude),
-            longSens=positionCourante.longitude.sensAsString())
-        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
+            heure=cNmeaTools.heure2GPSDecimale(utc_time),
+            lat=cNmeaTools._nmeaLatitudeFormat(positionCourante.latitude),
+            latSens=str(positionCourante.latitude.sensLatitude),
+            long=cNmeaTools._nmeaLongitudeFormat(positionCourante.longitude),
+            longSens=str(positionCourante.longitude.sensLongitude))
+        return nmea0183lib._addNMEACheckSum(nmeaMessage)
     '''
         Elle est très courante car elle fait partie de celles qui sont utilisées pour connaître la position courante du récepteur GPS.
 
@@ -602,14 +604,14 @@ class nmea0183lib :
         0E           : Somme de contrôle de parité, un simple XOR sur les caractères entre $ et *
     '''
 
-    def getGGA(self, utc_time: datetime, positionCourante: position) -> bytes:
+    def getGGA(self, utc_time: datetime, positionCourante: cPosition) -> bytes:
         nmeaMessage = "GPGGA,{heure:09.2f},{lat},{latSens},{long},{longSens},1,10,1.2,27.0,M,-34.2,M,,".format(
-            heure=nmea0183lib.heure2GPSDecimale(utc_time),
-            lat=nmea0183lib.__nmeaLatitudeFormat(positionCourante.latitude),
-            latSens=positionCourante.latitude.sensAsString(),
-            long=nmea0183lib.__nmeaLongitudeFormat(positionCourante.longitude),
-            longSens=positionCourante.longitude.sensAsString())
-        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
+            heure=cNmeaTools.heure2GPSDecimale(utc_time),
+            lat=cNmeaTools._nmeaLatitudeFormat(positionCourante.latitude),
+            latSens=str(positionCourante.latitude.sensLatitude),
+            long=cNmeaTools._nmeaLongitudeFormat(positionCourante.longitude),
+            longSens=str(positionCourante.longitude.sensLongitude))
+        return nmea0183lib._addNMEACheckSum(nmeaMessage)
 
     '''
     Une autre trame très courante pour les bateaux est la RMC, qui donne l'heure, la latitude, la longitude, la date, ainsi que la vitesse et la route sur le fond mais pas l'altitude. 
@@ -632,17 +634,17 @@ class nmea0183lib :
         53           : somme de contrôle de parité au format hexadécimal[4] 
 '''
 
-    def getRMC(self, utc_time: datetime, positionCourant: position, vitesse: vecteur) -> bytes:
+    def getRMC(self, utc_time: datetime, positionCourant: cPosition, vitesse: cVelocite) -> bytes:
         nmeaMessage = "GPRMC,{heure:09.2f},A,{lat},{latSens},{long},{longSens},{vitesseEnNoeud:06.2f},{cap:06.2f},{dateutc:06d},002.1,W,A,V".format(
-            heure=nmea0183lib.heure2GPSDecimale(utc_time),
-            lat=nmea0183lib.__nmeaLatitudeFormat(positionCourant.latitude),
-            latSens=positionCourant.latitude.sensAsString(),
-            long=nmea0183lib.__nmeaLongitudeFormat(positionCourant.longitude),
-            longSens=positionCourant.longitude.sensAsString(),
-            vitesseEnNoeud=vitesse.val,
-            cap=vitesse.dir.valAsDeg,
-            dateutc=nmea0183lib.date2GPSDecimale(utc_time))
-        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
+            heure=cNmeaTools.heure2GPSDecimale(utc_time),
+            lat=cNmeaTools._nmeaLatitudeFormat(positionCourant.latitude),
+            latSens=str(positionCourant.latitude.sensLatitude),
+            long=cNmeaTools._nmeaLongitudeFormat(positionCourant.longitude),
+            longSens=str(positionCourant.longitude.sensLongitude),
+            vitesseEnNoeud=vitesse.vitesse.asNoeud,
+            cap=vitesse.sens.angleAsDeg,
+            dateutc=cNmeaTools.date2GPSDecimale(utc_time))
+        return nmea0183lib._addNMEACheckSum(nmeaMessage)
 
     # ----------------------------------------------------------------------------------
     #        Info satellites
@@ -681,12 +683,12 @@ class nmea0183lib :
         4 = BeiDou B1I D1, B1I D2, B2I D1, B2I D12
     '''
 
-    def getGSA(self, satellite: Dict[str, object]) -> bytes:
+    def getGSA(self, satellite: cSatellite) -> bytes:
         nmeaMessage: str = "GPGSA,A,3,"
         satIds: str = ""
         nbsat: int = 0
         NBSATMAX: int = 14
-        for sat in satellite["IDs"]:
+        for sat in satellite.visible:
             satIds += f"{sat:02d}"
             nbsat += 1
             if nbsat == NBSATMAX:
@@ -697,8 +699,8 @@ class nmea0183lib :
             satIds += ","
 
         nmeaMessage += satIds
-        nmeaMessage += f"{satellite['PDOP']:4.2f},{satellite['HDOP']:4.2f},{satellite['VDOP']:4.2f}"
-        return nmea0183lib.__addNMEACheckSum(nmeaMessage)
+        nmeaMessage += f"{satellite.PDOP:4.2f},{satellite.HDOP:4.2f},{satellite.VDOP:4.2f}"
+        return nmea0183lib._addNMEACheckSum(nmeaMessage)
 
     '''
     GSV - Satellites in view
@@ -751,9 +753,9 @@ class nmea0183lib :
                 retour += ','
         return retour
 
-    def getGSV(self, satellite: Dict[str, object]) -> List[bytes]:
+    def getGSV(self, satellite: cSatellite) -> List[bytes]:
         retour: list[bytes] = []
-        allSatellite: list[str] = satellite["IDs"]
+        allSatellite: list[str] = satellite.visible
         nbSat: int = len(allSatellite)
         modulo: int = int(nbSat % 4)
         nbTrame: int = math.floor(nbSat / 4.0) + (0 if modulo == 0 else 1)
@@ -762,7 +764,7 @@ class nmea0183lib :
         for iTrame in range(1, nbTrame + 1, 1):
             curTrame = f"GPGSV,{nbTrame:1d},{iTrame:1d},{nbSat:02d},{self.__extractGSVInfoSatellites(indiceSatellite, allSatellite)}"
             indiceSatellite += 4
-            retour.append(nmea0183lib.__addNMEACheckSum(curTrame))
+            retour.append(nmea0183lib._addNMEACheckSum(curTrame))
 
         return retour
 
@@ -807,24 +809,24 @@ class nmea0183lib :
             3. Checksum
             Example: $GPHDT,274.07,T*03
     """
-    def getHDG(self, vitesse: vecteur, variation:float) -> List[bytes] :
+    def getHDG(self, vitesse: cVelocite, variation:cCap) -> List[bytes] :
         retour : List[bytes] = []
-        Cv = vitesse.dir.valAsDeg
-        Cc = Cv + variation
+        Cv = vitesse.sens.angleAsDeg
+        Cc = Cv + variation.capAsDeg
         while Cc < 0:
             Cc += 360.0
         while Cc > 360.0:
             Cc -= 360.0
-        SensVariation = "E" if variation>0 else "W"
+        SensVariation = "E" if variation.angleAsDeg>0 else "W"
 
-        nmeaMessage = f"IIHDG,{Cc:04.2f},{abs(variation):04.2f},{SensVariation},0.0,E"
-        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
+        nmeaMessage = f"IIHDG,{Cc:04.2f},{abs(variation.angleAsDeg):04.2f},{SensVariation},0.0,E"
+        retour.append(nmea0183lib._addNMEACheckSum(nmeaMessage))
 
         nmeaMessage = f"IIHDM,{Cc:04.2f},M"
-        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
+        retour.append(nmea0183lib._addNMEACheckSum(nmeaMessage))
 
         nmeaMessage = f"IIHDT,{Cv:04.2f},T"
-        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
+        retour.append(nmea0183lib._addNMEACheckSum(nmeaMessage))
 
         return retour
 
@@ -844,19 +846,19 @@ class nmea0183lib :
             8. K = Kilometers
             9. Checksum
     """
-    def getVHW(self, vitesse: vecteur, variation:float) -> List[bytes] :
+    def getVHW(self, vitesse: cVelocite, variation:cCap) -> List[bytes] :
         retour : List[bytes] = []
-        Cv = vitesse.dir.valAsDeg
-        Cc = Cv + variation
+        Cv = vitesse.sens.angleAsDeg
+        Cc = Cv + variation.angleAsDeg
         while Cc < 0:
             Cc += 360.0
         while Cc > 360.0:
             Cc -= 360.0
-        SensVariation = "E" if variation>0 else "W"
+        SensVariation = "E" if variation.angleAsDeg>0 else "W"
 
-        vitesseLockNoeud : float = vitesse.val * 0.85
-        nmeaMessage = f"IIVHW,{Cv:04.2f},T,{Cc:04.2f},M,{vitesseLockNoeud:04.2f},N,{vitesseLockNoeud*nmea0183lib.MILLE2KM_HEURE},K"
-        retour.append(nmea0183lib.__addNMEACheckSum(nmeaMessage))
+        vitesseLockNoeud : float = vitesse.vitesse.asNoeud
+        nmeaMessage = f"IIVHW,{Cv:04.2f},T,{Cc:04.2f},M,{vitesseLockNoeud:04.2f},N,{vitesseLockNoeud*cDistance.MN2KM},K"
+        retour.append(nmea0183lib._addNMEACheckSum(nmeaMessage))
 
 
         return retour

@@ -8,16 +8,19 @@ from colorist import green, Color
 
 from time import sleep, time
 
-from sfa_navigation import cVitesse, cCap, cPosition
-from sfa_nmea import nmea0183Lib
+
+
 from sfa_tools import myLogger
 
 from mySocket import mySocket
 from mySocketConf import eSocketConfig, TCP_CONFIG, UDP_CONFIG
-from env import sleepTimeInSec, postionTrinitee, postionStQuay
-from mySimulateurNav import simulateurNav as Nav
+from env import sleepTimeInSec, postionTrinitee, postionStQuay, data, depart, trajet
 
-xx : mySocket = None
+from sfa_navigation import cLatitude, cLongitude, cNavigationBateau, cVelocite, cPosition, cVecteurEtat
+from sfa_navigation.cVecteurEtat import cTrajet, cVecteurEtatKeys
+
+
+xx : mySocket 
 logger: logging.Logger = myLogger.getLogger("main", logging.DEBUG)
 
 def exit_gracefully(signum, frame):
@@ -44,40 +47,29 @@ def sendNavInfo(s : mySocket):
         print('La socket est vide')
         return
 
-    navconfig : dict[str, Any] = {
-        "vitesseEnNoeudMoyenne" : cVitesse(valAsNoeud=15.0),
-        "variationMagnetique" : cCap(valAsDeg=-1.2),
-        "nav": {
-            "positionDepart": postionTrinitee,
-            "positionWayPoints" : [
-                cPosition.fromString("2, 2"),
-                cPosition.fromString("2, 2")
-            ],
-            "positionArrivee": postionStQuay,
-        },
-        "vent": {
-            "vitesseEnNd" : cVitesse(valAsNoeud=15.0),
-            "directionEnDeg": cCap(valAsDeg=75.0), # sens du vent attention !!!
-            "temperature" : 20
-        },
-        "courant": {
-            "vitesseEnNd" : cVitesse(valAsNoeud=1.50),
-            "directionEnDeg": cCap(valAsDeg=1.5),
-        },
-        "eau": {
-            "profondeur" : 17,
-            "temperature" : 12,
-        },
-    }
-    nav : Nav = Nav(navconfig)
     nmeaTools : nmea0183Lib = nmea0183Lib.nmea0183lib()
+
+    v: cVecteurEtat = cVecteurEtat.fromDict(data)
+    t: cTrajet = cTrajet.fromDict(trajet)
+
+    b : cNavigationBateau = cNavigationBateau (etat = v, trajet= t)
+    now : float = datetime.datetime.now(tz=datetime.timezone.utc).timestamp()
+    theEnd : float = now + 100
+    dixSecondes  : float = 10  
+    
+    currentTime : float = datetime.datetime.now(tz=datetime.timezone.utc).timestamp()
+
 
     iLoop : int = 1  
     while True:
         logger.info (f"-- {iLoop:03d} {datetime.now()}--------------------------------------------------")
 
-        nav.nav(time())
-        trames : List[bytes] = nmeaTools.computeTrames(nav)
+        dT = currentTime - now
+        b.navigate (dT)
+        print(b.toString())
+        now = currentTime
+
+        trames : List[bytes] = nmeaTools.computeTrames(v)
         s.send(trames)
 
         sleep(sleepTimeInSec)

@@ -271,9 +271,11 @@ class cVelocite:
             x: float = self.vitesse.asNoeud * math.cos(
                 self.sens.asAngleTrigonometriqueEnRad
             ) - other.vitesse.asNoeud * math.cos(other.sens.asAngleTrigonometriqueEnRad)
+
             y: float = self.vitesse.asNoeud * math.sin(
                 self.sens.asAngleTrigonometriqueEnRad
             ) - other.vitesse.asNoeud * math.sin(other.sens.asAngleTrigonometriqueEnRad)
+            
             isYNull: bool = math.fabs(y) < cAngle.EQUAL_TOLERANCE_IN_DEG
             valAsAngleTrigonometriqueEnRad: float = 0.0
             if isYNull:
