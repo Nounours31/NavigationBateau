@@ -86,3 +86,16 @@ Python/python_astro/.coverage
 Python/python_astro/config.ini
 
 **/.venv/*
+**/.vscode/*
+**/.pytest_cache/*
+**/.ruff_cache/*
+**/.idea/*
+**/build/*
+**/docs/*
+**/htmlcov/*
+**/logs/*
+**/*.egg-info/*
+**/.coverage
+
+
+

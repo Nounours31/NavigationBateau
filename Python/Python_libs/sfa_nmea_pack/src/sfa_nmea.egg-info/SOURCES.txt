@@ -1,9 +1,0 @@
-README.md
-pyproject.toml
-src/sfa_nmea/__init__.py
-src/sfa_nmea/nmea0183Lib.py
-src/sfa_nmea/nmea_tools.py
-src/sfa_nmea.egg-info/PKG-INFO
-src/sfa_nmea.egg-info/SOURCES.txt
-src/sfa_nmea.egg-info/dependency_links.txt
-src/sfa_nmea.egg-info/top_level.txt
