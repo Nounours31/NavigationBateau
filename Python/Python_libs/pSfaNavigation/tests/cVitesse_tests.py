@@ -2,7 +2,7 @@ import copy
 import math
 
 import pytest
-from sfa_tools import cMyException
+from pSfaTools import cMyException
 
 from sfa_navigation import cVelocite, cCap
 from sfa_navigation.cVelocite import cVitesse

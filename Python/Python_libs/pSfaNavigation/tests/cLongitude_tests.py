@@ -1,6 +1,6 @@
 import pytest
 import copy
-from sfa_tools import cMyException
+from pSfaTools import cMyException
 
 from sfa_navigation import cAngle, cLongitude, eAngleFormat
 from sfa_navigation.cLongitude import eLongitudeSens

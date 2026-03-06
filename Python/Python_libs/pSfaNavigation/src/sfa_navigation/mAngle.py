@@ -10,7 +10,7 @@ import re
 import copy
 
 from enum import Enum, unique
-from sfa_tools import cMyException
+from pSfaTools.mMyException import cMyException
 
 
 @unique

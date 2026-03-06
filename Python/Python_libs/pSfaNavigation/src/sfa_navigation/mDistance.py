@@ -3,7 +3,7 @@ import copy
 import re
 from enum import Enum
 
-from sfa_tools import cMyException
+from pSfaTools.mMyException import cMyException
 
 
 class eDistanceFormat(Enum):

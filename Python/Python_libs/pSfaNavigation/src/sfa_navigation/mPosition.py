@@ -3,11 +3,11 @@ from __future__ import annotations
 import copy
 from typing import Dict
 
-from .cLongitude import cLongitude
-from .cLatitude import cLatitude
-from .cAngle import eAngleFormat
+from .mLongitude import cLongitude
+from .mLatitude import cLatitude
+from .mAngle import eAngleFormat
 
-from sfa_tools import cMyException
+from pSfaTools.mMyException import cMyException
 
 
 class cPosition:

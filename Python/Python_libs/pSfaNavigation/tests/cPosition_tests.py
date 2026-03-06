@@ -1,5 +1,5 @@
 import pytest
-from sfa_tools import cMyException
+from pSfaTools import cMyException
 
 from sfa_navigation import (
     cPosition,

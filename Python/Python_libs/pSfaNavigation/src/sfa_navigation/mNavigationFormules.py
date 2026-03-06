@@ -6,13 +6,15 @@ import numpy as np
 from enum import Enum
 from typing import List, Tuple
 
-from sfa_tools import cMyException
+from pSfaTools.mMyException import cMyException
 
-from . import cVelocite, cDistance, cCap
-from . import cPosition
-from . import cLongitude
-from . import cLatitude
-from . import eAngleFormat, cAngle
+from .mAngle import cAngle, eAngleFormat
+from .mCap import cCap
+from .mDistance import cDistance
+from .mVelocite import cVelocite
+from .mPosition import cPosition
+from .mLongitude import cLongitude
+from .mLatitude import cLatitude
 
 
 class cMethodeCalcul(Enum):

@@ -1,7 +1,7 @@
 from __future__ import annotations
 import copy
-from sfa_tools import cMyException
-from . import cAngle, eAngleFormat
+from pSfaTools.mMyException import cMyException
+from .mAngle import cAngle, eAngleFormat
 
 """
 Classe de base de cap

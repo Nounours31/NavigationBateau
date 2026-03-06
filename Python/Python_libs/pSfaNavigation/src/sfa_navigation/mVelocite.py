@@ -5,13 +5,11 @@ import copy
 import math
 import re
 
-from sfa_tools import cMyException
+from pSfaTools.mMyException import cMyException
 
-from .cDistance import cDistance
-from .cAngle import cAngle
-from .cCap import cCap
-from .cAngle import eAngleFormat
-from .cDistance import eDistanceFormat
+from .mDistance import cDistance, eDistanceFormat
+from .mAngle import cAngle, eAngleFormat
+from .mCap import cCap
 
 
 class cVitesse:

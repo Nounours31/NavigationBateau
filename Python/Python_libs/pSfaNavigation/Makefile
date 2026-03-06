@@ -6,8 +6,9 @@ venv:
 	cp .venv/Scripts/activate .venv/Scripts/activate.sh
 	
 # Installer les dépendances
-install: venv
+install: 
 	.venv/Scripts/python.exe -m pip install --upgrade pip
+	pip install -e /E/data/git/NavigationBateau/Python/Python_libs/pSfaTools
 	pip install -r requirements.txt
 	mkdocs new .
 

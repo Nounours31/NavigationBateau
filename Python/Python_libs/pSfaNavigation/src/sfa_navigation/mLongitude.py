@@ -7,8 +7,8 @@ import copy
 from enum import Enum, unique
 
 
-from sfa_tools import cMyException
-from .cAngle import cAngle, eAngleFormat
+from pSfaTools.mMyException import cMyException
+from .mAngle import cAngle, eAngleFormat
 
 
 @unique

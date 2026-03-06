@@ -4,6 +4,6 @@ ruff check
 
 pyright
 
-pip install sfa_navigation -e .
+pip install pSfaNavigation -e .
 pytest
 ./coverage.sh
