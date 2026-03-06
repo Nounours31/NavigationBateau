@@ -91,7 +91,6 @@ Python/python_astro/config.ini
 **/.ruff_cache/*
 **/.idea/*
 **/build/*
-**/docs/*
 **/htmlcov/*
 **/logs/*
 **/*.egg-info/*

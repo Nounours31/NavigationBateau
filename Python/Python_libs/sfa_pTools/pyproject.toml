@@ -3,12 +3,12 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "sfa_tools"
-version = "0.1.1"
+name = "pTools"
+version = "0.2.0"
 description = "Mon premier package Python"
 authors = [{name="Nounours31"}]
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = []
 
 
@@ -16,6 +16,12 @@ dependencies = []
 line-length = 100
 ignore = ["D203"]
 show-source = true
+
+[tool.pyright]
+line-length = 100
+ignore = ["D203"]
+show-source = true
+
 
 [tool.black]
 line-length = 100
