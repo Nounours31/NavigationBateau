@@ -6,6 +6,6 @@ coverage
 pre-commit
 ruff
 pyright
-sfa_tools >= 0.1.1
 
+pSfaTools
 numpy >= 1.20 

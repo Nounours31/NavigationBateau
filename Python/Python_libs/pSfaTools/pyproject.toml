@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pTools"
-version = "0.2.0"
+name = "pSfaTools"
+version = "0.1.0"
 description = "Mon premier package Python"
 authors = [{name="Nounours31"}]
 readme = "README.md"
