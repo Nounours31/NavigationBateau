@@ -4,15 +4,26 @@ from math import cos, sin, sqrt, atan2
 
 from typing import Dict, Any, List
 
-from sfa_navigation import cNavigationBateau, cTrajet, cVecteurEtat, cVitesse, cPosition, cAngle, cCap
+from pSfaTools.mMyException import cMyException
+from pSfaTools.mLogger import getLogger
 
-from sfa_tools import myLogger
+from pSfaNavigation.mNavigationFormules import cNavigationFormules, cMethodeCalcul
+from pSfaNavigation.mCap import cCap
+from pSfaNavigation.mDistance import cDistance
+from pSfaNavigation.mVelocite import cVelocite, cVitesse
+from pSfaNavigation.mPosition import cPosition
+from pSfaNavigation.mLatitude import cLatitude, eLatitudeSens
+from pSfaNavigation.mLongitude import cLongitude, eLongitudeSens
+from pSfaNavigation.mAngle import cAngle, eAngleFormat
+from pSfaNavigation.mVecteurEtat import cVecteurEtat, cVecteurEtatKeys, cTrajet
+from pSfaNavigation.mNavigationBateau import cNavigationBateau
 
+from pSfaNmea.mNmea0183Lib import nmea0183lib
 
 
 
 class cSimulateurNav:
-    _logger : logging.Logger = myLogger.getLogger("simulateurNav", logging.DEBUG)
+    _logger : logging.Logger = getLogger("simulateurNav", logging.DEBUG)
 
     def __init__(self, timestamp : float):
         self._heuredepart : float = timestamp

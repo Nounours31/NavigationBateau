@@ -2,7 +2,8 @@ import math
 from datetime import datetime
 from enum import Enum
 
-from sfa_navigation import cLatitude, cLongitude
+from pSfaNavigation.mLatitude import cLatitude
+from pSfaNavigation.mLongitude import cLongitude
 
 class cConstanteForNMEA(Enum):
     FORMAT_LAT = "FORMAT_LAT"

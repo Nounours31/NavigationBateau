@@ -4,8 +4,8 @@ coverage
 pre-commit
 ruff
 pyright
-sfa_tools >= 0.1.1
-sfa_navigation >= 0.1.0
-sfa_nmea >= 0.1.1
+pSfaTools >= 0.1.0
+pSfaNavigation >= 0.1.0
+pSfaNmea >= 0.1.0
 numpy 
 colorist

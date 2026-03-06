@@ -4,5 +4,5 @@ coverage
 pre-commit
 ruff
 pyright
-sfa_tools >= 0.1.0
-sfa_navigation >= 0.1.0
+pSfaTools >= 0.1.0
+pSfaNavigation >= 0.1.0

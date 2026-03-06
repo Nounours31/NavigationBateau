@@ -8,10 +8,20 @@ from typing import List, Dict
 from math import floor, cos, sin, tan
 from datetime import datetime, timezone, tzinfo
 
-from sfa_tools import myLogger
-from sfa_navigation import cCap, cDistance, cLatitude, cLongitude, cPosition, cSatellite, cVecteurEtat, cVelocite
 
-from . import cNmeaTools,cConstanteForNMEA
+from pSfaTools.mLogger import getLogger
+
+from pSfaNavigation.mLongitude import cLongitude
+from pSfaNavigation.mLatitude import cLatitude
+from pSfaNavigation.mLongitude import cLongitude
+from pSfaNavigation.mVelocite import cVelocite
+from pSfaNavigation.mCap import cCap
+from pSfaNavigation.mDistance import cDistance
+from pSfaNavigation.mPosition import cPosition
+from pSfaNavigation.mSatellite import cSatellite
+from pSfaNavigation.mVecteurEtat import cVecteurEtat, cVecteurEtatKeys, cTrajet
+
+from .mNmeaTools import cNmeaTools,cConstanteForNMEA
 
 
 
@@ -153,7 +163,7 @@ class nmea0183lib :
 
     def __init__(self):
         super().__init__()
-        self.__logger = myLogger.getLogger(name = "nmea0183lib")
+        self.__logger = getLogger(name = "nmea0183lib")
 
     # ----------------------------------------------------------------------------------
     # concatene devant le message le "$" et ajoute en fin le "*" + checksum nmea

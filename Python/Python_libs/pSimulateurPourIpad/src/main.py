@@ -1,6 +1,7 @@
 from logging import Logger
 from typing import Any, Dict
-from sfa_tools import myLogger
+from pSfaTools.mLogger import getLogger
+
 
 from colorist import green, Color
 
@@ -11,7 +12,7 @@ import sys
 import mApp
 
 
-logger: Logger = myLogger.getLogger("main.py")
+logger: Logger = getLogger("main.py")
 app : mApp.cApp = mApp.cApp()
 
 def exit_gracefully(signum, frame):

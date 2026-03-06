@@ -10,11 +10,21 @@ from colorist import green, Color
 
 from time import sleep, time
 
-from sfa_navigation import cAngle, cCap, cLatitude, cLongitude, cNavigationBateau, cPosition, cTrajet, cVecteurEtat, cVelocite
-from sfa_navigation.cVecteurEtat import cVecteurEtatKeys
-from sfa_tools import myLogger
+from pSfaTools.mMyException import cMyException
+from pSfaTools.mLogger import getLogger
 
-from mSimulateurNavigation import cSimulateurNav
+from pSfaNavigation.mNavigationFormules import cNavigationFormules, cMethodeCalcul
+from pSfaNavigation.mCap import cCap
+from pSfaNavigation.mDistance import cDistance
+from pSfaNavigation.mVelocite import cVelocite, cVitesse
+from pSfaNavigation.mPosition import cPosition
+from pSfaNavigation.mLatitude import cLatitude, eLatitudeSens
+from pSfaNavigation.mLongitude import cLongitude, eLongitudeSens
+from pSfaNavigation.mAngle import cAngle, eAngleFormat
+from pSfaNavigation.mVecteurEtat import cVecteurEtat, cVecteurEtatKeys, cTrajet
+from pSfaNavigation.mNavigationBateau import cNavigationBateau
+
+from .mSimulateurNavigation import cSimulateurNav
 
 depart : cPosition = cPosition.fromDict({cLatitude.NOM: "N 12°", cLongitude.NOM: "W 10°"})
 arrivee : cPosition = cPosition.fromDict({cLatitude.NOM: "N 15°", cLongitude.NOM: "W 10°"})
@@ -52,7 +62,7 @@ data: dict[str, object] = {
 
 
 class cApp:
-    _logger: logging.Logger = myLogger.getLogger("cApp", logging.DEBUG)
+    _logger: logging.Logger = getLogger("cApp", logging.DEBUG)
     stop_event : threading.Event = threading.Event()
 
     def __init__(self):

@@ -1,5 +1,15 @@
-from sfa_navigation import cLatitude, cLongitude, cVelocite, cPosition, cVecteurEtat, cCap, cAngle
-from sfa_navigation.cVecteurEtat import cTrajet, cVecteurEtatKeys
+from pSfaTools.mMyException import cMyException
+
+from pSfaNavigation.mNavigationFormules import cNavigationFormules, cMethodeCalcul
+from pSfaNavigation.mCap import cCap
+from pSfaNavigation.mDistance import cDistance
+from pSfaNavigation.mVelocite import cVelocite, cVitesse
+from pSfaNavigation.mPosition import cPosition
+from pSfaNavigation.mLatitude import cLatitude, eLatitudeSens
+from pSfaNavigation.mLongitude import cLongitude, eLongitudeSens
+from pSfaNavigation.mAngle import cAngle, eAngleFormat
+from pSfaNavigation.mVecteurEtat import cVecteurEtat, cVecteurEtatKeys, cTrajet
+from pSfaNavigation.mNavigationBateau import cNavigationBateau
 
 
 sleepTimeInSec=2
