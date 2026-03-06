@@ -3,12 +3,11 @@ from datetime import datetime, timezone
 from enum import Enum, IntEnum
 from typing import List
 
-from sfa_navigation import cSatellite
-
-from . import cAngle
-from . import cVelocite
-from . import cCap
-from . import cPosition
+from .cSatellite import cSatellite
+from .cAngle import cAngle
+from .cVelocite import cVelocite
+from .cCap import cCap
+from .cPosition import cPosition
 
 
 

@@ -6,6 +6,7 @@ from typing import Dict
 from .cLongitude import cLongitude
 from .cLatitude import cLatitude
 from .cAngle import eAngleFormat
+
 from sfa_tools import cMyException
 
 

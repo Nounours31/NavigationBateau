@@ -2,9 +2,12 @@
 import datetime
 import time
 
-from sfa_navigation import cCap, cNavigationBateau, cVecteurEtat, cVelocite, cPosition, cAngle, cLatitude, cLongitude
-from sfa_navigation.cVecteurEtat import cVecteurEtatKeys, cTrajet
+from sfa_navigation.cCap import cCap
+from sfa_navigation.cNavigationBateau import cNavigationBateau
+from sfa_navigation import cVelocite, cPosition, cAngle, cLatitude, cLongitude
+from sfa_navigation.cVecteurEtat import cVecteurEtat, cVecteurEtatKeys, cTrajet
 
+from sfa_navigation.cSatellite import cSatellite
 
 # =========================
 # Fixtures
@@ -31,6 +34,7 @@ class cVecteurEtat_tests:
                 cVecteurEtatKeys.TEMPERATURE: 20,
                 cVecteurEtatKeys.DERIVE: cAngle(valAsDeg=2.5),
             },
+            cVecteurEtatKeys.SATELLITE : {}
         }
 
         v: cVecteurEtat = cVecteurEtat.fromDict(data)
@@ -85,6 +89,7 @@ class cVecteurEtat_tests:
                 cVecteurEtatKeys.TEMPERATURE: 20,
                 cVecteurEtatKeys.DERIVE: cAngle(valAsDeg=2.5),
             },
+            cVecteurEtatKeys.SATELLITE : {}
         }
         
         v: cVecteurEtat = cVecteurEtat.fromDict(data)

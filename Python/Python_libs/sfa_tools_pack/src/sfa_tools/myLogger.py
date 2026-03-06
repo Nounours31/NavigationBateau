@@ -111,7 +111,7 @@ def createFileHandler(filepath: str) -> RotatingFileHandler:
     # - 'app.log' : nom du fichier
     # - maxBytes=2000 : taille max du fichier en octets avant rotation
     # - backupCount=5 : nombre de fichiers de backup conservés
-    rotating_handler = logging.handlers.RotatingFileHandler(filepath, maxBytes=2000000, backupCount=5)
+    rotating_handler = RotatingFileHandler(filepath, maxBytes=2000000, backupCount=5)
     rotating_handler.setLevel(logging.DEBUG)  # This handler only handles DEBUG and above
 
     # Create a formatter and attach it to the handler
@@ -120,7 +120,7 @@ def createFileHandler(filepath: str) -> RotatingFileHandler:
     return rotating_handler
 
 
-def getLogger(name : str, level : int = logging.INFO, myHandlers : List[logging.handlers] = None) -> Logger:
+def getLogger(name : str, level : int = logging.INFO, myHandlers : List[logging.Handler] = []) -> Logger:
     """
     creation d'un logger
     :param name: Nom du loger
@@ -136,24 +136,25 @@ def getLogger(name : str, level : int = logging.INFO, myHandlers : List[logging.
     else:
         x.addHandler(createConsoleHandler())
 
-    y: Logger = x
+    y: Logger | None = x
     allHandler = []
     if x.level == logging.NOTSET:
-        y : Logger = x.parent
+        y = x.parent
 
-    hs = y.handlers
-    for h in hs:
-        info: Dict[str, str] = {}
-        info ["name"] = h.name
-        info ["type"] = type(h).__name__
-        if isinstance(h, handlers.BaseRotatingHandler):
-            z : handlers.BaseRotatingHandler = h
-            info ["file"] = z.baseFilename
+    if y is not None: 
+        hs = y.handlers
+        for h in hs:
+            info: Dict[str, str | None] = {}
+            info ["name"] = h.name
+            info ["type"] = type(h).__name__
+            if isinstance(h, handlers.BaseRotatingHandler):
+                z : handlers.BaseRotatingHandler = h
+                info ["file"] = z.baseFilename
 
-        if isinstance(h, StreamHandler):
-            z : StreamHandler = h
-            info ["file"] = z.stream.name
-        allHandler.append(info)
+            if isinstance(h, StreamHandler):
+                w : StreamHandler = h
+                info ["file"] = w.stream.name
+            allHandler.append(info)
 
     _internalLogger.info(f"Creation logger {name} - level {logging.getLevelName(x.getEffectiveLevel())} - handler {allHandler}")
     return x

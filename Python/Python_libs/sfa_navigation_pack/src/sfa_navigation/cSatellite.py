@@ -1,18 +1,21 @@
 from __future__ import annotations
+import copy
 from typing import Dict, List
+
 from sfa_tools import cMyException
+
+
+
 
 
 class cSatellite:
     def __init__(self):
-        self._inRange : List[str] = [
-            "80", "71", "73", "79"
-        ]
+        self._SatInRange : List[str] = [ "80", "71", "73", "79" ]
 
 
     @property
     def visible(self) -> List[str] :
-        return self._inRange
+        return self._SatInRange
 
     @property
     def PDOP(self) -> float :
@@ -32,7 +35,7 @@ class cSatellite:
     @classmethod
     def fromObject(cls, o: object) -> cSatellite:
         if isinstance(o, cSatellite):
-            return cls()
+            return copy.deepcopy(o)
         if isinstance(o, str):
             return cSatellite.fromString(o)
         if isinstance(o, dict):
@@ -46,7 +49,9 @@ class cSatellite:
         return cls()
 
     @classmethod
-    def fromDict(cls, data: Dict = {}) -> cSatellite:
+    def fromDict(cls, data: Dict[str,object] | None = None) -> cSatellite:
+        if data is None:
+            data = {}
         return cls()
 
 
