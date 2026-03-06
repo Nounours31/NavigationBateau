@@ -3,8 +3,9 @@ import copy
 
 
 
-from sfa_navigation import cDistance
-from sfa_navigation.cDistance import eDistanceFormat
+
+from pSfaNavigation.mDistance import cDistance, eDistanceFormat
+
 
 
 class cDistance_tests:

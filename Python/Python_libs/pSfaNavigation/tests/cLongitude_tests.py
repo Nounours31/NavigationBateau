@@ -1,9 +1,10 @@
 import pytest
 import copy
-from pSfaTools import cMyException
+from pSfaTools.mMyException import cMyException
 
-from sfa_navigation import cAngle, cLongitude, eAngleFormat
-from sfa_navigation.cLongitude import eLongitudeSens
+
+from pSfaNavigation.mLongitude import cLongitude, eLongitudeSens
+from pSfaNavigation.mAngle import cAngle, eAngleFormat
 
 
 class cLongitude_tests:

@@ -1,7 +1,7 @@
 import logging
 import logging.config
 
-from sfa_navigation.cPosition import cPosition
+from pSfaNavigation.mPosition import cPosition
 
 logging.config.fileConfig("logging.conf")
 

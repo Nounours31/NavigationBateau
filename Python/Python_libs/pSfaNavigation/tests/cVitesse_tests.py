@@ -2,10 +2,10 @@ import copy
 import math
 
 import pytest
-from pSfaTools import cMyException
+from pSfaTools.mMyException import cMyException
 
-from sfa_navigation import cVelocite, cCap
-from sfa_navigation.cVelocite import cVitesse
+from pSfaNavigation.mCap import cCap
+from pSfaNavigation.mVelocite import cVelocite, cVitesse
 
 
 # =========================

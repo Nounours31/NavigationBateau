@@ -2,7 +2,7 @@ from __future__ import annotations
 import copy
 from typing import Dict, List
 
-from pSfaTools import cMyException
+from pSfaTools.mMyException import cMyException
 
 
 

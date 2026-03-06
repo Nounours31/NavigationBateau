@@ -1,9 +1,9 @@
 import pytest
 import copy
-from pSfaTools import cMyException
+from pSfaTools.mMyException import cMyException
 
-from sfa_navigation import cAngle, cLatitude, eAngleFormat
-from sfa_navigation.cLatitude import eLatitudeSens
+from pSfaNavigation.mLatitude import cLatitude, eLatitudeSens
+from pSfaNavigation.mAngle import cAngle, eAngleFormat
 
 
 class cLatitude_tests:
@@ -323,14 +323,13 @@ class cLatitude_tests:
 
         for y in x:
             assert ll.toString(y[0]) == y[1]
-
         assert ll.toString("toto") == "Not implemented"
 
         assert str(ll) == ll.toString(eAngleFormat.DD)
         assert ll.__repr__() == "[Latitude: S 010.2541°]"
 
     def test_pourCoverage(self):
-        ll: cLatitude(valAsDeg=0.0)
+        ll: cLatitude = cLatitude(valAsDeg=0.0)
         with pytest.raises(cMyException) as err:
             ll = cLatitude.fromString("95.0")
             ll.normalise()

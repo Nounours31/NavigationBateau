@@ -2,12 +2,19 @@
 import datetime
 import time
 
-from sfa_navigation.cCap import cCap
-from sfa_navigation.cNavigationBateau import cNavigationBateau
-from sfa_navigation import cVelocite, cPosition, cAngle, cLatitude, cLongitude
-from sfa_navigation.cVecteurEtat import cVecteurEtat, cVecteurEtatKeys, cTrajet
+from pSfaTools.mMyException import cMyException
 
-from sfa_navigation.cSatellite import cSatellite
+from pSfaNavigation.mNavigationFormules import cNavigationFormules, cMethodeCalcul
+from pSfaNavigation.mCap import cCap
+from pSfaNavigation.mDistance import cDistance
+from pSfaNavigation.mVelocite import cVelocite, cVitesse
+from pSfaNavigation.mPosition import cPosition
+from pSfaNavigation.mLatitude import cLatitude, eLatitudeSens
+from pSfaNavigation.mLongitude import cLongitude, eLongitudeSens
+from pSfaNavigation.mAngle import cAngle, eAngleFormat
+from pSfaNavigation.mVecteurEtat import cVecteurEtat, cVecteurEtatKeys, cTrajet
+from pSfaNavigation.mNavigationBateau import cNavigationBateau
+
 
 # =========================
 # Fixtures

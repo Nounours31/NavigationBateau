@@ -1,4 +1,4 @@
-from sfa_navigation import cSatellite
+from pSfaNavigation.mSatellite import cSatellite
 
 
 class cSatellite_tests:

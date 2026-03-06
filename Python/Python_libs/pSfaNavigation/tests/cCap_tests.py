@@ -1,9 +1,10 @@
 import pytest
 import copy
 
-from pSfaTools import cMyException
+from pSfaTools.mMyException import cMyException
 
-from sfa_navigation import cAngle, cCap
+from pSfaNavigation.mAngle import cAngle
+from pSfaNavigation.mCap import cCap
 
 
 class cCap_tests:

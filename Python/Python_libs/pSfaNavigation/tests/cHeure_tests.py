@@ -1,5 +1,4 @@
-from sfa_navigation import cHeure
-
+from pSfaNavigation.mHeure import cHeure
 
 class cHeure_tests:
     def test_infra(self):
