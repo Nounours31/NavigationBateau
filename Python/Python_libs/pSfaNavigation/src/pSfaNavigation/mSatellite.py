@@ -10,11 +10,11 @@ from pSfaTools.mMyException import cMyException
 
 class cSatellite:
     def __init__(self):
-        self._SatInRange : List[str] = [ "80", "71", "73", "79" ]
+        self._SatInRange : List[int] = [ 80, 71, 73, 79 ]
 
 
     @property
-    def visible(self) -> List[str] :
+    def visible(self) -> List[int] :
         return self._SatInRange
 
     @property

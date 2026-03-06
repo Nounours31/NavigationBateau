@@ -50,7 +50,7 @@ class cNavigationBateau:
             retour.append(x)
         return retour
     
-    def navigate (self, dT : float) -> None :
+    def navigate (self, dT : float) -> cPosition :
         # recherche du waypoint le plus proche
         p : cPosition = self.positionCourante
         wpt : List[cPosition] = self.Wpt
@@ -81,7 +81,7 @@ class cNavigationBateau:
                                                                       courant = self._etat.eau.courant,
                                                                       vent = self._etat.air.vent,
                                                                       derive = self._etat.air.derive)
-        self.positionCourante = NewPosition
+        return NewPosition
 
 
     def toString (self) -> str :

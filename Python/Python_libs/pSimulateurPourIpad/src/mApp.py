@@ -24,39 +24,11 @@ from pSfaNavigation.mAngle import cAngle, eAngleFormat
 from pSfaNavigation.mVecteurEtat import cVecteurEtat, cVecteurEtatKeys, cTrajet
 from pSfaNavigation.mNavigationBateau import cNavigationBateau
 
-from .mSimulateurNavigation import cSimulateurNav
+from mSimulateurNavigation import cSimulateurNav
 
-depart : cPosition = cPosition.fromDict({cLatitude.NOM: "N 12°", cLongitude.NOM: "W 10°"})
-arrivee : cPosition = cPosition.fromDict({cLatitude.NOM: "N 15°", cLongitude.NOM: "W 10°"})
-trajet: dict[str, object] = {
-    cVecteurEtatKeys.DEPART : depart,
-    cVecteurEtatKeys.ARRIVEE: arrivee,
-    cVecteurEtatKeys.WAYPOINTS : [
-        cPosition.fromDict({cLatitude.NOM: "N 13°", cLongitude.NOM: "W 10°"}),
-        cPosition.fromDict({cLatitude.NOM: "N 14°", cLongitude.NOM: "W 10°"})
-    ]
-}
-
-data: dict[str, object] = {
-    # cVecteurEtatKeys.HEURE : datetime.datetime.now(tz=datetime.timezone.utc).timestamp() ,
-    cVecteurEtatKeys.HEURE : 1772564924,
-    cVecteurEtatKeys.BATEAU : {
-        cVecteurEtatKeys.SOG: cVelocite(vitesse=15.0, sens=75),
-        cVecteurEtatKeys.POSITION: depart,
-        cVecteurEtatKeys.VARIATION_MAGNETIQUE: cCap(valAsDeg=-1.2),
-    },
-    cVecteurEtatKeys.EAU : {
-        cVecteurEtatKeys.COURANT: cVelocite(vitesse=15.0, sens=75),
-        cVecteurEtatKeys.PROFONDEUR: 17,
-        cVecteurEtatKeys.TEMPERATURE: 12,
-    },
-    cVecteurEtatKeys.AIR : {
-        cVecteurEtatKeys.VENT: cVelocite(vitesse=15.0, sens=75),
-        cVecteurEtatKeys.TEMPERATURE: 20,
-        cVecteurEtatKeys.DERIVE: cAngle(valAsDeg=2.5),
-    },
-    cVecteurEtatKeys.SATELLITE : {}
-}
+import env as myEnv
+trajet: dict[str, object] = myEnv.trajet
+data: dict[str, object] = myEnv.data
         
 
 
@@ -127,12 +99,13 @@ class cApp:
 
         self.serverSendBytesData(databytes, tramesBytes)
 
-    def serverSendBytesData(self, data: bytes,  trames : List[bytes]) -> None:
+    def serverSendBytesData(self, data: bytes | None = None,  trames : List[bytes] | None = None) -> None:
         cApp._logger.info("serverSendData")
         if trames is None:
             trames = []
         
-        trames.append(data)
+        if data is not None:
+            trames.append(data)
 
         if not cApp.stop_event.is_set():
             if self._protocolServer == "UDP":
@@ -218,47 +191,14 @@ class cApp:
         sim : cSimulateurNav = cSimulateurNav(now)
 
         while not cApp.stop_event.is_set():
-            now = datetime.now(tz=timezone.utc).timestamp()
-            trames : List[str] = sim.nav(now, v, t)
-            self.serverSendData(trames=trames)
+            trames : List[bytes]
+            (v, trames) = sim.nav(v, t)
+            
+            cApp._logger.info(v.toString())
+            self.serverSendBytesData(trames=trames)
             sleep(2)
 
 
         # arreter les sockets ...
         self._clientThread.join()
         self._serverThread.join()
-
-
-        """
-        if s is None:
-            print('La socket est vide')
-            return
-
-        nmeaTools : nmea0183Lib = nmea0183Lib.nmea0183lib()
-
-        v: cVecteurEtat = cVecteurEtat.fromDict(data)
-        t: cTrajet = cTrajet.fromDict(trajet)
-
-        b : cNavigationBateau = cNavigationBateau (etat = v, trajet= t)
-        now : float = datetime.datetime.now(tz=datetime.timezone.utc).timestamp()
-        theEnd : float = now + 100
-        dixSecondes  : float = 10  
-        
-        currentTime : float = datetime.datetime.now(tz=datetime.timezone.utc).timestamp()
-
-
-        iLoop : int = 1  
-        while True:
-            logger.info (f"-- {iLoop:03d} {datetime.now()}--------------------------------------------------")
-
-            dT = currentTime - now
-            b.navigate (dT)
-            print(b.toString())
-            now = currentTime
-
-            trames : List[bytes] = nmeaTools.computeTrames(v)
-            s.send(trames)
-
-            sleep(sleepTimeInSec)
-            iLoop += 1
-        """

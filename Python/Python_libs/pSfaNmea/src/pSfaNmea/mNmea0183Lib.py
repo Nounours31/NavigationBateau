@@ -160,11 +160,11 @@ class nmea0183lib :
     PIED2METRE: float = 0.33
     FANTOM2METRE: float = 1.8288
     InchMercure2Bar: float = 0.0334211
+    _logger : Logger = getLogger(name = "nmea0183lib")
 
     def __init__(self):
-        super().__init__()
-        self.__logger = getLogger(name = "nmea0183lib")
-
+        pass
+    
     # ----------------------------------------------------------------------------------
     # concatene devant le message le "$" et ajoute en fin le "*" + checksum nmea
     # ----------------------------------------------------------------------------------
@@ -205,9 +205,9 @@ class nmea0183lib :
         retour.append(self.getWayPointInfoBWR(now, positionDepartLatitudeDecimale + 2.0, positionDepartLongitudeDecimale + 2.0, 45.0, variationMagnetique, 2.98, "WP1"))
         retour.append(self.getWayPointInfoBWC(now, positionDepartLatitudeDecimale + 2.0, positionDepartLongitudeDecimale + 2.0, 45.0, variationMagnetique, 2.98, "WP1"))
         """
-        if self.__logger.isEnabledFor(logging.DEBUG) :
+        if nmea0183lib._logger.isEnabledFor(logging.DEBUG) :
             for t in retour:
-                self.__logger.debug(t)
+                nmea0183lib._logger.debug(t)
 
         return retour
 

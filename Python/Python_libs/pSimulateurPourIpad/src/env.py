@@ -19,6 +19,16 @@ latTrinitee = 47.565102  # angleSexaToDecimal(degre = 2, minute = 56.23)
 longTrinitee = -3.011115  # angleSexaToDecimal(degre = 2, minute = 56.23)
 postionTrinitee: cPosition = cPosition.fromString(f"{latTrinitee:.6f},{longTrinitee:.6f}")
 
+# La teignouse
+latTeignouse = 47.457243477695584
+longTeignouse = -3.0455449857339927  # angleSexaToDecimal(degre = 2, minute = 56.23)
+postionTeignouse: cPosition = cPosition.fromString(f"{latTeignouse:.6f},{longTeignouse:.6f}")
+
+# Buisson de Meaban
+latMeaban = 47.52807297570114
+longMeaban = -2.9486584578059367  # angleSexaToDecimal(degre = 2, minute = 56.23)
+positionMeaban: cPosition = cPosition.fromString(f"{latMeaban:.6f},{longMeaban:.6f}")
+
 # Port de St Quay
 latPortStQuay = 48.649665  # angleSexaToDecimal(degre = 2, minute = 56.23)
 longPortStQuay = -2.813217  # angleSexaToDecimal(degre = 2, minute = 56.23)
@@ -28,15 +38,14 @@ postionStQuay: cPosition = cPosition.fromString(f"{latPortStQuay:.6f},{longPortS
 latSamoa = -14.2456  # angleSexaToDecimal(degre = 2, minute = 56.23)
 longSamoa = -169.6100  # angleSexaToDecimal(degre = 2, minute = 56.23)
 
-depart : cPosition = cPosition.fromDict({cLatitude.NOM: "N 12°", cLongitude.NOM: "W 10°"})
-arrivee : cPosition = cPosition.fromDict({cLatitude.NOM: "N 15°", cLongitude.NOM: "W 10°"})
+depart : cPosition = postionTrinitee
+arrivee : cPosition = postionTeignouse
 
 trajet: dict[str, object] = {
     cVecteurEtatKeys.DEPART : depart,
     cVecteurEtatKeys.ARRIVEE: arrivee,
     cVecteurEtatKeys.WAYPOINTS : [
-        cPosition.fromDict({cLatitude.NOM: "N 13°", cLongitude.NOM: "W 10°"}),
-        cPosition.fromDict({cLatitude.NOM: "N 14°", cLongitude.NOM: "W 10°"})
+        positionMeaban,
     ]
 }
 

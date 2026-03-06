@@ -1,8 +1,10 @@
 import copy
+from datetime import datetime, timezone
 import logging
 from math import cos, sin, sqrt, atan2
 
-from typing import Dict, Any, List
+import random
+from typing import Dict, Any, List, Tuple
 
 from pSfaTools.mMyException import cMyException
 from pSfaTools.mLogger import getLogger
@@ -29,24 +31,26 @@ class cSimulateurNav:
         self._heuredepart : float = timestamp
         self._heure : float = timestamp
 
-    def updateVecteurEtat(self, w : cVecteurEtat) -> cVecteurEtat:    
+    def updateVecteurEtat(self, w : cVecteurEtat, t : cTrajet) -> cVecteurEtat:    
         v : cVecteurEtat = copy.deepcopy(w)   
-        positionCourante : cPosition = v.bateau.position
-        objectif : cPosition = None
-        objectifSecondaire : cPosition = None
+
+        # quel est le prochain point de la trajectoire a rejoindre a partir de la position courante
+        c : cCap = t.getTrajectoireInfo (v.bateau)
 
         # facteur perturbant
-        facteur = (self._heure - self._heuredepart) * cAngle.DEG2RAD
+        nombre = (2.0 * random.random()) - 1.0
+        facteur = nombre
+        
         
         # deplacement
-        v.bateau.sog.vitesse.asNoeud = v.bateau.sog.vitesse.asNoeud * (1 + 0.25 * cos(facteur))
-        v.bateau.sog.sens.capAsDeg = v.bateau.sog.sens.capAsDeg * (1.0 + 0.25 * cos(facteur))
+        v.bateau.sog.vitesse.asNoeud = v.bateau.sog.vitesse.asNoeud * (1 + facteur / 10.0)
+        v.bateau.sog.sens.capAsDeg = c.capAsDeg + (facteur * 5.0)
 
         # vent
-        v.air.vent.vitesse.asNoeud = v.air.vent.vitesse.asNoeud * (1 + cos(facteur))
-        v.air.vent.sens.capAsDeg = v.air.vent.sens.capAsDeg * (1 + cos(facteur))
-        v.air.derive.angleAsDeg = v.air.derive.angleAsDeg * (1 + cos(facteur))
-        v.air.temperature = v.air.temperature + (5.0 * (cos(facteur)))
+        v.air.vent.vitesse.asNoeud = v.air.vent.vitesse.asNoeud * (1 + facteur / 10.0)
+        v.air.vent.sens.capAsDeg = v.air.vent.sens.capAsDeg + (facteur * 5.0)
+        v.air.derive.angleAsDeg = v.air.derive.angleAsDeg + (facteur * 5.0)
+        v.air.temperature = v.air.temperature + (1 + facteur * 5.0)
         
         """
         ventAppX = (self._ventReel.val * cos(self._ventReel.dir.valAsRad) - self._vitesse.val * cos(self._vitesse.dir.valAsRad))
@@ -56,28 +60,33 @@ class cSimulateurNav:
         """     
 
         # Eau (profondeur + temp)
-        v.eau.courant.vitesse.asNoeud = v.eau.courant.vitesse.asNoeud * (1 + cos(facteur))
-        v.eau.courant.sens.capAsDeg = v.eau.courant.sens.capAsDeg * (1 + cos(facteur))
-        v.eau.temperature = v.eau.temperature + (2.0 * (cos(facteur)))
-        v.eau.profondeur = v.eau.profondeur + (15.0 * (1+cos(facteur)))
+        v.eau.courant.vitesse.asNoeud = v.eau.courant.vitesse.asNoeud *(1 + facteur / 10.0)
+        v.eau.courant.sens.capAsDeg = v.eau.courant.sens.capAsDeg  +(facteur * 5.0)
+        v.eau.temperature = v.eau.temperature + (1 + 2.0 * facteur)
+        v.eau.profondeur = v.eau.profondeur + (1 + 15.0 * (1 + facteur / 10.0))
 
         return v
 
 
-    def nav(self, timestamp : float, v : cVecteurEtat, t: cTrajet) -> List[bytes] :
+    def nav(self, v : cVecteurEtat, t: cTrajet) -> Tuple[cVecteurEtat, List[bytes]] :
+        # maintenant
+        timestamp = datetime.now(tz=timezone.utc).timestamp()
+
         # updateVecteurEtat a l'heure courante
-        v = self.updateVecteurEtat(v)
+        # le long de la trajectoire demandee
+        v = self.updateVecteurEtat(v, t)
 
         # calcul de la durre de la nav en secondes
-        intervalDeNavEnSec = (timestamp - self._heure) / 1000.0
+        intervalDeNavEnSec = (timestamp - self._heure) 
         self._heure = timestamp
 
-        # navigation
+        # navigation avec ce sinfos
         b : cNavigationBateau = cNavigationBateau (etat = v, trajet= t)        
-        b.navigate (dT=intervalDeNavEnSec)
+        newPosition : cPosition = b.navigate (dT=intervalDeNavEnSec)
+        v.bateau.position = newPosition 
 
         n : nmea0183lib = nmea0183lib ()
-        return n.computeTrames(nav=v, heure=timestamp)
+        return (v, n.computeTrames(nav=v, heure=datetime.fromtimestamp(timestamp, tz=timezone.utc)))
 
         
         
