@@ -8,10 +8,7 @@ from .mAngle import cAngle
 from .mVelocite import cVelocite
 from .mCap import cCap
 from .mPosition import cPosition
-from .mNavigationFormules import cNavigationFormules
 
-import numpy as np
-import math
 
 # ==========================================================
 # cEau
@@ -155,7 +152,7 @@ class cEtatBateau:
             raise TypeError("position doit être un cPosition")
         self._position = value
 
-    @property
+    @property 
     def varMagnetique(self) -> cCap:
         return self._varMagnetique
 
@@ -271,27 +268,17 @@ class cVecteurEtat:
 # ==========================================================
 # TRAJET
 # ==========================================================
-class cToleranceTrajet(IntEnum):
-    PassageParWPT = 1 << 0
-    PassageParWPTLePlusProche = 1 << 1
-    PassageParWPTLePlusProcheDansLAXE = 1 << 2
-    ZappeDepart = 1 << 3
+import uuid
+class cWayPoint:
+    def __init__(self, position: cPosition) -> None:
+        self.position = position
+        self._id = uuid.uuid4()
 
 class cTrajet:
-    def __init__(self,  depart: cPosition, arrivee: cPosition, pointsDePassage: List[cPosition],
-        tolerance: int = (cToleranceTrajet.ZappeDepart | cToleranceTrajet.PassageParWPTLePlusProcheDansLAXE)
-    ) -> None:
-        self._tolerance = tolerance
+    def __init__(self,  depart: cPosition, arrivee: cPosition, pointsDePassage: List[cPosition]) -> None:
         self._depart = depart
         self._arrivee = arrivee
         self._waypoints = pointsDePassage
-
-    @property
-    def tolerance(self) -> int:
-        return self._tolerance
-    @tolerance.setter
-    def tolerance(self, tolerance: int) -> None:
-        self._tolerance = tolerance
 
     @property
     def depart(self) -> cPosition:
@@ -344,70 +331,5 @@ class cTrajet:
     def __repr__(self):
         return self.__str__()
     
-    @staticmethod
-    def quick_sort(arr : List[(cPosition, cDistance)]) -> List[(cPosition, cDistance)]:
-        if len(arr) <= 1:
-            return arr
-        (pivot, dpivot) = arr[0]
-        left = [(x, y) for (x, y) in arr[1:] if y < dpivot]
-        right = [(x, y) for (x, y) in arr[1:] if y >= dpivot]
-        return cTrajet.quick_sort(left) + [(pivot, dpivot)] + cTrajet.quick_sort(right)
 
-
-    def getTrajectoireInfo(self, b: cEtatBateau) -> cCap:
-        # quel est le prochain point de la trajectoire a rejoindre a partir de la position courante
-        # en fonction de la tolerance choisie
-        
-        # recup de tous les WPT
-        allWPT : List[cPosition] = []    
-        allWPT.append(self.depart)
-        for p in self.waypoints:
-            allWPT.append(p)
-        allWPT.append(self.arrivee)
-
-
-        # liste des points devant moi et pas trop pret  
-        x : cNavigationFormules = cNavigationFormules(b.position)
-        c : cCap
-        d : cDistance
-        wptDevant : List[(cPosition, cDistance)] = []    
-        for p in allWPT:
-            (c, d) = x.routeLoxodromique(arrivee=p)
-            if d > 0.1:
-                v1 = np.array([math.sin(c.capAsRad), math.cos(c.capAsRad)])
-                v2 = np.array([math.sin(b.sog.sens.capAsRad), math.cos(b.sog.sens.capAsRad)])
-                if np.dot(v1, v2) > 0:
-                    wptDevant.append((p, d)) 
-        
-        # aucune solution - je vise l'arrivee
-        wptDevantTrie : List[(cPosition, cDistance)] = cTrajet.quick_sort(wptDevant)
-        if len(wptDevantTrie) == 0 :
-            (c, d) = x.routeLoxodromique(arrivee=t.arrivee)
-            return c
-        
-        # 1 solution - j'y vais
-        if len(wptDevantTrie) == 1 :
-            (c, d) = x.routeLoxodromique(arrivee=wptDevantTrie[0][0])
-            return c
-        
-
-        # plusieur solution - prendre la meilleure des 2 premieres
-        # je ne garde que les point assez loing (je n'impose pas de passer par le WPT)
-        wptDevantTrieUtile : List[(cPosition, cDistance)] = []    
-        for (p, d) in wptDevantTrie:
-            if d > 0.5:
-                wptDevantTrieUtile.append((p,d))
-
-        # pour les deux premiers prendre l'angle avec la route le plus petit
-        if len(wptDevantTrieUtile) == 0 or len(wptDevantTrieUtile) == 1:
-            (u, v) = wptDevantTrie[0]
-            (c, d) = x.routeLoxodromique(arrivee=u)
-            return c
-        
-        (c1, d1) = x.routeLoxodromique(arrivee=wptDevantTrieUtile[0][0])
-        (c2, d2) = x.routeLoxodromique(arrivee=wptDevantTrieUtile[1][0])
-        if math.fabs(c1.capAsDeg - b.sog.sens.capAsDeg) < math.fabs(c2.capAsDeg - b.sog.sens.capAsDeg):
-            return c1
-        else:
-            return c2
             

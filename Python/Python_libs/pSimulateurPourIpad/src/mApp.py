@@ -13,17 +13,8 @@ from time import sleep, time
 from pSfaTools.mMyException import cMyException
 from pSfaTools.mLogger import getLogger
 
-from pSfaNavigation.mNavigationFormules import cNavigationFormules, cMethodeCalcul
-from pSfaNavigation.mCap import cCap
-from pSfaNavigation.mDistance import cDistance
-from pSfaNavigation.mVelocite import cVelocite, cVitesse
-from pSfaNavigation.mPosition import cPosition
-from pSfaNavigation.mLatitude import cLatitude, eLatitudeSens
-from pSfaNavigation.mLongitude import cLongitude, eLongitudeSens
-from pSfaNavigation.mAngle import cAngle, eAngleFormat
 from pSfaNavigation.mVecteurEtat import cVecteurEtat, cVecteurEtatKeys, cTrajet
 from pSfaNavigation.mNavigationBateau import cNavigationBateau
-
 from mSimulateurNavigation import cSimulateurNav
 
 import env as myEnv
@@ -107,7 +98,7 @@ class cApp:
         if data is not None:
             trames.append(data)
 
-        if not cApp.stop_event.is_set():
+        if not cApp.stop_event.is_set() and self._socketServer is not None:
             if self._protocolServer == "UDP":
                 for x in trames:
                     self._socketServer.sendto(x, (self._hostServer, self._portServer))
@@ -185,14 +176,16 @@ class cApp:
             print(f"Wait for server")
             sleep(1)
 
+        now : float = datetime.now(tz=timezone.utc).timestamp()
         v: cVecteurEtat = cVecteurEtat.fromDict(data)
         t: cTrajet = cTrajet.fromDict(trajet)
-        now : float = datetime.now(tz=timezone.utc).timestamp()
-        sim : cSimulateurNav = cSimulateurNav(now)
+        
+        nav : cNavigationBateau = cNavigationBateau (etat = v, trajet= t)  
+        sim : cSimulateurNav = cSimulateurNav(now, navigationBateau = nav)
 
         while not cApp.stop_event.is_set():
             trames : List[bytes]
-            (v, trames) = sim.nav(v, t)
+            trames = sim.evaluateMaintenatNavigation()
             
             cApp._logger.info(v.toString())
             self.serverSendBytesData(trames=trames)
@@ -200,5 +193,7 @@ class cApp:
 
 
         # arreter les sockets ...
-        self._clientThread.join()
-        self._serverThread.join()
+        if self._clientThread is not None:
+             self._clientThread.join()  
+        if self._serverThread is not None:  
+            self._serverThread.join()
