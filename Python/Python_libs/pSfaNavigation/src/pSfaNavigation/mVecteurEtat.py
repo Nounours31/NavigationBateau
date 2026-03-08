@@ -268,50 +268,41 @@ class cVecteurEtat:
 # ==========================================================
 # TRAJET
 # ==========================================================
-import uuid
 class cWayPoint:
-    def __init__(self, position: cPosition) -> None:
-        self.position = position
-        self._id = uuid.uuid4()
+    def __init__(self, position: cPosition, i: int) -> None:
+        self._position : cPosition = position
+        self._ordreDePassage : int = i
+    
+    @property
+    def position(self) -> cPosition:
+        return self._position       
+
+    @property   
+    def ordreDePassage(self) -> int:
+        return self._ordreDePassage
+    
+    def __eq__(self, value):
+        if not isinstance(value, cWayPoint):
+            return False
+        return self._ordreDePassage == value._ordreDePassage
 
 class cTrajet:
     def __init__(self,  depart: cPosition, arrivee: cPosition, pointsDePassage: List[cPosition]) -> None:
-        self._depart = depart
-        self._arrivee = arrivee
-        self._waypoints = pointsDePassage
+        self._depart =  cWayPoint(depart, 0)
+        self._arrivee = cWayPoint(arrivee, len(pointsDePassage) + 1)  
+        self._waypoints = [ cWayPoint(p, i) for i, p in enumerate(pointsDePassage, start=1) ]
 
     @property
-    def depart(self) -> cPosition:
+    def depart(self) -> cWayPoint:
         return self._depart
 
-    @depart.setter
-    def depart(self, value: cPosition) -> None:
-        if not isinstance(value, cPosition):
-            raise TypeError("depart doit être un cPosition")
-        self._depart = value
-
     @property
-    def arrivee(self) -> cPosition:
+    def arrivee(self) -> cWayPoint:
         return self._arrivee
 
-    @arrivee.setter
-    def arrivee(self, value: cPosition) -> None:
-        if not isinstance(value, cPosition):
-            raise TypeError("arrivee doit être un cPosition")
-        self._arrivee = value
-
     @property
-    def waypoints(self) -> List[cPosition]:
+    def waypoints(self) -> List[cWayPoint]:
         return self._waypoints
-
-    @waypoints.setter
-    def waypoints(self, value: List[cPosition]) -> None:
-        if not isinstance(value, list):
-            raise TypeError("waypoints doit être une liste")
-        for p in value:
-            if not isinstance(p, cPosition):
-                raise TypeError("Chaque waypoint doit être un cPosition")
-        self._waypoints = value
 
     @classmethod
     def fromDict(cls, data: dict) -> cTrajet:
