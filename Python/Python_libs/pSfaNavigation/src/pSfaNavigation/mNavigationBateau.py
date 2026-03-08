@@ -60,18 +60,17 @@ class cNavigationBateau:
         # je cherche le waypoint le plus adapte ma position / trajectoire
         trouve : bool = False
         NewWpt : cWayPoint 
-        NewPosition : cPosition 
         (NewWpt, trouve) = self.getProchainWayPoint(p)
-        NewPosition = NewWpt.position
         
         if not trouve:
             NewPosition = self._trajet.arrivee.position
             print ("Navigation finie")
         else: 
-            
             # navigate de position courante vers new position
-            v : cVelocite = self.vitesse
             nav: cNavigationFormules = cNavigationFormules(position=p)
+            (capVersDestination, _) = nav.routeLoxodromique(NewWpt.position)
+            v : cVelocite = self.vitesse
+            v.sens = capVersDestination
             NewPosition  = nav.navACapVitesseCourantVentDonnes(tempsDeNavEnSeconde=dT, 
                                                                         v = v, 
                                                                         courant = self._etat.eau.courant,

@@ -17,6 +17,8 @@ from pSfaNavigation.mVecteurEtat import cVecteurEtat, cVecteurEtatKeys, cTrajet
 from pSfaNavigation.mNavigationBateau import cNavigationBateau
 from mSimulateurNavigation import cSimulateurNav
 
+from pSfaNmea.mNmea0183Lib import nmea0183lib
+
 import env as myEnv
 trajet: dict[str, object] = myEnv.trajet
 data: dict[str, object] = myEnv.data
@@ -39,6 +41,9 @@ class cApp:
         self._hostServer : str | None = None
         self._portServer : int | None = None
 
+        self._isReady = False
+        self._tcp_connection = None
+
     
     def closeAll(self) -> None :
         cApp._logger.info("Close all Socket")
@@ -50,6 +55,36 @@ class cApp:
         if self._socketClient:
            self._socketClient.close()
            self._socketClient = None
+
+    # -------------------------
+    # Thread serveur - Met a disposition une socket
+    # -------------------------
+    def _receiver_thread(self, protocol : str, host: str, port : int) -> None:
+        cApp._logger.info("start receiver")
+        while self._socketServer is None:
+            print(f"Wait for server")
+            sleep(1) 
+
+
+        if protocol == "UDP":
+            while not cApp.stop_event.is_set() and self._socketServer is not None :    
+                data, addr = self._socketServer.recvfrom(1024)
+                nmea : nmea0183lib = nmea0183lib ()
+                nmea.DumpTZBoatTrames(data)
+
+        if protocol == "TCP":
+            while self._socketServer is None or self._tcp_connection is None:        
+                sleep(1)
+
+            while not cApp.stop_event.is_set() and self._socketServer is not None and self._tcp_connection:        
+                data = self._tcp_connection.recv(1024)
+                print("Client a reçu:", data.decode())
+                nmea : nmea0183lib = nmea0183lib ()
+                nmea.DumpTZBoatTrames(data)
+            
+            print ("the end")
+        
+    
 
     # -------------------------
     # Thread serveur - Met a disposition une socket
@@ -70,13 +105,14 @@ class cApp:
 
     def _server_thread_TCP(self, host: str, port : int) -> None:
         cApp._logger.info("start socket server - TCP")
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.bind((host, port))
-            s.listen()
-            print("Serveur: en attente de connexion...")
-            self._socketServer = s
-            conn, addr = s.accept()
-            print(f"Serveur: connecte avec {conn} - {addr}")
+        self._socketServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._socketServer.bind((host, port))
+        self._socketServer.listen(2)
+        print("Serveur: en attente de connexion...")
+        self._tcp_connection, addr = self._socketServer.accept()
+        print(f"Serveur: connecte avec {self._tcp_connection} - {addr}")
+        self._isReady = True
+
     
     def serverSendData(self, data: str | None = None,  trames : List[str] | None = None) -> None:
         cApp._logger.info("serverSendData")
@@ -106,8 +142,8 @@ class cApp:
 
             if self._protocolServer == "TCP":
                 for x in trames:
-                    self._socketServer.sendall(x)
-                    self._socketServer.sendall('\x0d\x0a'.encode(encoding="utf-8"))
+                    self._tcp_connection.sendall(x)
+                    self._tcp_connection.sendall('\x0d\x0a'.encode(encoding="utf-8"))
 
 
 
@@ -130,6 +166,9 @@ class cApp:
             try:
                 while not cApp.stop_event.is_set() and self._socketClient is not None :    
                     data, addr = self._socketClient.recvfrom(1024)
+                    nmea : nmea0183lib = nmea0183lib ()
+                    nmea.DumpTZBoatTrames(data)
+
                     print(f"Message from {addr}: {data.decode()}")            
             except Exception as err:
                 cApp._logger.error("socket closed ... " + str(err))
@@ -151,7 +190,7 @@ class cApp:
 
             self._logger.error("Stop client thread")
 
-    def startServer (self, protocol : str, host: str, port : int) -> None:
+    def startServer (self, protocol : str, host: str, port : int, receiver : bool) -> None:
         cApp._logger.info("start SERVER")
         self._serverThread = threading.Thread(target=self._server_thread, kwargs={
             "protocol" : protocol, 
@@ -159,6 +198,13 @@ class cApp:
             "port" : port})
         
         self._serverThread.start()
+
+        self._receiverThread = threading.Thread(target=self._receiver_thread, kwargs={
+            "protocol" : protocol, 
+            "host": host, 
+            "port" : port})
+        
+        self._receiverThread.start()
 
     def startClient (self, protocol : str, host: str, port : int) -> None:
         cApp._logger.info("start CLIENT")
@@ -169,6 +215,10 @@ class cApp:
         
         self._clientThread.start()
 
+    def isReady(self) -> bool:
+        return self._socketServer is not None and self._isReady
+    
+    
     def startNavigation (self) -> None:
         cApp._logger.info("start NAV")
 

@@ -165,6 +165,16 @@ class nmea0183lib :
     def __init__(self):
         pass
     
+
+    def DumpTZBoatTrames(self, data : bytes) -> None:
+        try:
+            trame : str = data.decode(encoding="utf-8")
+            self._logger.info(f"Trame reçue : {trame}")
+            self.decode(trame)
+        except Exception as err:
+            self._logger.error("Erreur lors du décodage de la trame : " + str(err))
+
+            
     # ----------------------------------------------------------------------------------
     # concatene devant le message le "$" et ajoute en fin le "*" + checksum nmea
     # ----------------------------------------------------------------------------------
@@ -210,6 +220,7 @@ class nmea0183lib :
                 nmea0183lib._logger.debug(t)
 
         return retour
+
 
 
     def __decodePMXS(self, msgs: list[str]):

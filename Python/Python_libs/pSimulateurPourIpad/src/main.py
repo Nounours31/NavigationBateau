@@ -1,3 +1,5 @@
+from asyncio import sleep
+from concurrent.futures import thread
 from logging import Logger
 from typing import Any, Dict
 from pSfaTools.mLogger import getLogger
@@ -8,6 +10,7 @@ from colorist import green, Color
 import argparse
 import signal
 import sys
+import time
 
 import mApp
 
@@ -49,6 +52,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Simulateur de nav pour tz boat via trame NMEA183")
     parser.add_argument("-s", "--server", action="store_true", help="Creation du server NMEA - sans lui pas de socket")
     parser.add_argument("-c", "--client", action="store_true", help="Creation d'un client NMEA - si pas d'IPad pour permettre la comm sur la socket")
+    parser.add_argument("-r", "--receiver", action="store_true", help="Creation d'un receiver NMEA - pour ecouter l'IPad")
     parser.add_argument("-d", "--debug", action="store_true", help="Debug")
     parser.add_argument("-p", "--port", help="port de la socket", type=int, default=5006)
     parser.add_argument("-o", "--protocol", help="protocol de la socket", type=str, choices=['TCP', 'UDP'], default='TCP')
@@ -71,16 +75,23 @@ if __name__ == '__main__':
     if app_args.port:
         logger.debug("port: " + str(app_args.port))
 
+    if app_args.receiver:
+        logger.debug("receiver: " + str(app_args.receiver))
+
     global original_sigint
     original_sigint = signal.getsignal(signal.SIGINT)
     signal.signal(signal.SIGINT, exit_gracefully)
 
 
     if app_args.server:
-        app.startServer (app_args.protocol, app_args.host, app_args.port)
+        app.startServer (app_args.protocol, app_args.host, app_args.port, receiver = app_args.receiver)
 
     if app_args.client:
         app.startClient (app_args.protocol, app_args.host, app_args.port)
+
+    while app.isReady() !=  True:
+        logger.info("Wait for app to be ready")
+        time.sleep(1)
 
     app.startNavigation()    
     
