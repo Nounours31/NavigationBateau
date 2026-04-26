@@ -27,7 +27,7 @@ data: dict[str, object] = myEnv.data
 
 
 class cApp:
-    _logger: logging.Logger = getLogger("cApp", logging.DEBUG)
+    _logger: logging.Logger = getLogger("cApp", logging.INFO)
     stop_event : threading.Event = threading.Event()
 
     def __init__(self):
@@ -42,7 +42,7 @@ class cApp:
         self._portServer : int | None = None
 
         self._isReady = False
-        self._tcp_connection = None
+        self._tcp_connection : socket.socket | None = None
 
     
     def closeAll(self) -> None :
@@ -57,20 +57,24 @@ class cApp:
            self._socketClient = None
 
     # -------------------------
-    # Thread serveur - Met a disposition une socket
+    # Thread server/receiver - utilise la socket server pour recevoir les info de l'Ipad notament les infos du pilote auto
     # -------------------------
     def _receiver_thread(self, protocol : str, host: str, port : int) -> None:
         cApp._logger.info("start receiver")
         while self._socketServer is None:
-            print(f"Wait for server")
+            cApp._logger.info(f"Wait for server")
             sleep(1) 
 
 
         if protocol == "UDP":
             while not cApp.stop_event.is_set() and self._socketServer is not None :    
-                data, addr = self._socketServer.recvfrom(1024)
-                nmea : nmea0183lib = nmea0183lib ()
-                nmea.DumpTZBoatTrames(data)
+                try :
+                    data, addr = self._socketServer.recvfrom(1024)
+                    nmea : nmea0183lib = nmea0183lib ()
+                    nmea.DumpTZBoatTrames(data)
+                except Exception as e:
+                    self._logger.error(f"Socket not established - need to wait more ... {e}")
+                    sleep(5)
 
         if protocol == "TCP":
             while self._socketServer is None or self._tcp_connection is None:        
@@ -78,7 +82,7 @@ class cApp:
 
             while not cApp.stop_event.is_set() and self._socketServer is not None and self._tcp_connection:        
                 data = self._tcp_connection.recv(1024)
-                print("Client a reçu:", data.decode())
+                cApp._logger.info("Client a reçu de l'iPad:", data.decode())
                 nmea : nmea0183lib = nmea0183lib ()
                 nmea.DumpTZBoatTrames(data)
             
@@ -87,7 +91,7 @@ class cApp:
     
 
     # -------------------------
-    # Thread serveur - Met a disposition une socket
+    # Thread server - utilise la socket server pour envoyer a l'iPad les info de nav
     # -------------------------
     def _server_thread(self, protocol : str, host: str, port : int) -> None:
         cApp._logger.info("start socket server")
@@ -96,24 +100,34 @@ class cApp:
             self._server_thread_UDP(host = host, port = port)
         else:
             self._server_thread_TCP(host = host, port = port)
-        
+    
+    # creation UDP    
     def _server_thread_UDP(self, host: str, port : int) -> None:
         cApp._logger.info("start socket server - UDP")
         self._hostServer = host
         self._portServer = port
-        self._socketServer = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            self._socketServer = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self._isReady = True
+        except socket.error as e:
+            self._logger.error (f"Failed to create socket - {e}")
+            sys.exit (1)
 
+    # creation TCP
     def _server_thread_TCP(self, host: str, port : int) -> None:
         cApp._logger.info("start socket server - TCP")
         self._socketServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._socketServer.bind((host, port))
-        self._socketServer.listen(2)
-        print("Serveur: en attente de connexion...")
+        self._socketServer.bind((socket.gethostname(), port))
+        self._socketServer.listen(1024)
+        self._logger.info("Serveur: en attente de connexion...")
         self._tcp_connection, addr = self._socketServer.accept()
-        print(f"Serveur: connecte avec {self._tcp_connection} - {addr}")
+        self._logger.info(f"Serveur: connecte avec {self._tcp_connection} - {addr}")
         self._isReady = True
 
     
+    # -------------------------
+    # Envoyer a l'iPad les info de nav dans la socket server
+    # -------------------------
     def serverSendData(self, data: str | None = None,  trames : List[str] | None = None) -> None:
         cApp._logger.info("serverSendData")
         databytes : bytes | None = None
@@ -126,6 +140,7 @@ class cApp:
 
         self.serverSendBytesData(databytes, tramesBytes)
 
+    # interne send data en UDP ou TCP
     def serverSendBytesData(self, data: bytes | None = None,  trames : List[bytes] | None = None) -> None:
         cApp._logger.info("serverSendData")
         if trames is None:
@@ -137,10 +152,11 @@ class cApp:
         if not cApp.stop_event.is_set() and self._socketServer is not None:
             if self._protocolServer == "UDP":
                 for x in trames:
+                    self._logger.debug(f"UDP Socket sendto host:{self._hostServer} port:{self._portServer}")
                     self._socketServer.sendto(x, (self._hostServer, self._portServer))
                     self._socketServer.sendto('\x0d\x0a'.encode(encoding="utf-8"), (self._hostServer, self._portServer))
 
-            if self._protocolServer == "TCP":
+            if self._protocolServer == "TCP" and self._tcp_connection is not None:
                 for x in trames:
                     self._tcp_connection.sendall(x)
                     self._tcp_connection.sendall('\x0d\x0a'.encode(encoding="utf-8"))
@@ -158,6 +174,7 @@ class cApp:
         else:
             self._client_thread_TCP(host = host, port = port)
         
+    # en UDP
     def _client_thread_UDP(self, host: str, port : int):
         cApp._logger.info("start socket client - UDP")
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
@@ -175,6 +192,7 @@ class cApp:
                 
             cApp._logger.error("Stop client thread")
 
+    # en TCP
     def _client_thread_TCP(self, host: str, port : int):
         cApp._logger.info("start socket client - TCP")
         sleep(1)  # attendre que le serveur démarre
@@ -190,7 +208,11 @@ class cApp:
 
             self._logger.error("Stop client thread")
 
+    # --------------------------------------------------------------
+    # Start the server qui emet les trames NMEA
+    # --------------------------------------------------------------
     def startServer (self, protocol : str, host: str, port : int, receiver : bool) -> None:
+        # emission vers l'iPad
         cApp._logger.info("start SERVER")
         self._serverThread = threading.Thread(target=self._server_thread, kwargs={
             "protocol" : protocol, 
@@ -199,13 +221,17 @@ class cApp:
         
         self._serverThread.start()
 
+        # reception de l'iPad
         self._receiverThread = threading.Thread(target=self._receiver_thread, kwargs={
             "protocol" : protocol, 
             "host": host, 
             "port" : port})
         
         self._receiverThread.start()
-
+        
+    # --------------------------------------------------------------
+    # Start the client qui consomme  qui emet les trames NMEA
+    # --------------------------------------------------------------
     def startClient (self, protocol : str, host: str, port : int) -> None:
         cApp._logger.info("start CLIENT")
         self._clientThread = threading.Thread(target=self._client_thread, kwargs={
@@ -215,15 +241,22 @@ class cApp:
         
         self._clientThread.start()
 
+
+    # ---------------------------------------------------------------
+    # est ce que la socket est ouverte et connectée ?
+    # ---------------------------------------------------------------
     def isReady(self) -> bool:
         return self._socketServer is not None and self._isReady
     
     
+    # ---------------------------------------------------------------
+    # On simul la nav et on pousse les donnees dans la socket
+    # ---------------------------------------------------------------
     def startNavigation (self) -> None:
         cApp._logger.info("start NAV")
 
         while (self._socketServer is None) :
-            print(f"Wait for server")
+            self._logger.info(f"Wait for server")
             sleep(1)
 
         now : float = datetime.now(tz=timezone.utc).timestamp()

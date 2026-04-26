@@ -258,7 +258,7 @@ class cVecteurEtat:
         return self.__str__()
 
     def __str__(self) -> str:
-        s: str = f"[vecteurEtat heure={datetime.fromtimestamp(timestamp = self._timestamp, tz=timezone.utc).strftime('%d/%m/%y %H:%M:%S.%f')} bateau={self.bateau} air={self.air} eau={self.eau}]"
+        s: str = f"[\nvecteurEtat \n\theure={datetime.fromtimestamp(timestamp = self._timestamp, tz=timezone.utc).strftime('%d/%m/%y %H:%M:%S.%f')} \n\tbateau={self.bateau} \n\tair={self.air} \n\teau={self.eau}]"
         return s
 
     def __repr__(self) -> str:

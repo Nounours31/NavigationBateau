@@ -11,6 +11,7 @@ from pSfaNavigation.mAngle import cAngle, eAngleFormat
 from pSfaNavigation.mVecteurEtat import cVecteurEtat, cVecteurEtatKeys, cTrajet
 from pSfaNavigation.mNavigationBateau import cNavigationBateau
 
+from datetime import datetime, timezone
 
 sleepTimeInSec=2
 
@@ -50,10 +51,10 @@ trajet: dict[str, object] = {
 }
 
 data: dict[str, object] = {
-    # cVecteurEtatKeys.HEURE : datetime.datetime.now(tz=datetime.timezone.utc).timestamp() ,
-    cVecteurEtatKeys.HEURE : 1772564924,
+    cVecteurEtatKeys.HEURE : datetime.now(tz=timezone.utc).timestamp() ,
+    # cVecteurEtatKeys.HEURE : 1772564924,
     cVecteurEtatKeys.BATEAU : {
-        cVecteurEtatKeys.SOG: cVelocite(vitesse=15.0, sens=75),
+        cVecteurEtatKeys.SOG: cVelocite(vitesse=5.0, sens=75),
         cVecteurEtatKeys.POSITION: depart,
         cVecteurEtatKeys.VARIATION_MAGNETIQUE: cCap(valAsDeg=-1.2),
     },

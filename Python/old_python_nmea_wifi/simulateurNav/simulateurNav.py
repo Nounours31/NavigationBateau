@@ -1,0 +1,251 @@
+import logging
+import logging.config
+
+from math import floor, pi, cos, sin, tan, sqrt, atan2
+from datetime import datetime, timezone
+from typing import Dict
+
+from myEnv import myEnv
+
+from tools.vecteur import vecteur
+from tools.latitude import latitude as latitude 
+from tools.longitude import longitude as longitude 
+from tools.position import position as position 
+from tools.angle import angle as angle 
+from tools.cap import cap
+
+
+deg2rad = pi / 180.0
+rad2deg = 180.0 / pi
+
+class simulateurNav:
+    def __init__(self, config: dict[str, float | object]):
+
+        self.__logger : logging.Logger = myEnv.logger
+        self.__heuredepart : datetime = datetime.now()
+        self.__heure : datetime = datetime.now()
+
+        '''
+        {
+            "vitesseEnNoeudMoyenne": 15.0,
+            "variationMagnetique": -1.2,
+            "nav": {
+                "positionDepart": myEnv.postionTrinitee.toString(),
+                "positionWayPoints": [
+                    position.fromString("2, 2").toString(base=angle.STR_AsMin, detail=angle.DISPLAY_SHORT),
+                    position.fromString("2, 2").toString(base=angle.STR_AsMin, detail=angle.DISPLAY_SHORT)
+                ],
+                "positionArrivee": myEnv.postionTrinitee.toString()
+            },
+            "vent": {
+                "vitesseEnNd": 15,
+                "directionEnDeg": 75,  # sens du vent attention !!!
+                "temperature": 20
+            },
+            "courant": {
+                "vitesseEnNd": 1.5,
+                "directionEnDeg": 2.5,
+            },
+            "eau": {
+                "profondeur": 17,
+                "temperature": 12,
+            }
+        }
+        '''
+        self.__vitesseMoyenne : vecteur = vecteur('Kt')
+        self.__vitesseMoyenne.val = config["vitesseEnNoeudMoyenne"]
+        self.__vitesseMoyenne.dir  = cap(valAsDeg=0.0)
+
+        self.__vitesse : vecteur = vecteur.copy(self.__vitesseMoyenne)
+
+        self.__variationMagnetiqueEnDeg : float  = config["variationMagnetique"]
+
+        self.__positionDepart : position = position.fromString(config["nav"]["positionDepart"])
+        self.__positionCourante : position = self.__positionDepart.copy()
+        self.__positionArrivee : position = position.fromString(config["nav"]["positionArrivee"])
+        self.__positionWaypoints : list[position] = []
+        self.__positionWaypointsAtteint : int = -1
+        for p in config["nav"]["positionWayPoints"]:
+            self.__positionWaypoints.append(position.fromString(p))
+
+
+        self.__ventReelDepart : vecteur = vecteur('Kt')
+        self.__ventReelDepart.val = config["vent"]["vitesseEnNd"]
+        self.__ventReelDepart.dir = cap(valAsDeg=config["vent"]["directionEnDeg"])
+
+        self.__ventReel : vecteur = self.__ventReelDepart.copy()
+        self.__ventApp : vecteur = self.__ventReelDepart.copy()
+
+        self.__temperatureAirDepart : float = config["vent"]["temperature"]
+        self.__temperatureAir : float = config["vent"]["temperature"]
+
+        self.__profondeur : float = config["eau"]["profondeur"]
+        self.__profondeurDepart : float = config["eau"]["profondeur"]
+        self.__temperatureEau : float = config["eau"]["temperature"]
+        self.__temperatureEauDepart : float = config["eau"]["temperature"]
+
+        self.__courant : vecteur = vecteur('Kt')
+        self.__courant.val = config["courant"]["vitesseEnNd"]
+        self.__courant.dir = cap(valAsDeg=config["courant"]["directionEnDeg"])
+
+        self.__courantDepart : vecteur = self.__courant.copy()
+
+        self.__satellites : Dict[str, object] = {
+            "IDs": [80, 71, 73, 79, 10, 1, 68],
+            "PDOP": 1.83,
+            "HDOP": 1.09,
+            "VDOP": 1.47
+        }
+
+        self.__logger.info("Creation simulateurNav")
+        if self.__logger.isEnabledFor(level = logging.DEBUG):
+            self.__logger.debug(self.toString())
+    
+    def toString(self) -> str:
+        retour : str = ""
+        retour += "Etape de Nav:\n"
+        retour += f"\tHeure depart:     {self.__heuredepart.isoformat()}\n"
+        retour += f"\tVitesse moyenne:  {self.__vitesseMoyenne.toString()}\n"
+        retour += f"\tW:           {self.__variationMagnetiqueEnDeg:6.2f} °\n"
+        retour += f"\tDepart:      {self.__positionDepart.toString()}\n"
+
+        retour += f"\tHeure:       {self.__heure.isoformat()}\n"
+        retour += f"\tV:           {self.__vitesse.toString()}\n"
+        retour += f"\tPosition:    {self.__positionCourante.toString()}\n"
+
+        retour += f"\tCourant:     {self.__courant.toString()}\n"
+
+        retour += f"\tVent reel:   {self.__ventReel.toString()}\n"
+        retour += f"\tVent app:    {self.__ventApp.toString()}\n"
+        retour += f"\tT air:       {self.__temperatureAir:6.2f} °\n"
+
+        retour += f"\tProfondeur:  {self.__profondeur:6.2f} m\n"
+        retour += f"\tT eau:       {self.__temperatureEau:6.2f} °\n"
+        retour += f"\tSatellites:  {self.__satellites} °\n"
+
+        return retour
+
+    @property
+    def heure(self) -> datetime :
+        return self.__heure
+     
+    @property
+    def positionCourante(self) -> position:
+        return self.__positionCourante
+
+    @property
+    def variationMagnetiqueEnDeg(self) -> float :
+        return self.__variationMagnetiqueEnDeg
+
+    @property
+    def vitesse(self) -> vecteur :
+        return self.__vitesse
+
+    @property
+    def ventReel(self) -> vecteur :
+        return self.__ventReel
+
+    @property
+    def ventApparent(self) -> vecteur :
+        return self.__ventApp
+
+    @property
+    def satellite (self) -> Dict[str,object]:
+        return self.__satellites
+
+    @property
+    def profondeur (self) -> float:
+        return self.__profondeur
+
+    @property
+    def eauTemp (self) -> float:
+        return self.__temperatureEau
+
+    @property
+    def airTemp (self) -> float:
+        return self.__temperatureAir
+
+    # ----------------------------------------------------------------------------------
+    # Navigation a :
+    #   - cap       constant 
+    #   - vitesse   constante 
+    #   - lat moyenne
+    #   - a une position de depart (positionDepartLatitude / positionDepartLongitude) 
+    # ----------------------------------------------------------------------------------
+    def nav(self) -> None :
+        # calcul de la durre de la nav en secondes
+        maintenant = datetime.now()
+        intervalDeNavEnSec = maintenant.timestamp() - self.__heure.timestamp()
+        self.__heure = maintenant
+
+        # ----------------------------------
+        # vers ou dois je aller waypoint ?
+        # ----------------------------------
+        # waypoint ou arrivee ?
+        positionCourante : position = self.__positionCourante
+        objectif : position = None
+        objectifSecondaire : position = None
+        if ((len(self.__positionWaypoints) > 0) and (len(self.__positionWaypoints) > 1+self.__positionWaypointsAtteint)):
+            objectif = self.__positionWaypoints[1+self.__positionWaypointsAtteint]
+            if ((len(self.__positionWaypoints) > 0) and (len(self.__positionWaypoints) > 2 + self.__positionWaypointsAtteint)):
+                objectifSecondaire = self.__positionWaypoints[2 + self.__positionWaypointsAtteint]
+            else:
+                objectifSecondaire = self.__positionArrivee
+        else:
+            objectif = self.__positionArrivee
+            objectifSecondaire = self.__positionArrivee
+
+        # ma route
+        capNextWaypoint, distanceNextWaypoint = position.positionementRelatif(positionCourante, objectif)
+
+
+        # ai je atteint le waypoint
+        if distanceNextWaypoint.val < 0.5:
+            objectif = objectifSecondaire
+            self.__positionWaypointsAtteint = self.__positionWaypointsAtteint + 1
+
+        # ma nouvelle route
+        capNextWaypoint, distanceNextWaypoint = position.positionementRelatif(positionCourante, objectif)
+
+        # facteur perturbant
+        facteur = (self.__heure.timestamp() - self.__heuredepart.timestamp()) * deg2rad 
+        
+        # deplacement
+        self.__vitesse.val = self.__vitesseMoyenne.val * (1 + 0.25 * cos(facteur))
+        self.__vitesse.dir = capNextWaypoint * (1.0 + 0.25 * cos(facteur))
+
+        capRad = self.__vitesse.dir.valAsRad
+        latitudeEstimeeRad = self.__positionCourante.latitude.valAsRad
+
+        pasEnLatitude = cos (capRad) * self.__vitesse.val / 60 # noeud = mille/h - 1 mille = 1 minute d'arc
+        pasEnLongitude = sin (capRad) * self.__vitesse.val / (60 * cos (latitudeEstimeeRad))
+        
+        self.__positionCourante.latitude += angle(valAsDeg=(pasEnLatitude * intervalDeNavEnSec / 3600))
+        self.__positionCourante.longitude += angle(valAsDeg=(pasEnLongitude * intervalDeNavEnSec / 3600))
+
+        # vent
+        self.__ventReel.val = self.__ventReelDepart.val * (1 + cos(facteur))
+        self.__ventReel.dir = cap(self.__ventReelDepart.dir.valAsDeg + (180 * cos(facteur)))
+
+        ventAppX = (self.__ventReel.val * cos(self.__ventReel.dir.valAsRad) - self.__vitesse.val * cos(self.__vitesse.dir.valAsRad))
+        ventAppY = (self.__ventReel.val * sin(self.__ventReel.dir.valAsRad) - self.__vitesse.val * sin(self.__vitesse.dir.valAsRad))
+        ventAppForce = sqrt (ventAppX ** 2 + ventAppY **2)
+        ventAppDir : angle = angle(valAsDeg=(atan2 (ventAppY, ventAppX) * rad2deg))
+        
+        self.__ventApp.val = ventAppForce
+        self.__ventApp.dir = cap(valAsDeg=ventAppDir.valAsDeg)
+        self.__temperatureAir = self.__temperatureAirDepart + (5.0 * (cos(facteur)))
+
+        # Eau (profondeur + temp)
+        self.__profondeur = self.__profondeurDepart + (10 * (1+cos(facteur)))
+        self.__temperatureEau = self.__temperatureEauDepart + (2.0 * (cos(facteur)))
+
+        self.__courant.val = self.__courantDepart.val * (1 + cos(facteur))
+        self.__courant.dir.valAsDeg = self.__courantDepart.dir.valAsDeg + (180 * cos(facteur))
+
+        if self.__logger.isEnabledFor(level = logging.DEBUG):
+            self.__logger.debug(self.toString())
+
+        return
+        
+

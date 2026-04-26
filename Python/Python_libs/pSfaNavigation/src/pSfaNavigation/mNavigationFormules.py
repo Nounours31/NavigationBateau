@@ -389,19 +389,5 @@ class cNavigationFormules:
         navigationAvecVentEtCourant : cPosition
         navigationAvecVentEtCourant = n.navACapEtVitesseDonnes(tempsDeNavEnSeconde=tempsDeNavEnSeconde, v=courant)
 
-        debug : bool = True
-        if debug:
-            xx : cNavigationFormules = cNavigationFormules(position = self.position)
-            (a, b) = xx.routeLoxodromique(navigationAvecVent)
-            print ((a, b))
-
-            xx : cNavigationFormules = cNavigationFormules(position = navigationAvecVent)
-            (a, b) = xx.routeLoxodromique(navigationAvecVentEtCourant)
-            print ((a, b))
-
-            xx : cNavigationFormules = cNavigationFormules(position = self.position)
-            (a, b) = xx.routeLoxodromique(navigationAvecVentEtCourant)
-            print ((a, b))
-
         # nouvelle position
         return navigationAvecVentEtCourant
