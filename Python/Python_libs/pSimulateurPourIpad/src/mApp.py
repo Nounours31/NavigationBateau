@@ -20,6 +20,8 @@ from mSimulateurNavigation import cSimulateurNav
 from pSfaNmea.mNmea0183Lib import nmea0183lib
 
 import env as myEnv
+from mGUI import cMyGUI
+
 trajet: dict[str, object] = myEnv.trajet
 data: dict[str, object] = myEnv.data
         
@@ -214,7 +216,7 @@ class cApp:
     def startServer (self, protocol : str, host: str, port : int, receiver : bool) -> None:
         # emission vers l'iPad
         cApp._logger.info("start SERVER")
-        self._serverThread = threading.Thread(target=self._server_thread, kwargs={
+        self._serverThread = threading.Thread(target=self._server_thread, daemon=True, kwargs={
             "protocol" : protocol, 
             "host": host, 
             "port" : port})
@@ -222,7 +224,7 @@ class cApp:
         self._serverThread.start()
 
         # reception de l'iPad
-        self._receiverThread = threading.Thread(target=self._receiver_thread, kwargs={
+        self._receiverThread = threading.Thread(target=self._receiver_thread, daemon=True, kwargs={
             "protocol" : protocol, 
             "host": host, 
             "port" : port})
@@ -234,7 +236,7 @@ class cApp:
     # --------------------------------------------------------------
     def startClient (self, protocol : str, host: str, port : int) -> None:
         cApp._logger.info("start CLIENT")
-        self._clientThread = threading.Thread(target=self._client_thread, kwargs={
+        self._clientThread = threading.Thread(target=self._client_thread, daemon=True, kwargs={
             "protocol" : protocol, 
             "host": host, 
             "port" : port})
@@ -266,12 +268,17 @@ class cApp:
         nav : cNavigationBateau = cNavigationBateau (etat = v, trajet= t)  
         sim : cSimulateurNav = cSimulateurNav(now, navigationBateau = nav)
 
+        cUI : cMyGUI = cMyGUI.getInstance()
+
         while not cApp.stop_event.is_set():
             trames : List[bytes]
-            trames = sim.evaluateMaintenatNavigation()
+            newCap : float | None = cUI.getCap()
+            cUI.setCap(None) # reset cap to avoid sending the same cap again and again if not changed
+            trames = sim.evaluateMaintenatNavigation(newCap)
             
             cApp._logger.info(v.toString())
             self.serverSendBytesData(trames=trames)
+            cUI.addOutputInfo(v.toString(), clear=True)
             sleep(2)
 
 

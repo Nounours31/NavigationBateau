@@ -77,7 +77,7 @@ class cSimulateurNav:
         return v
 
 
-    def evaluateMaintenatNavigation(self) -> List[bytes] :
+    def evaluateMaintenatNavigation(self, newCap: float | None) -> List[bytes] :
         # maintenant
         timestamp = datetime.now(tz=timezone.utc).timestamp()
 
@@ -88,6 +88,8 @@ class cSimulateurNav:
         # navigation avec ce sinfos
         # attention on ne veut pas tenir compte de la derive du a vent car on veut un cap vers un point, pas un cap subit
         v : cVecteurEtat | None = self._navigationBateau.etat
+        if newCap is not None:
+            v.bateau.sog.sens.capAsDeg = newCap
 
         deriveAConserver : cAngle = v.air.derive
         courantAConserver : cVelocite = v.eau.courant

@@ -1,6 +1,7 @@
 from asyncio import sleep
 from concurrent.futures import thread
 from logging import Logger
+import threading
 from typing import Any, Dict
 from pSfaTools.mLogger import getLogger
 
@@ -13,6 +14,7 @@ import sys
 import time
 
 import mApp
+from mGUI import cMyGUI
 
 
 logger: Logger = getLogger("main.py")
@@ -61,6 +63,7 @@ if __name__ == '__main__':
     parser.add_argument("-c", "--client", action="store_true", help="Creation d'un client NMEA - si pas d'IPad pour permettre la comm sur la socket")
     parser.add_argument("-r", "--receiver", action="store_true", help="Creation d'un receiver NMEA - pour ecouter l'IPad")
     parser.add_argument("-d", "--debug", action="store_true", help="Debug")
+    parser.add_argument("-f", "--force", action="store_true", help="Force - forcer le lancement de l'app sans iPad - forcer le lancement du server sans client")
 
     app_args = parser.parse_args()
     if app_args.server:
@@ -90,28 +93,45 @@ if __name__ == '__main__':
     # ------------------------------------
     # demarre le server PC qui emet les messages
     # ------------------------------------
+    
     if app_args.server:
         if app_args.protocol == "UDP":
             app.startServer (app_args.protocol, app_args.UDP_IPClient, app_args.port, receiver = app_args.receiver)
         if app_args.protocol == "TCP":
             app.startServer (app_args.protocol, app_args.TCP_IPhost, app_args.port, receiver = app_args.receiver)
+    else:
+        if app_args.force:
+            logger.warning("Force mode - starting server without iPad")
+        else:
+            logger.error("No server - no socket - no communication with iPad possible")
+            parser.print_help()
+            sys.exit(1)
 
     # ------------------------------------
     # En debug sans iPad lis les trames NMEA et les drops - permet juste d'ouvrir la socket server 
     # ------------------------------------
     if app_args.client:
         app.startClient (app_args.protocol, app_args.host, app_args.port)
+    else:
+        logger.warning("No client - no socket - no communication with iPad possible = NO PILOT INFO for example")
 
     # ------------------------------------
     # En attente de la jointure iPad <-> PC
     # ------------------------------------
     while app.isReady() !=  True:
         logger.info("Wait for app to be ready")
+        if app_args.force:
+            logger.warning("Force mode - starting app without iPad")
+            break   
         time.sleep(10)
 
     # ------------------------------------
     # Start de l'app
     # ------------------------------------
-    app.startNavigation()    
-    
+    thread = threading.Thread(target=app.startNavigation, daemon=True)
+    thread.start()
+
+    cUI : cMyGUI = cMyGUI.getInstance()
+    cUI.draw()
+          
     logger.info ("The end ...")
