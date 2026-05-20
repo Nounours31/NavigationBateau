@@ -1,19 +1,16 @@
 import logging
 from datetime import datetime, timezone
-import signal
 import socket
 import sys
 
 import threading
-from typing import List, Any
-from colorist import green, Color
+from typing import List
 
-from time import sleep, time
+from time import sleep
 
-from pSfaTools.mMyException import cMyException
 from pSfaTools.mLogger import getLogger
 
-from pSfaNavigation.mVecteurEtat import cVecteurEtat, cVecteurEtatKeys, cTrajet
+from pSfaNavigation.mVecteurEtat import cVecteurEtat, cTrajet
 from pSfaNavigation.mNavigationBateau import cNavigationBateau
 from mSimulateurNavigation import cSimulateurNav
 
@@ -64,7 +61,7 @@ class cApp:
     def _receiver_thread(self, protocol : str, host: str, port : int) -> None:
         cApp._logger.info("start receiver")
         while self._socketServer is None:
-            cApp._logger.info(f"Wait for server")
+            cApp._logger.info("Wait for server")
             sleep(1) 
 
 
@@ -144,7 +141,7 @@ class cApp:
 
     # interne send data en UDP ou TCP
     def serverSendBytesData(self, data: bytes | None = None,  trames : List[bytes] | None = None) -> None:
-        cApp._logger.info("serverSendData")
+        cApp._logger.debug("serverSendData")
         if trames is None:
             trames = []
         
@@ -188,7 +185,7 @@ class cApp:
                     nmea : nmea0183lib = nmea0183lib ()
                     nmea.DumpTZBoatTrames(data)
 
-                    print(f"Message from {addr}: {data.decode()}")            
+                    cApp._logger.debug(f"Message from {addr}: {data.decode()}")            
             except Exception as err:
                 cApp._logger.error("socket closed ... " + str(err))
                 
@@ -204,7 +201,16 @@ class cApp:
             try:
                 while not cApp.stop_event.is_set() and self._socketClient is not None:        
                     data = self._socketClient.recv(1024)
-                    print("Client a reçu:", data.decode())
+                    cApp._logger.debug("Client a reçu du serveur:" + data.decode())
+                    cMyGUI.getInstance().addIPadInfo(data.decode(), clear=True)
+                    nmea : nmea0183lib = nmea0183lib ()
+                    trames : List[tuple[str, str]] = nmea.DumpTZBoatTrames(data)
+                    irang : int = 0
+                    for t in trames:
+                        cApp._logger.debug(f"Trame reçue : \n\t{t[0]} \n\t{t[1]}")
+                        cMyGUI.getInstance().addIPadInfo(f"Trame reçue : \n\t{t[0]} \n\t{t[1]}<", clear=(irang == 0))
+                        irang += 1
+
             except Exception as err:
                 cApp._logger.error("socket closed ... " + str(err))
 
@@ -258,7 +264,7 @@ class cApp:
         cApp._logger.info("start NAV")
 
         while (self._socketServer is None) :
-            self._logger.info(f"Wait for server")
+            self._logger.info("Wait for server")
             sleep(1)
 
         now : float = datetime.now(tz=timezone.utc).timestamp()
@@ -273,12 +279,15 @@ class cApp:
         while not cApp.stop_event.is_set():
             trames : List[bytes]
             newCap : float | None = cUI.getCap()
+            newVitesse : float | None = cUI.getVitesse()
             cUI.setCap(None) # reset cap to avoid sending the same cap again and again if not changed
-            trames = sim.evaluateMaintenatNavigation(newCap)
+            cUI.setVitesse(None) # reset vitesse to avoid sending the same vitesse again and again if not changed
+
+            trames = sim.evaluateMaintenatNavigation(newCap, newVitesse)
             
             cApp._logger.info(v.toString())
             self.serverSendBytesData(trames=trames)
-            cUI.addOutputInfo(v.toString(), clear=True)
+            cUI.addVecteurEtatInfo(v.toString(), clear=True)
             sleep(2)
 
 

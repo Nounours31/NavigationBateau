@@ -1,4 +1,3 @@
-from asyncio import sleep
 from concurrent.futures import thread
 from logging import Logger
 import threading
@@ -6,7 +5,6 @@ from typing import Any, Dict
 from pSfaTools.mLogger import getLogger
 
 
-from colorist import green, Color
 
 import argparse
 import signal
@@ -111,14 +109,14 @@ if __name__ == '__main__':
     # En debug sans iPad lis les trames NMEA et les drops - permet juste d'ouvrir la socket server 
     # ------------------------------------
     if app_args.client:
-        app.startClient (app_args.protocol, app_args.host, app_args.port)
+        app.startClient (app_args.protocol, "192.168.43.10", app_args.port)
     else:
         logger.warning("No client - no socket - no communication with iPad possible = NO PILOT INFO for example")
 
     # ------------------------------------
     # En attente de la jointure iPad <-> PC
     # ------------------------------------
-    while app.isReady() !=  True:
+    while not app.isReady():
         logger.info("Wait for app to be ready")
         if app_args.force:
             logger.warning("Force mode - starting app without iPad")

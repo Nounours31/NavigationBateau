@@ -1,26 +1,20 @@
 import copy
 from datetime import datetime, timezone
 import logging
-from math import cos, sin, sqrt, atan2
 
 import math
-import random
-from typing import Dict, Any, List, Tuple
+from typing import List
 
 from pSfaTools.mMyException import cMyException
 from pSfaTools.mLogger import getLogger
 
-from pSfaNavigation.mNavigationFormules import cNavigationFormules, cMethodeCalcul
+from pSfaNavigation.mNavigationFormules import cNavigationFormules
 from pSfaNavigation.mCap import cCap
-from pSfaNavigation.mDistance import cDistance
 from pSfaNavigation.mVelocite import cVelocite, cVitesse
 from pSfaNavigation.mPosition import cPosition
-from pSfaNavigation.mLatitude import cLatitude, eLatitudeSens
-from pSfaNavigation.mLongitude import cLongitude, eLongitudeSens
-from pSfaNavigation.mAngle import cAngle, eAngleFormat
-from pSfaNavigation.mVecteurEtat import cVecteurEtat, cVecteurEtatKeys, cTrajet
+from pSfaNavigation.mAngle import cAngle
+from pSfaNavigation.mVecteurEtat import cVecteurEtat
 from pSfaNavigation.mNavigationBateau import cNavigationBateau
-from pSfaNavigation.mNavigationFormules import cNavigationFormules
 
 
 from pSfaNmea.mNmea0183Lib import nmea0183lib
@@ -77,7 +71,7 @@ class cSimulateurNav:
         return v
 
 
-    def evaluateMaintenatNavigation(self, newCap: float | None) -> List[bytes] :
+    def evaluateMaintenatNavigation(self, newCap: float | None, newVitesse: float | None) -> List[bytes] :
         # maintenant
         timestamp = datetime.now(tz=timezone.utc).timestamp()
 
@@ -88,8 +82,25 @@ class cSimulateurNav:
         # navigation avec ce sinfos
         # attention on ne veut pas tenir compte de la derive du a vent car on veut un cap vers un point, pas un cap subit
         v : cVecteurEtat | None = self._navigationBateau.etat
-        if newCap is not None:
-            v.bateau.sog.sens.capAsDeg = newCap
+        if v is None:
+            raise cMyException("Pas d'etat dans le bateau - impossible de faire la nav")
+
+        v._timestamp = timestamp
+        
+        forceCap : bool = newCap is not None
+        forceVitesse : bool = newVitesse is not None
+
+        if forceCap or forceVitesse :
+            sog_imposed: cVelocite = v.bateau.sog
+            if forceCap:
+                sog_imposed.sens = cCap(valAsDeg=newCap)
+            if forceVitesse:
+                sog_imposed.vitesse = cVitesse(valAsNoeud=newVitesse)
+            v.bateau.sog_imposed = sog_imposed
+            self._logger.info("Nouveau cap demande: " + str(sog_imposed) + " - on le prend en compte dans la nav")
+        else:
+            v.bateau.sog_imposed = None # pas de cap impose - on laisse la nav faire son travail
+
 
         deriveAConserver : cAngle = v.air.derive
         courantAConserver : cVelocite = v.eau.courant

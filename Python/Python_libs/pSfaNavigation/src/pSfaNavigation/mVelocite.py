@@ -22,26 +22,27 @@ class cVitesse:
     DISPLAY_LONG: int = 1
 
     def __init__(self, valAsNoeud: float | None = None, valAsKmH: float | None = None):
+        self.__valAsNoeud : float = 0.0
         if isinstance(valAsNoeud, (int, float)):
-            self._valAsNoeud = valAsNoeud
+            self.__valAsNoeud = valAsNoeud
 
         elif isinstance(valAsKmH, (int, float)):
-            self._valAsNoeud = valAsKmH * cDistance.KM2MN
+            self.__valAsNoeud = valAsKmH * cDistance.KM2MN
 
         else:
-            self._valAsNoeud = 0.0
+            self.__valAsNoeud = 0.0
 
     @property
     def asNoeud(self) -> float:
-        return self._valAsNoeud
+        return self.__valAsNoeud
 
     @asNoeud.setter
     def asNoeud(self, x: float) -> None:
-        self._valAsNoeud = x
+        self.__valAsNoeud = x
 
     @property
     def asKmH(self) -> float:
-        return self._valAsNoeud * cDistance.MN2KM
+        return self.__valAsNoeud * cDistance.MN2KM
 
     # ========================
     # Conversions & affichage
@@ -108,7 +109,7 @@ class cVitesse:
         """
         cls = self.__class__
         new_obj = cls.__new__(cls)
-        new_obj._valAsNoeud = copy.copy(self._valAsNoeud)
+        new_obj.__valAsNoeud = copy.copy(self.__valAsNoeud)
         return new_obj
 
     def __deepcopy__(self, memodict={}) -> cVitesse:
@@ -123,7 +124,7 @@ class cVitesse:
         """
         cls = self.__class__
         new_obj = cls.__new__(cls)
-        new_obj._valAsNoeud = copy.deepcopy(self._valAsNoeud, memodict)
+        new_obj.__valAsNoeud = copy.deepcopy(self.__valAsNoeud, memodict)
 
         memodict[id(self)] = new_obj
 
@@ -152,40 +153,44 @@ class cVitesse:
 
 
 class cVelocite:
+
     def __init__(self, vitesse: cVitesse | float | None = None, sens: cCap | float | None = None):
-        self._distance: cVitesse = cVitesse(valAsNoeud=0.0)
+        self.__vitesse: cVitesse
+        self.__sens: cCap
+
+        self.__vitesse: cVitesse = cVitesse(valAsNoeud=0.0)
         if vitesse is not None:
             if isinstance(vitesse, (float, int)):
-                self._distance = cVitesse(valAsNoeud=vitesse)
+                self.__vitesse = cVitesse(valAsNoeud=vitesse)
             else:
-                self._distance = vitesse
+                self.__vitesse = vitesse
 
-        self._sens: cCap = cCap(valAsDeg=0.0)
+        self.__sens: cCap = cCap(valAsDeg=0.0)
         if sens is not None:
             if isinstance(sens, (float, int)):
-                self._sens = cCap(valAsDeg=sens)
+                self.__sens = cCap(valAsDeg=sens)
             else:
-                self._sens = sens
+                self.__sens = sens
 
     @property
     def vitesse(self) -> cVitesse:
-        return self._distance
+        return self.__vitesse
 
     @vitesse.setter
     def vitesse(self, d: cVitesse) -> None:
         if not isinstance(d, cVitesse):
             raise cMyException("normeVitesse is not a cDistance ...")
-        self._distance.asNoeud = d.asNoeud
+        self.__vitesse.asNoeud = d.asNoeud
 
     @property
     def sens(self) -> cCap:
-        return self._sens
+        return self.__sens
 
     @sens.setter
     def sens(self, c: cCap) -> None:
         if not isinstance(c, cCap):
             raise cMyException("sens is not a Cap ...")
-        self._sens.angleAsDeg = c.capAsDeg
+        self.__sens.angleAsDeg = c.capAsDeg
 
     @classmethod
     def fromDict(cls, data: dict) -> cVelocite:
@@ -228,7 +233,7 @@ class cVelocite:
         formatDistance: eDistanceFormat = eDistanceFormat.STD,
         formatAngle: eAngleFormat = eAngleFormat.DD,
     ):
-        return f"{self._distance.toString(formatDistance)} {self._sens.toString(formatAngle)}"
+        return f"{self.__vitesse.toString(formatDistance)} {self.__sens.toString(formatAngle)}"
 
     def __str__(self):
         return self.toString(eDistanceFormat.STD, eAngleFormat.DD)
@@ -347,8 +352,8 @@ class cVelocite:
         """
         cls = self.__class__
         new_obj = cls.__new__(cls)
-        new_obj._distance = copy.copy(self._distance)
-        new_obj._sens = copy.copy(self._sens)
+        new_obj.__vitesse = copy.copy(self.__vitesse)
+        new_obj.__sens = copy.copy(self.__sens)
         return new_obj
 
     def __deepcopy__(self, memodict={}) -> cVelocite:
@@ -363,8 +368,8 @@ class cVelocite:
         """
         cls = self.__class__
         new_obj = cls.__new__(cls)
-        new_obj._distance = copy.deepcopy(self._distance)
-        new_obj._sens = copy.deepcopy(self._sens)
+        new_obj.__vitesse = copy.deepcopy(self.__vitesse)
+        new_obj.__sens = copy.deepcopy(self.__sens)
 
         memodict[id(self)] = new_obj
 

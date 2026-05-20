@@ -166,15 +166,23 @@ class nmea0183lib :
         pass
     
 
-    def DumpTZBoatTrames(self, data : bytes) -> None:
+    def DumpTZBoatTrames(self, data : bytes) -> List[tuple[str, str]] :
+        retour : List[tuple[str, str]] = []
         try:
             trame : str = data.decode(encoding="utf-8")
-            self._logger.info(f"Trame reçue : {trame}")
-            self.decode(trame)
-        except Exception as err:
-            self._logger.error("Erreur lors du décodage de la trame : " + str(err))
-
+            allTrames : List[str] = trame.split("\n")
+            for t in allTrames:                
+                if t is not None and len(t) > 0:
+                    t = t.replace("\r", "")
+                    nmea0183lib._logger.info(f"Trame reçue : {t}")
+                    r = self.decode(t)  
+                    retour.append((t, r))
             
+        except Exception as err:
+            nmea0183lib._logger.error("Erreur lors du décodage de la trame : " + str(err))
+
+        return retour
+
     # ----------------------------------------------------------------------------------
     # concatene devant le message le "$" et ajoute en fin le "*" + checksum nmea
     # ----------------------------------------------------------------------------------
@@ -232,11 +240,11 @@ class nmea0183lib :
 
         msgs : list[str] = msg.split(",")
         if msgs[0] == "$PMXS":
-            self.__decodePMXS(msgs)
+            return self.__decodePMXS(msgs)
         else:
-            print (f"*********  ERROR RECEPTION {msg:s}")
+            nmea0183lib._logger.error(f"*********  ERROR RECEPTION {msg:s}")
 
-        return ""
+        return "error - je ne sais pas decoder ce message"
 
 
     # ----------------------------------------------------------------------------------

@@ -71,7 +71,6 @@ __pycache__
 **/ProjetJava/doc/*
 ../ProjetJava/Eclipse
 ProjetJava/Eclipse
-.vscode/
 Python/projet_maree/lcov.info
 Python/projet_maree/maree/simple_package.egg-info/
 Temporaire
@@ -86,7 +85,6 @@ Python/python_astro/.coverage
 Python/python_astro/config.ini
 
 **/.venv/*
-**/.vscode/*
 **/.pytest_cache/*
 **/.ruff_cache/*
 **/.idea/*

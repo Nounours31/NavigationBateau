@@ -128,19 +128,35 @@ class cEtatAir:
 
 class cEtatBateau:
     def __init__(self, sog: cVelocite, position: cPosition, varMagnetique: cCap) -> None:
-        self.sog = sog
-        self.position = position
-        self.varMagnetique = varMagnetique
+        self._sog = sog
+        self._sog_imposed : cVelocite | None = None
+        self._position = position
+        self._varMagnetique = varMagnetique
 
     @property
     def sog(self) -> cVelocite:
         return self._sog
 
+    @property
+    def sog_imposed(self) -> cVelocite | None:
+        return self._sog_imposed
+
     @sog.setter
     def sog(self, value: cVelocite) -> None:
-        if not isinstance(value, cVelocite):
-            raise TypeError("sog doit être un cVecteur")
+        if value is not None :
+            if not isinstance(value, cVelocite):
+                raise TypeError("sog doit être un cVecteur")
         self._sog = value
+
+    @sog_imposed.setter
+    def sog_imposed(self, value: cVelocite | None) -> None:
+        if value is not None:
+            if not isinstance(value, cVelocite):
+                raise TypeError("sog doit être un cVecteur")
+            self._sog_imposed  = value
+        else:
+            self._sog_imposed = None
+
 
     @property
     def position(self) -> cPosition:
@@ -172,7 +188,7 @@ class cEtatBateau:
 
     def __str__(self) -> str:
         s: str = (
-            f"[bateau sog={self.sog},position={self.position}, varMagnetique={self.varMagnetique}]"
+            f"[bateau sog={self.sog},sog_imposed={self.sog_imposed},position={self.position}, varMagnetique={self.varMagnetique}]"
         )
         return s
     

@@ -9,6 +9,9 @@ from .mNavigationFormules import cNavigationFormules
 from .mPosition import cPosition
 from .mVecteurEtat import cVecteurEtat, cVecteurEtatKeys, cTrajet, cWayPoint
 
+import logging
+from pSfaTools.mLogger import getLogger
+
 import numpy as np
 import math
 
@@ -21,6 +24,8 @@ class eModePassageDesWPT(Enum):
 
 
 class cNavigationBateau:
+    _logger : logging.Logger = getLogger("cNavigationBateau", logging.DEBUG)
+
     def __init__(self, etat: cVecteurEtat, trajet: cTrajet):
         self._etat : cVecteurEtat  = etat
         self._trajet : cTrajet = trajet
@@ -60,7 +65,20 @@ class cNavigationBateau:
         # je cherche le waypoint le plus adapte ma position / trajectoire
         trouve : bool = False
         NewWpt : cWayPoint 
-        (NewWpt, trouve) = self.getProchainWayPoint(p)
+
+        hasNewCap : bool = False
+        hasNewVitesse : bool = False
+        if self._etat.bateau.sog_imposed is not None and self._etat.bateau.sog_imposed.sens is not None:
+            self._logger.info("Vitesse imposee: " + str(self._etat.bateau.sog_imposed))
+            trouve = True
+            if self._etat.bateau.sog_imposed.sens is not None:
+                hasNewCap = True
+            if self._etat.bateau.sog_imposed.vitesse is not None:
+                hasNewVitesse = True
+
+
+        if not hasNewCap:
+            (NewWpt, trouve) = self.getProchainWayPoint(p)
         
         if not trouve:
             NewPosition = self._trajet.arrivee.position
@@ -68,9 +86,18 @@ class cNavigationBateau:
         else: 
             # navigate de position courante vers new position
             nav: cNavigationFormules = cNavigationFormules(position=p)
-            (capVersDestination, _) = nav.routeLoxodromique(NewWpt.position)
+            capVersDestination : cCap
+            if not hasNewCap:
+                (capVersDestination, _) = nav.routeLoxodromique(NewWpt.position)
+            else:
+                capVersDestination = self._etat.bateau.sog_imposed.sens
+
+
             v : cVelocite = self.vitesse
             v.sens = capVersDestination
+            if hasNewVitesse:
+                v.vitesse = self._etat.bateau.sog_imposed.vitesse
+
             NewPosition  = nav.navACapVitesseCourantVentDonnes(tempsDeNavEnSeconde=dT, 
                                                                         v = v, 
                                                                         courant = self._etat.eau.courant,
