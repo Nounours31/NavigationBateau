@@ -208,7 +208,7 @@ class cApp:
                     irang : int = 0
                     for t in trames:
                         cApp._logger.debug(f"Trame reçue : \n\t{t[0]} \n\t{t[1]}")
-                        cMyGUI.getInstance().addIPadInfo(f"Trame reçue : \n\t{t[0]} \n\t{t[1]}<", clear=(irang == 0))
+                        cMyGUI.getInstance().addIPadInfo(f"Trame reçue : \n\t{t[0]} \n\t{t[1]}", clear=(irang == 0))
                         irang += 1
 
             except Exception as err:

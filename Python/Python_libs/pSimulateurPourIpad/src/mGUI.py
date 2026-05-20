@@ -115,9 +115,9 @@ class cMyGUI:
             return
         
         if clear:
-            output = txt + "|\n"
+            output = txt
         else:
-            output = pipo.get("1.0", tk.END) + txt + ">\n"
+            output = pipo.get("1.0", tk.END) + txt
         try:  
             pipo.delete("1.0", tk.END) # clear text
             pipo.insert(tk.END, output) # insert new text
@@ -188,6 +188,7 @@ class cMyGUI:
                 frame,
                 wrap="none",  # disables line wrapping
                 width=50,
+                font=("Arial", 8),
                 xscrollcommand=x_scroll.set,
                 yscrollcommand=y_scroll.set
             )

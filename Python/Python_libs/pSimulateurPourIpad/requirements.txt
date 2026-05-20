@@ -9,3 +9,4 @@ pSfaNavigation >= 0.1.0
 pSfaNmea >= 0.1.0
 numpy 
 colorist
+pynmea2

@@ -23,7 +23,7 @@ from pSfaNavigation.mVecteurEtat import cVecteurEtat, cVecteurEtatKeys, cTrajet
 
 from .mNmeaTools import cNmeaTools,cConstanteForNMEA
 
-
+import pynmea2
 
 # ----------------------------------------------------------------------------------
 # Oui, il est possible de connecter TZ iBoat à des instruments externes qui envoient des NMEA0183 via Wi-Fi. TZ iBoat peut aujourd’hui décoder les données suivantes :
@@ -230,21 +230,159 @@ class nmea0183lib :
         return retour
 
 
+    NMEA_NAMES = {
+        "AAM": "Navigation-Waypoint Arrival Alarm",
+        "ABK": "AIS-AIS Addressed and Binary Broadcast Acknowledgement",
+        "ACA": "AIS-AIS Channel Assignment Message",
+        "AIR": "AIS-AIS Interrogation Request",
+        "AIS": "AIS-AIS Transceiver Information",
+        "ALM": "GNSS-GPS Almanac Data",
+        "APA": "Autopilot-Autopilot Sentence A",
+        "APB": "Autopilot-Autopilot Sentence B",
+        "BBM": "AIS-Broadcast Binary Message",
+        "BEC": " Dead Reckoning& Bearing - Distance to Waypoint",
+        "BOD": "Navigation-Bearing Origin to Destination",
+        "BWC": "Navigation-Bearing and Distance to Waypoint",
+        "BWR": "Navigation-Bearing and Distance to Waypoint (Rhumb Line)",
+        "CUR": "Environmental-Water Current Layer",
+        "DBK": "Depth-Depth Below Keel",
+        "DBS": "Depth-Depth Below Surface",
+        "DBT": "Depth-Depth Below Transducer",
+        "DPT": "Depth-Depth",
+        "DSC": "Communication-Digital Selective Calling",
+        "DTM": "GNSS-Datum Reference",
+        "GBS": "GNSS-GNSS Satellite Fault Detection",
+        "GGA": "GNSS-Global Positioning System Fix Data",
+        "GLL": "GNSS-Geographic Position Latitude/Longitude",
+        "GNS": "GNSS-GNSS Fix Data",
+        "GRS": "GNSS-GNSS Range Residuals",
+        "GSA": "GNSS-GNSS DOP and Active Satellites",
+        "GST": "GNSS-GNSS Pseudorange Error Statistics",
+        "GSV": "GNSS-GNSS Satellites in View",
+        "HDG": "Heading-Heading Deviation and Variation",
+        "HDM": "Heading-Heading Magnetic",
+        "HDT": "Heading-Heading True",
+        "MDA": "Weather-Meteorological Composite",
+        "MSK": "Beacon-MSK Receiver Interface",
+        "MTA": "Weather-Air Temperature",
+        "MTW": "Weather-Water Temperature",
+        "MWD": "Weather-Wind Direction and Speed",
+        "MWV": "Weather-Wind Speed and Angle",
+        "OSD": "Navigation-Own Ship Data",
+        "RMA": "Navigation-Recommended Minimum Navigation Information A",
+        "RMB": "Navigation-Recommended Minimum Navigation Information B",
+        "RMC": "GNSS-Recommended Minimum Specific GNSS Data",
+        "ROT": "Heading-Rate of Turn",
+        "RPM": "Engine-Revolutions",
+        "RSA": "Autopilot-Rudder Sensor Angle",
+        "RSD": "Radar-RADAR System Data",
+        "RTE": "Navigation-Routes",
+        "SSD": "AIS-AIS Ship Static Data",
+        "STN": "System-Multiple Data ID",
+        "TLL": "Radar-Target Latitude and Longitude",
+        "TRF": "Navigation-Transit Fix Data",
+        "TTM": "Radar-Tracked Target Message",
+        "TXT": "System-Text Transmission",
+        "VBW": "Speed-Dual Ground/Water Speed",
+        "VDM": "AIS-AIS VHF Data-link Message",
+        "VDO": "AIS-AIS VHF Data-link Own-vessel Report",
+        "VDR": "Navigation-Set and Drift",
+        "VHW": "Speed-Water Speed and Heading",
+        "VLW": "Speed-Distance Traveled through Water",
+        "VPW": "Weather-Speed Parallel to Wind",
+        "VTG": "GNSS-Course over Ground and Ground Speed",
+        "VWR": "Weather-Relative Wind Speed and Angle",
+        "VWT": "Weather-True Wind Speed and Angle",
+        "WCV": "Navigation-Waypoint Closure Velocity",
+        "WNC": "Navigation-Distance Waypoint to Waypoint",
+        "WPL": "Navigation-Waypoint Location",
+        "XDR": "Sensors-Transducer Measurements",
+        "XTE": "Navigation-Cross Track Error",
+        "ZDA": "Time-Date and Time",
+        "ZFO": "Time-UTC & Time from Origin Waypoint",
+        "ZTG": "Time-UTC & Time to Destination Waypoint",
+    }
 
-    def __decodePMXS(self, msgs: list[str]):
-        pass
 
+    NMEA_TALKER = {
+        "AI": "Automatic Identification System (AIS)",
+        "AP": "Autopilot",
+        "BD": "BeiDou",
+        "CC": "Computer Controller",
+        "CD": "Digital Selective Calling",
+        "CR": "Data Receiver",
+        "CS": "Communications Satellite",
+        "CT": "Radio-Telephone",
+        "CV": "Course and Speed Vector",
+        "CX": "Scanning Sounder",
+        "DE": "DECCA Navigation",
+        "DF": "Direction Finder",
+        "DU": "Duplex Repeater Station",
+        "EC": "Electronic Chart System",
+        "EP": "Emergency Position Indicating Beacon",
+        "ER": "Engine Room Monitoring",
+        "GA": "Galileo",
+        "GB": "BeiDou (legacy GB talker)",
+        "GL": "GLONASS",
+        "GN": "Combined GNSS",
+        "GP": "GPS",
+        "HC": "Heading Compass",
+        "HE": "Gyro / North Seeking Compass",
+        "HN": "Heel Angle / Pitch and Roll",
+        "II": "Integrated Instrumentation",
+        "IN": "Integrated Navigation",
+        "LA": "Loran-A",
+        "LC": "Loran-C",
+        "MP": "Microwave Positioning System",
+        "NL": "Navigation Light Controller",
+        "OM": "OMEGA Navigation",
+        "OS": "Distress Alarm System",
+        "QZ": "QZSS",
+        "RA": "RADAR",
+        "SD": "Depth Sounder",
+        "SN": "Electronic Positioning System",
+        "SS": "Sounder / Scanning Sonar",
+        "TI": "Turn Rate Indicator",
+        "TR": "Transit Navigation",
+        "U0": "User Configured",
+        "UP": "Microprocessor Controller",
+        "VD": "Velocity Sensor Doppler",
+        "VM": "Magnetic Variation Monitor",
+        "VW": "Speed Log mecanical",
+        "WI": "Weather Instruments",
+        "YC": "Transducer - Temperature",
+        "YD": "Transducer - Displacement",
+        "YF": "Transducer - Flow",
+        "YL": "Transducer - Level",
+        "YP": "Transducer - Pressure",
+        "YR": "Transducer - RPM",
+        "YT": "Transducer - Tachometer",
+        "YX": "Transducer",
+        "ZA": "Timekeeper",
+        "ZC": "Chronometer",
+        "ZQ": "Quartz Clock",
+        "ZV": "Radio Update"
+    }
+    
     def decode(self, msg: str) -> str:
         if msg is None or len(msg) < 1:
             return ""
 
-        msgs : list[str] = msg.split(",")
-        if msgs[0] == "$PMXS":
-            return self.__decodePMXS(msgs)
-        else:
-            nmea0183lib._logger.error(f"*********  ERROR RECEPTION {msg:s}")
+        fields : list[str] = msg.split(",")
+        
+        # BWR : route loxodromique (rhumb line)
+        # BWC : route orthodromique (great circle)
 
-        return "error - je ne sais pas decoder ce message"
+        if not fields[0].startswith("$") or len(fields) < 2:
+            nmea0183lib._logger.error(f"*********  ERROR RECEPTION {msg:s}")
+            return "error - je ne sais pas decoder ce message"
+        
+        try:
+            msg = pynmea2.parse(msg)
+            return f"{nmea0183lib.NMEA_TALKER.get(msg.talker, "Unknown")}-{nmea0183lib.NMEA_NAMES.get(msg.sentence_type, "Unknown")}-{repr(msg)}"
+        except Exception as err:
+            nmea0183lib._logger.error(f"*********  ERROR RECEPTION {msg:s} - {str(err)}")
+            return "error - je ne sais pas decoder ce message"
 
 
     # ----------------------------------------------------------------------------------
