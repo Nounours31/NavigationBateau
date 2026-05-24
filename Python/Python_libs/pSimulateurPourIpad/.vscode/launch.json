@@ -13,8 +13,7 @@
             "args": [
                 "-h",
             ]
-        }
-        ,
+        },
         {
             "name": "Python Debugger: force without iPad - main.py",
             "type": "debugpy",
@@ -25,11 +24,25 @@
                 "-o", "TCP",
                 "-s",
                 "-p", "5006",
-                "-t", "TCP",
+                "-t", "192.168.1.187",
                 "-c", 
                 "-r", 
                 "-d", 
                 "-f"
+            ]
+        },
+        {
+            "name": "Python Debugger: avec iPad - main.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "console": "integratedTerminal",
+            "args": [
+                "-o", "TCP",
+                "-s",
+                "-p", "5006",
+                "-t", "192.168.1.187",
+                "-r", 
             ]
         }
     ]

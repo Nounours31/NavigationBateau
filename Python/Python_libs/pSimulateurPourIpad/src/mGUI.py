@@ -51,12 +51,11 @@ class cMyGUI:
             if self.capAsEntry is not None:
                 if len(self.capAsEntry.get()) > 0:
                     self.cap = float(self.capAsEntry.get())
+            if self.vitesseAsEntry is not None:
                 if len(self.vitesseAsEntry.get()) > 0:
                     self.vitesse = float(self.vitesseAsEntry.get())
-                else:
-                    self.vitesse = None
-                outputTxt += f"Cap lu:      {self.cap}\n"
-                outputTxt += f"Vitesse lue: {self.vitesse}\n"
+            outputTxt += f"Cap lu:      {self.cap}\n"
+            outputTxt += f"Vitesse lue: {self.vitesse}\n"
         except ValueError:
             self.cap = None
             self.vitesse = None
@@ -168,8 +167,8 @@ class cMyGUI:
         frame['borderwidth'] = 1
         frame['relief'] = 'solid' # flat, groove, raised, ridge, solid, or sunken
         
-        frame.rowconfigure(0, weight=100) # label / input
-        frame.rowconfigure(1, weight=1) # label / input
+        frame.rowconfigure(0, weight=150) # label / input
+        frame.rowconfigure(1, weight=50) # label / input
         frame.columnconfigure(0, weight=100)
         frame.columnconfigure(1, weight=1)
 
@@ -188,6 +187,7 @@ class cMyGUI:
                 frame,
                 wrap="none",  # disables line wrapping
                 width=50,
+                height=100,
                 font=("Arial", 8),
                 xscrollcommand=x_scroll.set,
                 yscrollcommand=y_scroll.set
@@ -199,6 +199,7 @@ class cMyGUI:
                 frame,
                 wrap="none",  # disables line wrapping
                 width=50,
+                height=50,
                 xscrollcommand=x_scroll.set,
                 yscrollcommand=y_scroll.set
             )

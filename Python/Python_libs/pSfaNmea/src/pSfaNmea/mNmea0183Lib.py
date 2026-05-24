@@ -175,9 +175,12 @@ class nmea0183lib :
                 if t is not None and len(t) > 0:
                     t = t.replace("\r", "")
                     nmea0183lib._logger.info(f"Trame reçue : {t}")
-                    r = self.decode(t)  
-                    retour.append((t, r))
-            
+                    try:
+                        r = self.decode(t)  
+                        retour.append((t, r))
+                    except Exception as err:
+                        nmea0183lib._logger.error("Erreur lors du décodage de la trame : " + str(err))
+
         except Exception as err:
             nmea0183lib._logger.error("Erreur lors du décodage de la trame : " + str(err))
 

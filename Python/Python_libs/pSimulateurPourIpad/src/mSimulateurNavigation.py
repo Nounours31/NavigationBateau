@@ -71,7 +71,7 @@ class cSimulateurNav:
         return v
 
 
-    def evaluateMaintenatNavigation(self, newCap: float | None, newVitesse: float | None) -> List[bytes] :
+    def evaluateMaintenatNavigation(self) -> List[bytes] :
         # maintenant
         timestamp = datetime.now(tz=timezone.utc).timestamp()
 
@@ -87,21 +87,6 @@ class cSimulateurNav:
 
         v._timestamp = timestamp
         
-        forceCap : bool = newCap is not None
-        forceVitesse : bool = newVitesse is not None
-
-        if forceCap or forceVitesse :
-            sog_imposed: cVelocite = v.bateau.sog
-            if forceCap:
-                sog_imposed.sens = cCap(valAsDeg=newCap)
-            if forceVitesse:
-                sog_imposed.vitesse = cVitesse(valAsNoeud=newVitesse)
-            v.bateau.sog_imposed = sog_imposed
-            self._logger.info("Nouveau cap demande: " + str(sog_imposed) + " - on le prend en compte dans la nav")
-        else:
-            v.bateau.sog_imposed = None # pas de cap impose - on laisse la nav faire son travail
-
-
         deriveAConserver : cAngle = v.air.derive
         courantAConserver : cVelocite = v.eau.courant
         v.air.derive = cAngle(valAsDeg=0) 

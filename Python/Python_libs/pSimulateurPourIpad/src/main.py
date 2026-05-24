@@ -109,7 +109,7 @@ if __name__ == '__main__':
     # En debug sans iPad lis les trames NMEA et les drops - permet juste d'ouvrir la socket server 
     # ------------------------------------
     if app_args.client:
-        app.startClient (app_args.protocol, "192.168.43.10", app_args.port)
+        app.startClient (app_args.protocol, app_args.TCP_IPhost, app_args.port)
     else:
         logger.warning("No client - no socket - no communication with iPad possible = NO PILOT INFO for example")
 
