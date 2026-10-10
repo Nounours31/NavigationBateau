@@ -1,6 +1,6 @@
 @echo off
 
-cd E:\home\git\NavigationBateau\NavigationBateau\Python\Python_libs\pSimulateurPourIpad
+cd E:\git\NavigationBateau\Python\Python_libs\pSimulateurPourIpad
 call .venv\Scripts\activate.bat
 
 call python.exe -m pip install --upgrade pip
