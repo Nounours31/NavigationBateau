@@ -1,0 +1,134 @@
+from __future__ import annotations
+import copy
+from pSfaTools.mMyException import cMyException
+from .mAngle import cAngle, eAngleFormat
+
+"""
+Classe de base de cap
+"""
+
+
+class cCap(cAngle):
+    def __init__(
+        self,
+        valAsDeg: float | None = None,
+        valAsAngleTrigonometriqueEnDeg: float | None = None,
+        valAsAngleTrigonometriqueEnRad: float | None = None,
+    ):
+        super().__init__(valAsDeg=0.0)
+        if valAsDeg is not None:
+            self._angleEnDeg = valAsDeg
+        elif valAsAngleTrigonometriqueEnDeg is not None:
+            self.asAngleTrigonometriqueEnDeg = valAsAngleTrigonometriqueEnDeg
+        elif valAsAngleTrigonometriqueEnRad is not None:
+            self.asAngleTrigonometriqueEnRad = valAsAngleTrigonometriqueEnRad
+        self.normalise()
+
+    @property
+    def capAsRad(self) -> float:
+        return self._angleEnDeg * cAngle.DEG2RAD
+
+    @property
+    def capAsDeg(self) -> float:
+        return self._angleEnDeg
+
+    @capAsDeg.setter
+    def capAsDeg(self, cap: float) -> None:
+        self._angleEnDeg = cap
+
+    @property
+    def asAngleTrigonometriqueEnRad(self) -> float:
+        return self.asAngleTrigonometriqueEnDeg * cAngle.DEG2RAD
+
+    @asAngleTrigonometriqueEnRad.setter
+    def asAngleTrigonometriqueEnRad(self, rad: float) -> None:
+        self.asAngleTrigonometriqueEnDeg = rad * cAngle.RAD2DEG
+
+    @property
+    def asAngleTrigonometriqueEnDeg(self) -> float:
+        return 90.0 - self._angleEnDeg
+
+    @asAngleTrigonometriqueEnDeg.setter
+    def asAngleTrigonometriqueEnDeg(self, deg: float) -> None:
+        self._angleEnDeg = 90.0 - deg
+
+    def __repr__(self) -> str:
+        return "[cCap: " + self.__str__() + "]"
+
+    def __str__(self) -> str:
+        """
+        toString par defaut
+        """
+        return super().__str__()
+
+    def toString(self, format: eAngleFormat = eAngleFormat.DD) -> str:
+        return super().toString(format=format)
+
+    @classmethod
+    def fromObject(cls, o: object) -> cCap:
+        if isinstance(o, cCap):
+            return copy.deepcopy(o)
+        if isinstance(o, str):
+            return cCap.fromString(o)
+        if isinstance(o, dict):
+            sAngle : str = o["cap"]
+            a : cAngle = cAngle.fromString(sAngle)
+            return cCap(valAsDeg = a.angleAsDeg)
+
+        raise cMyException("Impossible de creer un Cap")
+
+
+    @classmethod
+    def fromString(cls, angleAsString: str = "") -> cCap:
+        a: cAngle = cAngle.fromString(angleAsString)
+        return cls(a.angleAsDeg % 360)
+
+
+    def __add__(self, other) -> cCap:
+        a: cAngle = super().__add__(other)
+        return cCap(a.angleAsDeg)
+
+    def __iadd__(self, other) -> cCap:
+        super().__iadd__(other)
+        self.normalise()
+        return self
+
+    def __mul__(self, other) -> cCap:
+        a = super().__mul__(other)
+        return cCap(a.angleAsDeg)
+
+    def __imul__(self, other) -> cCap:
+        super().__imul__(other)
+        self.normalise()
+        return self
+
+    def __sub__(self, other) -> cCap:
+        a = super().__sub__(other)
+        return cCap(a.angleAsDeg)
+
+    def __isub__(self, other) -> cCap:
+        super().__isub__(other)
+        self.normalise()
+        return self
+
+    def __truediv__(self, other) -> cCap:
+        a = super().__truediv__(other)
+        return cCap(a.angleAsDeg)
+
+    def __itruediv__(self, other) -> cCap:
+        super().__itruediv__(other)
+        self.normalise()
+        return self
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __eq__(self, other):
+        if isinstance(other, cCap):
+            return abs(self.angleAsDeg - other.angleAsDeg) <= cAngle.EQUAL_TOLERANCE_IN_DEG
+        if isinstance(other, cAngle):
+            return abs(self.angleAsDeg - other.angleAsDeg) <= cAngle.EQUAL_TOLERANCE_IN_DEG
+        if isinstance(other, (int, float)):
+            return abs(self.angleAsDeg - other) <= cAngle.EQUAL_TOLERANCE_IN_DEG
+        return False
+

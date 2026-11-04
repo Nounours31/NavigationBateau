@@ -1,0 +1,135 @@
+package sfa.nav.httpd;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.sun.net.httpserver.HttpExchange;
+
+import sfa.nav.httpd.ws.infra.WSContratForWSQuery;
+import sfa.nav.httpd.ws.navigation.WSCalculsAngulaires;
+import sfa.nav.httpd.ws.navigation.WSNavigationImpl;
+
+public class MyHttpHandlerOnVolatile extends AMyHttpHandler {
+	private static final Logger logger = LoggerFactory.getLogger(MyHttpHandlerOnVolatile.class);
+
+	public MyHttpHandlerOnVolatile() {
+		super();
+	}
+
+	public boolean canServeUri(String uri, File rootDir) {
+		File f = new File(rootDir, uri);
+		return f.exists();
+	}
+
+	public void initialize(Map<String, String> commandLineOptions) {
+	}
+
+	private String readSource(File file) {
+		FileReader fileReader = null;
+		BufferedReader reader = null;
+		try {
+			fileReader = new FileReader(file);
+			reader = new BufferedReader(fileReader);
+			String line = null;
+			StringBuilder sb = new StringBuilder();
+			do {
+				line = reader.readLine();
+				if (line != null) {
+					sb.append(line).append("\n");
+				}
+			} while (line != null);
+			reader.close();
+			return sb.toString();
+		} catch (Exception e) {
+			logger.error("could not read source", e);
+			return null;
+		} finally {
+			try {
+				if (fileReader != null) {
+					fileReader.close();
+				}
+				if (reader != null) {
+					reader.close();
+				}
+			} catch (IOException ignored) {
+				logger.error("close failed", ignored);
+			}
+		}
+	}
+
+	public MyHttpResponse serveFile(String uri, Map<String, String> headers, File file, String mimeType) {
+
+		String markdownSource = readSource(file);
+		byte[] bytes = null;
+		try {
+			bytes = markdownSource.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			markdownSource = null;
+		}
+		if ((markdownSource == null) || (bytes == null))
+			return null;
+		return MyHttpResponse.newFixedLengthResponse(Response.Status.OK.getStatusCode(), 
+				MediaType.TEXT_HTML,
+				new ByteArrayInputStream(bytes), bytes.length);
+
+	}
+
+
+
+	@Override
+	public MyRequestInfo computeResponse(HttpExchange httpExchange, Map<String, String> requestParamValue,
+			Map<String, List<String>> requestParamHeaders) throws IOException {
+		
+		MyRequestInfo ret = new MyRequestInfo();
+
+		String uri = httpExchange.getRequestURI().toString();
+		String post = httpExchange.getRequestMethod();
+		if (uri.equals("/api/nav/ortho") && post.equals("POST")) {
+			InputStream is = httpExchange.getRequestBody();
+			byte[] message = is.readAllBytes();
+			logger.debug("Api: {} - received: ->{}<-", uri, new String(message, StandardCharsets.UTF_8));
+			
+			WSContratForWSQuery query = new Gson().fromJson(new String(message, StandardCharsets.UTF_8), WSContratForWSQuery.class);
+
+			WSNavigationImpl wsnav = new WSNavigationImpl(query);
+			MyRequestInfo wsResponse = wsnav.response();
+			
+			ret = wsResponse;
+		}
+		else if (uri.equals("/api/nav/modele") && post.equals("POST")) {
+			InputStream is = httpExchange.getRequestBody();
+			byte[] message = is.readAllBytes();
+			logger.debug("Api: {} - received: ->{}<-", uri, new String(message, StandardCharsets.UTF_8));
+			
+			WSContratForWSQuery query = new Gson().fromJson(new String(message, StandardCharsets.UTF_8), WSContratForWSQuery.class);
+
+			WSCalculsAngulaires wsnav = new WSCalculsAngulaires(query);
+			MyRequestInfo wsResponse = wsnav.response();
+			
+			ret = wsResponse;
+		}
+		else {
+			ret.mimeType(MediaType.TEXT_HTML);
+			ret.setContent("KO");
+			ret.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+		}
+		return ret;
+	}
+
+}

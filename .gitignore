@@ -1,14 +1,98 @@
+**/nbproject/private/
+**/nbproject/Makefile-*.mk
+**/nbproject/Package-*.bash
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+**/core.*.dmp
+**/heapdump.*.phd
+**/javacore.*.txt
+**/Snap.*.trc
+
+.eclipse2/
+NavAstro/.project
+NavAstro/.settings/
+NavAstro/app/.classpath
+NavAstro/app/.project
+NavAstro/app/.settings/
+
+NavAstro/app/LOG_DIR_IS_UNDEFINED/
+NavAstro/app/bin/
+NavAstro/logsODT/
+
+
+.eclipse/
+/.metadata/
+JavaNav/.gradleUserHome
 .gradle
-/build/
+**/*.jar
+logs/
+.gradle/
+app/nbproject/
+**/.project
+**/.classpath
+**/.project
+**/.settings
+**/bin
 
-# Ignore Gradle GUI config
-gradle-app.setting
+# Ignore Gradle project-specific cache directory
+**/.gradle/
+**/gradle/
+**/gradlew
+**/gradlew.bat
 
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
 
-# Cache of project
-.gradletasknamecache
+# Ignore Gradle build output directory
+**/build/
+**/*.class
 
-# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
-# gradle/wrapper/gradle-wrapper.properties
+# Package Files #
+**/*.war
+**/*.ear
+
+# IDEA config files
+**/.idea/
+**/*.log
+**/out/
+
+
+ProjetUI/V1.0.0/node_modules
+**/node_modules
+**/node_modules/
+ProjetUI/V1.0.0/package-lock.json
+ProjetJava/eclipsePcTiti
+ProjetJava/EclipsePortable
+**/__pycache__/**
+*/__pycache__/**
+*/__pycache__/*
+__pycache__
+**/ProjetJava/doc/*
+../ProjetJava/Eclipse
+ProjetJava/Eclipse
+Python/projet_maree/lcov.info
+Python/projet_maree/maree/simple_package.egg-info/
+Temporaire
+ProjetXLS/Solution_Exo_Carbonel/
+ProjetXLS/Solution_Exo_Italiens/
+Thumbs.db
+**/.coverage
+.coverage
+Python/python_astro/.coverage
+**/myAppLogs*
+**/de421.bsp
+Python/python_astro/config.ini
+
+**/.venv/*
+**/.pytest_cache/*
+**/.ruff_cache/*
+**/.idea/*
+**/build/*
+**/htmlcov/*
+**/logs/*
+**/*.egg-info/*
+**/.coverage
+
+
+

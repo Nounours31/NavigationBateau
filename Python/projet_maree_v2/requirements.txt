@@ -1,0 +1,11 @@
+pytest >= 8.1.0
+pytest-cov >= 7.0.0
+coverage
+pre-commit
+ruff
+pyright
+# -------
+requests
+argparse
+logging
+arrow

@@ -1,0 +1,11 @@
+pytest >= 8.1.0
+pytest-cov >= 7.0.0
+# for python refactoring
+pylance 
+coverage
+pre-commit
+ruff
+pyright
+
+pSfaTools
+numpy >= 1.20 

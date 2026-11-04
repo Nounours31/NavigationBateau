@@ -1,0 +1,155 @@
+# import socketserver
+# import tools.MyServer as MyServer
+from datetime import datetime
+import signal
+import sys
+from functools import cached_property
+
+from typing import List
+from colorist import green, Color
+
+from time import sleep
+
+from simulateurNav.simulateurNav import simulateurNav as Nav
+from tools.mySocket import mySocket as mySocket
+from nmea.nmea0183Lib import nmea0183lib as Nmea
+from myEnv import myEnv
+
+import multiprocessing
+from http.server import HTTPServer, SimpleHTTPRequestHandler, BaseHTTPRequestHandler
+
+
+
+
+
+#class nmeaTCP(multiprocessing.Process):
+class nmeaTCP():
+    def __init__(self, name):
+        super().__init__()
+        self.name = name
+
+    def run(self):
+        print(f"Début de {self.name}")
+
+#        server_address = ('', 5006)
+ #       httpd = HTTPServer(server_address, WebRequestHandler)
+        server = HTTPServer(("0.0.0.0", 5006), WebRequestHandler)
+        server.serve_forever()
+
+        print("Serving static content on port 8000")
+        # httpd.serve_forever()
+
+
+import socket
+
+class nmeaSocketTCP():
+    PORT = 5006
+
+    def __init__(self):
+        pass
+
+    def nav(self, server: socket):
+        print(f"Début de {self.name}")
+        navconfig: dict[str, float | object] = {
+            "vitesseEnNoeudMoyenne": 15.0,
+            "capMoyen": 186.0,
+            "variationMagnetique": -1.2,
+            "positionDepart": {
+                "LatitudeDecimale": myEnv.latTrinitee,
+                "LongitudeDecimale": myEnv.longTrinitee
+            },
+            "vent": {
+                "vitesseEnNd": 15,
+                "directionEnDeg": 75,  # sens du vent attention !!!
+                "temperature": 20
+            },
+            "eau": {
+                "profondeur": 17,
+                "temperature": 12,
+                "courant": {
+                    "vitesseEnNd": 1.5,
+                    "directionEnDeg": 2.5,
+                }
+            },
+        }
+        nav: Nav = Nav(navconfig)
+        nmea: Nmea = Nmea()
+        myNet: mySocket = mySocket(debug=False)
+
+        iLoop: int = 1
+        while True:
+            myEnv.logger.info(f"-- {iLoop:03d} {datetime.now()}--------------------------------------------------")
+
+            nav.nav()
+            trame: List[bytes] = nmea.computeTrames(nav)
+            myNet.send(trame)
+
+            sleep(myEnv.sleepTimeInSec)
+            iLoop += 1
+
+    def listenFromNMEABus (self, socketNMEA : socket) :
+        while True:
+            print('Reception...')
+            donnees = socketNMEA.recv(1024)
+            print('Recu :', donnees)
+
+    def run(self):
+        server : socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.bind(('', nmeaSocketTCP.PORT))
+        server.listen()
+        client, adresseClient = server.accept()
+
+        process1 = multiprocessing.Process(target=self.listenFromNMEABus(), args=(self, client,))
+
+        server.close()
+
+
+def exit_gracefully(signum, frame):
+    signal.signal(signal.SIGINT, original_sigint)
+
+    try:
+        if input("\nReally quit? (y/n)> ").lower().startswith('y'):
+            mySocket.closeAll()
+            sys.exit(0)
+
+    except KeyboardInterrupt:
+        print("Ok ok, quitting")
+        mySocket.closeAll()
+        sys.exit(0)
+
+    # restore the exit gracefully handler here    
+    signal.signal(signal.SIGINT, exit_gracefully)
+
+
+
+
+
+if __name__ == '__main__':
+    global original_sigint
+    original_sigint = signal.getsignal(signal.SIGINT)
+    signal.signal(signal.SIGINT, exit_gracefully)
+
+    x = nmeaSocketTCP()
+    x.run()
+
+"""
+    process2 = nmeaTCP("nmeaTCP")
+    process2.run()
+"""
+
+
+"""
+    # Création de 2 processus
+    process1 = nmeaUDP("nmeaUDP")
+    process2 = nmeaTCP("nmeaTCP")
+
+    # Démarrage des processus
+    print("Démarrage des processus")
+    process1.start()
+    process2.start()
+
+    # Attendre la fin des processus
+    process1.join()
+    process2.join()
+    print("Les processus sont terminés")
+"""

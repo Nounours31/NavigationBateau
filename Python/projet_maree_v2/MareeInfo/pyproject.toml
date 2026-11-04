@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pMareeInfo"
+version = "0.1.1"
+description = "Mon premier package Python"
+authors = [{name="Nounours31"}]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = []
+
+
+[tool.ruff]
+line-length = 100
+indent-width = 4
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = false
+docstring-code-line-length = "dynamic"
+
+
+[tool.ruff.lint]
+select = ["E", "F", "B"]
+unfixable = ["B"]
+ignore = ["E501", "B006"]
+
+# 4. Ignore `E402` (import violations) in all `__init__.py` files, and in selected subdirectories.
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401"]
+"**/{tests,docs,tools}/*" = ["E402"]
+
+[tool.pyright]
+# exclude = [ "**/__pycache__", "**/tests", "**/node_modules", "**/.*", ".venv" ]
+include = [ "**/src" ]
+
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra --cov -q"
+python_files = ["*_tests.py", "*_test.py"]
+python_classes = ["*test", "test*","*Test", "Test*", "*tests", "tests*","*Tests", "Tests*"]
+testpaths = ['test', 'tests']
+pythonpath = ["."]

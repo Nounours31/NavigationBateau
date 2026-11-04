@@ -1,0 +1,10 @@
+numpy
+skyfield
+pandas
+colorist
+
+ruff
+black
+pytest
+coverage
+pytest-cov

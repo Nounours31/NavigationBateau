@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+           <title>
+                  Security Error
+            </title>
+    <style type="text/css">
+	  .content {
+        background-color:#0066a1;
+        width:900px;
+        margin:0px auto;
+        margin-top:40px;
+        margin-bottom:10px;
+        border:2px solid #DDDDDD;
+        height: 250px;
+        font-family:Tahoma;
+		color:white;
+      }    
+      *{
+        padding:0;
+        margin:0;
+      }
+    </style>
+    <script type="text/javascript" language="JavaScript" charset=utf-8>
+   
+  // data messages for each ISO code
+  var all_messages = new Array(5);
+  all_messages[0]=new Array("en","The server detected an error","For safety reason, your request was interrupted. Please correct your request if necessary and submit it again.","Please mention the following reference of blocking :");
+  all_messages[1]=new Array("fr","Le serveur a d&eacute;tect&eacute; une erreur.","Par s&eacute;curit&eacute;, votre demande a &eacute;t&eacute; interrompue. Veuillez &eacute;ventuellement corriger votre requ&ecirc;te et la soumettre &agrave; nouveau.","Merci de mentionner la r&eacute;f&eacute;rence de blocage suivante :");
+  all_messages[2]=new Array("de","Der Server hat einen Fehler festgestellt.","Aus Sicherheitsgr³nden unterbrochen wurde Ihre Anfrage Bitte korrigieren Sie Ihre Anfrage bei Bedarf und senden Sie es erneut.","Bitte erwõhnen Sie den folgenden Verweis zu blockieren :");
+  all_messages[3]=new Array("es","El servidor ha detectado un error.","Por medida de seguridad, su demanda ha sido interrumpida. Por favor, corrija eventualmente su demanda y somu tala de nuevo.","Le agradecemos por mencionar la referencia de bloqueo siguiente :");
+  all_messages[4]=new Array("it","Il server ha rilevato un errore.","Per sicurezza la sua richiesta &eagrave; stata interrotta. La ringrazio di corregere la richiesta e di riinviarla.","La prego di indicare la seguente referenza d'errore :");
+  all_messages[5]=new Array("nl","De server heeft een fout ontdekt.","Om veiligheidsredenen werd uw aanvraag onderbroken. Gelieve uw aanvraag eventueel te wijzigen vooraleer deze opnieuw in te dienen.","Bedankt voor volgende blokerende referentie te melden :");
+
+    
+  // return browser ISO code 
+  function getBrowserISOCode() {
+    var lct="en";
+    if (navigator.language) {
+      browserIsoCode=navigator.language.toLowerCase().substring(0, 2);
+    } else if (navigator.userLanguage) {
+      browserIsoCode=navigator.userLanguage.toLowerCase().substring(0, 2);
+    } else if (navigator.userAgent.indexOf("[")!=-1) {
+      var begin=navigator.userAgent.indexOf("[");
+      var end=navigator.userAgent.indexOf("]");
+      browserIsoCode=navigator.userAgent.substring(begin+1, end).toLowerCase();
+    }
+    return browserIsoCode;
+  }
+  
+  // return message 1 from a ISO code 
+  function getMessageFromIsoCode(isoCode, messageIndex) {
+    var nbMessages = all_messages.length;
+    // If not found, default language is EN (first item of all_messages array)
+    var defaultIsoCode = 0;
+    var message = all_messages[0][messageIndex];
+    for (i=0 ; i < nbMessages ; i++){
+      if (isoCode == all_messages[i][0] ) {
+        message = all_messages[i][messageIndex];
+      }
+    }
+    return message;
+  }
+  </script>
+
+  </head>
+  <body>
+    <div class="content">
+    <center>
+      <br/><br/><br/>
+      <h2><script type="text/javascript" language="JavaScript">document.write(getMessageFromIsoCode(getBrowserISOCode(),1))</script></h2>
+      <br/><br/>
+        <p>
+          <label>
+           <script type="text/javascript" language="JavaScript">document.write(getMessageFromIsoCode(getBrowserISOCode(),2))</script>
+            <br>
+            <script type="text/javascript" language="JavaScript">document.write(getMessageFromIsoCode(getBrowserISOCode(),3))</script> [3974929909482656738]
+          </label>
+        </p>
+      </center>
+    </div>
+  
+</body></html>

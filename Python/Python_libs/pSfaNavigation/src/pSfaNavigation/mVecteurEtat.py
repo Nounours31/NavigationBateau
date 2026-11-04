@@ -1,0 +1,342 @@
+from __future__ import annotations
+from datetime import datetime, timezone
+from enum import Enum, IntEnum
+from typing import List
+
+from .mSatellite import cSatellite
+from .mAngle import cAngle
+from .mVelocite import cVelocite
+from .mCap import cCap
+from .mPosition import cPosition
+
+
+# ==========================================================
+# cEau
+# ==========================================================
+
+
+class cEtatMer:
+    def __init__(self, profondeur: float, temperature: float, courant: cVelocite) -> None:
+        self.profondeur = profondeur
+        self.temperature = temperature
+        self.courant = courant
+
+    # --- profondeur ---
+
+    @property
+    def profondeur(self) -> float:
+        return self._profondeur
+
+    @profondeur.setter
+    def profondeur(self, value: float) -> None:
+        if value < 0:
+            raise ValueError("La profondeur ne peut pas être négative")
+        self._profondeur = float(value)
+
+    # --- temperature ---
+
+    @property
+    def temperature(self) -> float:
+        return self._temperature
+
+    @temperature.setter
+    def temperature(self, value: float) -> None:
+        self._temperature = float(value)
+
+    # --- courant ---
+
+    @property
+    def courant(self) -> cVelocite:
+        return self._courant
+
+    @courant.setter
+    def courant(self, value: cVelocite) -> None:
+        if not isinstance(value, cVelocite):
+            raise TypeError("courant doit être un cVecteur")
+        self._courant = value
+
+    @classmethod
+    def fromDict(cls, data: dict) -> cEtatMer:
+        return cls(
+            profondeur=float(data[cVecteurEtatKeys.PROFONDEUR]),
+            temperature=float(data[cVecteurEtatKeys.TEMPERATURE]),
+            courant=cVelocite.fromObject(data[cVecteurEtatKeys.COURANT]),
+        )
+
+    def __str__(self) -> str:
+        s: str = f"[eau profondeur={self.profondeur} temperature={self.temperature} courant={self.courant}]"
+        return s
+
+    def __repr__(self):
+        return self.__str__()
+
+
+# ==========================================================
+# cAir
+# ==========================================================
+
+
+class cEtatAir:
+    def __init__(self, temperature: float, vent: cVelocite, derive : cAngle) -> None:
+        self.temperature = temperature
+        self.vent = vent
+        self._derive = derive
+
+    @property
+    def temperature(self) -> float:
+        return self._temperature
+
+    @temperature.setter
+    def temperature(self, value: float) -> None:
+        self._temperature = float(value)
+
+    @property
+    def vent(self) -> cVelocite:
+        return self._vent
+
+    @vent.setter
+    def vent(self, value: cVelocite) -> None:
+        if not isinstance(value, cVelocite):
+            raise TypeError("vent doit être un cVecteur")
+        self._vent = value
+
+    @property
+    def derive(self) -> cAngle:
+        return self._derive
+    @derive.setter
+    def derive(self, value: cAngle) -> None:
+        self._derive = value
+
+    @classmethod
+    def fromDict(cls, data: dict) -> cEtatAir:
+        return cls(temperature=float(data[cVecteurEtatKeys.TEMPERATURE]), 
+                   vent=cVelocite.fromObject(data[cVecteurEtatKeys.VENT]), 
+                   derive=cAngle.fromObject(data[cVecteurEtatKeys.DERIVE]))
+
+    def __str__(self) -> str:
+        s: str = f"[air temperature={self.temperature} vent={self.vent} derive={self._derive}]"
+        return s
+
+    def __repr__(self):
+        return self.__str__()
+
+
+# ==========================================================
+# cBateau
+# ==========================================================
+
+
+class cEtatBateau:
+    def __init__(self, sog: cVelocite, position: cPosition, varMagnetique: cCap) -> None:
+        self._sog = sog
+        self._sog_imposed : cVelocite | None = None
+        self._position = position
+        self._varMagnetique = varMagnetique
+
+    @property
+    def sog(self) -> cVelocite:
+        return self._sog
+
+    @property
+    def sog_imposed(self) -> cVelocite | None:
+        return self._sog_imposed
+
+    @sog.setter
+    def sog(self, value: cVelocite) -> None:
+        if value is not None :
+            if not isinstance(value, cVelocite):
+                raise TypeError("sog doit être un cVecteur")
+        self._sog = value
+
+    @sog_imposed.setter
+    def sog_imposed(self, value: cVelocite | None) -> None:
+        if value is not None:
+            if not isinstance(value, cVelocite):
+                raise TypeError("sog doit être un cVecteur")
+            self._sog_imposed  = value
+        else:
+            self._sog_imposed = None
+
+
+    @property
+    def position(self) -> cPosition:
+        return self._position
+
+    @position.setter
+    def position(self, value: cPosition) -> None:
+        if not isinstance(value, cPosition):
+            raise TypeError("position doit être un cPosition")
+        self._position = value
+
+    @property 
+    def varMagnetique(self) -> cCap:
+        return self._varMagnetique
+
+    @varMagnetique.setter
+    def varMagnetique(self, value: cCap) -> None:
+        if not isinstance(value, cCap):
+            raise TypeError("varMagnetique doit être un cCap")
+        self._varMagnetique = value
+
+    @classmethod
+    def fromDict(cls, data: dict) -> "cEtatBateau":
+        return cls(
+            sog=cVelocite.fromObject(data[cVecteurEtatKeys.SOG]),
+            position=cPosition.fromObject(data[cVecteurEtatKeys.POSITION]),
+            varMagnetique=cCap.fromObject(data[cVecteurEtatKeys.VARIATION_MAGNETIQUE])
+        )
+
+    def __str__(self) -> str:
+        s: str = (
+            f"[bateau sog={self.sog},sog_imposed={self.sog_imposed},position={self.position}, varMagnetique={self.varMagnetique}]"
+        )
+        return s
+    
+    def __repr__(self):
+        return self.__str__()
+
+
+# ==========================================================
+# ETAT GLOBAL
+# ==========================================================
+
+class cVecteurEtatKeys:
+    HEURE : str = "Heure"
+    VENT : str = "Vent"
+    TEMPERATURE : str = "Temperature"
+    PROFONDEUR : str = "Profondeur"
+    VARIATION_MAGNETIQUE : str = "VariationMagnetique"
+    COURANT : str = "Courant"
+    POSITION : str = "Position"
+    DERIVE: str = "Derive"
+    SOG: str = "SOG"
+    BATEAU : str = "Bateau"
+    AIR : str = "Air"
+    EAU : str = "Eau"
+    DEPART : str = "Depart"
+    ARRIVEE : str = "Arrivee"
+    WAYPOINTS : str = "wpt"
+    SATELLITE: str = "Satellite"
+
+class cVecteurEtat:
+    def __init__(self, timestamp: float, bateau: cEtatBateau, air: cEtatAir, eau: cEtatMer, satellite: cSatellite) -> None:
+        self._timestamp = timestamp
+        self._bateau = bateau
+        self._air = air
+        self._eau = eau
+        self._satellite = satellite
+
+    @property
+    def satellite(self) -> cSatellite:
+        return self._satellite
+
+    @property
+    def bateau(self) -> cEtatBateau:
+        return self._bateau
+
+    @bateau.setter
+    def bateau(self, value: cEtatBateau) -> None:
+        if not isinstance(value, cEtatBateau):
+            raise TypeError("cBateau doit être un cBateau")
+        self._bateau = value
+
+    @property
+    def air(self) -> cEtatAir:
+        return self._air
+
+    @air.setter
+    def air(self, value: cEtatAir) -> None:
+        if not isinstance(value, cEtatAir):
+            raise TypeError("cAir doit être un cAir")
+        self._air = value
+
+    @property
+    def eau(self) -> cEtatMer:
+        return self._eau
+
+    @eau.setter
+    def eau(self, value: cEtatMer) -> None:
+        if not isinstance(value, cEtatMer):
+            raise TypeError("cEau doit être un cEau")
+        self._eau = value
+
+    @classmethod
+    def fromDict(cls, data: dict) -> cVecteurEtat:
+        return cls(
+            timestamp=data[cVecteurEtatKeys.HEURE],
+            bateau=cEtatBateau.fromDict(data[cVecteurEtatKeys.BATEAU]),
+            air=cEtatAir.fromDict(data[cVecteurEtatKeys.AIR]),
+            eau=cEtatMer.fromDict(data[cVecteurEtatKeys.EAU]),
+            satellite=cSatellite.fromDict(data[cVecteurEtatKeys.SATELLITE]),
+        )
+
+    def toString(self) -> str:
+        return self.__str__()
+
+    def __str__(self) -> str:
+        s: str = f"[\nvecteurEtat \n\theure={datetime.fromtimestamp(timestamp = self._timestamp, tz=timezone.utc).strftime('%d/%m/%y %H:%M:%S.%f')} \n\tbateau={self.bateau} \n\tair={self.air} \n\teau={self.eau}]"
+        return s
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+
+# ==========================================================
+# TRAJET
+# ==========================================================
+class cWayPoint:
+    def __init__(self, position: cPosition, i: int) -> None:
+        self._position : cPosition = position
+        self._ordreDePassage : int = i
+    
+    @property
+    def position(self) -> cPosition:
+        return self._position       
+
+    @property   
+    def ordreDePassage(self) -> int:
+        return self._ordreDePassage
+    
+    def __eq__(self, value):
+        if not isinstance(value, cWayPoint):
+            return False
+        return self._ordreDePassage == value._ordreDePassage
+
+class cTrajet:
+    def __init__(self,  depart: cPosition, arrivee: cPosition, pointsDePassage: List[cPosition]) -> None:
+        self._depart =  cWayPoint(depart, 0)
+        self._arrivee = cWayPoint(arrivee, len(pointsDePassage) + 1)  
+        self._waypoints = [ cWayPoint(p, i) for i, p in enumerate(pointsDePassage, start=1) ]
+
+    @property
+    def depart(self) -> cWayPoint:
+        return self._depart
+
+    @property
+    def arrivee(self) -> cWayPoint:
+        return self._arrivee
+
+    @property
+    def waypoints(self) -> List[cWayPoint]:
+        return self._waypoints
+
+    @classmethod
+    def fromDict(cls, data: dict) -> cTrajet:
+        return cls(
+            depart=cPosition.fromObject(data[cVecteurEtatKeys.DEPART]),
+            arrivee=cPosition.fromObject(data[cVecteurEtatKeys.ARRIVEE]),
+            pointsDePassage=[cPosition.fromObject(p) for p in data.get(cVecteurEtatKeys.WAYPOINTS, [])],
+        )
+
+    def toString(self) -> str:
+        return self.__str__()
+
+    def __str__(self) -> str:
+        s: str = f"[Trajet depart={self.depart}, arrivee={self.arrivee}, wpt={self._waypoints}]"
+        return s
+    
+    def __repr__(self):
+        return self.__str__()
+    
+
+            

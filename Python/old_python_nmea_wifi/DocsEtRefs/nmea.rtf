@@ -1,0 +1,465 @@
+{\rtf1\ansi\ansicpg1252\deff0\deftab709{\fonttbl{\f0\froman\fprq2\fcharset0 Times New Roman;}{\f1\fmodern\fcharset0 Courier New;}}
+{\colortbl ;\red0\green0\blue0;}
+\viewkind4\uc1\pard\keepn\tx1620\tx1701\tx1620\tx1701\lang1036\i\f0\fs24 Voici quelques informations sur la norme NMEA tir\'e9es de la notice d\rquote un GPS de marque MLR et du Net\par
+\pard\tx1620\tx1701\i0\par
+La NMEA (National Marine Electronics Association) \'e9dicte des standards pour la communication des instruments de marine entre eux.\par
+Ces standards permettent un seul \'e9metteur et plusieurs r\'e9cepteurs sur un m\'eame circuit.\par
+Le standards NMEA 0180 et NMEA 0182 sp\'e9cifient que la sortie de l'\'e9metteur peut \'eatre en RS 232 ou capable de d\'e9livrer 10 mA sous 4 v.\par
+Le standard NMEA 0183 reprend cela mais recommande une sortie en RS 422. Dans ce syst\'e8me diff\'e9rentiel, l'une des lignes (Ligne A) correspond \'e0 celle du syst\'e8me pr\'e9c\'e9dent tandis que le niveau de la seconde ligne (Ligne B) est invers\'e9. (Si A est \'e0 5 v, B est \'e0 0 v et vice versa)\par
+Dans la pratique seule la ligne A est connect\'e9e \'e0 une entr\'e9e RS 232.\par
+Les standards NMEA 0180 et NMEA 0182 se limitent \'e0 la connection d'un pilote automatique \'e0 un r\'e9cepteur de navigation Loran ou GPS.\par
+\i\par
+\ul\b\i0 1. - NMEA 180 SIMPLE\par
+\ulnone\b0\par
+8 bits de donn\'e9es, bit D7 = 0, 1 bit de stop, 1200 bauds, parit\'e9 paire, cadence 1 \'e0 5 s.\par
+Le message comporte un seul octet avec DO \'e0 D5 \'e9cart de route en milles, D6 = 1 si donn\'e9es valides\par
+\par
+\tab Exemple\par
+\tab D7\tab D6\tab D5\tab D4\tab D3\tab D2\tab D1\tab D0\par
+\tab 0\tab 1\tab 1\tab 1\tab 1\tab 1\tab 1\tab 1\tab - Ecart de route maximum \'e0 b\'e2bord\par
+\tab 0\tab 1\tab 1\tab 0\tab 0\tab 0\tab 0\tab 0\tab - Sur la trajectoire\par
+\tab 0\tab 1\tab 0\tab 0\tab 0\tab 0\tab 0\tab 0\tab - Ecart de route maximum \'e0 tribord\par
+\par
+\par
+\ul\b 2. - NMEA 182 ( OU NMEA 180 COMPLEX )\par
+\ulnone\b0\par
+8 bits de donn\'e9es, bit D7 = 1, 1 bit de stop, 1200 bauds, parit\'e9 paire, cadence 2 \'e0 8 s.\par
+Les 37 caract\'e8res du message sont des caract\'e8res ASCII avec D7 = 1\par
+\par
+\b $MP N   X.XX   L   T   XXX   XXDXX.XX'N   XXXDXX.XX'W   S   NUL ETX\b0\par
+\fs18\par
+N :\tab unit\'e9 de l'\'e9cart de route : K = kilometres, N = milles U = microsecondes\par
+X.XX :\tab Ecart de route\par
+L :\tab L = b\'e2bord, R = tribord\par
+T :\tab T = vrai, M = magn\'e9tique\par
+XXX ;\tab Azimut en degr\'e9s vers le prochain point fixe\par
+XXDXX.XX' :\tab Latitude ( ou XXDXX'XX" )\par
+N :\tab N = Nord, S = Sud\par
+XXXDXX.XX' :\tab Longitude ( ou XXXDXX'XX" )\par
+W :\tab E = Est, W = Ouest\par
+S :\tab Octet de status :\par
+\tab bit 0 = 1 verouillage de cycle manuel\par
+\tab bit 1 = 1 signal faible\par
+\tab bit 2 = 1 saut de cycle\par
+\tab bit 3 = 1 \'ab blink \'bb\fs24\par
+\fs18  \tab bit 4 = 1 alarme d'arriv\'e9e\par
+\tab bit 5 = 1 discontinuit\'e9\par
+\tab bit 6 = 1 toujours \'e0 1\par
+NUL\tab caract\'e8re h80\par
+ETX\tab caract\'e8re h83\par
+\ul\b\fs24\par
+3. - NMEA 183\par
+\ulnone\b0\par
+8 bits de donn\'e9es, 2 bits de stop, sans parit\'e9, 4800 Bauds.\par
+Le format NMEA 183 est une succession de plusieurs messages compos\'e9s de caract\'e8res ASCII.\par
+Chaque message commence par le symbole $ suivi de 5 caract\'e8res puis des param\'e8tres ; les diff\'e9rents champs sont s\'e9par\'e9s par des virgules sans espaces. Un champ peut \'eatre vide mais les virgules sont requises.\par
+Le standard permet une somme de contr\'f4le qui est pr\'e9c\'e9d\'e9e par le symbole * plac\'e9 apr\'e8s le dernier param\'e8tre. Elle est constitu\'e9e par 2 caract\'e8res qui repr\'e9sentent en hexad\'e9cimal  l\rquote op\'e9ration XOR de tous les caract\'e8res du message de $ \'e0 * inclus. Certains messages requi\'e8rent une somme de contr\'f4le. \par
+\pard\keepn\tx1620\tx1701\tx1620\tx1701\i Exemple : $GPGSA,A,3,,05,06,,09,,,24,,29,30,,3.9,2.5,2.9*30 [CR][LF]\par
+\pard\tx1620\tx1701\i0\par
+\b + Les messages de diffusion\par
+\b0 Le format est : \i $ttsss,par1,par2,....[CR][LF]\i0\par
+tt est l\rquote identificateur de l\rquote\'e9metteur :\par
+\par
+AG = Pilote automatique ( cas g\'e9n\'e9ral )\par
+AP = Pilote automatique ( magn\'e9tique)\par
+CC = Ordinateur\par
+CD = Appel s\'e9lectif ( radio) \par
+CS = Communication par satellite\par
+CT = Radio t\'e9l\'e9phone MF/HF\par
+CV = Radio t\'e9l\'e9phone VHF\par
+CX = R\'e9cepteur \'e0 scanner\par
+DE = DECCA\par
+DF = \'ab direction finder \'bb\par
+EC = Cartographie \'e9lectronique et syst\'e8me d'information\par
+EP = Balise de position de d\'e9tresse\par
+ER = Syst\'e8me de contr\'f4le de la salle des machines\par
+GP = GPS\par
+HC = Compas\par
+HE = Gyroscope \'ab  North Seeking \'bb\par
+HN = Gyroscope \'ab   Non-North Seeking \'bb\par
+II = Instrument int\'e9gr\'e9\par
+IN = Instrument de navigation int\'e9gr\'e9\par
+LA = Loran A\par
+LC = Loran C\par
+OM = Om\'e9ga\par
+RA =Radar\par
+SD = Sondeur\par
+TR = Syst\'e8me de positionnement\par
+SS = Sondeur \'e0 scanner\par
+TI = \'ab       Turn Rate Indicator \'ab \par
+TR = Syst\'e8me de navigation TRANSIT\par
+VD = Capteur de vitesse \'e0 effet doppler\par
+VM = Capteur de vitesse magn\'e9tic\par
+VW = Capteur de vitesse m\'e9canique\par
+YX = Transducteur\par
+ZA = Horloge atomique\par
+ZC = Chronom\'e8tre\par
+ZQ = Quartz\par
+ZV = Mise \'e0 l'heure radio        \par
+WI = Station m\'e9t\'e9o\par
+\par
+sss forment le mn\'e9monique du message.\par
+par1, par2, parX sont les param\'e8tres qui d\'e9pendent du message.\par
+Exemple : \i $HCHDM,238,M[CR][LF] Message \'ab HDM \'bb \'e9mis par le compas avec pour param\'e8tres 238 et M.\i0\par
+\par
+\b + Les messages d\rquote interrogation\par
+\b0 Le format est : \i $ttllQ,sss,[CR][LF]\i0\par
+tt est l\rquote identificateur du demandeur\par
+ll est l\rquote identificateur de l\rquote\'e9metteur requis\par
+Le 5\up10\'e8me\up0  caract\'e8re est un Q\par
+sss contient le mn\'e9monique du message demand\'e9.\par
+\pard\sb100\sa100\tx1620\tx1701\i Exemple : $CCGPQ,GGA[CR][LF] O\'f9 l\rquote appareil \'ab CC \'bb (ordinateur) demande \'e0 l\rquote appareil \'ab GP \'bb (GPS) le message \'ab GCA \'bb. Le GPS enverra alors ce message toute les seconde.\i0\par
+\i\par
+\pard\tx1620\tx1701\b\i0 + Les messages propri\'e9taire\par
+\b0 Le format est : \i $PmmmA,par1,par2,...,[CR][LF]\i0\par
+Le premier caract\'e8re est un P\par
+mmm est le code fabriquant\par
+GRM = Garmin\par
+ML2 ou ML3 = MLR\par
+MGN = Magellan\par
+MOT = Motorola\par
+RWI = Rockwell\par
+SLI = Starlink\par
+Le 5\up10\'e8me\up0  caract\'e8re d\'e9finit le type de message (A \'e0 Z) \par
+par1, par2, parX sont les param\'e8tres qui d\'e9pendent du message.\par
+\b\par
+\pard\keepn\qc\tx1620\tx1701\tx1080\tx1620\tx1701\fs36 Messages de diffusion \'e9mis par les GPS\par
+\pard\tx1620\tx1701\fs24\par
+\fs28 * AAM Alarme du point de destination\par
+\fs24\par
+$GPAAM, X, X, X.XX, N, XXXXXX CR LF\par
+\par
+\pard\tx1701\b0\fs18 X:\tab Entr\'e9e dans le cercle d\rquote arriv\'e9e\par
+X :\tab D\'e9passement de la perpendiculaire\fs24\par
+\fs18 X.XX, N :\tab Distance en miles\fs24\par
+\pard\tx916\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\tx14656\tx1701\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\tx14656\fs18 XXXXXX :\tab Point fixe\fs20  \f1\par
+\pard\tx1620\tx1701\b\f0\fs24\par
+\fs28 * ALM Donn\'e9es de l\rquote almanach GPS\par
+\b0\fs24 Ce message est transmis pour chaque satellite (Jusqu\rquote\'e0 32) et peut \'eatre tr\'e8s long ; il n\rquote est en principe pas transmis automatiquement.\par
+\b\par
+$GPALM, X, X, X, XXXX, X, X, HH, HHHH \'85\par
+\pard\tx916\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\tx14656\tx916\tx1620\tx1701\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\b0\fs20\par
+\pard\tx916\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\tx14656\tx1620\tx1701\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740 X :\tab Nombre de messages\par
+X :\tab Num\'e9ro du message\f1\par
+\f0 X :\tab Num\'e9ro du satellite\f1\par
+\f0 XXXX :\tab Num\'e9ro de semaine (0 \'e0 1023)\f1\par
+\f0 X :\tab Etat du satellite\f1\par
+\f0 X : \tab Exentricit\'e9\f1\par
+\f0 HH :\tab R\'e9f\'e9rence de temps de l\rquote almanach\f1\par
+\pard\tx916\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\tx14656\tx1620\tx1701\f0 HHHH :\tab Donn\'e9es de l\rquote almanach\f1\par
+\pard\tx1620\tx1701\b\f0\fs24\par
+\fs28 * APA Pilote automatique format A\par
+\b0\fs24\par
+\b\fs28 * APB Pilote automatique format B\par
+\b0\fs24 Ce message sert \'e0 controler un pilote automatique. Certains pilotes (Robertson en particulier) confondent \'ab azimut entre le point d\rquote origine et le point de destination \'bb et \'ab azimut entre la position actuelle et le point de destination\'bb\par
+\b\par
+$GPAPB, A, A, X.XX, L, N, A, A, XXX, M, DEST, XXX, M, M CR LF\par
+\fs18\par
+\b0 A:\tab Alerte g\'e9n\'e9rale\par
+A :\tab A : point valide, V : point non valide\fs24\par
+\fs18 X.XX :\tab Ecart de route\fs24\par
+\fs18 L :\tab L = b\'e2bord, R = tribord\fs24\par
+\fs18 N :\tab N = Mille nautique, K = Kilom\'e8tre\fs24\par
+\fs18 A :\tab Alarme d\rquote arriv\'e9e circulaire\fs24\par
+\fs18 A :\tab Alarme d\rquote arriv\'e9e perpendiculaire\fs24\par
+\fs18 XXX,M :\tab Azimut magn\'e9tique entre le point d\rquote origine et le point de destination\fs24\par
+\fs18 DEST :\tab Num\'e9ro du point fixe de destination\fs24\par
+\fs18 XXX,M :\tab Azimut magn\'e9tique entre la position actuelle et le point de destination\fs24\par
+\fs18 M :\tab ?\fs24\par
+\pard\keepn\tx1620\tx1701\tx1620\tx1701\b\par
+\pard\tx1620\tx1701\fs28 * ASD Pilote automatique, donn\'e9es syst\'e8me\par
+\b0\fs24\par
+\b\fs28 * BEC Azimut et distance jusqu\rquote au point fixe\par
+\b0\fs24\par
+\b\fs28 * BOD Azimut de l\rquote origine \'e0 la destination\par
+\pard\sb100\sa100\tx1620\tx1701\b0\fs24 Azimut magn\'e9tique entre le point d\rquote origine et le point de destination\par
+\pard\tx1620\tx1701\b\par
+\pard\tx916\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\tx14656\tx916\tx1620\tx1701\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824 $GPBOD, XXX.X, T, XXX.X, M, DEST, START CR LF\par
+\pard\tx1620\tx1701\par
+\pard\tx916\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\tx14656\tx1620\tx1701\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\b0\fs20 XXX.X,T :\tab\fs18 Azimut vrai entre le point d\rquote origine et le point de destination\f1\fs20\par
+\f0 XXX.X,M :\tab\fs18 Azimut magn\'e9tique entre le point d\rquote origine et le point de destination\f1\fs20\par
+\f0 DEST :\tab\fs18 Num\'e9ro du point fixe de destination\f1\fs20\par
+\f0 START :\tab\fs18 Num\'e9ro du point fixe d\rquote origine\f1\fs20\par
+\pard\tx1620\tx1701\f0\fs24\par
+\b\fs28 * BWC Azimut et distance jusqu\rquote au point fixe - Grand cercle\par
+\b0\fs24\par
+\b $GPBWC,XXXXXX, XXXXXX, N, XXXX.XX, W, XXX, T, XXX, M, XXX.X, N, DEST CR LF\par
+\b0\par
+\fs18 XXXXXX :\tab Heures, minutes, secondes UTC\fs24\par
+\pard\keepn\tx1620\tx1701\tx1620\tx1701\fs18 XXXXXX :\tab Latitude point fixe \b\par
+\pard\tx1620\tx1701\b0 N :\tab N = Nord, S = Sud\fs24\par
+\fs18 XXXX.XX :\tab Longitude point fixe\fs24\par
+\fs18 W :\tab E = Est, W = Ouest\fs24\par
+\fs18 XXX, T :\tab Azimut vrai en degr\'e9s\fs24\par
+\fs18 XXX, M :\tab Azimut magn\'e9tique en degr\'e9s\fs24\par
+\fs18 XXX.X :\tab Distance\fs24\par
+\fs18 N :\tab N = Mille nautique, K = Kilom\'e8tre\fs24\par
+\fs18 DEST :\tab Num\'e9ro du point fixe de destination\fs24\par
+\par
+\b\fs28 * BWR Azimut et distance jusqu\rquote au point fixe\par
+\par
+* BWW Azimut de point fixe \'e0 point fixe\par
+\par
+* DBT Profondeur sous la sonde\par
+\par
+* DCN Position DECCA\par
+\par
+* DPT Profondeur\par
+\par
+* FSI Informations de fr\'e9quences\par
+\b0\fs24\par
+\b\fs28 * GGA - Donn\'e9es du point du syst\'e8me de positionnement mondial\par
+\fs24\par
+$GPGGA, HHMMSS, XXXX.XXX, N, XXXXX.XXX, W, X, XX, XX, XXXX, M, XXXX, M, SSSS, XXXX CR LF\par
+\par
+\b0\fs18 HHMMSS :\tab Heures, minutes, secondes UTC\fs24\par
+\pard\keepn\tx1620\tx1701\tx1620\tx1701\fs18 XXXX.XXX :\tab Latitude\b\par
+\pard\tx1620\tx1701\b0 N :\tab N = Nord, S = Sud\fs24\par
+\fs18 XXXXX.XXX :\tab Longitude\fs24\par
+\fs18 W :\tab E = Est, W = Ouest\fs24\par
+\fs18 X :\tab 0 = point non cal\'e9, 1 = point cal\'e9, 2 = point cal\'e9 en mode diff\'e9rentiel, 6 point estim\'e9\fs24\par
+\fs18 XX :\tab Nombre de satellites\fs24\par
+\fs18 XX :\tab Dilution horizontale de la pr\'e9cision\fs24\par
+\fs18 XXXX, M :\tab Altitude en m\'e8tres de l\rquote antenne au dessus du niveau de la mer\fs24\par
+\fs18 XXXX, M :\tab Diff\'e9rence en m\'e8tres entre l'ellipso\'efde WGS84 et le niveau moyen de  la mer\fs24\par
+\fs18 SSSS :\tab Age des donn\'e9es diff\'e9rentielles en secondes\fs24\par
+\fs18 XXXX :\tab Num\'e9ro de la station diff\'e9rentielle\fs24\par
+\fs18 (Les donn\'e9es DGPS ne sont pas transmises en mode GPS normal, seules les virgules apparaissent).\par
+\fs24\par
+\b\fs28 * GLL Position vraie\par
+\pard\tx0\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880\b0\fs24\par
+\pard\tx1620\tx1701\b $GPGLL, XXXX.XXX, X, XXXXX.XXX, X, HHMMSS, V, CR LF\par
+\par
+\b0\fs18 XXXX.XXX :\tab Latitude\fs24\par
+\fs18 N :\tab N = Nord, S = Sud\fs24\par
+\fs18 XXXXX.XXX :\tab Longitude \fs24\par
+\fs18 W :\tab E = Est, W = Ouest \fs24\par
+\fs18 HHMMSS :\tab Heures, minutes, secondes UTC\fs24\par
+\fs18 V :\tab A = point valide, V = point non valide\fs24\par
+\pard\tx0\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880\lang2057\par
+\lang1036\b\fs28 * GSA Dilution de la pr\'e9cision et satellites GPS actifs\par
+\fs24\par
+\pard\sb100\sa100\tx0\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880 $GPGSA, S, D, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, X.X, X.X, X.X, CR LF\par
+\pard\tx0\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880\par
+\pard\tx1620\tx1701\b0\fs18 S :\tab A = s\'e9lection automatique d\rquote un point 2d ou 3d, M = manuel\fs24\par
+\fs18 D :\tab 1 = point non valide, 2 = 2d, 3 = 3d\fs24\par
+\fs18 XX (12 fois):\tab Id des satellites utilis\'e9s (Nombre al\'e9atoire, emplacements pour 12 mais certains sont vides)\par
+X.X :\tab Dilution de la pr\'e9cision de position \fs24\par
+\fs18 X.X :\tab Dilution de la pr\'e9cision horizontale\fs24\par
+\pard\keepn\tx1620\tx1701\tx1620\tx1701\fs18 X.X :\tab Dilution de la pr\'e9cision verticale\b\fs24\par
+\pard\sb100\sa100\tx1620\tx1701\cf1\lang2057\b0\fs28\par
+\b * GSV Satellites en vue\par
+\pard\sb100\sa100\tx0\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880\cf0\fs24 $GPGSV, N, X, SS, XX, XXX, XX, XX, XX, XXX, XX, XX, XX, XXX, XX, XX, XX, XXX, XX, XX, CR LF\par
+\pard\tx0\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880\b0\par
+\pard\tx1620\tx1701\b\par
+\lang1036\b0\fs18 N :\tab Nombre de messages pour lister tous les satellites\fs24\par
+\fs18 X :\tab Num\'e9ro de ce message\fs24\par
+\fs18 SS :\tab Nombre de satellites en vue\fs24\par
+\fs18 XX, XXX, XX, XX :\tab Id du satellite, \'e9levation en degr\'e9s (max. 90), azimut en degr\'e9s (depuis le nord vrai), niveau du signal (Emplacement pour 4 satellites)\fs24\par
+\pard\keepn\tx1620\tx1701\tx1620\tx1701\lang2057\b\fs18 (4 fois)\par
+\pard\tx1620\tx1701\b0\fs24\par
+\b\fs28 * HDT Cap vrai\par
+\pard\sb100\sa100\tx1620\tx1701\fs24 $GPHDT, X.X, T, CR LF\par
+\b0\fs18 X.X, T :\tab Cap vrai en degr\'e9s\par
+\fs24\par
+\pard\keepn\tx1620\tx1701\tx1620\tx1701\b\fs28 * R00 Liste des points fixes de la route active\par
+\pard\tx1620\tx1701\fs24 Ce message alterne avec $GPWPL\par
+\par
+\pard\keepn\tx1620\tx1701\tx1620\tx1701 $GPR00, NOM, NOM, ... , CR LF\par
+\pard\sb100\sa100\tx1620\tx1701\b0\fs18 NOM :\tab Nom ou identificateur des points fixes\par
+\b\fs28\par
+\pard\tx916\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\tx14656\tx916\tx1620\tx1701\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824 * RMA Informations minimums recommand\'e9es sp\'e9cifiques au Loran C\par
+\pard\tx1620\tx1701\b0\fs24\par
+\pard\keepn\tx1620\tx1701\tx1620\tx1701\b $GPRMA, A, X.XX, L, XXX, XXX, XXXX.XX, N, XXXXX.XX, W, XXX.X, XXX,X, XXX.X, V, CR LF\par
+\pard\sb100\sa100\tx1620\tx1701\b0\par
+eg. $GPRMA,A, XXXX.XX, N, XXXXX.XX, W, , , XX.X, XXX, XX.X, W, CR LF\par
+\pard\tx916\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\tx14656\tx916\tx1620\tx1701\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\fs18 A :\tab A : point valide, V : point non valide\fs20  \lang1036\f1\par
+\pard\tx1620\tx1701\lang2057\f0\fs18 XXXX.XX :\tab Latitude\lang1036\fs24\par
+\lang2057\fs18 N :\tab N = Nord, S = Sud\lang1036\fs24\par
+\fs18 XXXXX.XX :\tab Longitude \fs24\par
+\lang2057\fs18 W :\tab E = Est, W = Ouest\lang1036\fs24\par
+\lang2057\fs18 XX.X :\tab Vitesse en noeuds\lang1036\fs24\par
+\lang2057\fs18 XXX :\tab Distance\par
+XX.X :\tab Variation\par
+W :\tab Direction de la variation : E = Est, W = Ouest\lang1036\fs24\par
+\par
+\pard\tx0\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880\cf1\b\fs28 * RMB Informations minimums de navigation envoy\'e9es quand un point fixe de destination est actif\par
+\cf0\fs24\par
+$GPRMB, A, X.XX, L, XXX, XXX, XXXX.XX, N, XXXXX.XX, W, XXX.X, XXX,X, XXX.X, V, CR LF\par
+\pard\tx1620\tx1701\b0\line\fs18 A :\tab A : point valide, V : point non valide\fs24\par
+\fs18 X.XX :\tab Ecart de route\fs24\par
+\fs18 L :\tab L = b\'e2bord, R = tribord\fs24\par
+\fs18 XXX :\tab Point d\rquote origine\fs24\par
+\fs18 XXX :\tab Point de destination\fs24\par
+\fs18 XXXX.XX :\tab Latitude du point de destination\fs24\par
+\fs18 N :\tab N = Nord, S = Sud\fs24\par
+\fs18 XXXXX.XX :\tab Longitude du point de destination \fs24\par
+\fs18 W :\tab E = Est, W = Ouest\fs24\par
+\fs18 XXX.X :\tab Echelle en milles\fs24\par
+\fs18 XXX.X :\tab Cap vrai vers le point de destination\fs24\par
+\fs18 XXX.X :\tab Vitesse vers le point de destination en n\'9cuds\line V :\tab Alarme d\rquote arriv\'e9e : A : arriv\'e9, V : pas encore arriv\'e9\fs24\par
+\pard\tx0\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880\par
+\pard\tx0\tx144\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\b\fs28 * RMC Informations minimums recommand\'e9es sp\'e9cifiques au GPS\par
+\b0\fs24\par
+\pard\tx0\tx720\tx1620\tx1701\tx1728\tx3024\tx4464\tx5472\b $GPRMC, HHMMSS, A, XXXX.XXX, N, XXXXX.XXX, W, XX.X, XXX, JJMMAA, XXX, W, CR LF\par
+\pard\tx0\tx144\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\b0\par
+\pard\tx1620\tx1701\fs18 HHMMSS :\tab Heures, minutes, secondes UTC \fs24\par
+\fs18 A :\tab A = point valide, V = point non valide\b\fs24  \b0\par
+\fs18 XXXX.XXX :\tab Latitude\fs24\par
+\fs18 N :\tab N = Nord, S = Sud\fs24\par
+\fs18 XXXXX.XX :\tab Longitude \fs24\par
+\fs18 W :\tab E = Est, W = Ouest\fs24\par
+\fs18 XX.X :\tab Vitesse fond en n\'9cuds\fs24\par
+\fs18 XXX :\tab Cap vrai en degr\'e9s\line JJMMAA :\tab Jour, mois, ann\'e9e\fs24\par
+\lang2057\fs18 XXX :\tab Variation\line W :\tab W = correction +, E = correction -\lang1036\fs24\par
+\par
+\b\fs28 * RTE Points de la route active\par
+\lang2057\fs24 Ce message alterne avec $GPWPL, l\lang1036 es donn\'e9es des points eux-m\'eames seront envoy\'e9es dans les messages $GPWPL suivants.\b0\par
+\pard\li720\tx2880\tx3060\tx3141\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880\tx21600\tx22320\tx23040\tx23760\par
+\pard\keepn\tx1620\tx1701\tx1620\tx1701\b $GPRTE, X, X, C, X, NOM, NOM, ... CR LF\par
+\pard\b0\par
+\pard\tx1656\fs18 X :\tab Nombre de messages RTE \fs24\par
+\fs18 X :\tab Num\'e9ro de ce message\fs24\par
+\fs18 C :\tab C\b  = \b0 liste compl\'e8te des points de cette route, w = la liste des points commence avec le segment courant\fs24\par
+\fs18 X :\tab Nom ou num\'e9ro de la route active\fs24\par
+\fs18 NOM :\tab Noms des points de la route\fs24\tab\par
+\par
+\par
+\par
+\b\fs28 * TRF Donn\'e9es du point TRANSIT\par
+\lang2057\b0\fs24\par
+\pard\sb100\sa100\tx1620\tx1701\b $GPTRF, HHMMSS.SS, DDMMAA, XXXX.XX, N, XXXXX.XX, W, X.X, X.X, X.X, X.X, XXX CR LF\par
+\b0\line\fs18 HHMMSS.SS :\tab Heure UTC du point \line DDMMAA :\tab Date \line XXXX.XX :\tab Latitude\line N :\tab N = Nord, S = Sud\line XXXXX.XX :\tab Longitude \line W :\tab E = Est, W = Ouest\line X.X :\tab Elevation (Angle)\line X.X :\tab Nombre d'it\'e9rations\line X.X :\tab Nombre d'intervals Doppler\line X.X :\tab Distance de mise \'e0 jour en miles\line XXX :\tab Identificateur du satellite\lang1036\fs24\par
+\pard\tx1656\lang2057\par
+\b\fs28 * VBW Vitesse fond et vitesse surface en noeuds\par
+\fs24\par
+\pard\sb100\sa100\tx1620\tx1701 $GPVBW, X.X, X.X, A, X.X, X.X, A, CR LF\b0\line\lang1036\par
+\lang2057\fs18 X.X :\tab Vitese surface longitudinale\line X.X :\tab Vitesse surface transversale\line A :\tab A = Donn\'e9es valides\line X.X :\tab Vitese fond longitudinale\line X.X :\tab Vitesse fond transversale\line A :\tab A = Donn\'e9es valides\par
+\fs28 * \b VTG Vitesse et cap\lang1036\b0\fs24\par
+\pard\tx0\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880\par
+\b $GPVTG, XXX, T, XXX, M, XX.X, N, XX.X, K CR LF\par
+\pard\tx0\tx432\tx1440\tx1620\tx1701\tx2736\tx4032\b0\fs18\par
+XXX, T :\tab Cap vrai en degr\'e9s\par
+XXX, M :\tab Cap compas en degr\'e9s\par
+XX.X, N :\tab Vitesse en n\'9cud\line XX.X, K :\tab Vitesse en kilom\'e8tres/heure\par
+\fs24\par
+\pard\tx916\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\tx14656\tx916\tx1620\tx1701\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\lang2057\b\fs28 * WPL Donn\'e9es des points fixes\par
+\pard\sb100\sa100\tx1620\tx1701\fs24 Quand une route est active, ce message est envoy\'e9 pour chaque point fixe de la route. Dans chaque groupe de messages il n'y a qu'un seul message WPL ou un message RTE.\par
+\b0  \lang1031\b $GPWPL, XXXX.XXX, N, XXXXX.XXX, W, NOM, CR LF\lang1036\b0\par
+\pard\tx916\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\tx14656\tx916\tx1620\tx1701\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\lang1031\fs20\par
+\lang2057 XXXX.XXX :\tab Latitude\fs18\line N :\tab N = Nord, S = Sud\line XXXXX.XXX :\tab Longitude \line W :\tab E = Est, W = Ouest\line NOM :\tab Nom du point\lang1036\f1\fs20\par
+\pard\tx0\tx432\tx1440\tx1620\tx1701\tx2736\tx4032\lang2057\f0\fs24\par
+\lang1036\par
+\fs28 * \b XTE Ecart de route\b0\fs24\par
+\par
+\pard\tx0\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880\b $GPXTE, A, A, X.XX, M, L CR LF\par
+\par
+\pard\tx1620\tx1701\b0\fs18 A :\tab A = point valide, V = point non valide\par
+A :\tab Non utilis\'e9 en GPS, Indicateur de verouillage en LORAN-C\par
+\pard\tx0\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880 X.XX :\tab Ecart de route\par
+M :\tab Unit\'e9 de distance (Miles)\par
+L :\tab Sens de la correction : L = b\'e2bord, R = tribord\par
+\pard\tx0\tx1296\tx1620\tx1701\tx3888\tx4320\fs24\par
+\pard\tx0\tx288\tx1620\tx1701\tx3888\tx4320\fs28 * \b ZDA Date et Heure\b0\fs24\par
+\pard\tx0\tx144\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\par
+\b $GPZDA, HHMMSS.SS, JJ, MM, AAAA, XX, XX, CR LF\b0\par
+\par
+\fs18 HHMMSS.SS :\tab Heure UTC\par
+JJ :\tab Jour\par
+MM :\tab Mois\par
+AAAA :\tab Ann\'e9e\par
+XX :\tab Correstion heures heure locale ( +/- 13)\par
+XX :\tab Correction minutes heure locale ( 0 - 59 )\par
+\pard\tx0\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880\lang2057\fs24\par
+\pard\keepn\tx1620\tx1701\tx1620\tx1701\lang1036\b\fs28 * ZTA Heure d'arriv\'e9e\fs24\par
+\pard\tx1620\tx1701\b0\par
+\b $GPZTA, HHMMSS, XXXX00, XXX CR LF\b0\par
+\par
+\fs18 HHMMSS :\tab Heure UTC\par
+HHMM00 :\tab Heure d\rquote arriv\'e9e en UTC\par
+XXX :\tab Num\'e9ro du point fixe\par
+\fs24\par
+\pard\sb100\sa100\tx1620\tx1701\par
+\b\fs28 Messages propri\'e9taires\par
+- MLR\b0\fs24  -\par
+\pard\tx0\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880 * \b PML2 (pour la programmation du r\'e9cepteur diff\'e9rentiel)\b0\par
+\pard\tx0\tx144\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\par
+\b $PML2, XXX.X, X, X CR LF\b0\par
+\pard\tx0\tx144\tx1620\tx1701\tx1728\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880\fs18\par
+\pard\tx1620\tx1701 XXX.X :\tab Fr\'e9quence DGPS en KHz\par
+\pard\tx0\tx144\tx1620\tx1701\tx1728\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880 X :\tab Type de r\'e9seau diff\'e9rentiel : O=AISM, 1=st 09, 2=st 11, 3=st 12\fs24\par
+\pard\tx0\tx144\tx432\tx720\tx1440\tx1620\tx1701\tx1728\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\fs18 X :\tab Vitesse de transmission : 1 = 100 bauds\par
+\pard\tx0\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\tx20880\fs24\par
+* \b PML3 (pour la programmation du r\'e9cepteur diff\'e9rentiel)\b0\par
+\par
+\pard\tx0\tx288\tx1620\tx1701\tx2880\tx4320\tx6048\b $PML3, XX, XXX, XXX.X,\tab XX CR LF\b0\par
+\par
+\pard\tx0\tx1620\tx1701\tx1728\tx2880\tx4320\tx5760\fs18 XX :\tab Note de r\'e9ception : 00 = tr\'e8s bonne r\'e9ception, 10 = r\'e9ception moyenne, 31 = pas de r\'e9ception\fs24\par
+\fs18 XXX :\tab Taux d' erreur de r\'e9ception diff\'e9rentielle\line XXX.X :\tab ?\par
+\pard\tx0\tx1620\tx1701\tx1728\tx2880\tx4176\tx5760 XX :\tab Nombre de satellites corrig\'e9s\fs24\tab\par
+\pard\tx0\tx144\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\b\par
+\pard\sb100\sa100\tx1620\tx1701\fs28 - GARMIN\b0\fs24  -\par
+\pard\tx916\tx1620\tx1701\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\tx14656\lang2057\b $PGRME, XX.X, M, XX.X, M, XX.X, M CR LF\lang1036\b0\par
+\lang2057\b N'est pas envoy\'e9 en NMEA 1.5 mode. \par
+\pard\tx916\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\tx14656\tx916\tx1620\tx1701\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\b0\fs20\par
+\pard\tx0\tx1620\tx1701\tx1728\tx2880\tx4320\tx5760\lang1036\fs18 XX.X, M :\tab Erreur horizontale estim\'e9e en m\'e8tres\par
+XX.X, M :\tab Erreur verticale estim\'e9e en m\'e8tres\par
+\lang2057 XX.X, M :\tab Sph\'e8re de position\par
+\pard\tx916\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\tx14656\tx916\tx1620\tx1701\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\fs20\par
+\b\fs24 $PGRMZ, XX, F, X CR LF\lang1036\b0\f1\fs20\par
+\lang2057\f0\par
+XX, F :\tab Altitude en pieds\par
+X :\tab 2 = altitude de l'utilisateur, 3 = altitude GPS\par
+\par
+\b\fs24 $PGRMM, NAD27 Canada CR LF\lang1036\b0\f1\fs20\par
+\lang2057\f0\par
+\b\fs18 NAD27 Canada :\tab\b0 format g\fs20\'e9od\'e9sique courant (exemple)\lang1036\f1\par
+\lang2057\f0\par
+\pard\sb100\sa100\tx1620\tx1701\b\fs28 - STARLINK -\par
+\pard\keepn\tx1620\tx1701\tx1620\tx1701\fs24 $PSLIB, FFF.F, VVV, J CR LF\par
+\pard\tx1620\tx1701\b0\par
+FFF.F :\tab Fr\'e9quence (de 283.5 \'e0 325.0 Khz )\par
+VVV :\tab Vitesse de transmission ( 0, 25, 50, 100\lang1036  ou 200 bits par seconde )\par
+\lang2057 J :\tab J = Demande d'\'e9tat, K = demande de configuration du r\'e9cepteur diff\'e9rentiel\lang1036 , nul = message de r\'e9glage\par
+\lang2057\par
+\pard\keepn\tx1620\tx1701\tx1620\tx1701\b\fs28 - MAGELLAN -\par
+\pard\tx1620\tx1701\par
+\pard\tx916\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\tx14656\tx916\tx1620\tx1701\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\fs24 $PMGNST, XX.XX, D, T, XXX, XX.X, +XXXXX, XX CR LF \par
+\b0\fs20 Informations d'\'e9tat\par
+\par
+\fs18 XX.XX :\tab Num\'e9ro de version\par
+D :\tab 2 = 2d, 3 = 3d\par
+T :\tab T = point valide, F = point non valide\par
+XXX :\tab ?\par
+XX.X :\tab Dur\'e9e restante des batteries en heures\par
++XXXXX :\tab ?\par
+XX :\tab Num\'e9ro du satellite courant\par
+\fs20\par
+\pard\keepn\tx1620\tx1701\tx1620\tx1701\b\i\fs28 - MOTOROLA -\par
+\pard\tx1620\tx1701\b0\i0\fs24\par
+\b $PMOTG, XXX, SSSS\par
+Permet de r\'e8gler la fr\'e9quence d'\'e9mission d'un messsage\par
+\b0\par
+\fs18 XXX :\tab Message \'e0 controler\par
+SSSS :\tab Interval d'\'e9mission en secondes\par
+\par
+\b\fs24 $PMOTG, FOR, X\par
+R\'e8gle le format de sortie\par
+\b0\par
+\fs18 FOR :\tab Indique qu'il s'agit du r\'e8glage du format de sortie\par
+X :\tab 0 = Motorola binaire, 1 = GPS, 2 = Loran\par
+\par
+\b\fs28 - ROCKWELL -\par
+\b0\fs24\par
+\b $PRWIINIT\par
+\b0 Initialise le circuit\par
+\par
+\pard\tx916\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\tx13740\tx14656\tx916\tx1620\tx1701\tx1832\tx2748\tx3664\tx4580\tx5496\tx6412\tx7328\tx8244\tx9160\tx10076\tx10992\tx11908\tx12824\b $PRWIRID, 12, XX.XX, DD/MM/YY, XXXX\par
+\b0\fs20\par
+\fs18 12 :\tab Unit\'e9 \'e0 12 canaux\par
+XX.XX :\tab Version logiciel\par
+DD/MM/YY :\tab Date logiciel\par
+XXXX :\tab Options\par
+\pard\tx0\tx144\tx720\tx1440\tx1620\tx1701\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\tx10800\tx11520\tx12240\tx12960\tx13680\tx14400\tx15120\tx15840\tx16560\tx17280\tx18000\tx18720\tx19440\tx20160\b\par
+}
+ 

@@ -1,0 +1,10 @@
+exception
+
+numpy
+
+colorist
+ruff
+black
+pytest
+coverage
+pytest-cov
