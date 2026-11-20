@@ -1,0 +1,3 @@
+level: "debug"       # Valeurs possibles : debug, info, warn, error
+format: "text"      # Valeurs possibles : json, text
+add_source: true   # Ajoute le fichier et la ligne du log (équivalent %F:%L dans Logback)

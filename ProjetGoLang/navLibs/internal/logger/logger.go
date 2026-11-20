@@ -8,6 +8,9 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"gopkg.in/yaml.v3"
+
+	_ "embed"
+	"errors"
 )
 
 type Config struct {
@@ -21,8 +24,33 @@ type DynamicLogger struct {
 	configPath string
 }
 
+//go:embed logger.yaml
+var configFile string
+
+func fileExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if errors.Is(err, os.ErrNotExist) {
+		return false, nil
+	}
+	return false, err // Autre erreur (ex: permission refusée)
+}
+
+func init() {
+	// fichier exist ?
+	if exist, err := fileExists("./logger.yaml"); !exist && err == nil {
+		msg, _ := os.Getwd()
+		fmt.Fprintf(os.Stderr, "Creation du fichier %s/%s \n", msg, "./logger.yaml")
+		os.WriteFile("./logger.yaml", []byte(configFile), 0644)
+	}
+	Init("./logger.yaml")
+}
+
 // Init initialise le logger global slog et lance la surveillance du fichier
 func Init(configPath string) (*DynamicLogger, error) {
+
 	dl := &DynamicLogger{
 		levelVar:   new(slog.LevelVar),
 		configPath: configPath,
@@ -30,7 +58,9 @@ func Init(configPath string) (*DynamicLogger, error) {
 
 	// Chargement initial
 	if err := dl.reload(); err != nil {
-		return nil, fmt.Errorf("erreur chargement config logger: %w", err)
+		msg, _ := os.Getwd()
+		msg = fmt.Sprintf("Current wd: %s - erreur chargement config logger: %w", msg, err)
+		return nil, fmt.Errorf("%s", msg)
 	}
 
 	// Démarrage du watcher en arrière-plan

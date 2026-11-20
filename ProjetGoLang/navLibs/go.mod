@@ -1,4 +1,4 @@
-module sfa.bzh/navLibs
+module sfa/navLibs
 
 go 1.27.4
 
