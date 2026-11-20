@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculateur de Navigation Nautique</title>
+  <style>
+    :root { --navy: #0a2540; --navy-light: #163a5f; --ocean: #0077b6; --bg: #f0f4f8; --text: #1e293b; --border: #cbd5e1; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    nav { background: var(--navy); color: white; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 58px; position: sticky; top: 0; z-index: 100; }
+    .brand { font-weight: 700; font-size: 1.1rem; }
+    .menu { list-style: none; display: flex; height: 100%; }
+    .menu-item { position: relative; height: 100%; display: flex; align-items: center; }
+    .menu-btn { background: none; border: none; color: white; font-size: 0.95rem; font-weight: 600; padding: 0 1.1rem; height: 100%; cursor: pointer; }
+    .menu-btn:hover, .menu-item.active > .menu-btn { background: var(--navy-light); }
+    .dropdown { display: none; position: absolute; top: 58px; left: 0; background: white; min-width: 240px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-radius: 0 0 8px 8px; border: 1px solid var(--border); }
+    .menu-item:hover .dropdown { display: block; }
+    .dropdown button { width: 100%; text-align: left; background: none; border: none; padding: 11px 15px; font-size: 0.9rem; color: var(--text); cursor: pointer; border-bottom: 1px solid #f1f5f9; }
+    .dropdown button:hover { background: #e0f2fe; color: var(--ocean); font-weight: 600; }
+    main { max-width: 800px; margin: 1.5rem auto; padding: 0 1rem; }
+    .section { display: none; background: white; padding: 1.8rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+    .section.active { display: block; }
+    h2 { color: var(--navy); margin-bottom: 0.3rem; }
+    .subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 1.2rem; padding-bottom: 0.7rem; border-bottom: 2px solid #e2e8f0; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    fieldset { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; background: #fafbfc; }
+    legend { font-weight: 700; font-size: 0.8rem; color: var(--navy); padding: 0 6px; text-transform: uppercase; }
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    label { font-size: 0.82rem; font-weight: 600; color: #334155; }
+    .dms { display: flex; gap: 6px; }
+    input, select { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; background: white; }
+    .btn-calc { width: 100%; background: var(--ocean); color: white; border: none; padding: 12px; font-size: 1rem; font-weight: 700; border-radius: 8px; cursor: pointer; margin-top: 0.5rem; }
+    .btn-calc:hover { background: #005f92; }
+    .result-box { margin-top: 1.2rem; background: #f8fafc; border-left: 4px solid var(--ocean); padding: 1rem; border-radius: 6px; }
+    .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; margin-top: 0.5rem; }
+    .res-item span { display: block; font-size: 0.82rem; color: #64748b; }
+    .res-item strong { font-size: 1.2rem; color: var(--navy); }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="brand">NavCalc Pro</div>
+    <ul class="menu">
+      <li class="menu-item active" id="m-nav">
+        <button class="menu-btn">Navigation</button>
+        <div class="dropdown">
+          <button onclick="show('dist-loxo','m-nav')">Distance Loxodromique</button>
+          <button onclick="show('dist-ortho','m-nav')">Distance Orthodromique</button>
+          <button onclick="show('cap-ortho','m-nav')">Cap Orthodromique</button>
+          <button onclick="show('cap-loxo','m-nav')">Cap Loxodromique</button>
+          <button onclick="show('interception','m-nav')">Interception</button>
+          <button onclick="show('courant-subi','m-nav')">Courant subi</button>
+          <button onclick="show('courant-contre','m-nav')">Courant contre</button>
+        </div>
+      </li>
+      <li class="menu-item" id="m-astro">
+        <button class="menu-btn">Navigation Astro</button>
+        <div class="dropdown">
+          <button onclick="show('astro-soleil','m-astro')">Soleil</button>
+          <button onclick="show('astro-lune','m-astro')">Lune</button>
+          <button onclick="show('astro-etoiles','m-astro')">Étoiles</button>
+        </div>
+      </li>
+      <li class="menu-item" id="m-maree">
+        <button class="menu-btn" onclick="show('maree','m-maree')">Calcul de Marée</button>
+      </li>
+    </ul>
+  </nav>
+
+  <main>
+    <section id="dist-loxo" class="section active">
+      <h2>Distance Loxodromique</h2>
+      <p class="subtitle">Distance sur la carte Mercator à cap constant.</p>
+      <fieldset><legend>Coordonnées</legend>
+        <div class="grid-2">
+          <div class="field"><label>Lat Départ</label><div class="dms"><input type="number" id="dl-lat1-d" placeholder="Deg"><input type="number" step="any" id="dl-lat1-m" placeholder="Min"><select id="dl-lat1-ns"><option>N</option><option>S</option></select></div></div>
+          <div class="field"><label>Lon Départ</label><div class="dms"><input type="number" id="dl-lon1-d" placeholder="Deg"><input type="number" step="any" id="dl-lon1-m" placeholder="Min"><select id="dl-lon1-ew"><option>W</option><option>E</option></select></div></div>
+          <div class="field"><label>Lat Arrivée</label><div class="dms"><input type="number" id="dl-lat2-d" placeholder="Deg"><input type="number" step="any" id="dl-lat2-m" placeholder="Min"><select id="dl-lat2-ns"><option>N</option><option>S</option></select></div></div>
+          <div class="field"><label>Lon Arrivée</label><div class="dms"><input type="number" id="dl-lon2-d" placeholder="Deg"><input type="number" step="any" id="dl-lon2-m" placeholder="Min"><select id="dl-lon2-ew"><option>W</option><option>E</option></select></div></div>
+        </div>
+      </fieldset>
+      <button class="btn-calc" onclick="calculer('dist-loxo')">Calculer</button>
+      <div class="result-box"><div class="result-grid"><div class="res-item"><span>Distance Loxo</span><strong id="res-dl-dist">-- NM</strong></div><div class="res-item"><span>Diff. Latitude</span><strong id="res-dl-dlat">-- '</strong></div></div></div>
+    </section>
+
+    <section id="dist-ortho" class="section">
+      <h2>Distance Orthodromique</h2>
+      <p class="subtitle">Plus court chemin sur le globe (arc de grand cercle).</p>
+      <fieldset><legend>Coordonnées</legend>
+        <div class="grid-2">
+          <div class="field"><label>Lat Départ</label><div class="dms"><input type="number" id="do-lat1-d" placeholder="Deg"><input type="number" step="any" id="do-lat1-m" placeholder="Min"><select id="do-lat1-ns"><option>N</option><option>S</option></select></div></div>
+          <div class="field"><label>Lon Départ</label><div class="dms"><input type="number" id="do-lon1-d" placeholder="Deg"><input type="number" step="any" id="do-lon1-m" placeholder="Min"><select id="do-lon1-ew"><option>W</option><option>E</option></select></div></div>
+          <div class="field"><label>Lat Arrivée</label><div class="dms"><input type="number" id="do-lat2-d" placeholder="Deg"><input type="number" step="any" id="do-lat2-m" placeholder="Min"><select id="do-lat2-ns"><option>N</option><option>S</option></select></div></div>
+          <div class="field"><label>Lon Arrivée</label><div class="dms"><input type="number" id="do-lon2-d" placeholder="Deg"><input type="number" step="any" id="do-lon2-m" placeholder="Min"><select id="do-lon2-ew"><option>W</option><option>E</option></select></div></div>
+        </div>
+      </fieldset>
+      <button class="btn-calc" onclick="calculer('dist-ortho')">Calculer</button>
+      <div class="result-box"><div class="result-grid"><div class="res-item"><span>Distance Ortho</span><strong id="res-do-dist">-- NM</strong></div><div class="res-item"><span>Gain vs Loxo</span><strong id="res-do-gain">-- NM</strong></div></div></div>
+    </section>
+
+    <section id="cap-ortho" class="section">
+      <h2>Cap Orthodromique</h2>
+      <p class="subtitle">Route initiale (Ri), route finale (Rf) et vertex.</p>
+      <fieldset><legend>Coordonnées</legend>
+        <div class="grid-2">
+          <div class="field"><label>Lat Départ</label><div class="dms"><input type="number" id="co-lat1-d" placeholder="Deg"><input type="number" step="any" id="co-lat1-m" placeholder="Min"><select id="co-lat1-ns"><option>N</option><option>S</option></select></div></div>
+          <div class="field"><label>Lon Départ</label><div class="dms"><input type="number" id="co-lon1-d" placeholder="Deg"><input type="number" step="any" id="co-lon1-m" placeholder="Min"><select id="co-lon1-ew"><option>W</option><option>E</option></select></div></div>
+          <div class="field"><label>Lat Arrivée</label><div class="dms"><input type="number" id="co-lat2-d" placeholder="Deg"><input type="number" step="any" id="co-lat2-m" placeholder="Min"><select id="co-lat2-ns"><option>N</option><option>S</option></select></div></div>
+          <div class="field"><label>Lon Arrivée</label><div class="dms"><input type="number" id="co-lon2-d" placeholder="Deg"><input type="number" step="any" id="co-lon2-m" placeholder="Min"><select id="co-lon2-ew"><option>W</option><option>E</option></select></div></div>
+        </div>
+      </fieldset>
+      <button class="btn-calc" onclick="calculer('cap-ortho')">Calculer</button>
+      <div class="result-box"><div class="result-grid"><div class="res-item"><span>Route Initiale (Ri)</span><strong id="res-co-ri">-- °</strong></div><div class="res-item"><span>Route Finale (Rf)</span><strong id="res-co-rf">-- °</strong></div><div class="res-item"><span>Lat Vertex</span><strong id="res-co-vertex">-- °</strong></div></div></div>
+    </section>
+
+    <section id="cap-loxo" class="section">
+      <h2>Cap Loxodromique</h2>
+      <p class="subtitle">Route vraie constante (Rv) entre deux points.</p>
+      <fieldset><legend>Coordonnées</legend>
+        <div class="grid-2">
+          <div class="field"><label>Lat Départ</label><div class="dms"><input type="number" id="cl-lat1-d" placeholder="Deg"><input type="number" step="any" id="cl-lat1-m" placeholder="Min"><select id="cl-lat1-ns"><option>N</option><option>S</option></select></div></div>
+          <div class="field"><label>Lon Départ</label><div class="dms"><input type="number" id="cl-lon1-d" placeholder="Deg"><input type="number" step="any" id="cl-lon1-m" placeholder="Min"><select id="cl-lon1-ew"><option>W</option><option>E</option></select></div></div>
+          <div class="field"><label>Lat Arrivée</label><div class="dms"><input type="number" id="cl-lat2-d" placeholder="Deg"><input type="number" step="any" id="cl-lat2-m" placeholder="Min"><select id="cl-lat2-ns"><option>N</option><option>S</option></select></div></div>
+          <div class="field"><label>Lon Arrivée</label><div class="dms"><input type="number" id="cl-lon2-d" placeholder="Deg"><input type="number" step="any" id="cl-lon2-m" placeholder="Min"><select id="cl-lon2-ew"><option>W</option><option>E</option></select></div></div>
+        </div>
+      </fieldset>
+      <button class="btn-calc" onclick="calculer('cap-loxo')">Calculer</button>
+      <div class="result-box"><div class="result-grid"><div class="res-item"><span>Route Vraie (Rv)</span><strong id="res-cl-rv">-- °</strong></div><div class="res-item"><span>Distance Loxo</span><strong id="res-cl-dist">-- NM</strong></div></div></div>
+    </section>
+
+    <section id="interception" class="section">
+      <h2>Interception</h2>
+      <p class="subtitle">Cap et temps pour rejoindre un mobile en route constante.</p>
+      <div class="grid-2">
+        <div class="field"><label>Relèvement Cible (Z °)</label><input type="number" step="any" id="int-rel"></div>
+        <div class="field"><label>Distance Cible (NM)</label><input type="number" step="any" id="int-dist"></div>
+        <div class="field"><label>Route Cible (°)</label><input type="number" step="any" id="int-rcible"></div>
+        <div class="field"><label>Vitesse Cible (nd)</label><input type="number" step="any" id="int-vcible"></div>
+        <div class="field"><label>Votre Vitesse (nd)</label><input type="number" step="any" id="int-vnav"></div>
+      </div>
+      <button class="btn-calc" onclick="calculer('interception')">Calculer</button>
+      <div class="result-box"><div class="result-grid"><div class="res-item"><span>Cap Interception</span><strong id="res-int-cap">-- °</strong></div><div class="res-item"><span>Temps</span><strong id="res-int-temps">--</strong></div><div class="res-item"><span>Distance</span><strong id="res-int-dist">-- NM</strong></div></div></div>
+    </section>
+
+    <section id="courant-subi" class="section">
+      <h2>Courant Subi (Route Fond)</h2>
+      <p class="subtitle">Calcul de la route et vitesse fond résultantes.</p>
+      <div class="grid-2">
+        <div class="field"><label>Route Surface (Rs °)</label><input type="number" step="any" id="cs-rs"></div>
+        <div class="field"><label>Vitesse Surface (Vs nd)</label><input type="number" step="any" id="cs-vs"></div>
+        <div class="field"><label>Direction Courant (Dc °)</label><input type="number" step="any" id="cs-dc"></div>
+        <div class="field"><label>Vitesse Courant (Vc nd)</label><input type="number" step="any" id="cs-vc"></div>
+      </div>
+      <button class="btn-calc" onclick="calculer('courant-subi')">Calculer</button>
+      <div class="result-box"><div class="result-grid"><div class="res-item"><span>Route Fond (Rf)</span><strong id="res-cs-rf">-- °</strong></div><div class="res-item"><span>Vitesse Fond (Vf)</span><strong id="res-cs-vf">-- nd</strong></div><div class="res-item"><span>Dérive</span><strong id="res-cs-derive">-- °</strong></div></div></div>
+    </section>
+
+    <section id="courant-contre" class="section">
+      <h2>Courant Contre (Cap à suivre)</h2>
+      <p class="subtitle">Cap surface à tenir pour suivre une route fond voulue.</p>
+      <div class="grid-2">
+        <div class="field"><label>Route Fond désirée (Rf °)</label><input type="number" step="any" id="cc-rf"></div>
+        <div class="field"><label>Vitesse Surface (Vs nd)</label><input type="number" step="any" id="cc-vs"></div>
+        <div class="field"><label>Direction Courant (Dc °)</label><input type="number" step="any" id="cc-dc"></div>
+        <div class="field"><label>Vitesse Courant (Vc nd)</label><input type="number" step="any" id="cc-vc"></div>
+      </div>
+      <button class="btn-calc" onclick="calculer('courant-contre')">Calculer</button>
+      <div class="result-box"><div class="result-grid"><div class="res-item"><span>Route Surface (Rs)</span><strong id="res-cc-rs">-- °</strong></div><div class="res-item"><span>Vitesse Fond (Vf)</span><strong id="res-cc-vf">-- nd</strong></div><div class="res-item"><span>Correction</span><strong id="res-cc-corr">-- °</strong></div></div></div>
+    </section>
+
+    <section id="astro-soleil" class="section">
+      <h2>Navigation Astro — Soleil</h2>
+      <p class="subtitle">Réduction de hauteur et droite de hauteur Soleil.</p>
+      <div class="grid-3">
+        <div class="field"><label>Date & Heure UTC</label><input type="datetime-local" step="1" id="as-utc"></div>
+        <div class="field"><label>Hauteur Inst. (Hi)</label><div class="dms"><input type="number" id="as-hi-d" placeholder="Deg"><input type="number" step="any" id="as-hi-m" placeholder="Min"></div></div>
+        <div class="field"><label>Bord</label><select id="as-bord"><option value="inf">Inférieur</option><option value="sup">Supérieur</option></select></div>
+        <div class="field"><label>Index (ε ')</label><input type="number" step="any" id="as-index" value="0"></div>
+        <div class="field"><label>Hauteur œil (m)</label><input type="number" step="any" id="as-oeil" value="2.5"></div>
+      </div>
+      <div class="grid-2">
+        <div class="field"><label>Lat Estimée</label><div class="dms"><input type="number" id="as-lat-d" placeholder="Deg"><input type="number" step="any" id="as-lat-m" placeholder="Min"><select id="as-lat-ns"><option>N</option><option>S</option></select></div></div>
+        <div class="field"><label>Lon Estimée</label><div class="dms"><input type="number" id="as-lon-d" placeholder="Deg"><input type="number" step="any" id="as-lon-m" placeholder="Min"><select id="as-lon-ew"><option>W</option><option>E</option></select></div></div>
+      </div>
+      <button class="btn-calc" onclick="calculer('astro-soleil')">Calculer</button>
+      <div class="result-box"><div class="result-grid"><div class="res-item"><span>Hauteur Vraie (Hv)</span><strong id="res-as-hv">--</strong></div><div class="res-item"><span>Intercept</span><strong id="res-as-int">-- '</strong></div><div class="res-item"><span>Azimut (Z)</span><strong id="res-as-az">-- °</strong></div></div></div>
+    </section>
+
+    <section id="astro-lune" class="section">
+      <h2>Navigation Astro — Lune</h2>
+      <p class="subtitle">Réduction de hauteur lunaire avec parallaxe horizontale.</p>
+      <div class="grid-3">
+        <div class="field"><label>Date & Heure UTC</label><input type="datetime-local" step="1" id="al-utc"></div>
+        <div class="field"><label>Hauteur Inst. (Hi)</label><div class="dms"><input type="number" id="al-hi-d" placeholder="Deg"><input type="number" step="any" id="al-hi-m" placeholder="Min"></div></div>
+        <div class="field"><label>Parallaxe (HP ')</label><input type="number" step="any" id="al-hp"></div>
+        <div class="field"><label>Index (ε ')</label><input type="number" step="any" id="al-index" value="0"></div>
+        <div class="field"><label>Hauteur œil (m)</label><input type="number" step="any" id="al-oeil" value="2.5"></div>
+      </div>
+      <div class="grid-2">
+        <div class="field"><label>Lat Estimée</label><div class="dms"><input type="number" id="al-lat-d" placeholder="Deg"><input type="number" step="any" id="al-lat-m" placeholder="Min"><select id="al-lat-ns"><option>N</option><option>S</option></select></div></div>
+        <div class="field"><label>Lon Estimée</label><div class="dms"><input type="number" id="al-lon-d" placeholder="Deg"><input type="number" step="any" id="al-lon-m" placeholder="Min"><select id="al-lon-ew"><option>W</option><option>E</option></select></div></div>
+      </div>
+      <button class="btn-calc" onclick="calculer('astro-lune')">Calculer</button>
+      <div class="result-box"><div class="result-grid"><div class="res-item"><span>Hauteur Vraie (Hv)</span><strong id="res-al-hv">--</strong></div><div class="res-item"><span>Intercept</span><strong id="res-al-int">-- '</strong></div><div class="res-item"><span>Azimut (Z)</span><strong id="res-al-az">-- °</strong></div></div></div>
+    </section>
+
+    <section id="astro-etoiles" class="section">
+      <h2>Navigation Astro — Étoiles</h2>
+      <p class="subtitle">Observation d'étoile au crépuscule.</p>
+      <div class="grid-3">
+        <div class="field"><label>Étoile</label><select id="ae-nom"><option>Sirius</option><option>Canopus</option><option>Arcturus</option><option>Véga</option><option>Capella</option><option>Rigel</option><option>Procyon</option><option>Altaïr</option></select></div>
+        <div class="field"><label>Date & Heure UTC</label><input type="datetime-local" step="1" id="ae-utc"></div>
+        <div class="field"><label>Hauteur Inst. (Hi)</label><div class="dms"><input type="number" id="ae-hi-d" placeholder="Deg"><input type="number" step="any" id="ae-hi-m" placeholder="Min"></div></div>
+        <div class="field"><label>Index (ε ')</label><input type="number" step="any" id="ae-index" value="0"></div>
+        <div class="field"><label>Hauteur œil (m)</label><input type="number" step="any" id="ae-oeil" value="2.5"></div>
+      </div>
+      <div class="grid-2">
+        <div class="field"><label>Lat Estimée</label><div class="dms"><input type="number" id="ae-lat-d" placeholder="Deg"><input type="number" step="any" id="ae-lat-m" placeholder="Min"><select id="ae-lat-ns"><option>N</option><option>S</option></select></div></div>
+        <div class="field"><label>Lon Estimée</label><div class="dms"><input type="number" id="ae-lon-d" placeholder="Deg"><input type="number" step="any" id="ae-lon-m" placeholder="Min"><select id="ae-lon-ew"><option>W</option><option>E</option></select></div></div>
+      </div>
+      <button class="btn-calc" onclick="calculer('astro-etoiles')">Calculer</button>
+      <div class="result-box"><div class="result-grid"><div class="res-item"><span>Hauteur Vraie (Hv)</span><strong id="res-ae-hv">--</strong></div><div class="res-item"><span>Intercept</span><strong id="res-ae-int">-- '</strong></div><div class="res-item"><span>Azimut (Z)</span><strong id="res-ae-az">-- °</strong></div></div></div>
+    </section>
+
+    <section id="maree" class="section">
+      <h2>Calcul de Marée</h2>
+      <p class="subtitle">Hauteur d'eau à une heure donnée (Règle des douzièmes / Sinusoïde).</p>
+      <div class="grid-2">
+        <div class="field"><label>Heure Pleine Mer (PM)</label><input type="time" id="m-h-pm"></div>
+        <div class="field"><label>Hauteur PM (m)</label><input type="number" step="0.01" id="m-ht-pm"></div>
+        <div class="field"><label>Heure Basse Mer (BM)</label><input type="time" id="m-h-bm"></div>
+        <div class="field"><label>Hauteur BM (m)</label><input type="number" step="0.01" id="m-ht-bm"></div>
+        <div class="field"><label>Heure souhaitée</label><input type="time" id="m-h-cible"></div>
+        <div class="field"><label>Sonde carte (m)</label><input type="number" step="0.01" id="m-sonde"></div>
+      </div>
+      <button class="btn-calc" onclick="calculer('maree')">Calculer</button>
+      <div class="result-box"><div class="result-grid"><div class="res-item"><span>Marnage</span><strong id="res-m-marnage">-- m</strong></div><div class="res-item"><span>Hauteur d'eau</span><strong id="res-m-hauteur">-- m</strong></div><div class="res-item"><span>Profondeur totale</span><strong id="res-m-prof">-- m</strong></div></div></div>
+    </section>
+  </main>
+
+  <script>
+    function show(id, menuId) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.getElementById(menuId).classList.add('active');
+    }
+
+    async function calculer(type) {
+      const sec = document.getElementById(type);
+      const data = { type };
+      sec.querySelectorAll('input, select').forEach(el => {
+        if (el.id) data[el.id] = el.type === 'number' ? parseFloat(el.value || 0) : el.value;
+      });
+      const res = await fetch('/api/calcul', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json();
+      for (const [k, v] of Object.entries(json)) {
+        const el = document.getElementById(k);
+        if (el) el.innerText = v;
+      }
+    }
+  </script>
+</body>
+</html>
